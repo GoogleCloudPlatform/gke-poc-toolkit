@@ -1,9 +1,9 @@
 # GKE PoC Toolkit
 
-*[Introduction](#introduction)
-*[Pre-requisites](#pre-requisites)
-*[Deploy a Cluster](#deploy-a-cluster)
-*[Harden GKE Security](#harden-gke-security)
+* [Introduction](#introduction)
+* [Pre-requisites](#pre-requisites)
+* [Deploy a Cluster](#deploy-a-cluster)
+* [Harden GKE Security](#harden-gke-security)
 
 ## Introduction
 
