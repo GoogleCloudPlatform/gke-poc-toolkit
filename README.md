@@ -1,7 +1,11 @@
 # GKE PoC Toolkit
 
+*[Introduction](#introduction)
+*[Pre-requisites](#pre-requisites)
+*[Deploy a Cluster](#deploy-a-cluster)
+*[Harden GKE Security](#harden-gke-security)
 
-## Overview
+## Introduction
 
 Private clusters allow you to isolate nodes from the public internet
 Every GKE cluster has a Kubernetes API server that is managed by the control plane (master). The control plane runs on a VM that is in a VPC network in a Google-owned project.
@@ -41,7 +45,7 @@ Once the cluster is created, the following items are layered on to explore secur
   * GCP Service Account has GCS Storage Permissions and Workload Identity 
   * 2 Identical Kubernetes deployments with different Kubernetes Service Accounts
 
-## Before you start
+## Pre-requisites
 
 The steps described in this document require the installation of several tools and the proper configuration of authentication to allow them to access your GCP resources.
 
@@ -94,7 +98,7 @@ The Terraform configuration will execute against your GCP environment and create
 
 [GKE Cluster Install Instructions](docs/CLUSTERS.md)
 
-## Extra Security Install Instructions
+## Harden GKE Security
 
 [Centralized Logs](docs/SECURITY.md)
 
