@@ -14,13 +14,13 @@ Private clusters also restrict access to the internet by default. A NAT gateway 
 
 The examples in this repository will build GKE Private clusters with access to the control plane restricted in one of two configurations:
 
-* [Private Endpoint](CLUSTERS.md#GKE-Cluster-with-private-endpoint):
+* [Private Endpoint](docs/CLUSTERS.md#GKE-Cluster-with-private-endpoint):
   * Public endpoint for control plane is disabled
   * Nodes receive private IP addresses
   * Restricts access to addresses specified in the authorized networks list
   * Authorized networks range must containe internal IP addresses
 
-* [Public Endpoint](CLUSTERS.md#GKE-Cluster-with-public-endpoint):
+* [Public Endpoint](docs/CLUSTERS.md#GKE-Cluster-with-public-endpoint):
   * Public endpoint for control plane is enabled
   * Nodes receive private IP addresses
   * Restricts access to addresses specified in the authorized networks list
@@ -28,15 +28,15 @@ The examples in this repository will build GKE Private clusters with access to t
 
 Once the cluster is created, the following items are layered on to explore security considerations for the cluster:
 
-* [Audit Logging](SECURITY.md#Audit-Logging)
+* [Audit Logging](docs/SECURITY.md#Audit-Logging)
   * Creates Log Sinks and BigQuery Datasets for Cloud Audit Logs and GKE Audit Logs
 
-* [RBAC](SECURITY.md#RoleBased-Access-Control)
+* [RBAC](docs/SECURITY.md#RoleBased-Access-Control)
   * Maps GCP Service Accounts to Kubernetes ClusterRoles
   * 2 Service Accounts created with identical GCP IAM Roles
   * Individually mapped to Kubernetes Roles of Viewer and Editor
 
-* [Workload Identity](SECURITY.md#Workload-Identity)
+* [Workload Identity](docs/SECURITY.md#Workload-Identity)
   * Maps a GCP Service Account to Kubernetes Service Account
   * GCP Service Account has GCS Storage Permissions and Workload Identity 
   * 2 Identical Kubernetes deployments with different Kubernetes Service Accounts
