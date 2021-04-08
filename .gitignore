@@ -45,4 +45,5 @@ creds/
 # postgres db name
 .instance
 
-
+#terraform locks
+.terraform.lock.hcl
