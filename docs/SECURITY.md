@@ -5,16 +5,9 @@
 The provided scripts will populate the required  variables for the logging source from the region, zone, and project configurations of the default Google Cloud SDK profile. Ensure you are using the project that contains the previously created GKE clusters:
 
 ```shell
-jenn@eddie:~$ gcloud config list
-[compute]
-region = northamerica-northeast1
-zone = northamerica-northeast1-a
-[core]
-account = jenn.viau@arctiq.ca
-disable_usage_reporting = True
-project = toolkit-sandbox
-
-Your active configuration is: [default]
+export REGION=<target compute region for gke>
+export ZONE=<target compute zone for bastion host>
+export PROJECT=<GCP Project>
 ```
 
 An additional environment variable for the destination project is also required, this can be a seperate project or your existing project:
