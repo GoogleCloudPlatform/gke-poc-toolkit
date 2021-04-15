@@ -62,6 +62,7 @@ if [[ -z "${PROJECT}" ]]; then
     echo "replace 'PROJECT' with the project name." 1>&2
     exit 1;
 fi
+[[ -z "${LOG_PROJECT-}" ]] && LOG_PROJECT="$(gcloud config get-value core/project)"
 if [[ -z "${LOG_PROJECT}" ]]; then
     echo "This script requires a project for Logging." 1>&2
     echo "run 'export LOG_PROJECT=PROJECT'." 1>&2
