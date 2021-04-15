@@ -100,5 +100,5 @@ The Terraform configuration will execute against your GCP environment and create
 
 ## Harden GKE Security
 
-[Centralized Logs](docs/SECURITY.md)
+[GKE Hardening Instructions](docs/SECURITY.md)
 

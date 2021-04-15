@@ -2,19 +2,12 @@
 
 ## Before you start
 
-The provided scripts will populate the required variables from the region, zone, and project configurations of the default Google Cloud SDK profile. Verify your Google Cloud SDK settings before you start:
+The provided scripts will populate the required variables from the region, zone, and project envars.
 
 ```shell
-jenn@eddie:~$ gcloud config list
-[compute]
-region = northamerica-northeast1
-zone = northamerica-northeast1-a
-[core]
-account = jenn.viau@arctiq.ca
-disable_usage_reporting = True
-project = toolkit-sandbox
-
-Your active configuration is: [default]
+export REGION=<target compute region for gke>
+export ZONE=<target compute zone for bastion host>
+export PROJECT=<GCP Project>
 ```
 
 ## GKE Cluster with Private Endpoint
@@ -82,6 +75,12 @@ In the root of this repository, there is a script to create the cluster:
 export AUTH_IP=$(dig +short myip.opendns.com @resolver1.opendns.com)
 make create CLUSTER=public
 ```
+
+### Check the [FAQ](docs/FAQ.md) if you run into issues with the build.
+
+### Next steps
+
+[GKE Hardening Instructions](docs/SECURITY.md)
 
 ### Cleaning up
 
