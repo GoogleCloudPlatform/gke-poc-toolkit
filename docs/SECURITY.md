@@ -65,7 +65,11 @@ gcloud init
 Deploy the security example:
 
 ```shell
-make secure CLUSTER=(private|public)
+# If running a public cluster simply run the following:
+make secure CLUSTER=public
+
+# If running a private master endpoint you need to set the proxy ahead of the make command like so:
+HTTPS_PROXY=localhost:8888 make secure CLUSTER=private
 ```
 
 ### Audit Logs in Cloud Storage Validation
@@ -75,35 +79,37 @@ make secure CLUSTER=(private|public)
 Change the identity you are running gcloud under to the auditor service account and validate that change by observing the config list output.
 
 ```shell
-gcloud auth activate-service-account --key-file ./creds/rbac-demo-auditor@gke-toolkit-309114.iam.gserviceaccount.com.json
+gcloud auth activate-service-account --key-file ./creds/rbac-demo-auditor@$PROJECT.iam.gserviceaccount.com.json
 
 gcloud config list
-GKE_LOCATION=$(gcloud container clusters list --format="value(LOCAT
-ION)")
+GKE_LOCATION=$(gcloud container clusters list --format="value(LOCATION)")
 ```
 Retrieve a kubernetes config for the auditor service account and validate that you cannot get secrets.
 
 ```shell
 GKE_NAME=$(gcloud container clusters list --format="value(NAME)")
-gcloud container cluster get-credentials $GKE_NAME --location $GKE_LOCATION
+gcloud container clusters get-credentials $GKE_NAME --region $GKE_LOCATION
+
 kubectl auth can-i get secrets
+# Don't forget to pipe in the proxy if you are using a private master endpoint
+HTTPS_PROXY=localhost:8888 kubectl auth can-i get secrets
 ```
 
 Now switch the gcloud identity to the editor service account and validate that change.
 
 ```shell
-gcloud auth activate-service-account --key-file ./creds/rbac-demo-editor@gke-toolkit-309114.iam.gserviceaccount.com.json
+gcloud auth activate-service-account --key-file ./creds/rbac-demo-editor@$PROJECT.iam.gserviceaccount.com.json
 
 gcloud config list
-GKE_LOCATION=$(gcloud container clusters list --format="value(LOCAT
-ION)")
 ```
 Retrieve a kubernetes config for the editor service account and validate that you now get secrets.
 
 ```shell
-GKE_NAME=$(gcloud container clusters list --format="value(NAME)")
-gcloud container cluster get-credentials $GKE_NAME --location $GKE_LOCATION
+gcloud container clusters get-credentials $GKE_NAME --region $GKE_LOCATION
+
 kubectl auth can-i get secrets
+# Don't forget to pipe in the proxy if you are using a private master endpoint
+HTTPS_PROXY=localhost:8888 kubectl auth can-i get secrets
 ```
 
 ## Workload ID validation

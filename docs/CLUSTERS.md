@@ -76,11 +76,11 @@ export AUTH_IP=$(dig +short myip.opendns.com @resolver1.opendns.com)
 make create CLUSTER=public
 ```
 
-### Check the [FAQ](docs/FAQ.md) if you run into issues with the build.
+### Check the [FAQ](FAQ.md) if you run into issues with the build.
 
 ### Next steps
 
-[GKE Hardening Instructions](docs/SECURITY.md)
+[GKE Hardening Instructions](SECURITY.md)
 
 ### Cleaning up
 
