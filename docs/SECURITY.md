@@ -16,7 +16,7 @@ An additional environment variable for the destination project is also required,
 export LOG_PROJECT=<project-name>
 ```
 
-## Securing the Cluster
+## What Gets Enabled
 
 
 ### Audit Logging
@@ -47,22 +47,9 @@ RBAC authorization uses the rbac.authorization.k8s.io API group to drive authori
 ### Network Policy
 
 
-## Run Demo in a Google Cloud Shell
+## Securing the Cluster
 
-### Setup Cloud Shell Config and Deploy Security Features
-Click the button below to run the demo in a [Google Cloud Shell](https://cloud.google.com/shell/docs/).
-
-[![Open in Cloud Shell](http://gstatic.com/cloudssh/images/open-btn.svg)](https://console.cloud.google.com/cloudshell/open?cloudshell_git_repo=https://github.com/GoogleCloudPlatform/gke-poc-toolkit.git&amp;cloudshell_image=gcr.io/graphite-cloud-shell-images/terraform:latest&amp;cloudshell_tutorial=SECURITY.md)
-
-All the tools for the demo are installed. When using Cloud Shell execute the following
-command in order to setup gcloud cli. When executing this command please setup your region
-and zone.
-
-```console
-gcloud init
-```
-
-Deploy the security example:
+Execute the following steps to apply the hardening config to the cluster:
 
 ```shell
 # If running a public cluster simply run the following:
