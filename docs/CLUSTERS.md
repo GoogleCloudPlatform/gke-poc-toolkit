@@ -78,11 +78,11 @@ make create CLUSTER=public
 
 ### Check the [FAQ](FAQ.md) if you run into issues with the build.
 
-### Next steps
+## Next steps
 
 [GKE Hardening Instructions](SECURITY.md)
 
-### Cleaning up
+## Cleaning up
 
 Remove the cluster:
 
