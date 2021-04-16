@@ -65,7 +65,11 @@ gcloud init
 Deploy the security example:
 
 ```shell
-make secure CLUSTER=(private|public)
+# If running a public cluster simply run the following:
+make secure CLUSTER=public
+
+# If running a private cluster you need to set the proxy ahead of the make command like so:
+HTTPS_PROXY=localhost:8888 make secure CLUSTER=private
 ```
 
 ### Audit Logs in Cloud Storage Validation
