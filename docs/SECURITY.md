@@ -55,7 +55,9 @@ Execute the following steps to apply the hardening config to the cluster:
 # If running a public cluster simply run the following:
 make secure CLUSTER=public
 
-# If running a private master endpoint you need to set the proxy ahead of the make command like so:
+# If running a private master endpoint, validate the proxy is started and set the proxy ahead of the make command like so:
+make start-proxy
+
 HTTPS_PROXY=localhost:8888 make secure CLUSTER=private
 ```
 
@@ -69,15 +71,18 @@ Change the identity you are running gcloud under to the auditor service account 
 gcloud auth activate-service-account --key-file ./creds/rbac-demo-auditor@$PROJECT.iam.gserviceaccount.com.json
 
 gcloud config list
-GKE_LOCATION=$(gcloud container clusters list --format="value(LOCATION)")
 ```
 Retrieve a kubernetes config for the auditor service account and validate that you cannot get secrets.
 
 ```shell
+
+GKE_LOCATION=$(gcloud container clusters list --format="value(LOCATION)")
 GKE_NAME=$(gcloud container clusters list --format="value(NAME)")
+
 gcloud container clusters get-credentials $GKE_NAME --region $GKE_LOCATION
 
 kubectl auth can-i get secrets
+
 # Don't forget to pipe in the proxy if you are using a private master endpoint
 HTTPS_PROXY=localhost:8888 kubectl auth can-i get secrets
 ```
@@ -95,6 +100,7 @@ Retrieve a kubernetes config for the editor service account and validate that yo
 gcloud container clusters get-credentials $GKE_NAME --region $GKE_LOCATION
 
 kubectl auth can-i get secrets
+
 # Don't forget to pipe in the proxy if you are using a private master endpoint
 HTTPS_PROXY=localhost:8888 kubectl auth can-i get secrets
 ```
