@@ -76,12 +76,19 @@ else
     PRIVATE="false"
 fi
 # If Terraform is run without this file, the user will be prompted for values.
+# This check verifies if the file exists and prompts user for deletion
 # We don't want to overwrite a pre-existing tfvars file
 if [[ -f "${TFVARS_FILE}" ]]
 then
-    echo "${TFVARS_FILE} already exists." 1>&2
-    echo "Please remove or rename before regenerating." 1>&2
-    exit 1;
+    while true; do
+        echo ""
+         read -p "${TFVARS_FILE} already exists indicating a previous execution. This file needs to be removed or renamed before rerunning the deployment. Select yes(y) to delete or no(n) to cancel execution: " yn ; tput sgr0 
+        case $yn in
+            [Yy]* ) echo "Deleting and recreating ${TFVARS_FILE}"; rm ${TFVARS_FILE}; break;;
+            [Nn]* ) echo "Cancelling execution";exit ;;
+            * ) echo "Incorrect input. Cancelling execution";exit 1;;
+        esac
+    done
 fi
 
 # Write out all the values we gathered into a tfvars file so you don't
