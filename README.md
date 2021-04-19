@@ -7,22 +7,22 @@
 
 ## Introduction
 
-Private clusters allow you to isolate nodes from the public internet
+Private clusters allow you to isolate nodes from the public internet.
 Every GKE cluster has a Kubernetes API server that is managed by the control plane (master). The control plane runs on a VM that is in a VPC network in a Google-owned project.
 
 In private clusters, the control plane's VPC network is connected to your cluster's VPC network with VPC Network Peering. Your VPC network contains the cluster nodes, and a separate Google Cloud VPC network contains your cluster's control plane. The control plane's VPC network is located in a project controlled by Google. Traffic between nodes and the control plane is routed entirely using internal IP addresses.
 
-Private clusters also restrict access to the internet by default. A NAT gateway of some form needs to be deployed should you want to enable internet access to pods running in private clusters. Keep in mind this includes base container images not stored in the container registries that google cloud mantains. In the following examples, a Google Cloud Nat Gateway is deployed alongs side the GKE clusters. 
+Private clusters also restrict access to the internet by default. A NAT gateway of some form needs to be deployed should you want to enable outbound internet access from pods running in private clusters. Keep in mind this includes base container images not stored in the container registries that Google cloud maintains. In the following examples, a Google Cloud Nat Gateway is deployed alongs side the GKE clusters. 
 
 ![Private Cluster Architecture](/assets/private-cluster.svg)
 
-## Pre-requisites
+## Prerequisites
 
 The steps described in this document require the installation of several tools and the proper configuration of authentication to allow them to access your GCP resources.
 
 ### Cloud Project
 
-You'll need access to a Google Cloud Project with billing enabled. See **Creating and Managing Projects** (https://cloud.google.com/resource-manager/docs/creating-managing-projects) for creating a new project. To make cleanup easier it's recommended to create a new project.
+You'll need access to a Google Cloud Project with billing enabled. See **Creating and Managing Projects** (https://cloud.google.com/resource-manager/docs/creating-managing-projects) for creating a new project. To make cleanup easier, it's recommended to create a new project.
 
 ### Required GCP APIs
 
@@ -50,7 +50,7 @@ The Google Cloud SDK is used to interact with your GCP resources.
 
 #### Install kubectl CLI
 
-The kubectl CLI is used to interteract with both Kubernetes Engine and kubernetes in general.
+The kubectl CLI is used to interact with both Kubernetes Engine and kubernetes in general.
 [Installation instructions](https://cloud.google.com/kubernetes-engine/docs/quickstart)
 for multiple platforms are available online.
 
@@ -87,7 +87,7 @@ The [Deploy a Cluster](docs/CLUSTERS.md) step in this repository will build a GK
 
 [GKE Hardening Instructions](docs/SECURITY.md)
 
-Once the cluster is created, the [Harden GKE Security](docs/SECURITY.md) step can be executing against the existing environment. Doing so will layer on the following items to expand security considerations for the cluster:
+Once the cluster is created, the [Harden GKE Security](docs/SECURITY.md) step can be executed against the existing environment. Doing so will layer on the following items to expand security considerations for the cluster:
 
 * [Audit Logging](docs/SECURITY.md#Audit-Logging)
   * Creates Log Sinks and BigQuery Datasets for Cloud Audit Logs and GKE Audit Logs
