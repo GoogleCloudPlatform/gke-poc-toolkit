@@ -41,18 +41,14 @@ Once the GKE cluster has been created, establish an SSH tunnel to the bastion:
 make start-proxy
 ```
 
-Retrieve a kubernetes config for the auditor service account and validate that you cannot get secrets.
+Retrieve the kubernetes config for the cluster, then set the `HTTPS_PROXY` environment variable to validate you can forward kubectl commands through the tunnel:
 
 ```shell
 GKE_NAME=$(gcloud container clusters list --format="value(NAME)")
 GKE_LOCATION=$(gcloud container clusters list --format="value(LOCATION)")
 
 gcloud container clusters get-credentials $GKE_NAME --region $GKE_LOCATION
-```
 
-Set the `HTTPS_PROXY` environment variable to forward kubectl commands through the tunnel: 
-
-```shell
 HTTPS_PROXY=localhost:8888 kubectl get ns
 ```
 
