@@ -16,7 +16,7 @@ An additional environment variable for the destination project is also required,
 export LOG_PROJECT=<project-name>
 ```
 
-## Securing the Cluster
+## What Gets Enabled
 
 
 ### Audit Logging
@@ -47,28 +47,18 @@ RBAC authorization uses the rbac.authorization.k8s.io API group to drive authori
 ### Network Policy
 
 
-## Run Demo in a Google Cloud Shell
+## Securing the Cluster
 
-### Setup Cloud Shell Config and Deploy Security Features
-Click the button below to run the demo in a [Google Cloud Shell](https://cloud.google.com/shell/docs/).
-
-[![Open in Cloud Shell](http://gstatic.com/cloudssh/images/open-btn.svg)](https://console.cloud.google.com/cloudshell/open?cloudshell_git_repo=https://github.com/dstampfli/gke-poc-toolkit.git&amp;cloudshell_image=gcr.io/graphite-cloud-shell-images/terraform:latest&amp;cloudshell_tutorial=SECURITY.md)
-
-All the tools for the demo are installed. When using Cloud Shell execute the following
-command in order to setup gcloud cli. When executing this command please setup your region
-and zone.
-
-```console
-gcloud init
-```
-
-Deploy the security example:
+Execute the following steps to apply the hardening config to the cluster:
 
 ```shell
 # If running a public cluster simply run the following:
 make secure CLUSTER=public
 
-# If running a private master endpoint you need to set the proxy ahead of the make command like so:
+# If running a private master endpoint, validate the proxy is started. Then set the 
+# HTTPS_PROXY environment variable to forward the make command through the tunnel:
+make start-proxy
+
 HTTPS_PROXY=localhost:8888 make secure CLUSTER=private
 ```
 
@@ -82,15 +72,17 @@ Change the identity you are running gcloud under to the auditor service account 
 gcloud auth activate-service-account --key-file ./creds/rbac-demo-auditor@$PROJECT.iam.gserviceaccount.com.json
 
 gcloud config list
-GKE_LOCATION=$(gcloud container clusters list --format="value(LOCATION)")
 ```
 Retrieve a kubernetes config for the auditor service account and validate that you cannot get secrets.
 
 ```shell
 GKE_NAME=$(gcloud container clusters list --format="value(NAME)")
+GKE_LOCATION=$(gcloud container clusters list --format="value(LOCATION)")
+
 gcloud container clusters get-credentials $GKE_NAME --region $GKE_LOCATION
 
 kubectl auth can-i get secrets
+
 # Don't forget to pipe in the proxy if you are using a private master endpoint
 HTTPS_PROXY=localhost:8888 kubectl auth can-i get secrets
 ```
@@ -108,6 +100,7 @@ Retrieve a kubernetes config for the editor service account and validate that yo
 gcloud container clusters get-credentials $GKE_NAME --region $GKE_LOCATION
 
 kubectl auth can-i get secrets
+
 # Don't forget to pipe in the proxy if you are using a private master endpoint
 HTTPS_PROXY=localhost:8888 kubectl auth can-i get secrets
 ```

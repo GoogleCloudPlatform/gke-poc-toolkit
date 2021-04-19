@@ -41,9 +41,14 @@ Once the GKE cluster has been created, establish an SSH tunnel to the bastion:
 make start-proxy
 ```
 
-Set the `HTTPS_PROXY` environment variable to forward kubectl commands through the tunnel: 
+Retrieve the kubernetes config for the cluster, then set the `HTTPS_PROXY` environment variable to validate you can forward kubectl commands through the tunnel:
 
 ```shell
+GKE_NAME=$(gcloud container clusters list --format="value(NAME)")
+GKE_LOCATION=$(gcloud container clusters list --format="value(LOCATION)")
+
+gcloud container clusters get-credentials $GKE_NAME --region $GKE_LOCATION
+
 HTTPS_PROXY=localhost:8888 kubectl get ns
 ```
 
@@ -78,11 +83,11 @@ make create CLUSTER=public
 
 ### Check the [FAQ](FAQ.md) if you run into issues with the build.
 
-### Next steps
+## Next steps
 
 [GKE Hardening Instructions](SECURITY.md)
 
-### Cleaning up
+## Cleaning up
 
 Remove the cluster:
 

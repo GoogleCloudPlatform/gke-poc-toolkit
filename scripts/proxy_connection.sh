@@ -37,12 +37,12 @@ if [[ ! "$(pgrep -f L8888:127.0.0.1:8888)" ]]; then
  
   CREDENTIALS="$(terraform output --state=terraform/cluster_build/terraform.tfstate get_credentials_command)"
   KUBECTL="$(terraform output --state=terraform/cluster_build/terraform.tfstate bastion_kubectl_command)"
-  echo "SSH Tunnel/Proxy is now running.
+  tput setaf 2; echo "SSH Tunnel/Proxy is now running.
   Generate cluster credentials with gcloud:
    $CREDENTIALS
    
   Connect to the cluster with kubectl:  
-   $KUBECTL"
+   $KUBECTL"; tput sgr0
 else
   echo "Detected a running SSH tunnel.  Skipping."
 fi
