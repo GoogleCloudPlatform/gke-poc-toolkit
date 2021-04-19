@@ -55,7 +55,8 @@ Execute the following steps to apply the hardening config to the cluster:
 # If running a public cluster simply run the following:
 make secure CLUSTER=public
 
-# If running a private master endpoint, validate the proxy is started and set the proxy ahead of the make command like so:
+# If running a private master endpoint, validate the proxy is started. Then set the 
+# HTTPS_PROXY environment variable to forward the make command through the tunnel:
 make start-proxy
 
 HTTPS_PROXY=localhost:8888 make secure CLUSTER=private
@@ -75,9 +76,8 @@ gcloud config list
 Retrieve a kubernetes config for the auditor service account and validate that you cannot get secrets.
 
 ```shell
-
-GKE_LOCATION=$(gcloud container clusters list --format="value(LOCATION)")
 GKE_NAME=$(gcloud container clusters list --format="value(NAME)")
+GKE_LOCATION=$(gcloud container clusters list --format="value(LOCATION)")
 
 gcloud container clusters get-credentials $GKE_NAME --region $GKE_LOCATION
 
