@@ -90,7 +90,7 @@ The following best practices are also enforced as part of the cluster build proc
   * The build process generates a service account used for running the GKE nodes. This service account operates under the concept of least privilege and only has permissions needed for sending logging data, metrics, and downloading containers from the given GCR project. 
 
 * [Workload Identity](https://cloud.google.com/kubernetes-engine/docs/how-to/workload-identity):
-  * Workload identity is enabled on this cluster and is a way to securely provide access to Google cloud services within your Kubernetes cluster. This allows administrators to bind a Google cloud service account with the roles and/or permissions required to a Kubernetes Service account. An annotation on the service account then references the GCP service account which has the required roles and/or permissions to be able to access the Google cloud services within your cluster.
+  * Workload identity is enabled on this cluster and is a way to securely provide access to Google cloud services within your Kubernetes cluster. This allows administrators to bind a Google cloud service account with the roles and/or permissions required to a Kubernetes Service account. An annotation on the service account then references the GCP service account to access the Google cloud services within your cluster.
 
 * [Application Layer Secrets](https://cloud.google.com/kubernetes-engine/docs/how-to/encrypting-secrets#overview):
   * Application Layer Secrets are used to provide an additional layer of security for sensitive data stored in etcd. The build process creates a [Cloud KMS](https://cloud.google.com/kms/docs) which stores the Key Encrption Key (KEK) used to encrypt data at the application layer. 
@@ -102,7 +102,8 @@ The following best practices are also enforced as part of the cluster build proc
 Once the cluster is created, the [Harden GKE Security](docs/SECURITY.md) step can be executed against the existing environment. Doing so will layer on the following items to expand security considerations for the cluster:
 
 * [Audit Logging](docs/SECURITY.md#Audit-Logging)
-  * Creates Log Sinks and BigQuery Datasets for Cloud Audit Logs and GKE Audit Logs
+  * Creates BigQuery Datasets for Cloud Audit Logs and GKE Audit Logs
+  * Creates log sink and Big Query sink
 
 * [RBAC](docs/SECURITY.md#RoleBased-Access-Control)
 

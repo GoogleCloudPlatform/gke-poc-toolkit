@@ -23,10 +23,9 @@ This cluster features both private nodes and a private control plane node.
 The code in the `scripts` directory generates and populates terraform variable information and creates the following resources in the region, zone, and project specified:
 
 * GKE Cluster with Private Endpoint
-  * Workload Identity Enabled 
+  * Workload Identity enabled 
   * A least privileged Google Service Account assigned to compute engine instances
   * Master Authorized Networks enabled - Allows traffic from specified IP addresses to the GKE Control plane
-  * Custom Service Accounts for GKE Nodes 
   * Application layer secrets
 
 * VPC Networks
@@ -68,7 +67,6 @@ Stopping the SSH Tunnel:
 ```shell
 make stop-proxy
 ```
-#### Check the [FAQ](FAQ.md) if you run into issues with the build.
 
 #### Next steps
 
@@ -81,13 +79,17 @@ This cluster features cluster nodes with private IP's and a control plane node w
 The code in the `scripts` directory generates and populates terraform variable information and creates the following resources in the region, zone, and project specified:
 
 * GKE Cluster with Private Endpoint
-  * Workload Identity Enabled
+  * Workload Identity enabled 
+  * A least privileged Google Service Account assigned to compute engine instances
   * Master Authorized Networks enabled 
-  * Custom Service Accounts for GKE Nodes
+  * Application layer secrets
 
 * VPC Networks
   * subnets
   * firewall rules
+
+* Cloud KMS
+  * key ring for storing the application layer secret KEK
 
 Store external IP as local variable ```AUTH_IP```:
 
@@ -108,8 +110,6 @@ In the root of this repository, there is a script to create the cluster:
 # Create cluster
 make create CLUSTER=public
 ```
-
-#### Check the [FAQ](FAQ.md) if you run into issues with the build.
 
 #### Next steps
 
@@ -135,6 +135,8 @@ gcloud container clusters describe $GKE_NAME \
   --project $PROJECT
 
 ```
+## Check the [FAQ](FAQ.md) if you run into issues with the build.
+
 ## Cleaning up
 
 Remove the cluster:
