@@ -61,6 +61,15 @@ if [[ -z "${ZONE}" ]]; then
     echo "replace 'ZONE' with the zone name like us-west1-a." 1>&2
     exit 1;
 fi
+
+[[ -z "${GOVERNANCE_PROJECT-}" ]] && GOVERNANCE_PROJECT="$(gcloud config get-value core/project)"
+if [[ -z "${GOVERNANCE_PROJECT}" ]]; then
+    echo "This script requires a project for governance resources." 1>&2
+    echo "run 'export GOVERNANCE_PROJECT=PROJECT'." 1>&2
+    echo "replace 'PROJECT' with the project name." 1>&2
+    exit 1;
+fi
+
 PRIVATE=$1
 if [ "${PRIVATE}" == private ]; then
     PRIVATE="true"
@@ -95,6 +104,7 @@ fi
 # have to enter the values manually
     cat <<EOF > "${TFVARS_FILE}"
 project_id="${PROJECT}"
+governance_project_id="${GOVERNANCE_PROJECT}"
 region="${REGION}"
 private_endpoint="${PRIVATE}"
 cluster_name="$1-endpoint-cluster"

@@ -19,7 +19,7 @@ resource "google_storage_bucket" "log-bucket" {
   name          = "gke-logging-bucket-${random_id.server.hex}"
   storage_class = "NEARLINE"
   force_destroy = true
-  project       = var.log_project
+  project       = var.governance_project
 }
 
 //Create BQ Data Set in Logging Project
@@ -27,7 +27,7 @@ resource "google_bigquery_dataset" "bigquery-dataset" {
   dataset_id                  = "gke_logs_dataset"
   location                    = "US"
   default_table_expiration_ms = 3600000
-  project                     = var.log_project
+  project                     = var.governance_project
   labels = {
     env = "default"
   }
@@ -55,7 +55,7 @@ resource "google_logging_project_sink" "bigquery-sink" {
 // Add IAM permission in Logging project for Service accounts from GKE Project
 resource "google_project_iam_binding" "log-writer-storage" {
   role    = "roles/storage.objectCreator"
-  project = var.log_project
+  project = var.governance_project
   members = [
     google_logging_project_sink.storage-sink.writer_identity,
   ]
@@ -63,7 +63,7 @@ resource "google_project_iam_binding" "log-writer-storage" {
 // Add IAM permission in Logging project for Service accounts from GKE Project
 resource "google_project_iam_binding" "log-writer-bigquery" {
   role    = "roles/bigquery.dataEditor"
-  project = var.log_project
+  project = var.governance_project
   members = [
     google_logging_project_sink.bigquery-sink.writer_identity,
   ]

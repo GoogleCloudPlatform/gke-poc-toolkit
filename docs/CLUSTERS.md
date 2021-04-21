@@ -10,6 +10,12 @@ export ZONE=<target compute zone for bastion host>
 export PROJECT=<GCP Project>
 ```
 
+An additional environment variable for the governance project is also required. This project will be used to host resources such as the KVM and log sinks. As a best practice it is recommended that a separate project is used, however, the existing project can be used for testing purposes:
+
+```shell
+export GOVERNANCE_PROJECT=<project-name>
+```
+
 ## GKE Cluster with Private Endpoint
 
 This cluster features both private nodes and a private control plane node.
@@ -73,15 +79,48 @@ The code in the `scripts` directory generates and populates terraform variable i
   * subnets
   * firewall rules
 
-In the root of this repository, there is a script to create the cluster:
+Store external IP as local variable ```AUTH_IP```:
 
 ```shell
 # export your Public IP Address
 export AUTH_IP=$(dig +short myip.opendns.com @resolver1.opendns.com)
+```
+
+Verify ```AUTH_IP``` stored your external IP address before moving forward. If not, use an alternate means to update ```AUTH_IP``` with the external IP address for the console: 
+
+```shell
+# Check AUTH_IP for external IP
+echo $AUTH_IP
+```
+In the root of this repository, there is a script to create the cluster:
+
+```shell
+# Create cluster
 make create CLUSTER=public
 ```
 
-### Check the [FAQ](FAQ.md) if you run into issues with the build.
+## Check the [FAQ](FAQ.md) if you run into issues with the build.
+
+## Kubernetes App Layer Secrets Validation
+
+Execute the following command to retrieve the kubernetes config for the cluster if not collected in the previous step:
+
+```shell
+GKE_NAME=$(gcloud container clusters list --format="value(NAME)")
+GKE_LOCATION=$(gcloud container clusters list --format="value(LOCATION)")
+
+gcloud container clusters get-credentials $GKE_NAME --region $GKE_LOCATION
+```
+
+The following command validates that Application-layer Secrets Encryption is enabled. If the cluster is using app secrets, the response contains an EncryptionConfig of `ENCRYPTED`:
+
+```shell
+gcloud container clusters describe $GKE_NAME \
+  --region $GKE_LOCATION \
+  --format 'value(databaseEncryption)' \
+  --project $PROJECT
+
+```
 
 ## Next steps
 

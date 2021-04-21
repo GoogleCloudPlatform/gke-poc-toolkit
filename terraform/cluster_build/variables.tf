@@ -19,6 +19,11 @@ variable "project_id" {
   description = "The project ID to host the cluster in"
 }
 
+variable "governance_project_id" {
+  type        = string
+  description = "The project ID to host governance resources"
+}
+
 variable "cluster_name" {
   type        = string
   description = "The name of the cluster"
@@ -75,29 +80,7 @@ variable "ip_source_ranges_ssh" {
   description = "Additional source ranges to allow for ssh to bastion host. 35.235.240.0/20 allowed by default for IAP tunnel."
   default     = []
 }
-variable "service_account_iam_roles" {
-  type = list
 
-  default = [
-    "roles/logging.logWriter",
-    "roles/monitoring.metricWriter",
-    "roles/monitoring.viewer",
-  ]
-  description = <<-EOF
-  List of the default IAM roles to attach to the service account on the
-  GKE Nodes.
-  EOF
-}
-
-variable "service_account_custom_iam_roles" {
-  type    = list
-  default = []
-
-  description = <<-EOF
-  List of arbitrary additional IAM roles to attach to the service account on
-  the GKE nodes.  
-  EOF
-}
 variable "private_endpoint" {
   type    = bool
   default = false

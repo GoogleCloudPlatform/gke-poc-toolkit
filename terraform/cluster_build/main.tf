@@ -13,8 +13,8 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
- 
-module "enabled_google_apis" {
+
+ module "enabled_google_apis" {
   source  = "terraform-google-modules/project-factory/google//modules/project_services"
   version = "~> 10.0"
 
@@ -31,6 +31,36 @@ module "enabled_google_apis" {
     "binaryauthorization.googleapis.com",
     "stackdriver.googleapis.com",
     "iap.googleapis.com",
+  ]
+}
+ 
+module "enabled_governance_apis" {
+  source  = "terraform-google-modules/project-factory/google//modules/project_services"
+  version = "~> 10.0"
+
+  project_id                  = var.governance_project_id
+  disable_services_on_destroy = false
+
+  activate_apis = [
+    "cloudkms.googleapis.com",
+  ]
+}
+
+data "google_project" "project" {
+  project_id   = module.enabled_google_apis.project_id
+}
+
+locals {
+  bastion_name              = format("%s-bastion", var.cluster_name)
+  gke_service_account       = format("%s-sa", var.cluster_name)
+  gke_service_account_email = "${local.gke_service_account}@${module.enabled_google_apis.project_id}.iam.gserviceaccount.com"
+  gke_keyring_name          = format("%s-kr", var.cluster_name)
+  gke_key_name              = format("%s-kek", var.cluster_name)
+  kek_service_account       = format("service-%s@container-engine-robot.iam.gserviceaccount.com", data.google_project.project.number)
+  database-encryption-key   = "projects/${var.governance_project_id}/locations/${var.region}/keyRings/${local.gke_keyring_name}/cryptoKeys/${local.gke_key_name}"
+  bastion_zone              = var.zone
+  bastion_members           = [
+    format("user:%s", data.google_client_openid_userinfo.me.email),
   ]
 }
 
@@ -74,14 +104,6 @@ module "cluster-nat" {
   create_router = true
 }
 
-locals {
-  bastion_name = format("%s-bastion", var.cluster_name)
-  bastion_zone = var.zone
-  bastion_members = [
-    format("user:%s", data.google_client_openid_userinfo.me.email),
-  ]
-}
-
 data "template_file" "startup_script" {
   template = <<-EOF
   sudo apt-get update -y
@@ -107,13 +129,46 @@ module "bastion" {
   count          = var.private_endpoint ? 1 : 0
 }
 
+module "service_accounts" {
+  source        = "terraform-google-modules/service-accounts/google"
+  version       = "~> 3.0"
+  project_id    = module.enabled_google_apis.project_id
+  display_name  = "GKE cluster service account"
+  names         = [local.gke_service_account]
+  project_roles = [
+    "${module.enabled_google_apis.project_id}=>roles/artifactregistry.reader",
+    "${module.enabled_google_apis.project_id}=>roles/logging.logWriter",
+    "${module.enabled_google_apis.project_id}=>roles/monitoring.metricWriter",
+    "${module.enabled_google_apis.project_id}=>roles/monitoring.viewer",
+    "${module.enabled_google_apis.project_id}=>roles/stackdriver.resourceMetadata.writer",
+    "${module.enabled_google_apis.project_id}=>roles/storage.objectViewer",
+  ]
+  generate_keys = true
+}
+
+module "kms" {
+  depends_on = [
+    module.service_accounts,
+  ]
+  source            = "terraform-google-modules/kms/google"
+  version           = "~> 2.0"
+  project_id        = var.governance_project_id
+  location          = var.region
+  keyring           = local.gke_keyring_name
+  keys              = [local.gke_key_name]
+  set_owners_for    = [local.gke_key_name]
+  owners            = [
+        "serviceAccount:${local.kek_service_account}",
+  ]
+}
 
 module "gke" {
   depends_on = [
     module.bastion,
+    module.kms,
   ]
   source = "terraform-google-modules/kubernetes-engine/google//modules/safer-cluster"
-
+  version = "14.0.1"
   project_id = module.enabled_google_apis.project_id
   name       = var.cluster_name
   region     = var.region
@@ -126,6 +181,12 @@ module "gke" {
   master_authorized_networks = [{
     cidr_block   = var.private_endpoint ? "${module.bastion[0].ip_address}/32" : "${var.auth_ip}/32"
     display_name = "Bastion Host"
+  }]
+
+  compute_engine_service_account = local.gke_service_account_email
+  database_encryption = [{
+    state    = "ENCRYPTED"
+    key_name = local.database-encryption-key
   }]
 
   node_pools = [
