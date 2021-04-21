@@ -23,15 +23,7 @@ Cloud Logging can be used aggregate logs from all GCP resources as well as any c
 * Pub/Sub
 * BigQuery
 
-The scripts in this repository will create a set of log sinks for collecting the Audit Logs of the GKE clusters; one targeting a Google Cloud Storage Bucket and one targeting a Big Query data set.  These sinks can be created in either a new centralized logging project or inside your existing GCP Project.
-
-### Workload Identity
-
-What is [Workload Identity](https://cloud.google.com/kubernetes-engine/docs/how-to/workload-identity)?
-
-Workload identity is a way to securely provide access to Google cloud services within your Kubernetes cluster.
-
-This is accomplished by binding a Google cloud service account, with the roles and/or permissions required to a Kubernetes Service account. An annotation on  the service account references the GCP service account which has the required roles and/or permissions to be able to access the Google cloud services within your cluster.
+The scripts in this repository will create a set of log sinks for collecting the Audit Logs of the GKE clusters; one targeting a Google Cloud Storage Bucket and one targeting a Big Query data set.  These sinks can be created in either a new centralized logging project or inside your existing GCP Project. Please reference [this link](https://cloud.google.com/logging/docs/export) for a conceptual overview of log exports and how sinks work. 
 
 ### Rolebased Access control
 

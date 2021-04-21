@@ -23,15 +23,20 @@ This cluster features both private nodes and a private control plane node.
 The code in the `scripts` directory generates and populates terraform variable information and creates the following resources in the region, zone, and project specified:
 
 * GKE Cluster with Private Endpoint
-  * Workload Identity Enabled - 
+  * Workload Identity Enabled 
+  * A least privileged Google Service Account assigned to compute engine instances
   * Master Authorized Networks enabled - Allows traffic from specified IP addresses to the GKE Control plane
-  * Custom Service Accounts for GKE Nodes - 
+  * Custom Service Accounts for GKE Nodes 
+  * Application layer secrets
 
 * VPC Networks
   * subnets
   * firewall rules
   * Cloud NAT - provide outbound internet access for the clusters
   * Cloud Routers
+
+* Cloud KMS
+  * key ring for storing the application layer secret KEK
 
 * Compute Engine instance - acts as a bastion host, mapped to the GKE Cluster's Master Authorized Network
 
@@ -63,6 +68,11 @@ Stopping the SSH Tunnel:
 ```shell
 make stop-proxy
 ```
+#### Check the [FAQ](FAQ.md) if you run into issues with the build.
+
+#### Next steps
+
+[GKE Hardening Instructions](SECURITY.md)
 
 ## GKE Cluster with Public endpoint
 
@@ -99,7 +109,11 @@ In the root of this repository, there is a script to create the cluster:
 make create CLUSTER=public
 ```
 
-## Check the [FAQ](FAQ.md) if you run into issues with the build.
+#### Check the [FAQ](FAQ.md) if you run into issues with the build.
+
+#### Next steps
+
+[GKE Hardening Instructions](SECURITY.md)
 
 ## Kubernetes App Layer Secrets Validation
 
@@ -121,11 +135,6 @@ gcloud container clusters describe $GKE_NAME \
   --project $PROJECT
 
 ```
-
-## Next steps
-
-[GKE Hardening Instructions](SECURITY.md)
-
 ## Cleaning up
 
 Remove the cluster:

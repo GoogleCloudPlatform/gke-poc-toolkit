@@ -4,6 +4,7 @@
 * [Pre-requisites](#pre-requisites)
 * [Deploy a Cluster](#deploy-a-cluster)
 * [Harden GKE Security](#harden-gke-security)
+* [Deploy Secure GKE Workloads](#deploy-secure-gke-workloads)
 
 ## Introduction
 
@@ -88,6 +89,9 @@ The following best practices are also enforced as part of the cluster build proc
 * [Least Privilege Service Accounts](https://cloud.google.com/kubernetes-engine/docs/how-to/hardening-your-cluster#use_least_privilege_sa)
   * The build process generates a service account used for running the GKE nodes. This service account operates under the concept of least privilege and only has permissions needed for sending logging data, metrics, and downloading containers from the given GCR project. 
 
+* [Workload Identity](https://cloud.google.com/kubernetes-engine/docs/how-to/workload-identity):
+  * Workload identity is enabled on this cluster and is a way to securely provide access to Google cloud services within your Kubernetes cluster. This allows administrators to bind a Google cloud service account with the roles and/or permissions required to a Kubernetes Service account. An annotation on the service account then references the GCP service account which has the required roles and/or permissions to be able to access the Google cloud services within your cluster.
+
 * [Application Layer Secrets](https://cloud.google.com/kubernetes-engine/docs/how-to/encrypting-secrets#overview):
   * Application Layer Secrets are used to provide an additional layer of security for sensitive data stored in etcd. The build process creates a [Cloud KMS](https://cloud.google.com/kms/docs) which stores the Key Encrption Key (KEK) used to encrypt data at the application layer. 
 
@@ -101,11 +105,19 @@ Once the cluster is created, the [Harden GKE Security](docs/SECURITY.md) step ca
   * Creates Log Sinks and BigQuery Datasets for Cloud Audit Logs and GKE Audit Logs
 
 * [RBAC](docs/SECURITY.md#RoleBased-Access-Control)
+
   * Maps GCP Service Accounts to Kubernetes ClusterRoles
-  * 2 Service Accounts created with identical GCP IAM Roles
-  * Individually mapped to Kubernetes Roles of Viewer and Editor
+    * Two Service Accounts created with identical GCP IAM Roles - IAM roles needed for accessing cluster config
+    * Individually mapped to Kubernetes Roles of Viewer and Editor - Simulate auditor and cluster administrator role permissions
+
+## Deploy Secure GKE Workloads
+
+[Deploy Secure GKE Workloads Instructions](docs/WORKLOADS.md)
+
+Once hardening controls have been enforced, the [Deploy Secure GKE Workloads](docs/WORKLOADS.md) step provides examples on how to secure workloads deployed to the cluster. This step leverages [Config Connector](https://cloud.google.com/config-connector/docs/overview) to deploy services and resources using Kubernetes tooling and APIs. The following security features are layed into the application deployment:
 
 * [Workload Identity](docs/SECURITY.md#Workload-Identity)
-  * Maps a GCP Service Account to Kubernetes Service Account
-  * GCP Service Account has GCS Storage Permissions and Workload Identity 
-  * 2 Identical Kubernetes deployments with different Kubernetes Service Accounts
+  * Leveraging Workload Identity, map a GCP Service Account to a Kubernetes Service Account
+  * Grant GCP Service Account GCS Storage Permissions
+  * Deploy a sample `storage-application` that leverages that identity to access a GCP storage bucket
+
