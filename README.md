@@ -95,6 +95,9 @@ The following best practices are also enforced as part of the cluster build proc
 * [Application Layer Secrets](https://cloud.google.com/kubernetes-engine/docs/how-to/encrypting-secrets#overview):
   * Application Layer Secrets are used to provide an additional layer of security for sensitive data stored in etcd. The build process creates a [Cloud KMS](https://cloud.google.com/kms/docs) which stores the Key Encrption Key (KEK) used to encrypt data at the application layer. 
 
+* [Safe-Cluster GKE Module](https://registry.terraform.io/modules/terraform-google-modules/kubernetes-engine/google/latest/submodules/safer-cluster):
+  * This deployment uses the Safe-Cluster GKE module which fixes a set of parameters to values suggested in the [GKE hardening guide](https://cloud.google.com/kubernetes-engine/docs/how-to/hardening-your-cluster), the CIS framework, and other best practices. Reference the above link for project configurations, cluster settings, and basic kubernetes objects that are provisioned as part of this module and permit a safer-than-default configuration.
+
 ## Harden GKE Security
 
 [GKE Hardening Instructions](docs/SECURITY.md)
