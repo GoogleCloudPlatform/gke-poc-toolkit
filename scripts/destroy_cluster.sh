@@ -28,7 +28,7 @@ cd "$ROOT/terraform/cluster_build" || exit;
 
 # Perform the destroy
 terraform state rm 'module.kms'
-terraform destroy -input=false -auto-approve -var 'keys=[]' -compact-warnings
+terraform destroy -input=false -auto-approve
 
 # Remove the tfvars file generated during "make create"
 rm -f "$ROOT/terraform/cluster_build/terraform.tfvars"

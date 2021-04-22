@@ -142,3 +142,5 @@ Remove the cluster:
 ```shell
 make destroy CLUSTER=<private|public>
 ```
+
+![Invalid Function on Destroy](../assets/invalid-function-on-destroy.png)
