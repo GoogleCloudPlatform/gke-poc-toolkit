@@ -68,9 +68,7 @@ Stopping the SSH Tunnel:
 make stop-proxy
 ```
 
-#### Next steps
-
-[GKE Hardening Instructions](SECURITY.md)
+Proceed to [validation steps](#kubernetes-app-layer-secrets-validation) once installation completes. 
 
 ## GKE Cluster with Public endpoint
 
@@ -111,10 +109,6 @@ In the root of this repository, there is a script to create the cluster:
 make create CLUSTER=public
 ```
 
-#### Next steps
-
-[GKE Hardening Instructions](SECURITY.md)
-
 ## Kubernetes App Layer Secrets Validation
 
 Execute the following command to retrieve the kubernetes config for the cluster if not collected in the previous step:
@@ -136,6 +130,10 @@ gcloud container clusters describe $GKE_NAME \
 
 ```
 ## Check the [FAQ](FAQ.md) if you run into issues with the build.
+
+## Next steps
+
+[GKE Hardening Instructions](SECURITY.md)
 
 ## Cleaning up
 

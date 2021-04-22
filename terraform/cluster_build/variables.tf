@@ -98,3 +98,9 @@ variable "auth_ip" {
   type = string
 
 }
+
+variable "keys" {
+  description = "Key names."
+  type        = list(string)
+  default     = []
+}
