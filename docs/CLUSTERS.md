@@ -144,3 +144,5 @@ make destroy CLUSTER=<private|public>
 ```
 
 ![Invalid Function on Destroy](../assets/invalid-function-on-destroy.png)
+
+<img src="../assets/invalid-function-on-destroy.png" alt="invalid-function-on-destroy" width="200"/>
