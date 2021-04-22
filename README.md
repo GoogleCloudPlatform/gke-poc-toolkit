@@ -30,7 +30,7 @@ You'll need access to at least one Google Cloud Project with billing enabled. Se
 The following APIs will be enabled in your projects:
 
 * Identity and Access Management API
-* Compute API
+* Compute Engine API
 * Cloud Resource Manager API
 * Kubernetes Engine API
 * Google Container Registry API
