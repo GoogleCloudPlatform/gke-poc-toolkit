@@ -132,7 +132,7 @@ gcloud container clusters describe $GKE_NAME \
 
 ## Next steps
 
-The next step is to harden the newly created cluster:
+The next step is to harden the newly created cluster.
 
 [GKE Hardening Instructions](SECURITY.md)
 
