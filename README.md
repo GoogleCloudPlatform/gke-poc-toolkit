@@ -23,19 +23,24 @@ The steps described in this document require the installation of several tools a
 
 ### Cloud Project
 
-You'll need access to a Google Cloud Project with billing enabled. See **Creating and Managing Projects** (https://cloud.google.com/resource-manager/docs/creating-managing-projects) for creating a new project. To make cleanup easier, it's recommended to create a new project.
+You'll need access to at least one Google Cloud Project with billing enabled. See **Creating and Managing Projects** (https://cloud.google.com/resource-manager/docs/creating-managing-projects) for creating a new project. To make cleanup easier, it's recommended to create a new project.
 
 ### Required GCP APIs
 
 The following APIs will be enabled in your projects:
 
+* Identity and Access Management API
+* Compute API
 * Cloud Resource Manager API
 * Kubernetes Engine API
+* Google Container Registry API
 * Stackdriver Logging API
 * Stackdriver Monitoring API
 * BigQuery API
 * Identity Aware Proxy API
 * Google Cloud Storage API
+* Binary Authorization API
+* Cloud Key Management Service API
 
 ### Tools
 
@@ -118,7 +123,7 @@ Once the cluster is created, the [Harden GKE Security](docs/SECURITY.md) step ca
 
 [Deploy Secure GKE Workloads Instructions](docs/WORKLOADS.md)
 
-Once hardening controls have been enforced, the [Deploy Secure GKE Workloads](docs/WORKLOADS.md) step provides examples on how to secure workloads deployed to the cluster. This step leverages [Config Connector](https://cloud.google.com/config-connector/docs/overview) to deploy services and resources using Kubernetes tooling and APIs. The following security features are layed into the application deployment:
+The [Deploy Secure GKE Workloads](docs/WORKLOADS.md) step provides examples on how to enforce security best practices to workloads deployed to the cluster. This step leverages [Config Connector](https://cloud.google.com/config-connector/docs/overview) to deploy services and resources using Kubernetes tooling and APIs. The following security features are layed into the application deployment:
 
 * [Workload Identity](docs/SECURITY.md#Workload-Identity)
   * Leveraging Workload Identity, map a GCP Service Account to a Kubernetes Service Account
