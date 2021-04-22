@@ -14,8 +14,7 @@ export GOVERNANCE_PROJECT=<project-name>
 
 ## What Gets Enabled
 
-
-### Audit Logging
+#### Audit Logging
 
 Cloud Logging can be used aggregate logs from all GCP resources as well as any custom resources (on other platforms) to allow for one centralized store for all logs and metrics.  Logs are aggregated and then viewable within the provided Cloud Logging UI. They can also be [exported to Sinks](https://cloud.google.com/logging/docs/export/configure_export_v2) to support more specialized of use cases.  Currently, Cloud Logging supports exporting to the following sinks:
 
@@ -23,24 +22,20 @@ Cloud Logging can be used aggregate logs from all GCP resources as well as any c
 * Pub/Sub
 * BigQuery
 
-The scripts in this repository will create a set of log sinks for collecting the Audit Logs of the GKE clusters; one targeting a Google Cloud Storage Bucket and one targeting a Big Query data set.  These sinks can be created in either a new centralized logging project or inside your existing GCP Project.
+The scripts in this repository will create a set of log sinks for collecting the Audit Logs of the GKE clusters; one targeting a Google Cloud Storage Bucket and one targeting a Big Query data set.  These sinks can be created in either a new centralized logging project or inside your existing GCP Project. Please reference [this link](https://cloud.google.com/logging/docs/export) for a conceptual overview of log exports and how sinks work. 
 
-### Workload Identity
-
-What is [Workload Identity](https://cloud.google.com/kubernetes-engine/docs/how-to/workload-identity)?
-
-Workload identity is a way to securely provide access to Google cloud services within your Kubernetes cluster.
-
-This is accomplished by binding a Google cloud service account, with the roles and/or permissions required to a Kubernetes Service account. An annotation on  the service account references the GCP service account which has the required roles and/or permissions to be able to access the Google cloud services within your cluster.
-
-### Rolebased Access control
+#### Rolebased Access control
 
 Role-based access control (RBAC) is a method of regulating access to computer or network resources based on the roles of individual users within your organization.
 
 RBAC authorization uses the rbac.authorization.k8s.io API group to drive authorization decisions, allowing you to dynamically configure policies through the Kubernetes API.
 
+The scripts in this repository will create two sample Google Cloud Identities, `rbac-demo-auditor` and `rbac-demo-editor`, that have kubernetes 'view' and 'edit' ClusterRoles respectively. After creation, a simple test is provided to demonstrate the scope of permissions. These roles are intended to represent the a sample audit and administrative user. 
 
-### Network Policy
+
+#### Network Policy
+
+Roadmap Item
 
 
 ## Securing the Cluster
@@ -58,9 +53,13 @@ make start-proxy
 HTTPS_PROXY=localhost:8888 make secure CLUSTER=private
 ```
 
-### Audit Logs in Cloud Storage Validation
+#### Audit Logs in Cloud Storage Validation
 
-### Kubernetes + GCP RBAC Validation
+To view Log Router sinks created by this deployment in the GCP Portal UI navigated to Logging -> Logs Router in the Cluster Project. 
+
+To view the Big Query Data Set created by this deployment in the GCP Portal UI, nagivate to BigQuery -> SQL Workspace and view the dataset for the Governance Project.
+
+#### Kubernetes + GCP RBAC Validation
 
 Change the identity you are running gcloud under to the auditor service account and validate that change by observing the config list output.
 
@@ -101,11 +100,10 @@ kubectl auth can-i get secrets
 HTTPS_PROXY=localhost:8888 kubectl auth can-i get secrets
 ```
 
-## Workload ID validation
+#### Next steps
 
-Get the external IP of the test application and POST against the endpoint a few times. You should see a 200 when you are routed to the pod that is using a workload identity with the correct RBAC on the storage account and a 403 when routed to the pod that hath not RBAC.
+The next step is to deploy a secure workload to the cluster.
 
-```shell
-SERVICE_EXT_IP=$(kubectl get service -n storage-application gcs-wi-test-lb -o yaml | grep ip: | awk 'END{ print $3}')
-while true ; do curl -X POST -d 'Some test data' http://$SERVICE_EXT_IP/test; sleep 1 ; done
-```
+[Deploy Secure GKE Workloads](WORKLOADS.md)
+
+#### Check the [FAQ](FAQ.md) if you run into issues with the build.
