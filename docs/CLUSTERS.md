@@ -129,11 +129,12 @@ gcloud container clusters describe $GKE_NAME \
   --project $PROJECT
 
 ```
-## Check the [FAQ](FAQ.md) if you run into issues with the build.
 
 ## Next steps
 
 [GKE Hardening Instructions](SECURITY.md)
+
+## Check the [FAQ](FAQ.md) if you run into issues with the build.
 
 ## Cleaning up
 
