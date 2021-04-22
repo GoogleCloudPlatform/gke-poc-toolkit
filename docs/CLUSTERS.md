@@ -132,6 +132,8 @@ gcloud container clusters describe $GKE_NAME \
 
 ## Next steps
 
+The next step is to harden the newly created cluster:
+
 [GKE Hardening Instructions](SECURITY.md)
 
 ## Check the [FAQ](FAQ.md) if you run into issues with the build.
