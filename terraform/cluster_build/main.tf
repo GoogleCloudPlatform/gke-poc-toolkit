@@ -50,13 +50,18 @@ data "google_project" "project" {
   project_id   = module.enabled_google_apis.project_id
 }
 
+// Random string used to create a unique key ring name
+resource "random_id" "kms" {
+  byte_length = 2
+}
+
 locals {
   kcc_service_account       = format("%s-kcc", var.cluster_name)
   kcc_service_account_email = "${local.kcc_service_account}@${module.enabled_google_apis.project_id}.iam.gserviceaccount.com"
   bastion_name              = format("%s-bastion", var.cluster_name)
   gke_service_account       = format("%s-sa", var.cluster_name)
   gke_service_account_email = "${local.gke_service_account}@${module.enabled_google_apis.project_id}.iam.gserviceaccount.com"
-  gke_keyring_name          = format("%s-kr", var.cluster_name)
+  gke_keyring_name          = format("%s-kr-%s", var.cluster_name, random_id.kms.hex)
   gke_key_name              = format("%s-kek", var.cluster_name)
   kek_service_account       = format("service-%s@container-engine-robot.iam.gserviceaccount.com", data.google_project.project.number)
   database-encryption-key   = "projects/${var.governance_project_id}/locations/${var.region}/keyRings/${local.gke_keyring_name}/cryptoKeys/${local.gke_key_name}"

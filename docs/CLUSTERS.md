@@ -23,15 +23,19 @@ This cluster features both private nodes and a private control plane node.
 The code in the `scripts` directory generates and populates terraform variable information and creates the following resources in the region, zone, and project specified:
 
 * GKE Cluster with Private Endpoint
-  * Workload Identity Enabled - 
+  * Workload Identity enabled 
+  * A least privileged Google Service Account assigned to compute engine instances
   * Master Authorized Networks enabled - Allows traffic from specified IP addresses to the GKE Control plane
-  * Custom Service Accounts for GKE Nodes - 
+  * Application layer secrets
 
 * VPC Networks
   * subnets
   * firewall rules
   * Cloud NAT - provide outbound internet access for the clusters
   * Cloud Routers
+
+* Cloud KMS
+  * key ring for storing the application layer secret KEK
 
 * Compute Engine instance - acts as a bastion host, mapped to the GKE Cluster's Master Authorized Network
 
@@ -64,6 +68,8 @@ Stopping the SSH Tunnel:
 make stop-proxy
 ```
 
+Proceed to [validation steps](#kubernetes-app-layer-secrets-validation) once installation completes. 
+
 ## GKE Cluster with Public endpoint
 
 This cluster features cluster nodes with private IP's and a control plane node with a public IP.
@@ -71,13 +77,17 @@ This cluster features cluster nodes with private IP's and a control plane node w
 The code in the `scripts` directory generates and populates terraform variable information and creates the following resources in the region, zone, and project specified:
 
 * GKE Cluster with Private Endpoint
-  * Workload Identity Enabled
+  * Workload Identity enabled 
+  * A least privileged Google Service Account assigned to compute engine instances
   * Master Authorized Networks enabled 
-  * Custom Service Accounts for GKE Nodes
+  * Application layer secrets
 
 * VPC Networks
   * subnets
   * firewall rules
+
+* Cloud KMS
+  * key ring for storing the application layer secret KEK
 
 Store external IP as local variable ```AUTH_IP```:
 
@@ -98,8 +108,6 @@ In the root of this repository, there is a script to create the cluster:
 # Create cluster
 make create CLUSTER=public
 ```
-
-## Check the [FAQ](FAQ.md) if you run into issues with the build.
 
 ## Kubernetes App Layer Secrets Validation
 
@@ -124,12 +132,21 @@ gcloud container clusters describe $GKE_NAME \
 
 ## Next steps
 
+The next step is to futher harden the newly created cluster.
+
 [GKE Hardening Instructions](SECURITY.md)
+
+#### Check the [FAQ](FAQ.md) if you run into issues with the build.
 
 ## Cleaning up
 
-Remove the cluster:
+Running the command below will destroy all resources with the exception of the Cloud KMS, Key Rings and Keys created by this deployment. Futher deployments will create a new key ring and keys for use by the cluster. This is due to a feature in Cloud KMS requiring a [24 hour scheduled deletion of keys](https://cloud.google.com/kms/docs/faq#cannot_delete). Because of this, it is recommended to manually schedule the deletion of key rings and keys created while testing this deployment. 
 
 ```shell
 make destroy CLUSTER=<private|public>
+
 ```
+
+NOTE: Cloud KMS resources are removed from terraform state resulting in the following error when executing a `terraform destroy`. This error can be safely ignored: 
+
+<img src="../assets/invalid-function-on-destroy.png" alt="invalid-function-on-destroy" width="900"/>

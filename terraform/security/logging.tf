@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-// Create GCS Bucket in Logging Project 
+// Create GCS Bucket in Governance Project 
 resource "google_storage_bucket" "log-bucket" {
   name          = "gke-logging-bucket-${random_id.server.hex}"
   storage_class = "NEARLINE"
@@ -22,7 +22,7 @@ resource "google_storage_bucket" "log-bucket" {
   project       = var.governance_project
 }
 
-//Create BQ Data Set in Logging Project
+//Create BQ Data Set in Governance Project
 resource "google_bigquery_dataset" "bigquery-dataset" {
   dataset_id                  = "gke_logs_dataset"
   location                    = "US"
