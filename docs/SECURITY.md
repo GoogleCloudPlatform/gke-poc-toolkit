@@ -102,6 +102,8 @@ HTTPS_PROXY=localhost:8888 kubectl auth can-i get secrets
 
 #### Next steps
 
+The next step is to deploy a secure workload to the cluster.
+
 [Deploy Secure GKE Workloads](WORKLOADS.md)
 
 #### Check the [FAQ](FAQ.md) if you run into issues with the build.

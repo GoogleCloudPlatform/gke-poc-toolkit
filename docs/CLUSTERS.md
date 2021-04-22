@@ -136,7 +136,7 @@ The next step is to futher harden the newly created cluster.
 
 [GKE Hardening Instructions](SECURITY.md)
 
-## Check the [FAQ](FAQ.md) if you run into issues with the build.
+#### Check the [FAQ](FAQ.md) if you run into issues with the build.
 
 ## Cleaning up
 
