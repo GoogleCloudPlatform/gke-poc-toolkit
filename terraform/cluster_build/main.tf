@@ -51,6 +51,8 @@ data "google_project" "project" {
 }
 
 locals {
+  kcc_service_account       = format("%s-kcc", var.cluster_name)
+  kcc_service_account_email = "${local.kcc_service_account}@${module.enabled_google_apis.project_id}.iam.gserviceaccount.com"
   bastion_name              = format("%s-bastion", var.cluster_name)
   gke_service_account       = format("%s-sa", var.cluster_name)
   gke_service_account_email = "${local.gke_service_account}@${module.enabled_google_apis.project_id}.iam.gserviceaccount.com"
@@ -62,6 +64,19 @@ locals {
   bastion_members           = [
     format("user:%s", data.google_client_openid_userinfo.me.email),
   ]
+  service_accounts = {
+    (local.gke_service_account) = [
+      "${module.enabled_google_apis.project_id}=>roles/artifactregistry.reader",
+      "${module.enabled_google_apis.project_id}=>roles/logging.logWriter",
+      "${module.enabled_google_apis.project_id}=>roles/monitoring.metricWriter",
+      "${module.enabled_google_apis.project_id}=>roles/monitoring.viewer",
+      "${module.enabled_google_apis.project_id}=>roles/stackdriver.resourceMetadata.writer",
+      "${module.enabled_google_apis.project_id}=>roles/storage.objectViewer",
+    ]
+    (local.kcc_service_account) = [
+      "${module.enabled_google_apis.project_id}=>roles/owner",
+    ]
+  }
 }
 
 module "vpc" {
@@ -130,19 +145,13 @@ module "bastion" {
 }
 
 module "service_accounts" {
+  for_each = local.service_accounts
   source        = "terraform-google-modules/service-accounts/google"
   version       = "~> 3.0"
   project_id    = module.enabled_google_apis.project_id
-  display_name  = "GKE cluster service account"
-  names         = [local.gke_service_account]
-  project_roles = [
-    "${module.enabled_google_apis.project_id}=>roles/artifactregistry.reader",
-    "${module.enabled_google_apis.project_id}=>roles/logging.logWriter",
-    "${module.enabled_google_apis.project_id}=>roles/monitoring.metricWriter",
-    "${module.enabled_google_apis.project_id}=>roles/monitoring.viewer",
-    "${module.enabled_google_apis.project_id}=>roles/stackdriver.resourceMetadata.writer",
-    "${module.enabled_google_apis.project_id}=>roles/storage.objectViewer",
-  ]
+  display_name  = "${each.key} service account"
+  names         = [each.key]
+  project_roles = each.value
   generate_keys = true
 }
 
@@ -172,6 +181,7 @@ module "gke" {
   project_id = module.enabled_google_apis.project_id
   name       = var.cluster_name
   region     = var.region
+  config_connector = var.config_connector  
   network                 = module.vpc.network_name
   subnetwork              = module.vpc.subnets_names[0]
   ip_range_pods           = module.vpc.subnets_secondary_ranges[0].*.range_name[0]
@@ -225,5 +235,20 @@ module "gke" {
       // Explicitly remove GCE legacy metadata API endpoint
       disable-legacy-endpoints = "true"
     }
+  }
+}
+
+module "service_account-iam-bindings" {
+  depends_on = [
+    module.service_accounts,
+  ]
+  source = "terraform-google-modules/iam/google//modules/service_accounts_iam"
+
+  service_accounts = [local.kcc_service_account_email]
+  project          = module.enabled_google_apis.project_id
+  bindings = {
+    "roles/iam.workloadIdentityUser" = [
+      "serviceAccount:${module.enabled_google_apis.project_id}.svc.id.goog[cnrm-system/cnrm-controller-manager]",
+    ]
   }
 }

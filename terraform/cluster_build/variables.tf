@@ -98,3 +98,9 @@ variable "auth_ip" {
   type = string
 
 }
+
+variable "config_connector" {
+  type        = bool
+  description = "(Beta) Whether ConfigConnector is enabled for this cluster."
+  default     = true
+}
