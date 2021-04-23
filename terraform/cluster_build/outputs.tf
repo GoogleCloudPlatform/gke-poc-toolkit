@@ -43,7 +43,7 @@ output "bastion_name" {
 }
 output "bastion_ssh_command" {
   description = "gcloud command to ssh and port forward to the bastion host command"
-  value       = (var.private_endpoint ? (format("gcloud beta compute ssh %s --tunnel-through-iap --project %s --zone %s -- -4 -L8888:127.0.0.1:8888", module.bastion[0].hostname, var.project_id, local.bastion_zone)) : "")
+  value       = (var.private_endpoint ? (format("gcloud beta compute ssh %s --tunnel-through-iap --project %s --zone %s -- -4-L8888:127.0.0.1:8888", module.bastion[0].hostname, var.project_id, local.bastion_zone)) : "")
 }
 
 output "bastion_kubectl_command" {
