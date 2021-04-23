@@ -32,11 +32,11 @@ echo "Detecting SSH Bastion Tunnel/Proxy"
 if [[ ! "$(pgrep -f L8888:127.0.0.1:8888)" ]]; then
   echo "Did not detect a running SSH tunnel.  Opening a new one."
   # shellcheck disable=SC2091
-  BASTION_CMD="$(terraform output --state=terraform/cluster_build/terraform.tfstate bastion_ssh_command)"
+  BASTION_CMD="$(terraform output --state=terraform/cluster_build/terraform.tfstate bastion_ssh_command | tr -d \")"
   $BASTION_CMD -f tail -f /dev/null
  
-  CREDENTIALS="$(terraform output --state=terraform/cluster_build/terraform.tfstate get_credentials_command)"
-  KUBECTL="$(terraform output --state=terraform/cluster_build/terraform.tfstate bastion_kubectl_command)"
+  CREDENTIALS="$(terraform output --state=terraform/cluster_build/terraform.tfstate get_credentials_command | tr -d \")"
+  KUBECTL="$(terraform output --state=terraform/cluster_build/terraform.tfstate bastion_kubectl_command | tr -d \")"
   tput setaf 2; echo "SSH Tunnel/Proxy is now running.
   Generate cluster credentials with gcloud:
    $CREDENTIALS
