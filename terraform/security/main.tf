@@ -16,7 +16,7 @@
 
 resource "google_project_service" "service" {
   count   = length(var.project_services)
-  project = var.project
+  project = var.project_id
   service = element(var.project_services, count.index)
 
   // Do not disable the service on destroy. On destroy, we are going to
