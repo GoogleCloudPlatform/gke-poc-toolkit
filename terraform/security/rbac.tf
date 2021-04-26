@@ -27,13 +27,11 @@ module "service_accounts" {
   generate_keys = true
 }
 
-
 resource "local_file" "service_account_key" {
   for_each =  module.service_accounts
   filename = "../../creds/${each.value.email}.json"
   content  = each.value.key
 }
-
 
 resource "kubernetes_cluster_role_binding" "auditor" {
   for_each  = var.k8s_users

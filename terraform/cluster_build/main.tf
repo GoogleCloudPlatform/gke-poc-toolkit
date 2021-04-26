@@ -80,6 +80,7 @@ locals {
     ]
     (local.kcc_service_account) = [
       "${module.enabled_google_apis.project_id}=>roles/owner",
+      "${module.enabled_google_apis.project_id}=>roles/iam.serviceAccounts.create"
     ]
   }
 }
@@ -245,7 +246,7 @@ module "gke" {
 
 module "service_account-iam-bindings" {
   depends_on = [
-    module.service_accounts,
+    module.gke,
   ]
   source = "terraform-google-modules/iam/google//modules/service_accounts_iam"
 
