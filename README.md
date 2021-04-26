@@ -6,7 +6,7 @@
 * [Harden GKE Security](#harden-gke-security)
 * [Deploy Secure GKE Workloads](#deploy-secure-gke-workloads)
 
-## Introduction-t01
+## Introduction
 
 Private clusters allow you to isolate nodes from the public internet.
 Every GKE cluster has a Kubernetes API server that is managed by the control plane (master). The control plane runs on a VM that is in a VPC network in a Google-owned project.
