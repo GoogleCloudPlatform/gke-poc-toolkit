@@ -14,7 +14,8 @@
  * limitations under the License.
  */
 
- module "enabled_google_apis" {
+// Enable APIs needed in the gke cluster project
+module "enabled_google_apis" {
   source  = "terraform-google-modules/project-factory/google//modules/project_services"
   version = "~> 10.0"
 
@@ -33,7 +34,8 @@
     "iap.googleapis.com",
   ]
 }
- 
+
+// Enable APIs needed in the governance project
 module "enabled_governance_apis" {
   source  = "terraform-google-modules/project-factory/google//modules/project_services"
   version = "~> 10.0"
@@ -46,15 +48,12 @@ module "enabled_governance_apis" {
   ]
 }
 
-data "google_project" "project" {
-  project_id   = module.enabled_google_apis.project_id
-}
-
 // Random string used to create a unique key ring name
 resource "random_id" "kms" {
   byte_length = 2
 }
 
+// Locals used to construct names of stuffs.
 locals {
   kcc_service_account       = format("%s-kcc", var.cluster_name)
   kcc_service_account_email = "${local.kcc_service_account}@${module.enabled_google_apis.project_id}.iam.gserviceaccount.com"
@@ -65,7 +64,6 @@ locals {
   gke_key_name              = format("%s-kek", var.cluster_name)
   kek_service_account       = format("service-%s@container-engine-robot.iam.gserviceaccount.com", data.google_project.project.number)
   database-encryption-key   = "projects/${var.governance_project_id}/locations/${var.region}/keyRings/${local.gke_keyring_name}/cryptoKeys/${local.gke_key_name}"
-  bastion_zone              = var.zone
   bastion_members           = [
     format("user:%s", data.google_client_openid_userinfo.me.email),
   ]
@@ -89,7 +87,7 @@ module "vpc" {
   source  = "terraform-google-modules/network/google"
   version = "~> 2.5"
 
-  project_id   = module.enabled_google_apis.project_id
+  project_id   = var.project_id
   network_name = var.network_name
   routing_mode = "GLOBAL"
 
@@ -118,7 +116,7 @@ module "vpc" {
 
 module "cluster-nat" {
   source        = "terraform-google-modules/cloud-nat/google"
-  project_id    = module.enabled_google_apis.project_id
+  project_id   = var.project_id
   region        = var.region
   router        = "private-cluster-router"
   network       = module.vpc.network_self_link
@@ -137,10 +135,10 @@ module "bastion" {
   version        = "~> 3.1"
   network        = module.vpc.network_self_link
   subnet         = module.vpc.subnets_self_links[0]
-  project        = module.enabled_google_apis.project_id
-  host_project   = module.enabled_google_apis.project_id
+  project_id   = var.project_id
+  host_project   = var.project_id
   name           = local.bastion_name
-  zone           = local.bastion_zone
+  zone           = var.zone
   image_project  = "debian-cloud"
   image_family   = "debian-9"
   machine_type   = "g1-small"
@@ -154,7 +152,7 @@ module "service_accounts" {
   for_each = local.service_accounts
   source        = "terraform-google-modules/service-accounts/google"
   version       = "~> 3.0"
-  project_id    = module.enabled_google_apis.project_id
+  project_id   = var.project_id
   display_name  = "${each.key} service account"
   names         = [each.key]
   project_roles = each.value
@@ -184,7 +182,7 @@ module "gke" {
   ]
   source = "terraform-google-modules/kubernetes-engine/google//modules/safer-cluster"
   version = "14.0.1"
-  project_id = module.enabled_google_apis.project_id
+  project_id   = var.project_id
   name       = var.cluster_name
   region     = var.region
   config_connector = var.config_connector  
@@ -244,6 +242,8 @@ module "gke" {
   }
 }
 
+// Bind the KCC operator Kubernetes service account(KSA) to the 
+// KCC Google Service account(GSA) so the KSA can assume the workload identity users role.
 module "service_account-iam-bindings" {
   depends_on = [
     module.gke,
@@ -251,10 +251,10 @@ module "service_account-iam-bindings" {
   source = "terraform-google-modules/iam/google//modules/service_accounts_iam"
 
   service_accounts = [local.kcc_service_account_email]
-  project          = module.enabled_google_apis.project_id
+  project          = var.project_id
   bindings = {
     "roles/iam.workloadIdentityUser" = [
-      "serviceAccount:${module.enabled_google_apis.project_id}.svc.id.goog[cnrm-system/cnrm-controller-manager]",
+      "serviceAccount:${var.project_id}.svc.id.goog[cnrm-system/cnrm-controller-manager]",
     ]
   }
 }

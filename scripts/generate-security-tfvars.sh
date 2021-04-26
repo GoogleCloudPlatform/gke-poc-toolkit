@@ -95,9 +95,9 @@ fi
 # Write out all the values we gathered into a tfvars file so you don't
 # have to enter the values manually
 cat <<EOF > "${TFVARS_FILE}"
-project="${PROJECT}"
+project_id="${PROJECT}"
 zone="${ZONE}"
 region="${REGION}"
-governance_project="${GOVERNANCE_PROJECT}"
+governance_project_id="${GOVERNANCE_PROJECT}"
 cluster_name="$1-endpoint-cluster"
 EOF

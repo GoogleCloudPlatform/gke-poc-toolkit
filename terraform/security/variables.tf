@@ -15,7 +15,7 @@
  */
 
 // Required values to be set in terraform.tfvars
-variable "project" {
+variable "project_id" {
   description = "The project in which to hold the components"
   type        = string
 }
