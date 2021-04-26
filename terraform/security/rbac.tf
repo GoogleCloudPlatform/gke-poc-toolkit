@@ -21,8 +21,8 @@ module "service_accounts" {
   project_id    = var.project_id
   names         = [each.key]
   project_roles = [
-    "${var.project}=>roles/container.clusterViewer",
-    "${var.project}=>roles/container.viewer"
+    "${var.project_id}=>roles/container.clusterViewer",
+    "${var.project_id}=>roles/container.viewer"
   ]
   generate_keys = true
 }
@@ -45,7 +45,7 @@ resource "kubernetes_cluster_role_binding" "auditor" {
   }
   subject {
     kind      = "User"
-    name      = format("%s@%s.iam.gserviceaccount.com", each.key, var.project)
+    name      = format("%s@%s.iam.gserviceaccount.com", each.key, var.project_id)
     api_group = "rbac.authorization.k8s.io"
   }
 }

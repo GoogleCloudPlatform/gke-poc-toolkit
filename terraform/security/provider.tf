@@ -35,7 +35,7 @@ data "google_client_config" "current" {
 
 data "google_container_cluster" "cluster" {
   name     = var.cluster_name
-  project  = var.project
+  project  = var.project_id
   location = var.region
 }
 
@@ -55,7 +55,7 @@ provider "helm" {
 }
 
 provider "google" {
-  project = var.project
+  project = var.project_id
   region  = var.region
 }
 

@@ -60,7 +60,7 @@ variable "project_services" {
   EOF
 }
 
-variable "governance_project" {
+variable "governance_project_id" {
   description = "The project to use for governance resources such as kvm and log sinks"
   type        = string
 }

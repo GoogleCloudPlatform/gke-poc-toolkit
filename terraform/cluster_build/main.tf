@@ -48,6 +48,11 @@ module "enabled_governance_apis" {
   ]
 }
 
+// Used to grab project number for the GKE service account -- look into this later.
+data "google_project" "project" {
+  project_id   = module.enabled_google_apis.project_id
+}
+
 // Random string used to create a unique key ring name
 resource "random_id" "kms" {
   byte_length = 2
@@ -56,10 +61,10 @@ resource "random_id" "kms" {
 // Locals used to construct names of stuffs.
 locals {
   kcc_service_account       = format("%s-kcc", var.cluster_name)
-  kcc_service_account_email = "${local.kcc_service_account}@${module.enabled_google_apis.project_id}.iam.gserviceaccount.com"
+  kcc_service_account_email = "${local.kcc_service_account}@${var.project_id}.iam.gserviceaccount.com"
   bastion_name              = format("%s-bastion", var.cluster_name)
   gke_service_account       = format("%s-sa", var.cluster_name)
-  gke_service_account_email = "${local.gke_service_account}@${module.enabled_google_apis.project_id}.iam.gserviceaccount.com"
+  gke_service_account_email = "${local.gke_service_account}@${var.project_id}.iam.gserviceaccount.com"
   gke_keyring_name          = format("%s-kr-%s", var.cluster_name, random_id.kms.hex)
   gke_key_name              = format("%s-kek", var.cluster_name)
   kek_service_account       = format("service-%s@container-engine-robot.iam.gserviceaccount.com", data.google_project.project.number)
@@ -78,7 +83,7 @@ locals {
     ]
     (local.kcc_service_account) = [
       "${module.enabled_google_apis.project_id}=>roles/owner",
-      "${module.enabled_google_apis.project_id}=>roles/iam.serviceAccounts.create"
+      "${module.enabled_google_apis.project_id}=>roles/iam.serviceAccountCreator"
     ]
   }
 }
@@ -135,7 +140,7 @@ module "bastion" {
   version        = "~> 3.1"
   network        = module.vpc.network_self_link
   subnet         = module.vpc.subnets_self_links[0]
-  project_id   = var.project_id
+  project   = var.project_id
   host_project   = var.project_id
   name           = local.bastion_name
   zone           = var.zone
@@ -148,6 +153,7 @@ module "bastion" {
   count          = var.private_endpoint ? 1 : 0
 }
 
+// Create the service accounts for GKE and KCC from a map declared in locals.
 module "service_accounts" {
   for_each = local.service_accounts
   source        = "terraform-google-modules/service-accounts/google"
