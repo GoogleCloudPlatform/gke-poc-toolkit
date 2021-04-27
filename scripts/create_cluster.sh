@@ -32,17 +32,6 @@ source "${ROOT}/scripts/generate-cluster-tfvars.sh"
 (cd "${ROOT}/terraform/cluster_build"; terraform init -input=false)
 (cd "${ROOT}/terraform/cluster_build"; terraform apply -input=false -auto-approve)
 
-# Configure the connfig connector with the project GKE was created in.
-cat <<EOF | kubectl apply -f -
-apiVersion: core.cnrm.cloud.google.com/v1beta1
-kind: ConfigConnector
-metadata:
-  name: configconnector.core.cnrm.cloud.google.com
-spec:
-  mode: cluster
-  googleServiceAccount: "$1-endpoint-cluster-kcc@${PROJECT}.iam.gserviceaccount.com" 
-EOF
-
 # Get cluster credentials
 GET_CREDS="$(terraform output --state=./terraform/$1/terraform.tfstate get_credentials)"
 

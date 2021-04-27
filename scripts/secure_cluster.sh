@@ -23,6 +23,17 @@ ROOT="$( cd "$( dirname "${BASH_SOURCE[0]}" )/.." && pwd )"
 # shellcheck source=scripts/common.sh
 source "${ROOT}/scripts/common.sh"
 
+# Configure the connfig connector with the project GKE was created in.
+cat <<EOF | kubectl apply -f -
+apiVersion: core.cnrm.cloud.google.com/v1beta1
+kind: ConfigConnector
+metadata:
+  name: configconnector.core.cnrm.cloud.google.com
+spec:
+  mode: cluster
+  googleServiceAccount: "${1}-endpoint-cluster-kcc@${PROJECT}.iam.gserviceaccount.com" 
+EOF
+
 # Generate the variables to be used by Terraform
 # shellcheck source=scripts/generate-tfvars.sh
 # TODO remove this
