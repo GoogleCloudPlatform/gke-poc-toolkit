@@ -56,7 +56,6 @@ metadata:
   name: workload-id-demo-sa
 spec:
   displayName: workload-id-demo-sa
-  namespace: workload-id-demo
 ---
 apiVersion: v1
 kind: ServiceAccount
