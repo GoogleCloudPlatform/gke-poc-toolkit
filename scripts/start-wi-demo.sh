@@ -34,229 +34,29 @@ source "$ROOT"/scripts/common.sh
 #
 # The - in the initial variable check prevents the script from exiting due
 # from attempting to use an unset variable.
-[[ -z "${PROJECT-}" ]] && PROJECT="$(gcloud config get-value core/project)"
-if [[ -z "${PROJECT}" ]]; then
-    echo "gcloud cli must be configured with a default project." 1>&2
-    echo "run 'gcloud config set core/project PROJECT'." 1>&2
-    echo "replace 'PROJECT' with the project name." 1>&2
-    exit 1;
+
+CONFIG_FILES_COUNT=$(ls demos/workload-identity | wc -l)
+
+if [[ "$CONFIG_FILES_COUNT" != 1 ]]
+then
+    while true; do
+        echo ""
+         read -p "The workload identity demo config files already exist. If you would like to write over them Select yes(y) or no(n) to cancel execution: " yn ; tput sgr0 
+        case $yn in
+            [Yy]* ) echo "Config files will be overwritten"; rm ${TFVARS_FILE}; break;;
+            [Nn]* ) echo "Cancelling execution";exit ;;
+            * ) echo "Incorrect input. Cancelling execution";exit 1;;
+        esac
+    done
 fi
+
+# Generate the demo kubernetes configs 
+# shellcheck source=scripts/generate-wi-demo-configs.sh
+source "${ROOT}/scripts/generate-wi-demo-configs.sh"
 
 # Set variables for the demo folder kubernets config location.
 WORKLOAD_ID_DIR="./demos/workload-identity"
 
-# Generate a random name for the storage bucket used in the example app.
-BUCKET_NAME="gke-application-bucket-$(openssl rand -hex 3)"
-
-# Generate kubenernetes configs based on unique vars.
-cat <<EOF > "${WORKLOAD_ID_DIR}/gcs-wi-test-sa.yaml"
-apiVersion: iam.cnrm.cloud.google.com/v1beta1
-kind: IAMServiceAccount
-metadata:
-  name: workload-id-demo-sa
-spec:
-  displayName: workload-id-demo-sa
----
-apiVersion: v1
-kind: ServiceAccount
-metadata:
-  annotations:
-    iam.gke.io/gcp-service-account: workload-id-demo-sa@${PROJECT}.iam.gserviceaccount.com
-  name: workload-id-demo-sa
-  namespace: workload-id-demo
----
-apiVersion: iam.cnrm.cloud.google.com/v1beta1
-kind: IAMPolicy
-metadata:
-  name: workload-id-sa-policy
-  namespace: workload-id-demo
-spec:
-  resourceRef:
-    apiVersion:  iam.cnrm.cloud.google.com/v1beta1
-    kind: IAMServiceAccount
-    name: workload-id-demo-sa
-  bindings:
-    - role: roles/iam.workloadIdentityUser 
-      members: 
-        - serviceAccount:${PROJECT}.svc.id.goog[workload-id-demo/workload-id-demo-sa]
-EOF
-
-cat <<EOF > "${WORKLOAD_ID_DIR}/gcs-wi-test-storage.yaml"
-apiVersion: storage.cnrm.cloud.google.com/v1beta1
-kind: StorageBucket
-metadata:
-  annotations:
-    cnrm.cloud.google.com/force-destroy: "false"
-  name: ${BUCKET_NAME}
-  namespace: workload-id-demo
-spec:
-  bucketPolicyOnly: true
-  lifecycleRule:
-    - action:
-        type: Delete
-      condition:
-        age: 7
-  versioning:
-    enabled: true
----
-apiVersion: iam.cnrm.cloud.google.com/v1beta1
-kind: IAMPolicyMember
-metadata:
-  name: workload-id-demo-storage-policy
-spec:
-  member: serviceAccount:workload-id-demo-sa@${PROJECT}.iam.gserviceaccount.com
-  role: roles/storage.objectAdmin
-  resourceRef:
-    apiVersion: storage.cnrm.cloud.google.com/v1beta1
-    kind: StorageBucket
-    external: ${BUCKET_NAME?} 
-EOF
-
-cat <<EOF > "${WORKLOAD_ID_DIR}/gcs-wi-test-namespace.yaml"
-apiVersion: v1
-kind: Namespace
-metadata:
-  name: workload-id-demo
-  annotations:
-    cnrm.cloud.google.com/project-id: ${PROJECT}
-EOF
-
-cat <<EOF > "${WORKLOAD_ID_DIR}/gcs-wi-test-deploy.yaml"
-apiVersion: v1
-kind: Service
-metadata:
-  name: demo
-  namespace: workload-id-demo
-  annotations:
-    cloud.google.com/neg: '{"ingress": true}'
-spec:
-  ports:
-  - port: 8080
-    targetPort: 8080
-    name: http 
-  selector:
-    app: demo
-  type: ClusterIP
----
-apiVersion: apps/v1
-kind: Deployment
-metadata:
-  labels:
-    app: demo
-  name: gcs-wi-test
-  namespace: workload-id-demo
-spec:
-  selector:
-    matchLabels:
-      app: demo
-  template:
-    metadata:
-      labels:
-        app: demo
-    spec:
-      containers:
-      - env:
-        - name: PORT
-          value: "8080"
-        - name: BUCKET_NAME
-          value: ${BUCKET_NAME}
-        image: bucksteamy/workload-id-storage-demo:v1.3
-        imagePullPolicy: Always
-        name: gcs-fuse-workload
-        ports:
-          - name: http
-            containerPort: 8080
-        resources:
-          limits:
-            cpu: 500m
-            memory: 512Mi
-          requests:
-            cpu: 250m
-            memory: 50Mi
-        readinessProbe:
-          httpGet:
-            path: /healthz
-            port: 8080
-            scheme: HTTP
-          initialDelaySeconds: 5
-          timeoutSeconds: 1
-        livenessProbe:
-          httpGet:
-            path: /healthz
-            port: 8080
-            scheme: HTTP
-          initialDelaySeconds: 5
-          timeoutSeconds: 1
-      serviceAccount: workload-id-demo-sa
-      serviceAccountName: workload-id-demo-sa
-EOF
-
-cat << EOF > "${WORKLOAD_ID_DIR}/gcs-wi-test-bad-deploy.yaml"
-apiVersion: v1
-kind: Service
-metadata:
-  name: demo-bad
-  namespace: workload-id-demo
-  annotations:
-    cloud.google.com/neg: '{"ingress": true}'
-spec:
-  ports:
-  - port: 8080
-    targetPort: 8080
-    name: http 
-  selector:
-    app: demo-bad
-  type: ClusterIP
----
-apiVersion: apps/v1
-kind: Deployment
-metadata:
-  name: gcs-wi-test-bad
-  namespace: workload-id-demo
-spec:
-  selector:
-    matchLabels:
-      app: demo-bad
-  template:
-    metadata:
-      labels:
-        app: demo-bad
-    spec:
-      containers:
-      - env:
-        - name: PORT
-          value: "8080"
-        - name: BUCKET_NAME
-          value: ${BUCKET_NAME}
-        image: bucksteamy/workload-id-storage-demo:v1.3
-        imagePullPolicy: Always
-        name: gcs-fuse-workload
-        ports:
-        ports:
-          - name: http
-            containerPort: 8080
-        resources:
-          limits:
-            cpu: 500m
-            memory: 512Mi
-          requests:
-            cpu: 250m
-            memory: 50Mi
-        readinessProbe:
-          httpGet:
-            path: /healthz
-            port: 8080
-            scheme: HTTP
-          initialDelaySeconds: 5
-          timeoutSeconds: 1
-        livenessProbe:
-          httpGet:
-            path: /healthz
-            port: 8080
-            scheme: HTTP
-          initialDelaySeconds: 5
-          timeoutSeconds: 1
-EOF
 
 # Create the demo app namespace then the rest of the k8s objects.
 kubectl apply -f ${WORKLOAD_ID_DIR}/gcs-wi-test-namespace.yaml
