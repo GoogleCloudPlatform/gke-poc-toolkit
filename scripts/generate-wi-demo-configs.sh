@@ -56,6 +56,7 @@ metadata:
   name: workload-id-demo-sa
 spec:
   displayName: workload-id-demo-sa
+  namespace: workload-id-demo
 ---
 apiVersion: v1
 kind: ServiceAccount
@@ -103,6 +104,7 @@ apiVersion: iam.cnrm.cloud.google.com/v1beta1
 kind: IAMPolicyMember
 metadata:
   name: workload-id-demo-storage-policy
+  namespace: workload-id-demo
 spec:
   member: serviceAccount:workload-id-demo-sa@${PROJECT}.iam.gserviceaccount.com
   role: roles/storage.objectAdmin
