@@ -43,7 +43,7 @@ then
         echo ""
          read -p "The workload identity demo config files already exist. If you would like to write over them Select yes(y) or no(n) to cancel execution: " yn ; tput sgr0 
         case $yn in
-            [Yy]* ) echo "Config files will be overwritten"; rm ${TFVARS_FILE}; break;;
+            [Yy]* ) echo "Config files will be overwritten";break;;
             [Nn]* ) echo "Cancelling execution";exit ;;
             * ) echo "Incorrect input. Cancelling execution";exit 1;;
         esac
