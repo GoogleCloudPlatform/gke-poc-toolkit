@@ -28,36 +28,9 @@ ROOT="$( cd "$( dirname "${BASH_SOURCE[0]}" )/.." && pwd )"
 # shellcheck source=scripts/common.sh
 source "$ROOT"/scripts/common.sh
 
-# Obtain the needed env variables. Variables are only created if they are
-# currently empty. This allows users to set environment variables if they
-# would prefer to do so.
-#
-# The - in the initial variable check prevents the script from exiting due
-# from attempting to use an unset variable.
-
-CONFIG_FILES_COUNT=$(ls demos/workload-identity | wc -l)
-
-if [[ "$CONFIG_FILES_COUNT" != 0 ]]
-then
-    while true; do
-        echo ""
-         read -p "The workload identity demo config files already exist. If you would like to write over them Select yes(y) or no(n) to cancel execution: " yn ; tput sgr0 
-        case $yn in
-            [Yy]* ) echo "Config files will be overwritten"; rm ${TFVARS_FILE}; break;;
-            [Nn]* ) echo "Cancelling execution";exit ;;
-            * ) echo "Incorrect input. Cancelling execution";exit 1;;
-        esac
-    done
-fi
-
-# Generate the demo kubernetes configs 
-# shellcheck source=scripts/generate-wi-demo-configs.sh
-source "${ROOT}/scripts/generate-wi-demo-configs.sh"
-
 # Set variables for the demo folder kubernetes config location.
 WORKLOAD_ID_DIR="./demos/workload-identity"
 
-
-# Create the demo app namespace then the rest of the k8s objects.
-kubectl apply -f ${WORKLOAD_ID_DIR}/gcs-wi-demo-namespace.yaml
-kubectl apply -f ${WORKLOAD_ID_DIR}/.
+# Delete the kubernetes resources.
+echo "Deleting all of the KCC and native k8s resources, be patient this can take a minute or two."
+kubectl delete -f ${WORKLOAD_ID_DIR}/.

@@ -28,16 +28,6 @@ source "${ROOT}/scripts/common.sh"
 # TODO remove this
 source "${ROOT}/scripts/generate-security-tfvars.sh"
 
-cat <<EOF | kubectl apply -f -
-apiVersion: core.cnrm.cloud.google.com/v1beta1
-kind: ConfigConnector
-metadata:
-  name: configconnector.core.cnrm.cloud.google.com
-spec:
-  mode: cluster
-  googleServiceAccount: "$1-endpoint-cluster-kcc@$PROJECT.iam.gserviceaccount.com" 
-EOF
-
 # Initialize and run Terraform
 (cd "${ROOT}/terraform/security"; terraform init -input=false)
 (cd "${ROOT}/terraform/security"; terraform apply -input=false -auto-approve)

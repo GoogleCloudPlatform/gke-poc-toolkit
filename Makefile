@@ -18,7 +18,9 @@ help:
 	@echo	''
 	@echo '	make destroy CLUSTER=(private|public)	Destroy Cluster and associated resources'
 	@echo	''
-	@echo '	make start-wi-demo	                Boot strap the workload identity demo'
+	@echo '	make start-wi-demo	                Boot strap the workload identity demo into GKE'
+	@echo	''
+	@echo '	make stop-wi-demo	                Delete workload identity demo resources from GKE'
 	@echo	''
 .PHONY: create
 create:
@@ -44,3 +46,7 @@ destroy:
 .PHONY: start-wi-demo
 start-wi-demo:
 	@source scripts/start-wi-demo.sh
+
+.PHONY: stop-wi-demo
+stop-wi-demo:
+	@source scripts/stop-wi-demo.sh

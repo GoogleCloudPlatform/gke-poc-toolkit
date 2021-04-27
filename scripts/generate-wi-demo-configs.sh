@@ -49,7 +49,7 @@ WORKLOAD_ID_DIR="./demos/workload-identity"
 BUCKET_NAME="gke-application-bucket-$(openssl rand -hex 3)"
 
 # Generate kubenernetes configs based on unique vars.
-cat <<EOF > "${WORKLOAD_ID_DIR}/gcs-wi-test-sa.yaml"
+cat <<EOF > "${WORKLOAD_ID_DIR}/gcs-wi-demo-sa.yaml"
 apiVersion: iam.cnrm.cloud.google.com/v1beta1
 kind: IAMServiceAccount
 metadata:
@@ -81,7 +81,7 @@ spec:
         - serviceAccount:${PROJECT}.svc.id.goog[workload-id-demo/workload-id-demo-sa]
 EOF
 
-cat <<EOF > "${WORKLOAD_ID_DIR}/gcs-wi-test-storage.yaml"
+cat <<EOF > "${WORKLOAD_ID_DIR}/gcs-wi-demo-storage.yaml"
 apiVersion: storage.cnrm.cloud.google.com/v1beta1
 kind: StorageBucket
 metadata:
@@ -112,7 +112,7 @@ spec:
     external: ${BUCKET_NAME?} 
 EOF
 
-cat <<EOF > "${WORKLOAD_ID_DIR}/gcs-wi-test-namespace.yaml"
+cat <<EOF > "${WORKLOAD_ID_DIR}/gcs-wi-demo-namespace.yaml"
 apiVersion: v1
 kind: Namespace
 metadata:
@@ -121,7 +121,7 @@ metadata:
     cnrm.cloud.google.com/project-id: ${PROJECT}
 EOF
 
-cat <<EOF > "${WORKLOAD_ID_DIR}/gcs-wi-test-deploy.yaml"
+cat <<EOF > "${WORKLOAD_ID_DIR}/gcs-wi-demo-deploy.yaml"
 apiVersion: v1
 kind: Service
 metadata:
@@ -191,7 +191,7 @@ spec:
       serviceAccountName: workload-id-demo-sa
 EOF
 
-cat << EOF > "${WORKLOAD_ID_DIR}/gcs-wi-test-bad-deploy.yaml"
+cat << EOF > "${WORKLOAD_ID_DIR}/gcs-wi-demo-bad-deploy.yaml"
 apiVersion: v1
 kind: Service
 metadata:
@@ -256,4 +256,28 @@ spec:
             scheme: HTTP
           initialDelaySeconds: 5
           timeoutSeconds: 1
+EOF
+
+cat <<EOF > gcs-wi-demo-ingress.yaml
+apiVersion: networking.k8s.io/v1beta1
+kind: Ingress
+metadata:
+  name: workload-id-demo
+  namespace: workload-id-demo
+  annotations:
+    kubernetes.io/ingress.class: "gce"
+spec:
+  rules:
+  - host: good.example.com
+    http:
+      paths:
+      - backend:
+          serviceName: demo
+          servicePort: 8080
+  - host: bad.example.com
+    http:
+      paths:
+      - backend:
+          serviceName: demo-bad
+          servicePort: 8080
 EOF

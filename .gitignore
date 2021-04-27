@@ -48,3 +48,6 @@ creds/
 # terraform locks
 .terraform.lock.hcl
 
+# WI Demo Test files
+test
+demos/workload-identity/
