@@ -6,7 +6,7 @@ This demo sets out to provide an example of how to deploy an entire application 
 ### Kubernetes Config Connector (KCC):
 KCC is a Kubernetes addon that allows you to manage Google Cloud resources through Kubernetes. It does so by providing a collection of Kubernetes Custom Resource Definitions (CRDs) and controllers. The Config Connector CRDs allow Kubernetes to create and manage Google Cloud resources when you configure and apply Objects to your cluster.
 
-KCC was installed and configured on this cluster during the cluster creation. If you would like to read up on the install steps, please check out the public docs [here](https://cloud.google.com/config-connector/docs/how-to/install-upgrade-uninstall).
+KCC was installed during the cluster creation and configured during the hardening install. If you would like to read up on the install steps, please check out the public docs [here](https://cloud.google.com/config-connector/docs/how-to/install-upgrade-uninstall).
 
 ### Workload Identity
 Workload Identity allows you to bind a Kubernetes service account to a GCP service account allowing you to delegate GCP role based access controls to an app running in GKE.
