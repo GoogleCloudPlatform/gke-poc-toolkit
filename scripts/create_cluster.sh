@@ -40,7 +40,7 @@ metadata:
   name: configconnector.core.cnrm.cloud.google.com
 spec:
   mode: cluster
-  googleServiceAccount: "$1-endpoint-cluster-kcc@$PROJECT.iam.gserviceaccount.com" 
+  googleServiceAccount: "$1-endpoint-cluster-kcc@${PROJECT}.iam.gserviceaccount.com" 
 EOF
 
 # Get cluster credentials
