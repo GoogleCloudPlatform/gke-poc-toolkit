@@ -72,7 +72,7 @@ metadata:
   name: configconnector.core.cnrm.cloud.google.com
 spec:
   mode: cluster
-  googleServiceAccount: "${KCC_SA_EMAIL}-endpoint-cluster-kcc@${PROJECT}.iam.gserviceaccount.com" 
+  googleServiceAccount: "${KCC_SA_EMAIL}" 
 EOF
 
 # Generate the demo kubernetes configs 
