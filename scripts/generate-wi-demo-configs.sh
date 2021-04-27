@@ -24,8 +24,6 @@ set -euo pipefail
 
 # Directory of this script.
 ROOT="$( cd "$( dirname "${BASH_SOURCE[0]}" )/.." && pwd )"
-
-# shellcheck source=scripts/common.sh
 source "$ROOT"/scripts/common.sh
 
 # Obtain the needed env variables. Variables are only created if they are

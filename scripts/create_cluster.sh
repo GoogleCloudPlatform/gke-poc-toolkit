@@ -24,8 +24,6 @@ ROOT="$( cd "$( dirname "${BASH_SOURCE[0]}" )/.." && pwd )"
 source "${ROOT}/scripts/common.sh"
 
 # Generate the variables to be used by Terraform
-# shellcheck source=scripts/generate-tfvars.sh
-# TODO remove this
 source "${ROOT}/scripts/generate-cluster-tfvars.sh"
 
 # Initialize and run Terraform

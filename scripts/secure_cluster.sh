@@ -20,7 +20,6 @@ set -o pipefail
 # Locate the root directory
 ROOT="$( cd "$( dirname "${BASH_SOURCE[0]}" )/.." && pwd )"
 
-# shellcheck source=scripts/common.sh
 source "${ROOT}/scripts/common.sh"
 
 # Configure the connfig connector with the project GKE was created in.
