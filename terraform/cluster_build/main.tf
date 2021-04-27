@@ -50,7 +50,7 @@ module "enabled_governance_apis" {
 
 // Used to grab project number for the GKE service account -- look into this later.
 data "google_project" "project" {
-  project   = module.enabled_google_apis.project_id
+  project_id   = module.enabled_google_apis.project_id
 }
 
 // Random string used to create a unique key ring name
