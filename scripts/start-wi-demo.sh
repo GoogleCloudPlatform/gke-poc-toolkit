@@ -34,7 +34,15 @@ source "$ROOT"/scripts/common.sh
 #
 # The - in the initial variable check prevents the script from exiting due
 # from attempting to use an unset variable.
+[[ -z "${PROJECT-}" ]] && PROJECT="$(gcloud config get-value core/project)"
+if [[ -z "${PROJECT}" ]]; then
+    echo "gcloud cli must be configured with a default project." 1>&2
+    echo "run 'gcloud config set core/project PROJECT'." 1>&2
+    echo "replace 'PROJECT' with the project name." 1>&2
+    exit 1;
+fi
 
+# Check to for existing deployment configs. 
 CONFIG_FILES_COUNT=$(ls demos/workload-identity | wc -l)
 
 if [[ "$CONFIG_FILES_COUNT" != 0 ]]
@@ -50,13 +58,28 @@ then
     done
 fi
 
+# Configure the connfig connector with the project GKE was created in. 
+# This is done in the hardening build already but I want to ensure this demo
+# can run standalone. 
+
+# Get KCC SA email
+KCC_SA_EMAIL=$(gcloud iam service-accounts list | grep cluster-kcc | awk 'END{ print $4}')
+
+cat <<EOF | kubectl apply -f -
+apiVersion: core.cnrm.cloud.google.com/v1beta1
+kind: ConfigConnector
+metadata:
+  name: configconnector.core.cnrm.cloud.google.com
+spec:
+  mode: cluster
+  googleServiceAccount: "${KCC_SA_EMAIL}-endpoint-cluster-kcc@${PROJECT}.iam.gserviceaccount.com" 
+EOF
+
 # Generate the demo kubernetes configs 
-# shellcheck source=scripts/generate-wi-demo-configs.sh
 source "${ROOT}/scripts/generate-wi-demo-configs.sh"
 
 # Set variables for the demo folder kubernetes config location.
 WORKLOAD_ID_DIR="./demos/workload-identity"
-
 
 # Create the demo app namespace then the rest of the k8s objects.
 kubectl apply -f ${WORKLOAD_ID_DIR}/gcs-wi-demo-namespace.yaml
