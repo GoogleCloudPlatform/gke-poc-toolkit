@@ -58,7 +58,7 @@ workload-id-demo   <none>   good.example.com,bad.example.com   34.107.224.154   
 
 Ensure that all the native Kubernetes resources have been deployed.
 ```shell
-k get all -n workload-id-demo
+kubectl get all -n workload-id-demo
 NAME                                   READY   STATUS    RESTARTS   AGE
 pod/gcs-wi-test-74bfc944c9-7t69b       1/1     Running   0          10h
 pod/gcs-wi-test-bad-68547f5d67-6gwdc   1/1     Running   0          10h
