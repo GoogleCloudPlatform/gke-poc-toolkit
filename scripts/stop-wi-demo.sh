@@ -34,4 +34,4 @@ WORKLOAD_ID_DIR="./demos/workload-identity"
 # Delete the kubernetes resources.
 echo "Deleting all of the KCC and native k8s resources, be patient this can take a minute or two."
 kubectl delete -f ${WORKLOAD_ID_DIR}/.
-rm ${WORKLOAD_ID_DIR}/.
+rm ${WORKLOAD_ID_DIR}/*
