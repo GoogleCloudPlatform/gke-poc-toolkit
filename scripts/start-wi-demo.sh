@@ -48,7 +48,7 @@ WORKLOAD_ID_DIR="./demos/workload-identity"
 # Generate a random name for the storage bucket used in the example app.
 BUCKET_NAME="gke-application-bucket-$(openssl rand -hex 3)"
 
-# Generate service account and storage account configs based on unique vars.
+# Generate kubenernetes configs based on unique vars.
 cat <<EOF > "${WORKLOAD_ID_DIR}/gcs-wi-test-sa.yaml"
 apiVersion: iam.cnrm.cloud.google.com/v1beta1
 kind: IAMServiceAccount
@@ -56,7 +56,6 @@ metadata:
   name: workload-id-demo-sa
 spec:
   displayName: workload-id-demo-sa
-  namespace: workload-id-demo
 ---
 apiVersion: v1
 kind: ServiceAccount
@@ -103,10 +102,10 @@ spec:
 apiVersion: iam.cnrm.cloud.google.com/v1beta1
 kind: IAMPolicyMember
 metadata:
-  name: storage-bucket-iam-member
+  name: workload-id-demo-storage-policy
 spec:
   member: serviceAccount:workload-id-demo-sa@${PROJECT}.iam.gserviceaccount.com
-  role: roles/storage.objectViewer 
+  role: roles/storage.objectAdmin
   resourceRef:
     apiVersion: storage.cnrm.cloud.google.com/v1beta1
     kind: StorageBucket
@@ -120,6 +119,143 @@ metadata:
   name: workload-id-demo
   annotations:
     cnrm.cloud.google.com/project-id: ${PROJECT}
+EOF
+
+cat <<EOF > "${WORKLOAD_ID_DIR}/gcs-wi-test-deploy.yaml"
+apiVersion: v1
+kind: Service
+metadata:
+  name: demo
+  namespace: workload-id-demo
+  annotations:
+    cloud.google.com/neg: '{"ingress": true}'
+spec:
+  ports:
+  - port: 8080
+    targetPort: 8080
+    name: http 
+  selector:
+    app: demo
+  type: ClusterIP
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  labels:
+    app: demo
+  name: gcs-wi-test
+  namespace: workload-id-demo
+spec:
+  selector:
+    matchLabels:
+      app: demo
+  template:
+    metadata:
+      labels:
+        app: demo
+    spec:
+      containers:
+      - env:
+        - name: PORT
+          value: "8080"
+        - name: BUCKET_NAME
+          value: ${BUCKET_NAME}
+        image: bucksteamy/workload-id-storage-demo:v1.3
+        imagePullPolicy: Always
+        name: gcs-fuse-workload
+        ports:
+          - name: http
+            containerPort: 8080
+        resources:
+          limits:
+            cpu: 500m
+            memory: 512Mi
+          requests:
+            cpu: 250m
+            memory: 50Mi
+        readinessProbe:
+          httpGet:
+            path: /healthz
+            port: 8080
+            scheme: HTTP
+          initialDelaySeconds: 5
+          timeoutSeconds: 1
+        livenessProbe:
+          httpGet:
+            path: /healthz
+            port: 8080
+            scheme: HTTP
+          initialDelaySeconds: 5
+          timeoutSeconds: 1
+      serviceAccount: workload-id-demo-sa
+      serviceAccountName: workload-id-demo-sa
+EOF
+
+cat << EOF > "${WORKLOAD_ID_DIR}/gcs-wi-test-bad-deploy.yaml"
+apiVersion: v1
+kind: Service
+metadata:
+  name: demo-bad
+  namespace: workload-id-demo
+  annotations:
+    cloud.google.com/neg: '{"ingress": true}'
+spec:
+  ports:
+  - port: 8080
+    targetPort: 8080
+    name: http 
+  selector:
+    app: demo-bad
+  type: ClusterIP
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: gcs-wi-test-bad
+  namespace: workload-id-demo
+spec:
+  selector:
+    matchLabels:
+      app: demo-bad
+  template:
+    metadata:
+      labels:
+        app: demo-bad
+    spec:
+      containers:
+      - env:
+        - name: PORT
+          value: "8080"
+        - name: BUCKET_NAME
+          value: ${BUCKET_NAME}
+        image: bucksteamy/workload-id-storage-demo:v1.3
+        imagePullPolicy: Always
+        name: gcs-fuse-workload
+        ports:
+        ports:
+          - name: http
+            containerPort: 8080
+        resources:
+          limits:
+            cpu: 500m
+            memory: 512Mi
+          requests:
+            cpu: 250m
+            memory: 50Mi
+        readinessProbe:
+          httpGet:
+            path: /healthz
+            port: 8080
+            scheme: HTTP
+          initialDelaySeconds: 5
+          timeoutSeconds: 1
+        livenessProbe:
+          httpGet:
+            path: /healthz
+            port: 8080
+            scheme: HTTP
+          initialDelaySeconds: 5
+          timeoutSeconds: 1
 EOF
 
 # Create the demo app namespace then the rest of the k8s objects.

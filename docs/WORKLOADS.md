@@ -16,11 +16,38 @@ After creation, a simple test is provided to demonstrate the sample application 
 
 ## Deploying the Sample Workload
 
+```shell
+# If running a public cluster simply run the following:
+make start-wi-demo
+
+# If running a private master endpoint, validate the proxy is started. Then set the 
+# HTTPS_PROXY environment variable to forward the make command through the tunnel:
+make start-proxy
+
+HTTPS_PROXY=localhost:8888 make start-wi-demo
+```
+
+# If you are running this demo against a private master endpoint do yourself a solid create and alias to abstract away the proxy prefix like so:
+```
+alias kubectl="HTTPS_PROXY=localhost:8888 kubectl"
+```
+
 ## Workload ID validation
 
 Get the external IP of the test application and POST against the endpoint a few times. You should see a 200 when you are routed to the pod that is using a workload identity with the correct RBAC on the storage account and a 403 when routed to the pod that hath not RBAC.
 
 ```shell
-SERVICE_EXT_IP=$(kubectl get service -n storage-application gcs-wi-test-lb -o yaml | grep ip: | awk 'END{ print $3}')
-while true ; do curl -X POST -d 'Some test data' http://$SERVICE_EXT_IP/test; sleep 1 ; done
+ING_EXT_IP=$(kubectl get ing -n workload-id-demo -o yaml | grep ip: | awk 'END{ print $3}')
+
+cat << EOF > test
+This is the end
+this is the end
+my friend
+EOF
+
+curl -H "host: bad.example.com" -F "file=@./test" $ING_EXT_IP/cloud-storage-bucket
+
+curl -H "host: good.example.com" -F "file=@./test" $ING_EXT_IP/cloud-storage-bucket
+
+
 ```
