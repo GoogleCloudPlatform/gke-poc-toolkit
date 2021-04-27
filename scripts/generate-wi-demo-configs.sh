@@ -260,7 +260,7 @@ spec:
           timeoutSeconds: 1
 EOF
 
-cat <<EOF > gcs-wi-demo-ingress.yaml
+cat <<EOF > ""${WORKLOAD_ID_DIR}/gcs-wi-demo-ingress.yaml"
 apiVersion: networking.k8s.io/v1beta1
 kind: Ingress
 metadata:
