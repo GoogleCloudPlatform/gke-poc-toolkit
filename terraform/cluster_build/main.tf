@@ -74,16 +74,15 @@ locals {
   ]
   service_accounts = {
     (local.gke_service_account) = [
-      "${module.enabled_google_apis.project_id}=>roles/artifactregistry.reader",
-      "${module.enabled_google_apis.project_id}=>roles/logging.logWriter",
-      "${module.enabled_google_apis.project_id}=>roles/monitoring.metricWriter",
-      "${module.enabled_google_apis.project_id}=>roles/monitoring.viewer",
-      "${module.enabled_google_apis.project_id}=>roles/stackdriver.resourceMetadata.writer",
-      "${module.enabled_google_apis.project_id}=>roles/storage.objectViewer",
+      "${var.project_id}=>roles/artifactregistry.reader",
+      "${var.project_id}=>roles/logging.logWriter",
+      "${var.project_id}=>roles/monitoring.metricWriter",
+      "${var.project_id}=>roles/monitoring.viewer",
+      "${var.project_id}=>roles/stackdriver.resourceMetadata.writer",
+      "${var.project_id}=>roles/storage.objectViewer",
     ]
     (local.kcc_service_account) = [
-      "${module.enabled_google_apis.project_id}=>roles/owner",
-      "${module.enabled_google_apis.project_id}=>roles/iam.serviceAccountCreator"
+      "${var.project_id}=>roles/owner",
     ]
   }
 }
@@ -260,6 +259,10 @@ module "service_account-iam-bindings" {
   project          = var.project_id
   bindings = {
     "roles/iam.workloadIdentityUser" = [
+      "serviceAccount:${var.project_id}.svc.id.goog[cnrm-system/cnrm-controller-manager]",
+    ]
+
+    "roles/iam.serviceAccountCreator" = [
       "serviceAccount:${var.project_id}.svc.id.goog[cnrm-system/cnrm-controller-manager]",
     ]
   }
