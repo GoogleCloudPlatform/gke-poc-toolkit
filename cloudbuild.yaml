@@ -48,7 +48,8 @@ steps:
           echo "******* At environment: ${env} ********"
           echo "*************************************************"
 
-          sed -i s/data.google_client_openid_userinfo.me.email/'user@verify.com'/g main.tf
+          export email="verify@build.com"
+          sed -i s/data.google_client_openid_userinfo.me.email/$email/g main.tf
 
           if [ -f "workload.tf" ]; then
             rm workload.tf
