@@ -10,22 +10,23 @@ steps:
       echo "***********************"
 
 - name: 'hashicorp/terraform:0.13.0'
-  id: 'tf init'
+  id: 'cluster_build tf init'
   entrypoint: 'sh'
   args: 
   - '-c'
   - |
-      if [ -d "terraform/" ]; then
-        for dir in terraform/*
-        do 
-          cd ${dir}   
-          env=${dir%*/}
-          env=${env#*/}
-          echo ""
-          echo "*************** TERRAFORM INIT ******************"
-          echo "******* At environment: ${env} ********"
-          echo "*************************************************"
-          terraform init || exit 1
-          cd ../../
-        done
+      if [ -d "terraform/cluster_build/" ]; then
+        cd terraform/cluster_build
+        terraform init
+      fi 
+      
+- name: 'hashicorp/terraform:0.13.0'
+  id: 'secure tf init'
+  entrypoint: 'sh'
+  args: 
+  - '-c'
+  - |
+      if [ -d "terraform/security/" ]; then
+        cd terraform/security
+        terraform init
       fi 
