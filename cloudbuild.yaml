@@ -37,6 +37,10 @@ steps:
   args: 
   - '-c'
   - | 
+      export REGION=northamerica-northeast1
+      export ZONE=northamerica-northeast1-a
+      export PROJECT=cloud-build-github-trigger
+      export GOVERNANCE_PROJECT=cloud-build-github-trigger
       if [ -d "terraform/" ]; then
         for dir in terraform/*
         do 
@@ -50,10 +54,5 @@ steps:
           terraform plan || exit 1
           cd ../../
         done
-      fi 
-  env:
-  - 'REGION=northamerica-northeast1'
-  - 'ZONE=northamerica-northeast1-a'
-  - 'PROJECT=cloud-build-github-trigger'
-  - 'GOVERNANCE_PROJECT=cloud-build-github-trigger'
+      fi
 # [END tf-plan]
