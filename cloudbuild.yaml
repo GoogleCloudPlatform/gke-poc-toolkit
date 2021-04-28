@@ -54,16 +54,16 @@ steps:
           export GOVERNANCE_PROJECT=cloud-build-github-trigger
 
           cat <<EOF > "terraform.tfvars"
-          project_id="${PROJECT}"
-          governance_project_id="${GOVERNANCE_PROJECT}"
-          region="${REGION}"
-          private_endpoint="${PRIVATE}"
+          project_id=cloud-build-github-trigger
+          governance_project_id=cloud-build-github-trigger
+          region=northamerica-northeast1
+          private_endpoint=false
           cluster_name="verify-endpoint-cluster"
           network_name="verify-cluster-network"
           subnet_name="verify-cluster-subnet"
           node_pool="verify-node-pool"
-          zone = "${ZONE}"
-          auth_ip = "${AUTH_IP}"
+          zone = northamerica-northeast1-a
+          auth_ip = 127.0.0.1
           EOF
 
           terraform plan || exit 1
