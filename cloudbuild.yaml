@@ -28,5 +28,27 @@ steps:
           terraform init || exit 1
           cd ../../
         done
-
       fi 
+
+# [START tf-plan]
+- id: 'tf plan'
+  name: 'hashicorp/terraform:0.11.14'
+  entrypoint: 'sh'
+  args: 
+  - '-c'
+  - | 
+      if [ -d "terraform/" ]; then
+        for dir in terraform/*
+        do 
+          cd ${dir}   
+          env=${dir%*/}
+          env=${env#*/}  
+          echo ""
+          echo "*************** TERRAFOM PLAN ******************"
+          echo "******* At environment: ${env} ********"
+          echo "*************************************************"
+          terraform plan || exit 1
+          cd ../../
+        done
+      fi 
+# [END tf-plan]
