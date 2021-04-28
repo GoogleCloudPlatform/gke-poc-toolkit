@@ -101,8 +101,10 @@ steps:
           fi
 
           terraform plan || { 
-            echo 'my_command failed' 
-            exit 1 
+            apk add curl
+            echo "{\"body\": \"\`terraform plan\` failed against Terraform configuration files in **/terraform/${env}**. Run `terraform plan\` locally to clean up errors and resubmit the Pull Request.\"}" > /workspace/api_payload.txt && \
+            curl -s -H "Authorization: token $$GH_TOKEN" -X POST -d @/workspace/api_payload.txt "https://api.github.com/repos/albertwo1978/gke-poc-toolkit-1/issues/$_PR_NUMBER/comments"
+            exit 1
           }
           cd ../../
         done
