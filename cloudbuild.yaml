@@ -8,3 +8,27 @@ steps:
       echo "***********************"
       echo "$BRANCH_NAME"
       echo "***********************"
+
+- id: 'tf init'
+  name: 'hashicorp/terraform:0.13.0'
+  entrypoint: 'sh'
+  args: 
+  - '-c'
+  - |
+      if [ -d "terraform/cluster_build/" ]; then
+        cd terraform/cluster_build
+        terraform init
+      else
+        for dir in terraform/*
+        do 
+          cd ${dir}   
+          env=${dir%*/}
+          env=${env#*/}
+          echo ""
+          echo "*************** TERRAFORM INIT ******************"
+          echo "******* At environment: ${env} ********"
+          echo "*************************************************"
+          terraform init || exit 1
+          cd ../../
+        done
+      fi 
