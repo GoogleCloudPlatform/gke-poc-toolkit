@@ -1,5 +1,5 @@
 /**
- * Copyright 2020 Google LLC
+ * Copyright 2021 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,7 +15,7 @@
  */
 
 // Required values to be set in terraform.tfvars
-variable "project" {
+variable "project_id" {
   description = "The project in which to hold the components"
   type        = string
   default     = "cloud-build-github-trigger"
@@ -63,7 +63,7 @@ variable "project_services" {
   EOF
 }
 
-variable "governance_project" {
+variable "governance_project_id" {
   description = "The project to use for governance resources such as kvm and log sinks"
   type        = string
   default     = "cloud-build-github-trigger"

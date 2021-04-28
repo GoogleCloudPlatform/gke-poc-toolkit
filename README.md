@@ -75,7 +75,7 @@ The Terraform configuration will execute against your GCP environment and create
 
 [GKE Cluster Install Instructions](docs/CLUSTERS.md)
 
-The [Deploy a Cluster](docs/CLUSTERS.md) step in this repository will build a GKE Private cluster with access to the control plane restricted in one of two configurations:
+The GKE Cluster Install step in this repository will build a GKE Private cluster with access to the control plane restricted in one of two configurations:
 
 * [Private Endpoint](docs/CLUSTERS.md#GKE-Cluster-with-private-endpoint):
   * Public endpoint for control plane is disabled
@@ -107,7 +107,7 @@ The following best practices are also enforced as part of the cluster build proc
 
 [GKE Hardening Instructions](docs/SECURITY.md)
 
-Once the cluster is created, the [Harden GKE Security](docs/SECURITY.md) step can be executed against the existing environment. Doing so will layer on the following items to expand security considerations for the cluster:
+Once the cluster is created, this step can be executed against the existing environment. Doing so will layer on the following items to expand security considerations for the cluster:
 
 * [Audit Logging](docs/SECURITY.md#Audit-Logging)
   * Creates BigQuery Datasets for Cloud Audit Logs and GKE Audit Logs
@@ -123,7 +123,7 @@ Once the cluster is created, the [Harden GKE Security](docs/SECURITY.md) step ca
 
 [Deploy Secure GKE Workloads Instructions](docs/WORKLOADS.md)
 
-The [Deploy Secure GKE Workloads](docs/WORKLOADS.md) step provides examples on how to enforce security best practices to workloads deployed to the cluster. This step leverages [Config Connector](https://cloud.google.com/config-connector/docs/overview) to deploy services and resources using Kubernetes tooling and APIs. The following security features are layed into the application deployment:
+This step provides examples on how to enforce security best practices to workloads deployed to the cluster. This step leverages [Config Connector](https://cloud.google.com/config-connector/docs/overview) to deploy services and resources using Kubernetes tooling and APIs. The following security features are layed into the application deployment:
 
 * [Workload Identity](docs/SECURITY.md#Workload-Identity)
   * Leveraging Workload Identity, map a GCP Service Account to a Kubernetes Service Account

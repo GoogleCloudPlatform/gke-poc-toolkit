@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# Copyright 2020 Google LLC
+# Copyright 2021 Google LLC
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -24,8 +24,6 @@ ROOT="$( cd "$( dirname "${BASH_SOURCE[0]}" )/.." && pwd )"
 source "${ROOT}/scripts/common.sh"
 
 # Generate the variables to be used by Terraform
-# shellcheck source=scripts/generate-tfvars.sh
-# TODO remove this
 source "${ROOT}/scripts/generate-cluster-tfvars.sh"
 
 # Initialize and run Terraform

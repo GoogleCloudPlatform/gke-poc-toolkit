@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# Copyright 2020 Google LLC
+# Copyright 2021 Google LLC
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -25,7 +25,6 @@ set -euo pipefail
 
 ROOT="$( cd "$( dirname "${BASH_SOURCE[0]}" )/.." && pwd )"
 
-# shellcheck source=scripts/common.sh
 source "$ROOT/scripts/common.sh"
 
 TFVARS_FILE="./terraform/security/terraform.tfvars"
@@ -36,7 +35,6 @@ TFVARS_FILE="./terraform/security/terraform.tfvars"
 #
 # The - in the initial variable check prevents the script from exiting due
 # from attempting to use an unset variable.
-
 [[ -z "${REGION-}" ]] && REGION="$(gcloud config get-value compute/region)"
 if [[ -z "${REGION}" ]]; then
     echo "https://cloud.google.com/compute/docs/regions-zones/changing-default-zone-region" 1>&2
@@ -96,9 +94,9 @@ fi
 # Write out all the values we gathered into a tfvars file so you don't
 # have to enter the values manually
 cat <<EOF > "${TFVARS_FILE}"
-project="${PROJECT}"
+project_id="${PROJECT}"
 zone="${ZONE}"
 region="${REGION}"
-governance_project="${GOVERNANCE_PROJECT}"
+governance_project_id="${GOVERNANCE_PROJECT}"
 cluster_name="$1-endpoint-cluster"
 EOF
