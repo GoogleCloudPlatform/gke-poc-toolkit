@@ -1,3 +1,8 @@
+availableSecrets:
+  secretManager:
+  - versionName: projects/927114482793/secrets/ALBERTWO1978-GH-TOKEN
+    env: GH_TOKEN
+
 steps:
 - name: 'alpine'
   id: 'branch name'
@@ -29,12 +34,14 @@ steps:
 
           terraform fmt -diff -check=true -write=false
           if [ $? -ne 0 ]; then
-            echo "FAIL!!"
+            echo "{\"body\": \"FAIL!!!!"}" > /workspace/api_payload.txt && \
+            curl -s -H "Authorization: token $$GH_TOKEN" -X POST -d @/workspace/api_payload.txt "https://api.github.com/repos/albertwo1978/gke-poc-toolkit-1/issues/$_PR_NUMBER/comments"
             exit 1
           fi
           cd ../../
         done
       fi 
+  secretEnv: ['GH_TOKEN']
 # [END tf-fmt]
 
 # [END tf-init]
