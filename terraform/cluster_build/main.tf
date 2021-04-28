@@ -38,7 +38,7 @@ module "enabled_governance_apis" {
   source  = "terraform-google-modules/project-factory/google//modules/project_services"
   version = "~> 10.0"
 
-  project_id                  = var.governance_project
+  project_id                  = var.governance_project_id
   disable_services_on_destroy = false
 
   activate_apis = [
