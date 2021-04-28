@@ -8,6 +8,7 @@ steps:
       echo "***********************"
       echo "$BRANCH_NAME"
       echo "***********************"
+
 - name: 'hashicorp/terraform:0.13.0'
   id: 'tf init'
   entrypoint: 'sh'
