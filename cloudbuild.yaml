@@ -1,3 +1,8 @@
+availableSecrets:
+  secretManager:
+  - versionName: projects/927114482793/secrets/ALBERTWO1978-GH-TOKEN/versions/latest
+    env: GH_TOKEN
+
 steps:
 - name: 'alpine'
   id: 'branch name'
@@ -23,18 +28,19 @@ steps:
           env=${dir%*/}
           env=${env#*/}  
           echo ""
-          echo "*************** TERRAFOM FMT ******************"
-          echo "******* At environment: ${env} ********"
-          echo "***********************************************"
+          echo "******* Executing Terraform Format against environment: ${env}"
 
           terraform fmt -diff -check=true -write=false
           if [ $? -ne 0 ]; then
-            echo "FAIL!!"
+            apk add curl
+            echo "{\"body\": \"Please run the \`terraform fmt\` command against the **/terraform/${env}** directory and then resubmit the Pull Request. It is required that \`terraform fmt\` be executed against all Terraform configuration files in order to provide consistency across the repo.\"}" > /workspace/api_payload.txt && \
+            curl -s -H "Authorization: token $$GH_TOKEN" -X POST -d @/workspace/api_payload.txt "https://api.github.com/repos/albertwo1978/gke-poc-toolkit-1/issues/$_PR_NUMBER/comments"
             exit 1
           fi
           cd ../../
         done
       fi 
+  secretEnv: ['GH_TOKEN']
 # [END tf-fmt]
 
 # [END tf-init]
@@ -51,13 +57,18 @@ steps:
           env=${dir%*/}
           env=${env#*/}
           echo ""
-          echo "*************** TERRAFORM INIT ******************"
-          echo "******* At environment: ${env} ********"
-          echo "*************************************************"
-          terraform init || exit 1
+          echo "******* Executing Terraform Init against environment: ${env}"
+
+          terraform init || { 
+            apk add curl
+            echo "{\"body\": \"An error was detected executing \`terraform init\` against the **/terraform/${env}** directory. Please run \`terraform init\` locally against that directory to resolve any errors and then resubmit the Pull Request.\"}" > /workspace/api_payload.txt && \
+            curl -s -H "Authorization: token $$GH_TOKEN" -X POST -d @/workspace/api_payload.txt "https://api.github.com/repos/albertwo1978/gke-poc-toolkit-1/issues/$_PR_NUMBER/comments"
+            exit 1
+          }
           cd ../../
         done
       fi 
+  secretEnv: ['GH_TOKEN']
 # [END tf-init]
 
 # [START tf-plan]
@@ -74,9 +85,7 @@ steps:
           env=${dir%*/}
           env=${env#*/}  
           echo ""
-          echo "*************** TERRAFOM PLAN ******************"
-          echo "******* At environment: ${env} ********"
-          echo "************************************************"
+          echo "******* Executing Terraform Plan against environment: ${env}"
 
           # Changing bastion members to GKE Service Account Email for validation purposes.
           sed -i s/data.google_client_openid_userinfo.me.email/local.gke_service_account_email/g main.tf
@@ -91,8 +100,31 @@ steps:
             rm provider.tf
           fi
 
-          terraform plan || exit 1
+          terraform plan || { 
+            apk add curl
+            echo "{\"body\": \"An error was detected executing \`terraform plan\` against the **/terraform/${env}** directory. Please run \`terraform plan\` locally against that directory to resolve any errors and then resubmit the Pull Request.\"}" > /workspace/api_payload.txt && \
+            curl -s -H "Authorization: token $$GH_TOKEN" -X POST -d @/workspace/api_payload.txt "https://api.github.com/repos/albertwo1978/gke-poc-toolkit-1/issues/$_PR_NUMBER/comments"
+            exit 1
+          }
           cd ../../
         done
       fi 
+  secretEnv: ['GH_TOKEN']
 # [END tf-plan]
+
+# [START completion-comment]
+- name: 'alpine'
+  id: 'comment - ready for review'
+  entrypoint: 'sh'  
+  args: 
+  - '-c'
+  - | 
+      echo ""
+      echo "*************** PRECHECKS COMPLETE ******************"
+
+      apk add curl
+      echo "{\"body\": \"Prechecks Complete - Ready for review\"}" > /workspace/api_payload.txt && \
+      curl -s -H "Authorization: token $$GH_TOKEN" -X POST -d @/workspace/api_payload.txt "https://api.github.com/repos/albertwo1978/gke-poc-toolkit-1/issues/$_PR_NUMBER/comments"
+
+  secretEnv: ['GH_TOKEN']
+# [END completion-comment]
