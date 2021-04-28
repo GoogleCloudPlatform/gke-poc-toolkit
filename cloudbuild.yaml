@@ -47,7 +47,6 @@ steps:
           echo "*************** TERRAFOM PLAN ******************"
           echo "******* At environment: ${env} ********"
           echo "*************************************************"
-
           cat <<EOF > "verify.tfvars"
           project_id=cloud-build-github-trigger
           governance_project_id=cloud-build-github-trigger
@@ -60,7 +59,6 @@ steps:
           zone=northamerica-northeast1-a
           auth_ip=127.0.0.1
           EOF
-
           terraform plan || exit 1
           cd ../../
         done
