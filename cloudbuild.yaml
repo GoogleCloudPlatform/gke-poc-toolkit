@@ -32,7 +32,7 @@ steps:
 
 # [START tf-fmt]
 - name: 'hashicorp/terraform:0.13.0'
-  id: 'tf plan'  
+  id: 'tf fmt'  
   entrypoint: 'sh'
   args: 
   - '-c'
