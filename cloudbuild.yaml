@@ -48,12 +48,7 @@ steps:
           echo "******* At environment: ${env} ********"
           echo "*************************************************"
 
-          export REGION=northamerica-northeast1
-          export ZONE=northamerica-northeast1-a
-          export PROJECT=cloud-build-github-trigger
-          export GOVERNANCE_PROJECT=cloud-build-github-trigger
-
-          cat <<EOF > "terraform.tfvars"
+          cat <<EOF > "verify.tfvars"
           project_id=cloud-build-github-trigger
           governance_project_id=cloud-build-github-trigger
           region=northamerica-northeast1
