@@ -27,7 +27,7 @@ steps:
           echo "******* At environment: ${env} ********"
           echo "***********************************************"
 
-          terraform fmt -diff -check=true -write=false || exit 1
+          terraform fmt -diff -check=true -write=false
           cd ../../
         done
       fi 
