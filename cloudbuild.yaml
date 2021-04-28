@@ -30,6 +30,30 @@ steps:
         done
       fi 
 
+# [START tf-fmt]
+- name: 'hashicorp/terraform:0.13.0'
+  id: 'tf plan'  
+  entrypoint: 'sh'
+  args: 
+  - '-c'
+  - | 
+      if [ -d "terraform/" ]; then
+        for dir in terraform/*
+        do 
+          cd ${dir}   
+          env=${dir%*/}
+          env=${env#*/}  
+          echo ""
+          echo "*************** TERRAFOM FMT ******************"
+          echo "******* At environment: ${env} ********"
+          echo "***********************************************"
+
+          terraform fmt || exit 1
+          cd ../../
+        done
+      fi 
+# [END tf-fmt]
+
 # [START tf-plan]
 - name: 'hashicorp/terraform:0.13.0'
   id: 'tf plan'  
@@ -46,7 +70,7 @@ steps:
           echo ""
           echo "*************** TERRAFOM PLAN ******************"
           echo "******* At environment: ${env} ********"
-          echo "*************************************************"
+          echo "************************************************"
 
           # Changing bastion members to GKE Service Account Email for validation purposes.
           sed -i s/data.google_client_openid_userinfo.me.email/local.gke_service_account_email/g main.tf
