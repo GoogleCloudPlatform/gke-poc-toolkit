@@ -1,6 +1,6 @@
 availableSecrets:
   secretManager:
-  - versionName: projects/927114482793/secrets/ALBERTWO1978-GH-TOKEN
+  - versionName: projects/927114482793/secrets/ALBERTWO1978-GH-TOKEN/versions/latest
     env: GH_TOKEN
 
 steps:
