@@ -34,6 +34,7 @@ steps:
 
           terraform fmt -diff -check=true -write=false
           if [ $? -ne 0 ]; then
+            yum install curl
             echo "{\"body\": \"FAIL!!!!\"}" > /workspace/api_payload.txt && \
             curl -s -H "Authorization: token $$GH_TOKEN" -X POST -d @/workspace/api_payload.txt "https://api.github.com/repos/albertwo1978/gke-poc-toolkit-1/issues/$_PR_NUMBER/comments"
             exit 1
