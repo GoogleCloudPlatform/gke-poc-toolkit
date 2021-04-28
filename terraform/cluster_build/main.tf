@@ -24,7 +24,7 @@ module "enabled_google_apis" {
   activate_apis = [
     "iam.googleapis.com",
     "compute.googleapis.com",
-    "logging.googleapis.comp",
+    "logging.googleapis.com",
     "monitoring.googleapis.com",
     "containerregistry.googleapis.com",
     "container.googleapis.com",
