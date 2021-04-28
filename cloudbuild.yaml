@@ -9,6 +9,31 @@ steps:
       echo "$BRANCH_NAME"
       echo "***********************"
 
+# [START tf-fmt]
+- name: 'hashicorp/terraform:0.13.0'
+  id: 'tf fmt'  
+  entrypoint: 'sh'
+  args: 
+  - '-c'
+  - | 
+      if [ -d "terraform/" ]; then
+        for dir in terraform/*
+        do 
+          cd ${dir}   
+          env=${dir%*/}
+          env=${env#*/}  
+          echo ""
+          echo "*************** TERRAFOM FMT ******************"
+          echo "******* At environment: ${env} ********"
+          echo "***********************************************"
+
+          terraform fmt -diff -check=true -write=false
+          cd ../../
+        done
+      fi 
+# [END tf-fmt]
+
+# [END tf-init]
 - name: 'hashicorp/terraform:0.13.0'
   id: 'tf init'
   entrypoint: 'sh'
@@ -29,30 +54,7 @@ steps:
           cd ../../
         done
       fi 
-
-# [START tf-fmt]
-- name: 'hashicorp/terraform:0.13.0'
-  id: 'tf fmt'  
-  entrypoint: 'sh'
-  args: 
-  - '-c'
-  - | 
-      if [ -d "terraform/" ]; then
-        for dir in terraform/*
-        do 
-          cd ${dir}   
-          env=${dir%*/}
-          env=${env#*/}  
-          echo ""
-          echo "*************** TERRAFOM FMT ******************"
-          echo "******* At environment: ${env} ********"
-          echo "***********************************************"
-
-          terraform fmt || exit 1
-          cd ../../
-        done
-      fi 
-# [END tf-fmt]
+# [END tf-init]
 
 # [START tf-plan]
 - name: 'hashicorp/terraform:0.13.0'
