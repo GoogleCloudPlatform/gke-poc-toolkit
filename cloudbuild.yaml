@@ -10,7 +10,7 @@ steps:
       echo "***********************"
 
 - name: 'hashicorp/terraform:0.13.0'
-  id: 'cluster_build tf init'
+  id: 'tf init'
   entrypoint: 'sh'
   args: 
   - '-c'
@@ -28,5 +28,31 @@ steps:
           terraform init || exit 1
           cd ../../
         done
-
       fi 
+
+# [START tf-plan]
+- name: 'hashicorp/terraform:0.11.14'
+  id: 'tf plan'  
+  entrypoint: 'sh'
+  args: 
+  - '-c'
+  - | 
+      export REGION=northamerica-northeast1
+      export ZONE=northamerica-northeast1-a
+      export PROJECT=cloud-build-github-trigger
+      export GOVERNANCE_PROJECT=cloud-build-github-trigger
+      if [ -d "terraform/" ]; then
+        for dir in terraform/*
+        do 
+          cd ${dir}   
+          env=${dir%*/}
+          env=${env#*/}  
+          echo ""
+          echo "*************** TERRAFOM PLAN ******************"
+          echo "******* At environment: ${env} ********"
+          echo "*************************************************"
+          terraform plan || exit 1
+          cd ../../
+        done
+      fi
+# [END tf-plan]
