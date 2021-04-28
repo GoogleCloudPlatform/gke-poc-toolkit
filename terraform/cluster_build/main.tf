@@ -83,6 +83,7 @@ locals {
     ]
     (local.kcc_service_account) = [
       "${module.enabled_google_apis.project_id}=>roles/owner",
+      "${module.enabled_google_apis.project_id}=>roles/iam.serviceAccountCreator",
     ]
   }
 }
