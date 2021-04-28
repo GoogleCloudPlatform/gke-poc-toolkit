@@ -120,10 +120,10 @@ steps:
   - '-c'
   - | 
       echo ""
-      echo "*************** LINTING COMPLETE ******************"
+      echo "*************** PRECHECKS COMPLETE ******************"
 
       apk add curl
-      echo "{\"body\": \"Linting Complete - Ready for review\"}" > /workspace/api_payload.txt && \
+      echo "{\"body\": \"Prechecks Complete - Ready for review\"}" > /workspace/api_payload.txt && \
       curl -s -H "Authorization: token $$GH_TOKEN" -X POST -d @/workspace/api_payload.txt "https://api.github.com/repos/albertwo1978/gke-poc-toolkit-1/issues/$_PR_NUMBER/comments"
 
   secretEnv: ['GH_TOKEN']
