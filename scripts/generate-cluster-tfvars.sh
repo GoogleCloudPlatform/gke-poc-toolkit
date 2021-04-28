@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# Copyright 2020 Google LLC
+# Copyright 2021 Google LLC
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -21,10 +21,8 @@
 # "---------------------------------------------------------"
 
 # Stop immediately if something goes wrong
-
 ROOT="$( cd "$( dirname "${BASH_SOURCE[0]}" )/.." && pwd )"
 
-# shellcheck source=scripts/common.sh
 source "$ROOT/scripts/common.sh"
 
 TFVARS_FILE="./terraform/cluster_build/terraform.tfvars"
@@ -35,7 +33,6 @@ TFVARS_FILE="./terraform/cluster_build/terraform.tfvars"
 #
 # The - in the initial variable check prevents the script from exiting due
 # from attempting to use an unset variable.
-
 [[ -z "${REGION-}" ]] && REGION="$(gcloud config get-value compute/region)"
 if [[ -z "${REGION}" ]]; then
     echo "https://cloud.google.com/compute/docs/regions-zones/changing-default-zone-region" 1>&2

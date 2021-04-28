@@ -27,6 +27,7 @@ The code in the `scripts` directory generates and populates terraform variable i
   * A least privileged Google Service Account assigned to compute engine instances
   * Master Authorized Networks enabled - Allows traffic from specified IP addresses to the GKE Control plane
   * Application layer secrets
+  * Kubernetes Config Connector enabled
 
 * VPC Networks
   * subnets
@@ -72,24 +73,11 @@ Proceed to [validation steps](#kubernetes-app-layer-secrets-validation) once ins
 
 ## GKE Cluster with Public endpoint
 
-This cluster features cluster nodes with private IP's and a control plane node with a public IP.
+This cluster features cluster nodes with private IP's and a control plane api with a public IP.
 
-The code in the `scripts` directory generates and populates terraform variable information and creates the following resources in the region, zone, and project specified:
+The code in the `scripts` directory generates and populates terraform variable information and creates all the same resources as the private endpoint cluster with the exception of the bastion host, which is not created. 
 
-* GKE Cluster with Private Endpoint
-  * Workload Identity enabled 
-  * A least privileged Google Service Account assigned to compute engine instances
-  * Master Authorized Networks enabled 
-  * Application layer secrets
-
-* VPC Networks
-  * subnets
-  * firewall rules
-
-* Cloud KMS
-  * key ring for storing the application layer secret KEK
-
-Store external IP as local variable ```AUTH_IP```:
+Store external IP of the client you plan to run commands from as local variable ```AUTH_IP```:
 
 ```shell
 # export your Public IP Address

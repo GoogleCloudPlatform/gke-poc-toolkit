@@ -25,22 +25,12 @@ set -euo pipefail
 # Directory of this script.
 ROOT="$( cd "$( dirname "${BASH_SOURCE[0]}" )/.." && pwd )"
 
+# shellcheck source=scripts/common.sh
 source "$ROOT"/scripts/common.sh
 
-echo "Detecting SSH Bastion Tunnel/Proxy"
-if [[ ! "$(pgrep -f L8888:127.0.0.1:8888)" ]]; then
-  echo "Did not detect a running SSH tunnel.  Opening a new one."
-  BASTION_CMD="$(terraform output --state=terraform/cluster_build/terraform.tfstate bastion_ssh_command | tr -d \")"
-  $BASTION_CMD -f tail -f /dev/null
- 
-  CREDENTIALS="$(terraform output --state=terraform/cluster_build/terraform.tfstate get_credentials_command | tr -d \")"
-  KUBECTL="$(terraform output --state=terraform/cluster_build/terraform.tfstate bastion_kubectl_command | tr -d \")"
-  tput setaf 2; echo "SSH Tunnel/Proxy is now running.
-  Generate cluster credentials with gcloud:
-   $CREDENTIALS
-   
-  Connect to the cluster with kubectl:  
-   $KUBECTL"; tput sgr0
-else
-  echo "Detected a running SSH tunnel.  Skipping."
-fi
+# Set variables for the demo folder kubernetes config location.
+WORKLOAD_ID_DIR="./demos/workload-identity"
+
+# Delete the kubernetes resources.
+echo "Deleting all of the KCC and native k8s resources, be patient this can take a minute or two."
+kubectl delete -f ${WORKLOAD_ID_DIR}/. -n workload-id-demo 

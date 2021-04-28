@@ -1,5 +1,5 @@
 /**
- * Copyright 2020 Google LLC
+ * Copyright 2021 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -37,13 +37,15 @@ output "get_credentials_command" {
   description = "gcloud get-credentials command to generate kubeconfig for the private cluster"
   value       = (var.private_endpoint ? (format("gcloud container clusters get-credentials --project %s --zone %s --internal-ip %s", var.project_id, module.gke.location, module.gke.name)) : (format("gcloud container clusters get-credentials --project %s --zone %s %s", var.project_id, module.gke.location, module.gke.name)))
 }
+
 output "bastion_name" {
  description = "Name of the bastion host"
  value       = (var.private_endpoint ? module.bastion[0].hostname : "")
 }
+
 output "bastion_ssh_command" {
   description = "gcloud command to ssh and port forward to the bastion host command"
-  value       = (var.private_endpoint ? (format("gcloud beta compute ssh %s --tunnel-through-iap --project %s --zone %s -- -4 -L8888:127.0.0.1:8888", module.bastion[0].hostname, var.project_id, local.bastion_zone)) : "")
+  value       = (var.private_endpoint ? (format("gcloud beta compute ssh %s --tunnel-through-iap --project %s --zone %s -- -4 -L8888:127.0.0.1:8888", module.bastion[0].hostname, var.project_id, var.zone)) : "")
 }
 
 output "bastion_kubectl_command" {

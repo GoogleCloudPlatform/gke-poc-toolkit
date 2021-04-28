@@ -1,5 +1,5 @@
 /**
- * Copyright 2020 Google LLC
+ * Copyright 2021 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,7 +16,7 @@
 
 resource "google_project_service" "service" {
   count   = length(var.project_services)
-  project = var.project
+  project = var.project_id
   service = element(var.project_services, count.index)
 
   // Do not disable the service on destroy. On destroy, we are going to
@@ -28,4 +28,10 @@ resource "google_project_service" "service" {
 // Random string used to create a unique bucket name
 resource "random_id" "server" {
   byte_length = 2
+}
+
+data "google_container_cluster" "cluster" {
+  name     = var.cluster_name
+  project  = var.project_id
+  location = var.region
 }
