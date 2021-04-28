@@ -48,13 +48,15 @@ steps:
           echo "******* At environment: ${env} ********"
           echo "*************************************************"
 
-          echo "Modifying bastion members to ${local.gke_service_account_email} for testing purposes."
+          # Changing bastion members to GKE Service Account Email for validation purposes.
           sed -i s/data.google_client_openid_userinfo.me.email/local.gke_service_account_email/g main.tf
 
+          # Remove workloads.tf for testing purposes - requires an existing deployment. 
           if [ -f "workload.tf" ]; then
             rm workload.tf
           fi
 
+          # Remove provider.tf for testing purposes - requires an existing deployment. 
           if [ -f "provider.tf" ]; then
             rm provider.tf
           fi
