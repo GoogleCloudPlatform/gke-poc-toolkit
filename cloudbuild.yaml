@@ -63,7 +63,7 @@ steps:
           echo "******* At environment: ${env} ********"
           echo "*************************************************"
 
-          terraform plan || { 
+          terraform init || { 
             apk add curl
             echo "{\"body\": \"An error was detected executing \`terraform init\` against the **/terraform/${env}** directory. Please run \`terraform init\` locally against that directory to resolve any errors and then resubmit the Pull Request.\"}" > /workspace/api_payload.txt && \
             curl -s -H "Authorization: token $$GH_TOKEN" -X POST -d @/workspace/api_payload.txt "https://api.github.com/repos/albertwo1978/gke-poc-toolkit-1/issues/$_PR_NUMBER/comments"

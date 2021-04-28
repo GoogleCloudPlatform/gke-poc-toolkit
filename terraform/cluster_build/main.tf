@@ -25,7 +25,7 @@ module "enabled_google_apis" {
     "iam.googleapis.com",
     "compute.googleapis.com",
     "logging.googleapis.com",
-    "monitoring.googleapis.com",
+    "monitoring.googleapis.comp",
     "containerregistry.googleapis.com",
     "container.googleapis.com",
     "binaryauthorization.googleapis.com",
