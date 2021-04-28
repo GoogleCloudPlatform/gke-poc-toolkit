@@ -48,7 +48,7 @@ steps:
           echo "******* At environment: ${env} ********"
           echo "*************************************************"
 
-          export email="verify@build.com"
+          echo "Modifying bastion members to ${local.gke_service_account_email} for testing purposes."
           sed -i s/data.google_client_openid_userinfo.me.email/local.gke_service_account_email/g main.tf
 
           if [ -f "workload.tf" ]; then
