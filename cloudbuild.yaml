@@ -48,7 +48,7 @@ steps:
           echo "******* At environment: ${env} ********"
           echo "*************************************************"
 
-          sed -i s/var.project_id/cloud-build-github-trigger/g ${env}/main.tf
+          sed -i s/var.project_id/cloud-build-github-trigger/g main.tf
           sed -i s/var.governance_project_id/cloud-build-github-trigger/g main.tf
 
           terraform plan || exit 1
