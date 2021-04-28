@@ -1,6 +1,6 @@
 steps:
-- id: 'branch name'
-  name: 'alpine'
+- name: 'alpine'
+  id: 'branch name'
   entrypoint: 'sh'  
   args: 
   - '-c'
@@ -9,8 +9,8 @@ steps:
       echo "$BRANCH_NAME"
       echo "***********************"
 
-- id: 'tf init'
-  name: 'hashicorp/terraform:0.13.0'
+- name: 'hashicorp/terraform:0.13.0'
+  id: 'tf init'
   entrypoint: 'sh'
   args: 
   - '-c'
