@@ -155,7 +155,7 @@ module "bastion" {
 
 // Create the service accounts for GKE and KCC from a map declared in locals.
 module "service_accounts" {
-  for_each = local.service_accounts
+  for_each      = local.service_accounts
   source        = "terraform-google-modules/service-accounts/google"
   version       = "~> 3.0"
   project_id    = module.enabled_google_apis.project_id
@@ -186,12 +186,12 @@ module "gke" {
     module.bastion,
     module.kms,
   ]
-  source = "terraform-google-modules/kubernetes-engine/google//modules/safer-cluster"
-  version = "14.0.1"
-  project_id  = module.enabled_google_apis.project_id
-  name        = var.cluster_name
-  region      = var.region
-  config_connector        = var.config_connector  
+  source                  = "terraform-google-modules/kubernetes-engine/google//modules/safer-cluster"
+  version                 = "14.0.1"
+  project_id              = module.enabled_google_apis.project_id
+  name                    = var.cluster_name
+  region                  = var.region
+  config_connector        = var.config_connector
   network                 = module.vpc.network_name
   subnetwork              = module.vpc.subnets_names[0]
   ip_range_pods           = module.vpc.subnets_secondary_ranges[0].*.range_name[0]
