@@ -17,11 +17,13 @@
 variable "project_id" {
   type        = string
   description = "The project ID to host the cluster in"
+  default     = "cloud-build-github-trigger"
 }
 
 variable "governance_project_id" {
   type        = string
   description = "The project ID to host governance resources"
+  default     = "cloud-build-github-trigger"
 }
 
 variable "cluster_name" {
@@ -34,7 +36,6 @@ variable "region" {
   type        = string
   description = "The region to host the cluster in"
   default     = "us-central1"
-
 }
 
 variable "network_name" {
@@ -94,7 +95,8 @@ variable "node_pool" {
   type    = string
   default = "node-pool"
 }
+
 variable "auth_ip" {
   type = string
-
+  default = "127.0.0.1"
 }
