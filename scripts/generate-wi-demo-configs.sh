@@ -181,7 +181,7 @@ spec:
           initialDelaySeconds: 5
           timeoutSeconds: 1
       serviceAccount: workload-id-demo-sa
-      serviceAccountName: workload-id-demo-sa
+      serviceAccountName: workload-id-demo-ksa
 EOF
 
 cat << EOF > "${WORKLOAD_ID_DIR}/gcs-wi-demo-bad-deploy.yaml"
