@@ -16,7 +16,6 @@ steps:
   - '-c'
   - |
       if [ -d "terraform/" ]; then
-        cd terraform/
         for dir in terraform/*
         do 
           cd ${dir}   
