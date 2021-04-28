@@ -97,6 +97,6 @@ variable "node_pool" {
 }
 
 variable "auth_ip" {
-  type = string
+  type    = string
   default = "127.0.0.1"
 }
