@@ -51,6 +51,11 @@ steps:
           if [ -f "workload.tf" ]; then
             rm workload.tf
           fi
+
+          if [ -f "provider.tf" ]; then
+            rm provider.tf
+          fi
+
           terraform plan || exit 1
           cd ../../
         done
