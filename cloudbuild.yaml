@@ -114,7 +114,7 @@ steps:
 
 # [START completion-comment]
 - name: 'alpine'
-  id: 'comment'
+  id: 'comment - ready for review'
   entrypoint: 'sh'  
   args: 
   - '-c'
