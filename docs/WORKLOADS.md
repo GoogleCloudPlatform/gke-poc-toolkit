@@ -35,14 +35,15 @@ Kick off the demo build like so:
 
 make start-wi-demo
 
-# If running a private master endpoint, validate the proxy is started. Then set the HTTPS_PROXY environment variable to forward the make command through the tunnel:
+# If running a private master endpoint, validate the proxy is started. Then set the 
+# HTTPS_PROXY environment variable to forward the make command through the tunnel:
 
 make start-proxy
 
 HTTPS_PROXY=localhost:8888 make start-wi-demo
 ```
 
-If you are running this demo against a private master endpoint do yourself a solid create and alias to abstract away the proxy prefix like so:
+If you are running this demo against a private master endpoint do yourself a solid and create an alias to abstract away the proxy prefix like so:
 ```
 alias kubectl="HTTPS_PROXY=localhost:8888 kubectl"
 ```
@@ -75,7 +76,7 @@ deployment.apps/gcs-wi-test-bad   1/1     1            1           10h
 
 Ensure that all of the KCC resources have been deployed.
 ```shell
-kubectl get IAMServiceAccount
+kubectl get IAMServiceAccount -n workload-id-demo
 NAME                  AGE   READY   STATUS     STATUS AGE
 workload-id-demo-sa   12h   True    UpToDate   12h
 
@@ -121,7 +122,7 @@ curl -H "host: good.example.com" -F "file=@./test" $ING_EXT_IP/cloud-storage-buc
 And validate that the file was loaded in the bucket.
 ```shell
 BUCKET=$(gsutil list | grep gs://gke-application-bucket)
-gsutil cat gs://$BUCKET/test
+gsutil cat "${BUCKET}test"
 
 Ureeka! it works!
 ```
