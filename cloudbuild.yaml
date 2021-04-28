@@ -4,7 +4,7 @@ availableSecrets:
     env: GH_TOKEN
 
 steps:
-- name: 'alpine'
+- name: 'ubuntu'
   id: 'branch name'
   entrypoint: 'sh'  
   args: 
@@ -17,7 +17,7 @@ steps:
 # [START tf-fmt]
 - name: 'hashicorp/terraform:0.13.0'
   id: 'tf fmt'  
-  entrypoint: 'sh'
+  entrypoint: 'bash'
   args: 
   - '-c'
   - | 
