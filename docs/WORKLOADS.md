@@ -121,7 +121,7 @@ curl -H "host: good.example.com" -F "file=@./test" $ING_EXT_IP/cloud-storage-buc
 And validate that the file was loaded in the bucket.
 ```shell
 BUCKET=$(gsutil list | grep gs://gke-application-bucket)
-gsutil cat gs://$BUCKET/test
+gsutil cat "${BUCKET}test"
 
 Ureeka! it works!
 ```
