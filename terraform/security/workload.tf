@@ -77,7 +77,7 @@ resource "kubernetes_service_account" "storage-sa" {
 
 resource "kubernetes_deployment" "gcs-wi-test" {
   metadata {
-    name = "gcs-wi-test"
+    name      = "gcs-wi-test"
     namespace = var.k8s_namespace
     labels = {
       app = "demo"
@@ -93,9 +93,9 @@ resource "kubernetes_deployment" "gcs-wi-test" {
     }
     template {
       metadata {
-      labels = {
-        app = "demo"
-      }
+        labels = {
+          app = "demo"
+        }
       }
       spec {
         service_account_name = var.k8s_sa_name
@@ -106,12 +106,12 @@ resource "kubernetes_deployment" "gcs-wi-test" {
             container_port = "8080"
           }
           env {
-            name = "PORT"
+            name  = "PORT"
             value = "8080"
 
           }
           env {
-            name = "BUCKET_NAME"
+            name  = "BUCKET_NAME"
             value = google_storage_bucket.wi-bucket.name
           }
           resources {
@@ -123,7 +123,7 @@ resource "kubernetes_deployment" "gcs-wi-test" {
               cpu    = "250m"
               memory = "50Mi"
             }
-      
+
           }
         }
       }
@@ -134,7 +134,7 @@ resource "kubernetes_deployment" "gcs-wi-test" {
 
 resource "kubernetes_deployment" "gcs-wi-test-bad" {
   metadata {
-    name = "gcs-wi-test-bad"
+    name      = "gcs-wi-test-bad"
     namespace = var.k8s_namespace
     labels = {
       app = "demo"
@@ -150,12 +150,12 @@ resource "kubernetes_deployment" "gcs-wi-test-bad" {
     }
     template {
       metadata {
-      labels = {
-        app = "demo"
-      }
+        labels = {
+          app = "demo"
+        }
       }
       spec {
-       
+
         container {
           image = "debricked/example-gke-workload-identity-app:latest"
           name  = "gcs-fuse-workload"
@@ -163,12 +163,12 @@ resource "kubernetes_deployment" "gcs-wi-test-bad" {
             container_port = "8080"
           }
           env {
-            name = "PORT"
+            name  = "PORT"
             value = "8080"
 
           }
           env {
-            name = "BUCKET_NAME"
+            name  = "BUCKET_NAME"
             value = google_storage_bucket.wi-bucket.name
           }
           resources {
@@ -180,7 +180,7 @@ resource "kubernetes_deployment" "gcs-wi-test-bad" {
               cpu    = "250m"
               memory = "50Mi"
             }
-      
+
           }
         }
       }
@@ -190,7 +190,7 @@ resource "kubernetes_deployment" "gcs-wi-test-bad" {
 
 resource "kubernetes_service" "example" {
   metadata {
-    name = "gcs-wi-test-lb"
+    name      = "gcs-wi-test-lb"
     namespace = var.k8s_namespace
   }
   spec {
