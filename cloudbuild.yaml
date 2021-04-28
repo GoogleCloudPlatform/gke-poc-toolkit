@@ -37,10 +37,6 @@ steps:
   args: 
   - '-c'
   - | 
-      export REGION=northamerica-northeast1
-      export ZONE=northamerica-northeast1-a
-      export PROJECT=cloud-build-github-trigger
-      export GOVERNANCE_PROJECT=cloud-build-github-trigger
       if [ -d "terraform/" ]; then
         for dir in terraform/*
         do 
@@ -51,8 +47,27 @@ steps:
           echo "*************** TERRAFOM PLAN ******************"
           echo "******* At environment: ${env} ********"
           echo "*************************************************"
+
+          cat <<EOF > "${TFVARS_FILE}"
+          project_id="${PROJECT}"
+          governance_project_id="${GOVERNANCE_PROJECT}"
+          region="${REGION}"
+          private_endpoint="${PRIVATE}"
+          cluster_name="verify-endpoint-cluster"
+          network_name="verify-cluster-network"
+          subnet_name="verify-cluster-subnet"
+          node_pool="verify-node-pool"
+          zone = "${ZONE}"
+          auth_ip = "${AUTH_IP}"
+          EOF
+
           terraform plan || exit 1
           cd ../../
         done
-      fi
+      fi 
+  env:
+  - 'REGION=northamerica-northeast1'
+  - 'ZONE=northamerica-northeast1-a'
+  - 'PROJECT=cloud-build-github-trigger'
+  - 'GOVERNANCE_PROJECT=cloud-build-github-trigger'
 # [END tf-plan]
