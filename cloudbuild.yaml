@@ -30,6 +30,30 @@ steps:
         done
       fi 
 
+# [START tf-fmt]
+- name: 'hashicorp/terraform:0.13.0'
+  id: 'tf fmt'  
+  entrypoint: 'sh'
+  args: 
+  - '-c'
+  - | 
+      if [ -d "terraform/" ]; then
+        for dir in terraform/*
+        do 
+          cd ${dir}   
+          env=${dir%*/}
+          env=${env#*/}  
+          echo ""
+          echo "*************** TERRAFOM FMT ******************"
+          echo "******* At environment: ${env} ********"
+          echo "***********************************************"
+
+          terraform fmt || exit 1
+          cd ../../
+        done
+      fi 
+# [END tf-fmt]
+
 # [START tf-plan]
 - name: 'hashicorp/terraform:0.13.0'
   id: 'tf plan'  
@@ -46,19 +70,21 @@ steps:
           echo ""
           echo "*************** TERRAFOM PLAN ******************"
           echo "******* At environment: ${env} ********"
-          echo "*************************************************"
-          cat <<EOF > "verify.tfvars"
-          project_id=cloud-build-github-trigger
-          governance_project_id=cloud-build-github-trigger
-          region=northamerica-northeast1
-          private_endpoint=false
-          cluster_name=verify-endpoint-cluster
-          network_name=verify-cluster-network
-          subnet_name=verify-cluster-subnet
-          node_pool=verify-node-pool
-          zone=northamerica-northeast1-a
-          auth_ip=127.0.0.1
-          EOF
+          echo "************************************************"
+
+          # Changing bastion members to GKE Service Account Email for validation purposes.
+          sed -i s/data.google_client_openid_userinfo.me.email/local.gke_service_account_email/g main.tf
+
+          # Remove workloads.tf for testing purposes - requires an existing deployment. 
+          if [ -f "workload.tf" ]; then
+            rm workload.tf
+          fi
+
+          # Remove provider.tf for testing purposes - requires an existing deployment. 
+          if [ -f "provider.tf" ]; then
+            rm provider.tf
+          fi
+
           terraform plan || exit 1
           cd ../../
         done
