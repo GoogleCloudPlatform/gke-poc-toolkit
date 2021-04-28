@@ -47,6 +47,10 @@ steps:
           echo "*************** TERRAFOM PLAN ******************"
           echo "******* At environment: ${env} ********"
           echo "*************************************************"
+
+          if [ -f "workload.tf" ]; then
+            rm workload.tf
+          fi
           terraform plan || exit 1
           cd ../../
         done
