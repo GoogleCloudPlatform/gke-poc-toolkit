@@ -10,7 +10,7 @@ steps:
       echo "***********************"
 
 - name: 'hashicorp/terraform:0.13.0'
-  id: 'tf init'
+  id: 'cluster_build tf init'
   entrypoint: 'sh'
   args: 
   - '-c'
@@ -29,4 +29,5 @@ steps:
           terraform init || exit 1
           cd ../../
         done
+
       fi 
