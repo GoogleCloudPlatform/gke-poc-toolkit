@@ -15,11 +15,11 @@
  */
 
 module "service_accounts" {
-  for_each      = var.k8s_users
-  source        = "terraform-google-modules/service-accounts/google"
-  version       = "~> 3.0"
-  project_id    = var.project_id
-  names         = [each.key]
+  for_each   = var.k8s_users
+  source     = "terraform-google-modules/service-accounts/google"
+  version    = "~> 3.0"
+  project_id = var.project_id
+  names      = [each.key]
   project_roles = [
     "${var.project_id}=>roles/container.clusterViewer",
     "${var.project_id}=>roles/container.viewer"
