@@ -67,7 +67,7 @@ WORKLOAD_ID_DIR="./demos/workload-identity"
 
 # Create the demo app namespace then the rest of the k8s objects.
 kubectl apply -f ${WORKLOAD_ID_DIR}/namespace.yaml
-kubectl apply -f ${WORKLOAD_ID_DIR}/storage.yaml
+kubectl apply -f ${WORKLOAD_ID_DIR}/storage.yaml -n workload-id-demo
 kubectl apply -f ${WORKLOAD_ID_DIR}/sa.yaml
 kubectl apply -f ${WORKLOAD_ID_DIR}/deploy.yaml
 kubectl apply -f ${WORKLOAD_ID_DIR}/bad-deploy.yaml
