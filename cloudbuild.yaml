@@ -29,7 +29,7 @@ steps:
 
           terraform fmt -diff -check=true -write=false
           if [ $? -ne 0 ]; then
-            echo "FAIL!!!"
+            echo "FAIL!!"
             exit 1
           fi
           cd ../../
