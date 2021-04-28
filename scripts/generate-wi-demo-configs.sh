@@ -47,20 +47,55 @@ WORKLOAD_ID_DIR="./demos/workload-identity"
 BUCKET_NAME="gke-application-bucket-$(openssl rand -hex 3)"
 
 # Generate kubenernetes configs based on unique vars.
-cat <<EOF > "${WORKLOAD_ID_DIR}/gcs-wi-demo-sa.yaml"
+cat <<EOF > "${WORKLOAD_ID_DIR}/gcs-wi-demo-namespace.yaml"
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: workload-id-demo
+  annotations:
+    cnrm.cloud.google.com/project-id: ${PROJECT}
+EOF
+
+cat <<EOF > "${WORKLOAD_ID_DIR}/gcs-wi-demo-storage.yaml"
 apiVersion: iam.cnrm.cloud.google.com/v1beta1
 kind: IAMServiceAccount
 metadata:
-  name: workload-id-demo-sa
+  name: workload-id-demo-gsa
 spec:
   displayName: workload-id-demo-sa
 ---
+apiVersion: storage.cnrm.cloud.google.com/v1beta1
+kind: StorageBucket
+metadata:
+  annotations:
+    cnrm.cloud.google.com/force-destroy: "false"
+  name: ${BUCKET_NAME}
+  namespace: workload-id-demo
+spec:
+  bucketPolicyOnly: true
+---
+apiVersion: iam.cnrm.cloud.google.com/v1beta1
+kind: IAMPolicyMember
+metadata:
+  name: workload-id-demo-storage-policy
+  namespace: workload-id-demo
+spec:
+  member: serviceAccount:workload-id-demo-gsa@${PROJECT}.iam.gserviceaccount.com
+  role: roles/storage.objectAdmin
+  resourceRef:
+    apiVersion: storage.cnrm.cloud.google.com/v1beta1
+    kind: StorageBucket
+    external: ${BUCKET_NAME} 
+    namespace: workload-id-demo
+EOF
+
+cat <<EOF > "${WORKLOAD_ID_DIR}/gcs-wi-demo-sa.yaml"
 apiVersion: v1
 kind: ServiceAccount
 metadata:
   annotations:
-    iam.gke.io/gcp-service-account: workload-id-demo-sa@${PROJECT}.iam.gserviceaccount.com
-  name: workload-id-demo-sa
+    iam.gke.io/gcp-service-account: workload-id-demo-gsa@${PROJECT}.iam.gserviceaccount.com
+  name: workload-id-demo-ksa
   namespace: workload-id-demo
 ---
 apiVersion: iam.cnrm.cloud.google.com/v1beta1
@@ -72,52 +107,11 @@ spec:
   resourceRef:
     apiVersion:  iam.cnrm.cloud.google.com/v1beta1
     kind: IAMServiceAccount
-    name: workload-id-demo-sa
+    name: workload-id-demo-gsa
   bindings:
     - role: roles/iam.workloadIdentityUser 
       members: 
-        - serviceAccount:${PROJECT}.svc.id.goog[workload-id-demo/workload-id-demo-sa]
-EOF
-
-cat <<EOF > "${WORKLOAD_ID_DIR}/gcs-wi-demo-storage.yaml"
-apiVersion: storage.cnrm.cloud.google.com/v1beta1
-kind: StorageBucket
-metadata:
-  annotations:
-    cnrm.cloud.google.com/force-destroy: "false"
-  name: ${BUCKET_NAME}
-  namespace: workload-id-demo
-spec:
-  bucketPolicyOnly: true
-  lifecycleRule:
-    - action:
-        type: Delete
-      condition:
-        age: 7
-  versioning:
-    enabled: true
----
-apiVersion: iam.cnrm.cloud.google.com/v1beta1
-kind: IAMPolicyMember
-metadata:
-  name: workload-id-demo-storage-policy
-  namespace: workload-id-demo
-spec:
-  member: serviceAccount:workload-id-demo-sa@${PROJECT}.iam.gserviceaccount.com
-  role: roles/storage.objectAdmin
-  resourceRef:
-    apiVersion: storage.cnrm.cloud.google.com/v1beta1
-    kind: StorageBucket
-    external: ${BUCKET_NAME?} 
-EOF
-
-cat <<EOF > "${WORKLOAD_ID_DIR}/gcs-wi-demo-namespace.yaml"
-apiVersion: v1
-kind: Namespace
-metadata:
-  name: workload-id-demo
-  annotations:
-    cnrm.cloud.google.com/project-id: ${PROJECT}
+        - serviceAccount:${PROJECT}.svc.id.goog[workload-id-demo/workload-id-demo-ksa]
 EOF
 
 cat <<EOF > "${WORKLOAD_ID_DIR}/gcs-wi-demo-deploy.yaml"
