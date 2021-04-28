@@ -42,22 +42,6 @@ if [[ -z "${PROJECT}" ]]; then
     exit 1;
 fi
 
-# Check to for existing deployment configs. 
-CONFIG_FILES_COUNT=$(ls demos/workload-identity | wc -l)
-
-if [[ "$CONFIG_FILES_COUNT" != 0 ]]
-then
-    while true; do
-        echo ""
-         read -p "The workload identity demo config files already exist. If you would like to write over them Select yes(y) or no(n) to cancel execution: " yn ; tput sgr0 
-        case $yn in
-            [Yy]* ) echo "Config files will be overwritten";break;;
-            [Nn]* ) echo "Cancelling execution";exit ;;
-            * ) echo "Incorrect input. Cancelling execution";exit 1;;
-        esac
-    done
-fi
-
 # Configure the connfig connector with the project GKE was created in. 
 # This is done in the hardening build already but I want to ensure this demo
 # can run standalone. 
