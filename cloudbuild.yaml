@@ -49,7 +49,7 @@ steps:
           echo "*************************************************"
 
           export email="verify@build.com"
-          sed -i s/data.google_client_openid_userinfo.me.email/"$email"/g main.tf
+          sed -i s/data.google_client_openid_userinfo.me.email/local.gke_service_account_email/g main.tf
 
           if [ -f "workload.tf" ]; then
             rm workload.tf
