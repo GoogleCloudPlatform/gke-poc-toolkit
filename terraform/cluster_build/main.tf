@@ -24,7 +24,7 @@ module "enabled_google_apis" {
   activate_apis = [
     "iam.googleapis.com",
     "compute.googleapis.com",
-    "logging.googleapis.com",
+    "logging.googleapis.comp",
     "monitoring.googleapis.com",
     "containerregistry.googleapis.com",
     "container.googleapis.com",
@@ -32,7 +32,7 @@ module "enabled_google_apis" {
     "stackdriver.googleapis.com",
     "iap.googleapis.com",
   ]
-
+}
 
 module "enabled_governance_apis" {
   source  = "terraform-google-modules/project-factory/google//modules/project_services"
