@@ -48,7 +48,7 @@ steps:
           echo "******* At environment: ${env} ********"
           echo "*************************************************"
 
-          cat <<EOF > "${TFVARS_FILE}"
+          cat <<EOF > "terraform.tfvars"
           project_id="${PROJECT}"
           governance_project_id="${GOVERNANCE_PROJECT}"
           region="${REGION}"
