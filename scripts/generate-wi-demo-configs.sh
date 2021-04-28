@@ -47,7 +47,7 @@ WORKLOAD_ID_DIR="./demos/workload-identity"
 BUCKET_NAME="gke-application-bucket-$(openssl rand -hex 3)"
 
 # Generate kubenernetes configs based on unique vars.
-cat <<EOF > "${WORKLOAD_ID_DIR}/gcs-wi-demo-namespace.yaml"
+cat <<EOF > "${WORKLOAD_ID_DIR}/namespace.yaml"
 apiVersion: v1
 kind: Namespace
 metadata:
