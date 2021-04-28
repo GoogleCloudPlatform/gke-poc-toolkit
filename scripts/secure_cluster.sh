@@ -34,8 +34,6 @@ spec:
 EOF
 
 # Generate the variables to be used by Terraform
-# shellcheck source=scripts/generate-tfvars.sh
-# TODO remove this
 source "${ROOT}/scripts/generate-security-tfvars.sh"
 
 # Initialize and run Terraform

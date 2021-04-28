@@ -48,7 +48,6 @@ module "enabled_governance_apis" {
   ]
 }
 
-// Used to grab project number for the GKE service account -- look into this later.
 data "google_project" "project" {
   project_id   = module.enabled_google_apis.project_id
 }
@@ -61,28 +60,29 @@ resource "random_id" "kms" {
 // Locals used to construct names of stuffs.
 locals {
   kcc_service_account       = format("%s-kcc", var.cluster_name)
-  kcc_service_account_email = "${local.kcc_service_account}@${var.project_id}.iam.gserviceaccount.com"
+  kcc_service_account_email = "${local.kcc_service_account}@${module.enabled_google_apis.project_id}.iam.gserviceaccount.com"
   bastion_name              = format("%s-bastion", var.cluster_name)
   gke_service_account       = format("%s-sa", var.cluster_name)
-  gke_service_account_email = "${local.gke_service_account}@${var.project_id}.iam.gserviceaccount.com"
+  gke_service_account_email = "${local.gke_service_account}@${module.enabled_google_apis.project_id}.iam.gserviceaccount.com"
   gke_keyring_name          = format("%s-kr-%s", var.cluster_name, random_id.kms.hex)
   gke_key_name              = format("%s-kek", var.cluster_name)
   kek_service_account       = format("service-%s@container-engine-robot.iam.gserviceaccount.com", data.google_project.project.number)
   database-encryption-key   = "projects/${var.governance_project_id}/locations/${var.region}/keyRings/${local.gke_keyring_name}/cryptoKeys/${local.gke_key_name}"
+  bastion_zone              = var.zone
   bastion_members           = [
     format("user:%s", data.google_client_openid_userinfo.me.email),
   ]
   service_accounts = {
     (local.gke_service_account) = [
-      "${var.project_id}=>roles/artifactregistry.reader",
-      "${var.project_id}=>roles/logging.logWriter",
-      "${var.project_id}=>roles/monitoring.metricWriter",
-      "${var.project_id}=>roles/monitoring.viewer",
-      "${var.project_id}=>roles/stackdriver.resourceMetadata.writer",
-      "${var.project_id}=>roles/storage.objectViewer",
+      "${module.enabled_google_apis.project_id}=>roles/artifactregistry.reader",
+      "${module.enabled_google_apis.project_id}=>roles/logging.logWriter",
+      "${module.enabled_google_apis.project_id}=>roles/monitoring.metricWriter",
+      "${module.enabled_google_apis.project_id}=>roles/monitoring.viewer",
+      "${module.enabled_google_apis.project_id}=>roles/stackdriver.resourceMetadata.writer",
+      "${module.enabled_google_apis.project_id}=>roles/storage.objectViewer",
     ]
     (local.kcc_service_account) = [
-      "${var.project_id}=>roles/owner",
+      "${module.enabled_google_apis.project_id}=>roles/owner",
     ]
   }
 }
@@ -91,7 +91,7 @@ module "vpc" {
   source  = "terraform-google-modules/network/google"
   version = "~> 2.5"
 
-  project_id   = var.project_id
+  project_id   = module.enabled_google_apis.project_id
   network_name = var.network_name
   routing_mode = "GLOBAL"
 
@@ -120,7 +120,7 @@ module "vpc" {
 
 module "cluster-nat" {
   source        = "terraform-google-modules/cloud-nat/google"
-  project_id   = var.project_id
+  project_id    = module.enabled_google_apis.project_id
   region        = var.region
   router        = "private-cluster-router"
   network       = module.vpc.network_self_link
@@ -139,10 +139,10 @@ module "bastion" {
   version        = "~> 3.1"
   network        = module.vpc.network_self_link
   subnet         = module.vpc.subnets_self_links[0]
-  project   = var.project_id
-  host_project   = var.project_id
+  project        = module.enabled_google_apis.project_id
+  host_project   = module.enabled_google_apis.project_id
   name           = local.bastion_name
-  zone           = var.zone
+  zone           = local.bastion_zone
   image_project  = "debian-cloud"
   image_family   = "debian-9"
   machine_type   = "g1-small"
@@ -157,7 +157,7 @@ module "service_accounts" {
   for_each = local.service_accounts
   source        = "terraform-google-modules/service-accounts/google"
   version       = "~> 3.0"
-  project_id   = var.project_id
+  project_id    = module.enabled_google_apis.project_id
   display_name  = "${each.key} service account"
   names         = [each.key]
   project_roles = each.value
@@ -187,10 +187,10 @@ module "gke" {
   ]
   source = "terraform-google-modules/kubernetes-engine/google//modules/safer-cluster"
   version = "14.0.1"
-  project_id   = var.project_id
-  name       = var.cluster_name
-  region     = var.region
-  config_connector = var.config_connector  
+  project_id  = module.enabled_google_apis.project_id
+  name        = var.cluster_name
+  region      = var.region
+  config_connector        = var.config_connector  
   network                 = module.vpc.network_name
   subnetwork              = module.vpc.subnets_names[0]
   ip_range_pods           = module.vpc.subnets_secondary_ranges[0].*.range_name[0]
@@ -256,14 +256,14 @@ module "service_account-iam-bindings" {
   source = "terraform-google-modules/iam/google//modules/service_accounts_iam"
 
   service_accounts = [local.kcc_service_account_email]
-  project          = var.project_id
+  project          = module.enabled_google_apis.project_id
   bindings = {
     "roles/iam.workloadIdentityUser" = [
-      "serviceAccount:${var.project_id}.svc.id.goog[cnrm-system/cnrm-controller-manager]",
+      "serviceAccount:${module.enabled_google_apis.project_id}.svc.id.goog[cnrm-system/cnrm-controller-manager]",
     ]
 
-    "roles/iam.serviceAccountCreator" = [
-      "serviceAccount:${var.project_id}.svc.id.goog[cnrm-system/cnrm-controller-manager]",
-    ]
+    # "roles/iam.serviceAccountCreator" = [
+    #   "serviceAccount:${module.enabled_google_apis.project_id}.svc.id.goog[cnrm-system/cnrm-controller-manager]",
+    # ]
   }
 }

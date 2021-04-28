@@ -29,3 +29,9 @@ resource "google_project_service" "service" {
 resource "random_id" "server" {
   byte_length = 2
 }
+
+data "google_container_cluster" "cluster" {
+  name     = var.cluster_name
+  project  = var.project_id
+  location = var.region
+}

@@ -25,7 +25,6 @@ set -euo pipefail
 
 ROOT="$( cd "$( dirname "${BASH_SOURCE[0]}" )/.." && pwd )"
 
-# shellcheck source=scripts/common.sh
 source "$ROOT/scripts/common.sh"
 
 TFVARS_FILE="./terraform/security/terraform.tfvars"

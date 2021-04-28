@@ -30,7 +30,6 @@ source "$ROOT"/scripts/common.sh
 echo "Detecting SSH Bastion Tunnel/Proxy"
 if [[ ! "$(pgrep -f L8888:127.0.0.1:8888)" ]]; then
   echo "Did not detect a running SSH tunnel.  Opening a new one."
-  # shellcheck disable=SC2091
   BASTION_CMD="$(terraform output --state=terraform/cluster_build/terraform.tfstate bastion_ssh_command | tr -d \")"
   $BASTION_CMD -f tail -f /dev/null
  

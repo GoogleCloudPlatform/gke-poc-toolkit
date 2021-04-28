@@ -23,7 +23,6 @@
 # Stop immediately if something goes wrong
 ROOT="$( cd "$( dirname "${BASH_SOURCE[0]}" )/.." && pwd )"
 
-# shellcheck source=scripts/common.sh
 source "$ROOT/scripts/common.sh"
 
 TFVARS_FILE="./terraform/cluster_build/terraform.tfvars"
