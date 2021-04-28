@@ -109,6 +109,7 @@ steps:
           cd ../../
         done
       fi 
+  secretEnv: ['GH_TOKEN']
 # [END tf-plan]
 
 # [START completion-comment]
