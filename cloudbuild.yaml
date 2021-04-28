@@ -28,6 +28,9 @@ steps:
           echo "***********************************************"
 
           terraform fmt -diff -check=true -write=false
+          if [ $? -ne 0 ]; then
+            exit 1
+          fi
           cd ../../
         done
       fi 
