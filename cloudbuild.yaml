@@ -48,8 +48,7 @@ steps:
           echo "******* At environment: ${env} ********"
           echo "***********************************************"
 
-          terraform fmt -check -diff 
-          exit 1
+          terraform fmt -check -diff || exit 1
           cd ../../
         done
       fi 
