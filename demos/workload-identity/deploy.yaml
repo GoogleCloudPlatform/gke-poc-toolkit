@@ -1,0 +1,67 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: demo
+  namespace: workload-id-demo
+  annotations:
+    cloud.google.com/neg: '{"ingress": true}'
+spec:
+  ports:
+  - port: 8080
+    targetPort: 8080
+    name: http 
+  selector:
+    app: demo
+  type: ClusterIP
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  labels:
+    app: demo
+  name: gcs-wi-test
+  namespace: workload-id-demo
+spec:
+  selector:
+    matchLabels:
+      app: demo
+  template:
+    metadata:
+      labels:
+        app: demo
+    spec:
+      containers:
+      - env:
+        - name: PORT
+          value: "8080"
+        - name: BUCKET_NAME
+          value: ${BUCKET_NAME}
+        image: bucksteamy/workload-id-storage-demo:v1.3
+        imagePullPolicy: Always
+        name: gcs-fuse-workload
+        ports:
+          - name: http
+            containerPort: 8080
+        resources:
+          limits:
+            cpu: 500m
+            memory: 512Mi
+          requests:
+            cpu: 250m
+            memory: 50Mi
+        readinessProbe:
+          httpGet:
+            path: /healthz
+            port: 8080
+            scheme: HTTP
+          initialDelaySeconds: 5
+          timeoutSeconds: 1
+        livenessProbe:
+          httpGet:
+            path: /healthz
+            port: 8080
+            scheme: HTTP
+          initialDelaySeconds: 5
+          timeoutSeconds: 1
+      serviceAccount: workload-id-demo-sa
+      serviceAccountName: workload-id-demo-ksa

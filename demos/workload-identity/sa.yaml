@@ -1,0 +1,22 @@
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  annotations:
+    iam.gke.io/gcp-service-account: workload-id-demo-gsa@${PROJECT}.iam.gserviceaccount.com
+  name: workload-id-demo-ksa
+  namespace: workload-id-demo
+---
+apiVersion: iam.cnrm.cloud.google.com/v1beta1
+kind: IAMPolicy
+metadata:
+  name: workload-id-sa-policy
+  namespace: workload-id-demo
+spec:
+  resourceRef:
+    apiVersion:  iam.cnrm.cloud.google.com/v1beta1
+    kind: IAMServiceAccount
+    name: workload-id-demo-gsa
+  bindings:
+    - role: roles/iam.workloadIdentityUser 
+      members: 
+        - serviceAccount:${PROJECT}.svc.id.goog[workload-id-demo/workload-id-demo-ksa]

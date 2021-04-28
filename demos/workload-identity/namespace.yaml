@@ -1,0 +1,6 @@
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: workload-id-demo
+  annotations:
+    cnrm.cloud.google.com/project-id: ${PROJECT}
