@@ -31,16 +31,12 @@ steps:
       fi 
 
 # [START tf-plan]
-- name: 'hashicorp/terraform:0.11.14'
+- name: 'hashicorp/terraform:0.13.0'
   id: 'tf plan'  
   entrypoint: 'sh'
   args: 
   - '-c'
   - | 
-      export REGION=northamerica-northeast1
-      export ZONE=northamerica-northeast1-a
-      export PROJECT=cloud-build-github-trigger
-      export GOVERNANCE_PROJECT=cloud-build-github-trigger
       if [ -d "terraform/" ]; then
         for dir in terraform/*
         do 
@@ -51,8 +47,20 @@ steps:
           echo "*************** TERRAFOM PLAN ******************"
           echo "******* At environment: ${env} ********"
           echo "*************************************************"
+          cat <<EOF > "verify.tfvars"
+          project_id=cloud-build-github-trigger
+          governance_project_id=cloud-build-github-trigger
+          region=northamerica-northeast1
+          private_endpoint=false
+          cluster_name=verify-endpoint-cluster
+          network_name=verify-cluster-network
+          subnet_name=verify-cluster-subnet
+          node_pool=verify-node-pool
+          zone=northamerica-northeast1-a
+          auth_ip=127.0.0.1
+          EOF
           terraform plan || exit 1
           cd ../../
         done
-      fi
+      fi 
 # [END tf-plan]
