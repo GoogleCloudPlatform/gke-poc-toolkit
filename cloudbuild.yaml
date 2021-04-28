@@ -28,9 +28,7 @@ steps:
           env=${dir%*/}
           env=${env#*/}  
           echo ""
-          echo "*************** TERRAFOM FMT ******************"
-          echo "******* At environment: ${env} ********"
-          echo "***********************************************"
+          echo "******* Executing Terraform Format at environment: ${env}"
 
           terraform fmt -diff -check=true -write=false
           if [ $? -ne 0 ]; then
@@ -59,9 +57,7 @@ steps:
           env=${dir%*/}
           env=${env#*/}
           echo ""
-          echo "*************** TERRAFORM INIT ******************"
-          echo "******* At environment: ${env} ********"
-          echo "*************************************************"
+          echo "******* Executing Terraform Init at environment: ${env}"
 
           terraform init || { 
             apk add curl
@@ -89,9 +85,7 @@ steps:
           env=${dir%*/}
           env=${env#*/}  
           echo ""
-          echo "*************** TERRAFOM PLAN ******************"
-          echo "******* At environment: ${env} ********"
-          echo "************************************************"
+          echo "******* Executing Terraform Plan at environment: ${env}"
 
           # Changing bastion members to GKE Service Account Email for validation purposes.
           sed -i s/data.google_client_openid_userinfo.me.email/local.gke_service_account_email/g main.tf
