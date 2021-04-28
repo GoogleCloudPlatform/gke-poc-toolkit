@@ -32,7 +32,7 @@ module "enabled_google_apis" {
     "stackdriver.googleapis.com",
     "iap.googleapis.com",
   ]
-}
+
 
 module "enabled_governance_apis" {
   source  = "terraform-google-modules/project-factory/google//modules/project_services"
