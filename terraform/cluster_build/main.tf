@@ -102,7 +102,7 @@ module "vpc" {
 
 module "cluster-nat" {
   source        = "terraform-google-modules/cloud-nat/google"
-  project_id    = module.enabled_google_apis.project_id
+  project_id    = module.enabled_google_apis.project
   region        = var.region
   router        = "private-cluster-router"
   network       = module.vpc.network_self_link
