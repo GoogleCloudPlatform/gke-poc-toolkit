@@ -35,7 +35,7 @@ steps:
           terraform fmt -diff -check=true -write=false
           if [ $? -ne 0 ]; then
             apk add curl
-            echo "{\"body\": \"Please run the `terraform fmt` command against /terraform/${env} directory the resubmit the Pull Request. `terraform fmt` is required to rewrite the Terraform configuration files to a consistent canonical format and style.\"}" > /workspace/api_payload.txt && \
+            echo "{\"body\": \"Please run the \`terraform fmt\` command against /terraform/${env} directory the resubmit the Pull Request. It is required that \`terraform fmt\` be executed against all Terraform configuration files in order to provide a consistent canonical format and style.\"}" > /workspace/api_payload.txt && \
             curl -s -H "Authorization: token $$GH_TOKEN" -X POST -d @/workspace/api_payload.txt "https://api.github.com/repos/albertwo1978/gke-poc-toolkit-1/issues/$_PR_NUMBER/comments"
             exit 1
           fi
