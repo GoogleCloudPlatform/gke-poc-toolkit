@@ -47,20 +47,22 @@ steps:
           echo "*************** TERRAFOM PLAN ******************"
           echo "******* At environment: ${env} ********"
           echo "*************************************************"
-          cat <<EOF > "verify.tfvars"
-          project_id=cloud-build-github-trigger
-          governance_project_id=cloud-build-github-trigger
-          region=northamerica-northeast1
-          private_endpoint=false
-          cluster_name=verify-endpoint-cluster
-          network_name=verify-cluster-network
-          subnet_name=verify-cluster-subnet
-          node_pool=verify-node-pool
-          zone=northamerica-northeast1-a
-          auth_ip=127.0.0.1
-          EOF
           terraform plan || exit 1
           cd ../../
         done
       fi 
 # [END tf-plan]
+
+
+          # cat <<EOF > "verify.tfvars"
+          # project_id=cloud-build-github-trigger
+          # governance_project_id=cloud-build-github-trigger
+          # region=northamerica-northeast1
+          # private_endpoint=false
+          # cluster_name=verify-endpoint-cluster
+          # network_name=verify-cluster-network
+          # subnet_name=verify-cluster-subnet
+          # node_pool=verify-node-pool
+          # zone=northamerica-northeast1-a
+          # auth_ip=127.0.0.1
+          # EOF
