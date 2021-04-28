@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
- module "enabled_google_apis" {
+module "enabled_google_apis" {
   source  = "terraform-google-modules/project-factory/google//modules/project_services"
   version = "~> 10.0"
 
@@ -33,7 +33,7 @@
     "iap.googleapis.com",
   ]
 }
- 
+
 module "enabled_governance_apis" {
   source  = "terraform-google-modules/project-factory/google//modules/project_services"
   version = "~> 10.0"
@@ -47,7 +47,7 @@ module "enabled_governance_apis" {
 }
 
 data "google_project" "project" {
-  project_id   = module.enabled_google_apis.project_id
+  project_id = module.enabled_google_apis.project_id
 }
 
 // Random string used to create a unique key ring name
@@ -64,7 +64,7 @@ locals {
   kek_service_account       = format("service-%s@container-engine-robot.iam.gserviceaccount.com", data.google_project.project.number)
   database-encryption-key   = "projects/${var.governance_project_id}/locations/${var.region}/keyRings/${local.gke_keyring_name}/cryptoKeys/${local.gke_key_name}"
   bastion_zone              = var.zone
-  bastion_members           = [
+  bastion_members = [
     format("user:%s", data.google_client_openid_userinfo.me.email),
   ]
 }
@@ -135,11 +135,11 @@ module "bastion" {
 }
 
 module "service_accounts" {
-  source        = "terraform-google-modules/service-accounts/google"
-  version       = "~> 3.0"
-  project_id    = module.enabled_google_apis.project_id
-  display_name  = "GKE cluster service account"
-  names         = [local.gke_service_account]
+  source       = "terraform-google-modules/service-accounts/google"
+  version      = "~> 3.0"
+  project_id   = module.enabled_google_apis.project_id
+  display_name = "GKE cluster service account"
+  names        = [local.gke_service_account]
   project_roles = [
     "${module.enabled_google_apis.project_id}=>roles/artifactregistry.reader",
     "${module.enabled_google_apis.project_id}=>roles/logging.logWriter",
@@ -155,15 +155,15 @@ module "kms" {
   depends_on = [
     module.service_accounts,
   ]
-  source            = "terraform-google-modules/kms/google"
-  version           = "~> 2.0"
-  project_id        = var.governance_project_id
-  location          = var.region
-  keyring           = local.gke_keyring_name
-  keys              = [local.gke_key_name]
-  set_owners_for    = [local.gke_key_name]
-  owners            = [
-        "serviceAccount:${local.kek_service_account}",
+  source         = "terraform-google-modules/kms/google"
+  version        = "~> 2.0"
+  project_id     = var.governance_project_id
+  location       = var.region
+  keyring        = local.gke_keyring_name
+  keys           = [local.gke_key_name]
+  set_owners_for = [local.gke_key_name]
+  owners = [
+    "serviceAccount:${local.kek_service_account}",
   ]
 }
 
@@ -172,11 +172,11 @@ module "gke" {
     module.bastion,
     module.kms,
   ]
-  source = "terraform-google-modules/kubernetes-engine/google//modules/safer-cluster"
-  version = "14.0.1"
-  project_id = module.enabled_google_apis.project_id
-  name       = var.cluster_name
-  region     = var.region
+  source                  = "terraform-google-modules/kubernetes-engine/google//modules/safer-cluster"
+  version                 = "14.0.1"
+  project_id              = module.enabled_google_apis.project_id
+  name                    = var.cluster_name
+  region                  = var.region
   network                 = module.vpc.network_name
   subnetwork              = module.vpc.subnets_names[0]
   ip_range_pods           = module.vpc.subnets_secondary_ranges[0].*.range_name[0]

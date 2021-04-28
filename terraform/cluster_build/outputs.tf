@@ -38,8 +38,8 @@ output "get_credentials_command" {
   value       = (var.private_endpoint ? (format("gcloud container clusters get-credentials --project %s --zone %s --internal-ip %s", var.project_id, module.gke.location, module.gke.name)) : (format("gcloud container clusters get-credentials --project %s --zone %s %s", var.project_id, module.gke.location, module.gke.name)))
 }
 output "bastion_name" {
- description = "Name of the bastion host"
- value       = (var.private_endpoint ? module.bastion[0].hostname : "")
+  description = "Name of the bastion host"
+  value       = (var.private_endpoint ? module.bastion[0].hostname : "")
 }
 output "bastion_ssh_command" {
   description = "gcloud command to ssh and port forward to the bastion host command"
@@ -48,6 +48,6 @@ output "bastion_ssh_command" {
 
 output "bastion_kubectl_command" {
   description = "kubectl command using the local proxy once the bastion_ssh command is running"
-  value       = (var.private_endpoint ? "HTTPS_PROXY=localhost:8888 kubectl get pods --all-namespaces": "kubectl get pods --all-namespaces")
+  value       = (var.private_endpoint ? "HTTPS_PROXY=localhost:8888 kubectl get pods --all-namespaces" : "kubectl get pods --all-namespaces")
 
 }

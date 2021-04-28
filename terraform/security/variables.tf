@@ -18,26 +18,29 @@
 variable "project" {
   description = "The project in which to hold the components"
   type        = string
+  default     = "cloud-build-github-trigger"
 }
 
 variable "region" {
   description = "The region in which to create the VPC network"
   type        = string
+  default     = "northamerica-northeast1"
 }
 
 variable "zone" {
   description = "The zone in which to create the Kubernetes cluster. Must match the region"
   type        = string
+  default     = "northamerica-northeast1-a"
 }
 
 variable "cluster_name" {
   description = "The name to give the new Kubernetes cluster."
   type        = string
-  default     = ""
+  default     = "cluster"
 }
 
 variable "service_account_iam_roles" {
-  type = list
+  type = list(any)
 
   default = [
     "roles/storage.objectCreator"
@@ -48,7 +51,7 @@ variable "service_account_iam_roles" {
 }
 
 variable "project_services" {
-  type = list
+  type = list(any)
 
   default = [
     "storage.googleapis.com",
@@ -63,6 +66,7 @@ variable "project_services" {
 variable "governance_project" {
   description = "The project to use for governance resources such as kvm and log sinks"
   type        = string
+  default     = "cloud-build-github-trigger"
 }
 
 variable "k8s_namespace" {
@@ -77,10 +81,10 @@ variable "k8s_sa_name" {
 
 }
 
-variable "k8s_users"{
+variable "k8s_users" {
   type = map(string)
-  default = { 
+  default = {
     rbac-demo-auditor = "view"
-    rbac-demo-editor = "edit"
-    }
+    rbac-demo-editor  = "edit"
+  }
 }
