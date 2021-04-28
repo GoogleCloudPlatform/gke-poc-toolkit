@@ -82,9 +82,9 @@ source "${ROOT}/scripts/generate-wi-demo-configs.sh"
 WORKLOAD_ID_DIR="./demos/workload-identity"
 
 # Create the demo app namespace then the rest of the k8s objects.
-kubectl apply -f ${WORKLOAD_ID_DIR}/gcs-wi-demo-namespace.yaml
-kubectl apply -f ${WORKLOAD_ID_DIR}/gcs-wi-demo-storage.yaml
-kubectl apply -f ${WORKLOAD_ID_DIR}/gcs-wi-demo-sa.yaml
-kubectl apply -f ${WORKLOAD_ID_DIR}/gcs-wi-demo-deploy.yaml
-kubectl apply -f ${WORKLOAD_ID_DIR}/gcs-wi-demo-bad-deploy.yaml
-kubectl apply -f ${WORKLOAD_ID_DIR}/gcs-wi-demo-ingress.yaml
+kubectl apply -f ${WORKLOAD_ID_DIR}/namespace.yaml
+kubectl apply -f ${WORKLOAD_ID_DIR}/storage.yaml
+kubectl apply -f ${WORKLOAD_ID_DIR}/sa.yaml
+kubectl apply -f ${WORKLOAD_ID_DIR}/deploy.yaml
+kubectl apply -f ${WORKLOAD_ID_DIR}/bad-deploy.yaml
+kubectl apply -f ${WORKLOAD_ID_DIR}/ingress.yaml

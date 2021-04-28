@@ -56,7 +56,7 @@ metadata:
     cnrm.cloud.google.com/project-id: ${PROJECT}
 EOF
 
-cat <<EOF > "${WORKLOAD_ID_DIR}/gcs-wi-demo-storage.yaml"
+cat <<EOF > "${WORKLOAD_ID_DIR}/storage.yaml"
 apiVersion: iam.cnrm.cloud.google.com/v1beta1
 kind: IAMServiceAccount
 metadata:
@@ -86,10 +86,9 @@ spec:
     apiVersion: storage.cnrm.cloud.google.com/v1beta1
     kind: StorageBucket
     external: ${BUCKET_NAME} 
-    namespace: workload-id-demo
 EOF
 
-cat <<EOF > "${WORKLOAD_ID_DIR}/gcs-wi-demo-sa.yaml"
+cat <<EOF > "${WORKLOAD_ID_DIR}/sa.yaml"
 apiVersion: v1
 kind: ServiceAccount
 metadata:
@@ -114,7 +113,7 @@ spec:
         - serviceAccount:${PROJECT}.svc.id.goog[workload-id-demo/workload-id-demo-ksa]
 EOF
 
-cat <<EOF > "${WORKLOAD_ID_DIR}/gcs-wi-demo-deploy.yaml"
+cat <<EOF > "${WORKLOAD_ID_DIR}/deploy.yaml"
 apiVersion: v1
 kind: Service
 metadata:
@@ -184,7 +183,7 @@ spec:
       serviceAccountName: workload-id-demo-ksa
 EOF
 
-cat << EOF > "${WORKLOAD_ID_DIR}/gcs-wi-demo-bad-deploy.yaml"
+cat << EOF > "${WORKLOAD_ID_DIR}/bad-deploy.yaml"
 apiVersion: v1
 kind: Service
 metadata:
@@ -224,7 +223,6 @@ spec:
         image: bucksteamy/workload-id-storage-demo:v1.3
         imagePullPolicy: Always
         name: gcs-fuse-workload
-        ports:
         ports:
           - name: http
             containerPort: 8080
