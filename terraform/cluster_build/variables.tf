@@ -35,7 +35,7 @@ variable "cluster_name" {
 variable "region" {
   type        = string
   description = "The region to host the cluster in"
-  default     = "us-central1"
+  default     = "northamerica-northeast1"
 }
 
 variable "network_name" {
@@ -88,7 +88,7 @@ variable "private_endpoint" {
 }
 variable "zone" {
   type    = string
-  default = "us-central1-a"
+  default = "northamerica-northeast1-a"
 }
 
 variable "node_pool" {
