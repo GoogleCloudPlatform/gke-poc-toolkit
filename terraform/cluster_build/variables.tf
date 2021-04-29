@@ -1,5 +1,5 @@
 /**
- * Copyright 2021 Google LLC
+ * Copyright 2020 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,13 +17,11 @@
 variable "project_id" {
   type        = string
   description = "The project ID to host the cluster in"
-  default     = "cloud-build-github-trigger"
 }
 
 variable "governance_project_id" {
   type        = string
   description = "The project ID to host governance resources"
-  default     = "cloud-build-github-trigger"
 }
 
 variable "cluster_name" {
@@ -35,7 +33,8 @@ variable "cluster_name" {
 variable "region" {
   type        = string
   description = "The region to host the cluster in"
-  default     = "northamerica-northeast1"
+  default     = "us-central1"
+
 }
 
 variable "network_name" {
@@ -88,12 +87,16 @@ variable "private_endpoint" {
 }
 variable "zone" {
   type    = string
-  default = "northamerica-northeast1-a"
+  default = "us-central1-a"
 }
 
 variable "node_pool" {
   type    = string
   default = "node-pool"
+}
+variable "auth_ip" {
+  type = string
+
 }
 
 variable "config_connector" {
