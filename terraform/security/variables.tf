@@ -37,7 +37,7 @@ variable "cluster_name" {
 }
 
 variable "service_account_iam_roles" {
-  type = list
+  type = list(any)
 
   default = [
     "roles/storage.objectCreator"
@@ -48,7 +48,7 @@ variable "service_account_iam_roles" {
 }
 
 variable "project_services" {
-  type = list
+  type = list(any)
 
   default = [
     "storage.googleapis.com",
@@ -77,10 +77,10 @@ variable "k8s_sa_name" {
 
 }
 
-variable "k8s_users"{
+variable "k8s_users" {
   type = map(string)
-  default = { 
+  default = {
     rbac-demo-auditor = "view"
-    rbac-demo-editor = "edit"
-    }
+    rbac-demo-editor  = "edit"
+  }
 }
