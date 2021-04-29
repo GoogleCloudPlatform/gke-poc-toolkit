@@ -1,5 +1,5 @@
 /**
- * Copyright 2021 Google LLC
+ * Copyright 2020 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -28,15 +28,15 @@ module "service_accounts" {
 }
 
 resource "local_file" "service_account_key" {
-  for_each = module.service_accounts
+  for_each =  module.service_accounts
   filename = "../../creds/${each.value.email}.json"
   content  = each.value.key
 }
 
 resource "kubernetes_cluster_role_binding" "auditor" {
-  for_each = var.k8s_users
+  for_each  = var.k8s_users
   metadata {
-    name = each.key
+    name      = each.key
   }
   role_ref {
     api_group = "rbac.authorization.k8s.io"

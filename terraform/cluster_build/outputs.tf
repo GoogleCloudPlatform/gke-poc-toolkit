@@ -1,5 +1,5 @@
 /**
- * Copyright 2021 Google LLC
+ * Copyright 2020 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -39,8 +39,8 @@ output "get_credentials_command" {
 }
 
 output "bastion_name" {
-  description = "Name of the bastion host"
-  value       = (var.private_endpoint ? module.bastion[0].hostname : "")
+ description = "Name of the bastion host"
+ value       = (var.private_endpoint ? module.bastion[0].hostname : "")
 }
 
 output "bastion_ssh_command" {
@@ -50,6 +50,6 @@ output "bastion_ssh_command" {
 
 output "bastion_kubectl_command" {
   description = "kubectl command using the local proxy once the bastion_ssh command is running"
-  value       = (var.private_endpoint ? "HTTPS_PROXY=localhost:8888 kubectl get pods --all-namespaces" : "kubectl get pods --all-namespaces")
+  value       = (var.private_endpoint ? "HTTPS_PROXY=localhost:8888 kubectl get pods --all-namespaces": "kubectl get pods --all-namespaces")
 
 }

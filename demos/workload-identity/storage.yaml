@@ -1,17 +1,3 @@
-# Copyright 2021 Google LLC
-#
-# Licensed under the Apache License, Version 2.0 (the "License");
-# you may not use this file except in compliance with the License.
-# You may obtain a copy of the License at
-#
-#      http://www.apache.org/licenses/LICENSE-2.0
-#
-# Unless required by applicable law or agreed to in writing, software
-# distributed under the License is distributed on an "AS IS" BASIS,
-# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-# See the License for the specific language governing permissions and
-# limitations under the License.
-
 apiVersion: iam.cnrm.cloud.google.com/v1beta1
 kind: IAMServiceAccount
 metadata:
@@ -24,7 +10,7 @@ kind: StorageBucket
 metadata:
   annotations:
     cnrm.cloud.google.com/force-destroy: "false"
-  name: ${BUCKET_NAME}
+  name: gke-application-bucket-341c72
   namespace: workload-id-demo
 spec:
   bucketPolicyOnly: true
@@ -35,9 +21,9 @@ metadata:
   name: workload-id-demo-storage-policy
   namespace: workload-id-demo
 spec:
-  member: serviceAccount:workload-id-demo-gsa@${PROJECT}.iam.gserviceaccount.com
+  member: serviceAccount:workload-id-demo-gsa@gke-toolkit-test-07.iam.gserviceaccount.com
   role: roles/storage.objectAdmin
   resourceRef:
     apiVersion: storage.cnrm.cloud.google.com/v1beta1
     kind: StorageBucket
-    external: ${BUCKET_NAME} 
+    external: gke-application-bucket-341c72 
