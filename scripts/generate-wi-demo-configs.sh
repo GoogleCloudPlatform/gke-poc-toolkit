@@ -152,7 +152,7 @@ spec:
           value: "8080"
         - name: BUCKET_NAME
           value: ${BUCKET_NAME}
-        image: bucksteamy/workload-id-storage-demo:v1.3
+        image: gcr.io/cloud-build-github-trigger/github.com/knee-berts/example-go-gcp-storage-app:v0.1
         imagePullPolicy: Always
         name: gcs-fuse-workload
         ports:
@@ -220,7 +220,7 @@ spec:
           value: "8080"
         - name: BUCKET_NAME
           value: ${BUCKET_NAME}
-        image: bucksteamy/workload-id-storage-demo:v1.3
+        image: gcr.io/cloud-build-github-trigger/github.com/knee-berts/example-go-gcp-storage-app:v0.1
         imagePullPolicy: Always
         name: gcs-fuse-workload
         ports:
