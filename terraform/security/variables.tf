@@ -21,13 +21,15 @@ variable "project_id" {
 }
 
 variable "region" {
-  description = "The region in which to create the VPC network"
   type        = string
+  description = "The region to host the cluster in"
+  default     = "us-central1"
+
 }
 
 variable "zone" {
-  description = "The zone in which to create the Kubernetes cluster. Must match the region"
-  type        = string
+  type    = string
+  default = "us-central1-a"
 }
 
 variable "cluster_name" {
