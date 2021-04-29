@@ -98,7 +98,7 @@ variable "node_pool" {
 
 # Need this default to run PR build test
 variable "auth_ip" {
-  type = string
+  type    = string
   default = "1.2.3.4"
 }
 
