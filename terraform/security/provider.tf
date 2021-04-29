@@ -29,8 +29,15 @@ terraform {
     }
   }
 }
+
 data "google_client_config" "current" {
   provider = google
+}
+
+data "google_container_cluster" "cluster" {
+  name     = var.cluster_name
+  project  = var.project_id
+  location = var.region
 }
 
 provider "kubernetes" {
