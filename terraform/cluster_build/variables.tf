@@ -85,6 +85,7 @@ variable "private_endpoint" {
   type    = bool
   default = false
 }
+
 variable "zone" {
   type    = string
   default = "us-central1-a"
@@ -94,9 +95,11 @@ variable "node_pool" {
   type    = string
   default = "node-pool"
 }
+
+# Need this default to run PR build test
 variable "auth_ip" {
   type = string
-
+  default = "1.2.3.4"
 }
 
 variable "config_connector" {
