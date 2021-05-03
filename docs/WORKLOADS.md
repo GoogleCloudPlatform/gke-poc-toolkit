@@ -75,7 +75,7 @@ deployment.apps/gcs-wi-test-bad   1/1     1            1           10h
 
 Ensure that all of the KCC resources have been deployed.
 ```shell
-kubectl get IAMServiceAccount
+kubectl get IAMServiceAccount -n workload-id-demo
 NAME                  AGE   READY   STATUS     STATUS AGE
 workload-id-demo-sa   12h   True    UpToDate   12h
 
