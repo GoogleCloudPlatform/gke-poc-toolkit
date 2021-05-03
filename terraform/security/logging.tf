@@ -20,6 +20,7 @@ resource "google_storage_bucket" "log-bucket" {
   storage_class = "NEARLINE"
   force_destroy = true
   project       = var.governance_project_id
+  uniform_bucket_level_access = true
 }
 
 //Create BQ Data Set in Governance Project
