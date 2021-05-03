@@ -8,16 +8,13 @@
 
 ## Introduction
 
-Private clusters allow you to isolate nodes from the public internet.
-Every GKE cluster has a Kubernetes API server that is managed by the control plane (master). The control plane runs on a VM that is in a VPC network in a Google-owned project.
+This toolkit sets out to provide a set of infrastructre as code (IaC) which deploys GKE with a strong security posture that can be used to step through demos, stand up a POC, and deliver a codified example that can be the basis of a production implementation your own CICD pipelines.
 
-In private clusters, the control plane's VPC network is connected to your cluster's VPC network with VPC Network Peering. Your VPC network contains the cluster nodes, and a separate Google Cloud VPC network contains your cluster's control plane. The control plane's VPC network is located in a project controlled by Google. Traffic between nodes and the control plane is routed entirely using internal IP addresses.
+Terraform modules found in the [Cloud Foundations Toolkit](https://github.com/GoogleCloudPlatform/cloud-foundation-toolkit/blob/master/docs/terraform.md) are used as the bases for all IaC.
 
-Private clusters also restrict access to the internet by default. A NAT gateway of some form needs to be deployed should you want to enable outbound internet access from pods running in private clusters. Keep in mind this includes base container images not stored in the container registries that Google cloud maintains. In the following examples, a Google Cloud Nat Gateway is deployed alongs side the GKE clusters. 
+[Kuberenetes Config Connector](https://cloud.google.com/config-connector/docs/overview) is used to bootstap GCP resouces that are part of application demos.
 
-![Private Cluster Architecture](/assets/private-cluster.svg)
-
-## Prerequisites
+## Pre-requisites
 
 The steps described in this document require the installation of several tools and the proper configuration of authentication to allow them to access your GCP resources.
 
@@ -74,6 +71,11 @@ The Terraform configuration will execute against your GCP environment and create
 ## Deploy a Cluster
 
 [GKE Cluster Install Instructions](docs/CLUSTERS.md)
+
+Private clusters allow you to isolate nodes from the public internet.
+Every GKE cluster has a Kubernetes API server that is managed by the control plane (master). In private clusters, the control plane's VPC network is connected to your cluster's VPC network with VPC Network Peering. Your VPC network contains the cluster nodes, and a separate Google Cloud VPC network contains your cluster's control plane. The control plane's VPC network is located in a project controlled by Google. Traffic between nodes and the control plane is routed entirely using internal IP addresses.
+
+Private clusters also restrict access to the internet by default. A NAT gateway of some form needs to be deployed should you want to enable outbound internet access from pods running in private clusters. Keep in mind this includes base container images not stored in the container registries that Google cloud maintains. In the following examples, a Google Cloud Nat Gateway is deployed alongs side the GKE clusters. 
 
 The GKE Cluster Install step in this repository will build a GKE Private cluster with access to the control plane restricted in one of two configurations:
 
