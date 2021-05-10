@@ -231,8 +231,8 @@ module "gke" {
       initial_node_count = 1
       // Intergrity Monitoring is not enabled in Windows Node pools yet.
       enable_integrity_monitoring = false
-      count          = var.windows_nodepool ? 1 : 0
-    }    
+      count                       = var.windows_nodepool ? 1 : 0
+    }
   ]
   node_pools_oauth_scopes = {
     all = []
