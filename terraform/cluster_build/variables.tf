@@ -107,3 +107,8 @@ variable "config_connector" {
   description = "(Beta) Whether ConfigConnector is enabled for this cluster."
   default     = true
 }
+
+variable "windows_nodepool" {
+  type    = bool
+  default = false
+}

@@ -97,6 +97,29 @@ In the root of this repository, there is a script to create the cluster:
 make create CLUSTER=public
 ```
 
+## GKE Cluster with Windows Nodepool
+
+Create a GKE cluster with a Windows nodepool:
+
+```shell
+make create CLUSTER=public|private WINDOWS=true
+```
+
+Execute the following command to retrieve the kubernetes config for the cluster:
+
+```shell
+GKE_NAME=$(gcloud container clusters list --format="value(NAME)")
+GKE_LOCATION=$(gcloud container clusters list --format="value(LOCATION)")
+
+gcloud container clusters get-credentials $GKE_NAME --region $GKE_LOCATION
+```
+
+Validate Windows Server Node pool has been created:
+
+```shell
+kubectl get nodes --label-columns beta.kubernetes.io/os
+```
+
 ## Kubernetes App Layer Secrets Validation
 
 Execute the following command to retrieve the kubernetes config for the cluster if not collected in the previous step:

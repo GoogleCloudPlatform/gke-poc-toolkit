@@ -81,6 +81,14 @@ if [[ -z ${AUTH_IP} ]] && [ "${PRIVATE}" != "true" ]; then
     echo "replace IP with your IP"
 fi
 
+WINDOWS=$2
+if [[ "${WINDOWS}" == true ]]; then
+    WINDOWS="true"
+else
+    WINDOWS="false"
+
+fi
+
 # If Terraform is run without this file, the user will be prompted for values.
 # This check verifies if the file exists and prompts user for deletion
 # We don't want to overwrite a pre-existing tfvars file
@@ -110,4 +118,5 @@ subnet_name="$1-cluster-subnet"
 node_pool="$1-node-pool"
 zone = "${ZONE}"
 auth_ip = "${AUTH_IP}"
+windows_nodepool = "${WINDOWS}"
 EOF

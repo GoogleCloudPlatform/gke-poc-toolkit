@@ -27,9 +27,9 @@ source "${ROOT}/scripts/common.sh"
 source "${ROOT}/scripts/generate-cluster-tfvars.sh"
 
 # Initialize and run Terraform
-(cd "${ROOT}/terraform/cluster_build"; terraform init -input=false)
-(cd "${ROOT}/terraform/cluster_build"; terraform apply -input=false -auto-approve)
+# (cd "${ROOT}/terraform/cluster_build"; terraform init -input=false)
+# (cd "${ROOT}/terraform/cluster_build"; terraform apply -input=false -auto-approve)
 
-# Get cluster credentials
-GET_CREDS="$(terraform output --state=./terraform/$1/terraform.tfstate get_credentials)"
+# # Get cluster credentials
+# GET_CREDS="$(terraform output --state=./terraform/$1/terraform.tfstate get_credentials)"
 
