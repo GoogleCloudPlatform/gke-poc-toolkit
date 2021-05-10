@@ -24,12 +24,12 @@ help:
 	@echo	''
 .PHONY: create
 create:
-	@source	scripts/create_cluster.sh $(CLUSTER)
+	@source	scripts/create_cluster.sh $(CLUSTER) $(WINDOWS)
 
 
 .PHONY: secure
 secure:
-	@source scripts/secure_cluster.sh $(CLUSTER)
+	@source scripts/secure_cluster.sh $(CLUSTER) $(WINDOWS)
 
 .PHONY: start-proxy
 start-proxy:

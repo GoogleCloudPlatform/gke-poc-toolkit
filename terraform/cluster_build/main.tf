@@ -200,7 +200,7 @@ module "gke" {
   master_ipv4_cidr_block  = "172.16.0.16/28"
   master_authorized_networks = [{
     cidr_block   = var.private_endpoint ? "${module.bastion[0].ip_address}/32" : "${var.auth_ip}/32"
-    display_name = "Bastion Host"
+    display_name = var.private_endpoint ? "Bastion Host" : "Workstation Public IP"
   }]
 
   compute_engine_service_account = local.gke_service_account_email
@@ -212,14 +212,26 @@ module "gke" {
   node_pools = [
     {
       name          = var.node_pool
-      min_count     = 3
-      max_count     = 3
+      min_count     = 1
+      max_count     = 10
       auto_upgrade  = true
       node_metadata = "GKE_METADATA_SERVER"
       machine_type  = "n1-standard-2"
       disk_type     = "pd-ssd"
       disk_size_gb  = 30
       image_type    = "COS"
+    },
+    {
+      name               = "windows-node-pool"
+      min_count          = 1
+      max_count          = 10
+      disk_size_gb       = 100
+      disk_type          = "pd-ssd"
+      image_type         = "WINDOWS_SAC"
+      initial_node_count = 1
+      // Intergrity Monitoring is not enabled in Windows Node pools yet.
+      enable_integrity_monitoring = false
+      count                       = var.windows_nodepool ? 1 : 0
     }
   ]
   node_pools_oauth_scopes = {

@@ -10,7 +10,7 @@ kind: StorageBucket
 metadata:
   annotations:
     cnrm.cloud.google.com/force-destroy: "false"
-  name: gke-application-bucket-341c72
+  name: gke-application-bucket-a951a5
   namespace: workload-id-demo
 spec:
   bucketPolicyOnly: true
@@ -21,9 +21,9 @@ metadata:
   name: workload-id-demo-storage-policy
   namespace: workload-id-demo
 spec:
-  member: serviceAccount:workload-id-demo-gsa@gke-toolkit-test-07.iam.gserviceaccount.com
+  member: serviceAccount:workload-id-demo-gsa@gke-toolkit-test-11.iam.gserviceaccount.com
   role: roles/storage.objectAdmin
   resourceRef:
     apiVersion: storage.cnrm.cloud.google.com/v1beta1
     kind: StorageBucket
-    external: gke-application-bucket-341c72 
+    external: gke-application-bucket-a951a5 

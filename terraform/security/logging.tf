@@ -16,10 +16,10 @@
 
 // Create GCS Bucket in Governance Project 
 resource "google_storage_bucket" "log-bucket" {
-  name          = "gke-logging-bucket-${random_id.server.hex}"
-  storage_class = "NEARLINE"
-  force_destroy = true
-  project       = var.governance_project_id
+  name                        = "gke-logging-bucket-${random_id.server.hex}"
+  storage_class               = "NEARLINE"
+  force_destroy               = true
+  project                     = var.governance_project_id
   uniform_bucket_level_access = true
 }
 
