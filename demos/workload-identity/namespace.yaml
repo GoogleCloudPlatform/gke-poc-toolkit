@@ -3,4 +3,4 @@ kind: Namespace
 metadata:
   name: workload-id-demo
   annotations:
-    cnrm.cloud.google.com/project-id: gke-toolkit-test-07
+    cnrm.cloud.google.com/project-id: gke-toolkit-test-11
