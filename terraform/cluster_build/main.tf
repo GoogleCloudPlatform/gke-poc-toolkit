@@ -223,12 +223,12 @@ module "gke" {
     },
     {
       name               = "windows-node-pool"
-      min_count          = 1
+      min_count          = 0
       max_count          = 10
       disk_size_gb       = 100
       disk_type          = "pd-ssd"
       image_type         = "WINDOWS_SAC"
-      initial_node_count = 1
+      initial_node_count = 0
       // Intergrity Monitoring is not enabled in Windows Node pools yet.
       enable_integrity_monitoring = false
       count                       = var.windows_nodepool ? 1 : 0
