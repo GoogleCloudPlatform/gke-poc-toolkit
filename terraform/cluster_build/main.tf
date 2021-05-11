@@ -86,6 +86,42 @@ locals {
       "${module.enabled_google_apis.project_id}=>roles/iam.serviceAccountCreator",
     ]
   }
+  windows_pool = [
+    {
+      name          = format("linux-%s", var.node_pool)
+      min_count     = 1
+      max_count     = 10
+      auto_upgrade  = true
+      node_metadata = "GKE_METADATA_SERVER"
+      machine_type  = "n1-standard-2"
+      disk_type     = "pd-ssd"
+      disk_size_gb  = 30
+      image_type    = "COS"
+    },
+    {
+      name               = format("windows-%s", var.node_pool)
+      min_count          = 0
+      max_count          = 10
+      disk_size_gb       = 100
+      disk_type          = "pd-ssd"
+      image_type         = "WINDOWS_SAC"
+      initial_node_count = 0
+      // Intergrity Monitoring is not enabled in Windows Node pools yet.
+      enable_integrity_monitoring = false
+    }
+  ]
+  linux_pool = [{
+    name          = format("linux-%s", var.node_pool)
+    min_count     = 1
+    max_count     = 10
+    auto_upgrade  = true
+    node_metadata = "GKE_METADATA_SERVER"
+    machine_type  = "n1-standard-2"
+    disk_type     = "pd-ssd"
+    disk_size_gb  = 30
+    image_type    = "COS"
+    },
+  ]
 }
 
 module "vpc" {
@@ -209,31 +245,8 @@ module "gke" {
     key_name = local.database-encryption-key
   }]
 
-  node_pools = [
-    {
-      name          = var.node_pool
-      min_count     = 1
-      max_count     = 10
-      auto_upgrade  = true
-      node_metadata = "GKE_METADATA_SERVER"
-      machine_type  = "n1-standard-2"
-      disk_type     = "pd-ssd"
-      disk_size_gb  = 30
-      image_type    = "COS"
-    },
-    {
-      name               = "windows-node-pool"
-      min_count          = 0
-      max_count          = 10
-      disk_size_gb       = 100
-      disk_type          = "pd-ssd"
-      image_type         = "WINDOWS_SAC"
-      initial_node_count = 0
-      // Intergrity Monitoring is not enabled in Windows Node pools yet.
-      enable_integrity_monitoring = false
-      count                       = var.windows_nodepool ? 1 : 0
-    }
-  ]
+  node_pools = var.windows_nodepool == "true" ? local.windows_pool : local.linux_pool
+
   node_pools_oauth_scopes = {
     all = []
     (var.node_pool) = [
