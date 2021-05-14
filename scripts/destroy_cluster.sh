@@ -27,8 +27,19 @@ source "$ROOT/scripts/common.sh"
 cd "$ROOT/terraform/cluster_build" || exit;
 
 # Perform the destroy
-terraform state rm 'module.kms'
-terraform destroy -input=false -auto-approve
+
+if [ "$2" == gcs ]; then 
+   cd "${ROOT}/terraform/cluster_build"
+   sed -i "s/local/gcs/g" backend.tf
+   (cd "${ROOT}/terraform/cluster_build"; terraform init -input=false -backend-config="bucket=$PROJECT-$1-cluster-tf-state")
+   (cd "${ROOT}/terraform/cluster_build"; terraform destroy -input=false -auto-approve) 
+fi
+if [ "$2" == local ]; then
+ cd "${ROOT}/terraform/cluster_build"
+ sed -i "s/gcs/local/g" backend.tf
+ (cd "${ROOT}/terraform/cluster_build"; terraform init -input=false)
+ (cd "${ROOT}/terraform/cluster_build"; terraform destroy -input=false -auto-approve)
+fi
 
 # Remove the tfvars file generated during "make create"
 rm -f "$ROOT/terraform/cluster_build/terraform.tfvars"

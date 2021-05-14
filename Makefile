@@ -41,7 +41,7 @@ stop-proxy:
 
 .PHONY: destroy
 destroy:
-	@source scripts/destroy_cluster.sh $(CLUSTER)
+	@source scripts/destroy_cluster.sh $(CLUSTER) $(STATE)
 
 .PHONY: start-wi-demo
 start-wi-demo:
