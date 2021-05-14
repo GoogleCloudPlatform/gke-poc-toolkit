@@ -5,9 +5,9 @@ SHELL := /usr/bin/env bash
 help:
 	@echo 'Usage:'
 	
-	@echo '	make create CLUSTER=(private|public)	Create Cluster and associated resources'
+	@echo '	make create CLUSTER=(private|public) WINDOWS=(true|false) STATE=(local|gcs)	Create Cluster and associated resources'
 	@echo	''
-	@echo '	make secure CLUSTER=(private|public)	Create GCS + Big Query log sinks for GKE Audit'
+	@echo '	make secure CLUSTER=(private|public) WINDOWS=(true|false) STATE=(local|gcs)	Create GCS + Big Query log sinks for GKE Audit'
 	@echo '						Logs. Use with make start-proxy,for private' 			
 	@echo	'						clusters'
 	@echo	''
@@ -24,12 +24,12 @@ help:
 	@echo	''
 .PHONY: create
 create:
-	@source	scripts/create_cluster.sh $(CLUSTER) $(WINDOWS)
+	@source	scripts/create_cluster.sh $(CLUSTER) $(WINDOWS) $(STATE)
 
 
 .PHONY: secure
 secure:
-	@source scripts/secure_cluster.sh $(CLUSTER) $(WINDOWS)
+	@source scripts/secure_cluster.sh $(CLUSTER) $(WINDOWS) $(STATE)
 
 .PHONY: start-proxy
 start-proxy:

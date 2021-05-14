@@ -27,9 +27,24 @@ source "${ROOT}/scripts/common.sh"
 source "${ROOT}/scripts/generate-cluster-tfvars.sh"
 
 # Initialize and run Terraform
-(cd "${ROOT}/terraform/cluster_build"; terraform init -input=false)
-(cd "${ROOT}/terraform/cluster_build"; terraform apply -input=false -auto-approve)
-
-# Get cluster credentials
-GET_CREDS="$(terraform output --state=./terraform/$1/terraform.tfstate get_credentials)"
+if [ "$STATE" == gcs ]; then
+  cd "${ROOT}/terraform/cluster_build"
+  sed -i "s/local/gcs/g" backend.tf
+  if [[ $(gsutil ls | grep "$PROJECT-$1-cluster-tf-state/") ]]; then
+   echo "state bucket exists"
+  else
+   gsutil mb gs://$PROJECT-$1-cluster-tf-state
+  fi
+   (cd "${ROOT}/terraform/cluster_build"; terraform init -input=false -backend-config="bucket=$PROJECT-$1-cluster-tf-state")
+   (cd "${ROOT}/terraform/cluster_build"; terraform apply -input=false -auto-approve) 
+   GET_CREDS="$(terraform output  get_credentials)" 
+  
+fi
+if [ "$STATE" == local ]; then
+ cd "${ROOT}/terraform/cluster_build"
+ sed -i "s/gcs/local/g" backend.tf
+ (cd "${ROOT}/terraform/cluster_build"; terraform init -input=false)
+ (cd "${ROOT}/terraform/cluster_build"; terraform apply -input=false -auto-approve)
+ GET_CREDS="$(terraform output --state=./terraform/$1/terraform.tfstate get_credentials)"
+fi
 

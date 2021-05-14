@@ -75,6 +75,24 @@ if [ "${PRIVATE}" == private ]; then
 else
     PRIVATE="false"
 fi
+
+WINDOWS=$2
+if [[ "${WINDOWS}" == true ]]; then
+    WINDOWS="true"
+else
+    WINDOWS="false"
+
+fi
+
+
+STATE=$3
+if [[ "${STATE}" == gcs ]]; then
+    STATE="gcs"
+else
+    STATE="local"
+
+fi
+
 # If Terraform is run without this file, the user will be prompted for values.
 # This check verifies if the file exists and prompts user for deletion
 # We don't want to overwrite a pre-existing tfvars file
