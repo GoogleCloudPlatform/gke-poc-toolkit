@@ -42,5 +42,5 @@ if [ "$2" == local ]; then
 fi
 
 # Remove the tfvars file generated during "make create"
-rm -f "$ROOT/terraform/cluster_build/terraform.tfvars"
+#rm -f "$ROOT/terraform/cluster_build/terraform.tfvars"
 rm -f "$ROOT/terraform/cluster_build/terraform.tfstate"
