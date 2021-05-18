@@ -39,8 +39,7 @@ if [ "$2" == local ]; then
  sed -i "s/gcs/local/g" backend.tf
  (cd "${ROOT}/terraform/cluster_build"; terraform init -input=false)
  (cd "${ROOT}/terraform/cluster_build"; terraform destroy -input=false -auto-approve)
+ rm -f "$ROOT/terraform/cluster_build/terraform.tfvars"
+ rm -f "$ROOT/terraform/cluster_build/terraform.tfstate"
 fi
 
-# Remove the tfvars file generated during "make create"
-#rm -f "$ROOT/terraform/cluster_build/terraform.tfvars"
-rm -f "$ROOT/terraform/cluster_build/terraform.tfstate"
