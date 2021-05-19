@@ -44,6 +44,7 @@ module "gke" {
   }
 
   node_pools_metadata = {
+
     all = {}
 
     (var.node_pool) = {
