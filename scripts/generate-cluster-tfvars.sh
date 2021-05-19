@@ -196,7 +196,8 @@ if [[ ${SHARED_VPC} == true ]]; then
         echo "" ; tput sgr0
         exit 1;
     fi
-
+else 
+    SHARED_VPC="false"
 fi
 
 # If Terraform is run without this file, the user will be prompted for values.
