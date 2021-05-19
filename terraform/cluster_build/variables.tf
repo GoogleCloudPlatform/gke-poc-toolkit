@@ -114,6 +114,11 @@ variable "shared_vpc_ip_range_services_name" {
   default = ""
 }
 
+variable "node_pool" {
+  type    = string
+  default = "node-pool"
+}
+
 variable "private_endpoint" {
   type    = bool
   default = false
@@ -123,12 +128,6 @@ variable "zone" {
   type    = string
   default = "us-central1-a"
 }
-
-variable "node_pool" {
-  type    = string
-  default = "node-pool"
-}
-
 # Need this default to run PR build test
 variable "auth_ip" {
   type    = string
@@ -144,4 +143,10 @@ variable "config_connector" {
 variable "windows_nodepool" {
   type    = bool
   default = false
+}
+
+variable "preemptible_nodes" {
+  type        = bool
+  description = "Whether underlying node GCE instances are preemptible"
+  default     = true
 }

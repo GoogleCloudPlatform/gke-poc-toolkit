@@ -102,6 +102,17 @@ else
     echo "creating a linux GKE cluster" 1>&2
 fi
 
+# This check verifies if the PREEMPTIBLE_NODES boolean value has been set to true
+#  - If set to true, deploy GKE cluster with preemptible nodes
+#  - If not set, the boolean value defaults to false and the cluster deploys with traditional node types
+[[ -z "${PREEMPTIBLE_NODES-}" ]] && PREEMPTIBLE_NODES="$(echo $PREEMPTIBLE_NODES)"
+if [[ ${PREEMPTIBLE_NODES} == true ]]; then
+    PREEMPTIBLE="true"
+    echo "deploying GKE cluster with preemptible nodes" 1>&2
+else
+    PREEMPTIBLE="false"
+fi
+
 # This check verifies if the SHARED_VPC boolean value has been set to true
 #  - If set to true, additional variables are required to deployed to an existing shared VPC
 #  - If not set, the boolean value defaults to false and GKE is deployed to an standalone VPC
@@ -218,6 +229,7 @@ node_pool="${CLUSTER_TYPE}-node-pool"
 zone = "${ZONE}"
 auth_ip = "${AUTH_IP}"
 windows_nodepool = "${WINDOWS}"
+preemptible_nodes = "${PREEMPTIBLE}"
 shared_vpc="${SHARED_VPC}"
 shared_vpc_name="${SHARED_VPC_NAME}"
 shared_vpc_subnet_name="${SHARED_VPC_SUBNET_NAME}"

@@ -60,6 +60,13 @@ module "cluster-nat" {
   subnetworks                         = [{"name" = local.subnet_selflink, "source_ip_ranges_to_nat" = ["PRIMARY_IP_RANGE"], "secondary_ip_range_names" = []}]
 }
 
+data "template_file" "startup_script" {
+  template = <<-EOF
+  sudo apt-get update -y
+  sudo apt-get install -y tinyproxy
+  EOF
+}
+
 module "bastion" {
   depends_on = [
     module.vpc,

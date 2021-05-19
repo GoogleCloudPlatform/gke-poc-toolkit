@@ -14,6 +14,7 @@
  * limitations under the License.
  */
 
+// Data Resources
 data "google_project" "project" {
   project_id = module.enabled_google_apis.project_id
 }
@@ -59,6 +60,7 @@ locals {
       "${module.enabled_google_apis.project_id}=>roles/iam.serviceAccountCreator",
     ]
   }
+  
   // Presets for Windows Node Pool
   windows_pool = [{
     name               = format("windows-%s", var.node_pool)
@@ -138,6 +140,7 @@ module "service_accounts" {
   generate_keys = true
 }
 
+// Create the KMS keyring and owner 
 module "kms" {
   depends_on = [
     module.service_accounts,
@@ -153,4 +156,3 @@ module "kms" {
     "serviceAccount:${local.kek_service_account}",
   ]
 }
-

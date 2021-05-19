@@ -44,7 +44,7 @@ module "gke" {
     key_name = local.database-encryption-key
   }]
 
-  node_pools = var.windows_nodepool == "true" ? local.windows_pool : local.linux_pool
+  node_pools = local.cluster_node_pools
 
   node_pools_oauth_scopes = {
     all = []
