@@ -5,7 +5,9 @@ SHELL := /usr/bin/env bash
 help:
 	@echo 'Usage:'
 	
-	@echo '	make create CLUSTER=(private|public)	Create Cluster and associated resources'
+	@echo '	make create CLUSTER=(private|public)	Create a GKE Cluster and associated resources. Additional Options for node pools:   '
+	@echo '						  WINDOWS=true        Creates an additional Node Pool with Windows Nodes'  
+	@echo '						  PREEMPTIBLE=true    Creates an additional Linux Node Pool, using pre-emptible nodes'
 	@echo	''
 	@echo '	make secure CLUSTER=(private|public)	Create GCS + Big Query log sinks for GKE Audit'
 	@echo '						Logs. Use with make start-proxy,for private' 			
@@ -24,7 +26,7 @@ help:
 	@echo	''
 .PHONY: create
 create:
-	@source	scripts/create_cluster.sh $(CLUSTER) $(WINDOWS)
+	@source	scripts/create_cluster.sh $(CLUSTER) $(WINDOWS) $(PREEMPTIBLE)
 
 
 .PHONY: secure

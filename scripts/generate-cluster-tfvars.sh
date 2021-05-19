@@ -89,6 +89,13 @@ else
 
 fi
 
+PREEMPTIBLE=$3
+if [[ "${PREEMPTIBLE}" == true ]]; then
+    PREEMPTIBLE="true"
+else
+    PREEMPTIBLE="false"
+
+fi
 # If Terraform is run without this file, the user will be prompted for values.
 # This check verifies if the file exists and prompts user for deletion
 # We don't want to overwrite a pre-existing tfvars file
@@ -115,8 +122,8 @@ private_endpoint="${PRIVATE}"
 cluster_name="$1-endpoint-cluster"
 network_name="$1-cluster-network"
 subnet_name="$1-cluster-subnet"
-node_pool="$1-node-pool"
 zone = "${ZONE}"
 auth_ip = "${AUTH_IP}"
 windows_nodepool = "${WINDOWS}"
+preemptible_nodepool = "${PREEMPTIBLE}"
 EOF
