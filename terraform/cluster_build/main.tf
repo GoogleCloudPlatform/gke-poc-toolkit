@@ -14,40 +14,6 @@
  * limitations under the License.
  */
 
-// Enable APIs needed in the gke cluster project
-module "enabled_google_apis" {
-  source  = "terraform-google-modules/project-factory/google//modules/project_services"
-  version = "~> 10.0"
-
-  project_id                  = var.project_id
-  disable_services_on_destroy = false
-
-  activate_apis = [
-    "iam.googleapis.com",
-    "compute.googleapis.com",
-    "logging.googleapis.com",
-    "monitoring.googleapis.com",
-    "containerregistry.googleapis.com",
-    "container.googleapis.com",
-    "binaryauthorization.googleapis.com",
-    "stackdriver.googleapis.com",
-    "iap.googleapis.com",
-  ]
-}
-
-// Enable APIs needed in the governance project
-module "enabled_governance_apis" {
-  source  = "terraform-google-modules/project-factory/google//modules/project_services"
-  version = "~> 10.0"
-
-  project_id                  = var.governance_project_id
-  disable_services_on_destroy = false
-
-  activate_apis = [
-    "cloudkms.googleapis.com",
-  ]
-}
-
 data "google_project" "project" {
   project_id = module.enabled_google_apis.project_id
 }
@@ -93,32 +59,21 @@ locals {
       "${module.enabled_google_apis.project_id}=>roles/iam.serviceAccountCreator",
     ]
   }
-  windows_pool = [
-    {
-      name          = format("linux-%s", var.node_pool)
-      min_count     = 1
-      max_count     = 10
-      auto_upgrade  = true
-      node_metadata = "GKE_METADATA_SERVER"
-      machine_type  = "n1-standard-2"
-      disk_type     = "pd-ssd"
-      disk_size_gb  = 30
-      image_type    = "COS"
-      enable_secure_boot = true
-    },
-    {
-      name               = format("windows-%s", var.node_pool)
-      min_count          = 0
-      max_count          = 10
-      disk_size_gb       = 100
-      disk_type          = "pd-ssd"
-      image_type         = "WINDOWS_SAC"
-      initial_node_count = 0
-      // Intergrity Monitoring is not enabled in Windows Node pools yet.
-      enable_integrity_monitoring = false
-      enable_secure_boot = true
-    }
-  ]
+  // Presets for Windows Node Pool
+  windows_pool = [{
+    name               = format("windows-%s", var.node_pool)
+    min_count          = 0
+    max_count          = 10
+    disk_size_gb       = 100
+    disk_type          = "pd-ssd"
+    image_type         = "WINDOWS_SAC"
+    initial_node_count = 0
+    // Intergrity Monitoring is not enabled in Windows Node pools yet.
+    enable_integrity_monitoring = false
+    enable_secure_boot = true
+  }]
+
+  // Presets for Linux Node Pool
   linux_pool = [{
     name          = format("linux-%s", var.node_pool)
     min_count     = 1
@@ -129,83 +84,46 @@ locals {
     disk_type     = "pd-ssd"
     disk_size_gb  = 30
     image_type    = "COS"
+    preemptible   = var.preemptible_nodes == "true" ? "true" : "false"
     enable_secure_boot = true
-    },
+  }]
+  // Final Node Pool options for Cluster - combines all specified nodepools
+
+  cluster_node_pools = var.windows_nodepool == "true" ? flatten([local.windows_pool, local.linux_pool]) : flatten(local.linux_pool)
+}
+
+// Enable APIs needed in the gke cluster project
+module "enabled_google_apis" {
+  source  = "terraform-google-modules/project-factory/google//modules/project_services"
+  version = "~> 10.0"
+
+  project_id                  = var.project_id
+  disable_services_on_destroy = false
+
+  activate_apis = [
+    "iam.googleapis.com",
+    "compute.googleapis.com",
+    "logging.googleapis.com",
+    "monitoring.googleapis.com",
+    "containerregistry.googleapis.com",
+    "container.googleapis.com",
+    "binaryauthorization.googleapis.com",
+    "stackdriver.googleapis.com",
+    "iap.googleapis.com",
   ]
 }
 
-data "template_file" "startup_script" {
-  template = <<-EOF
-  sudo apt-get update -y
-  sudo apt-get install -y tinyproxy
-  EOF
-}
+// Enable APIs needed in the governance project
+module "enabled_governance_apis" {
+  source  = "terraform-google-modules/project-factory/google//modules/project_services"
+  version = "~> 10.0"
 
-module "vpc" {
-  count   = var.shared_vpc ? 0 : 1
-  source  = "terraform-google-modules/network/google"
-  version = "~> 2.5"
+  project_id                  = var.governance_project_id
+  disable_services_on_destroy = false
 
-  project_id   = module.enabled_google_apis.project_id
-  network_name = var.vpc_name
-  routing_mode = "GLOBAL"
-
-  subnets = [
-    {
-      subnet_name           = var.subnet_name
-      subnet_ip             = var.subnet_ip
-      subnet_region         = var.region
-      subnet_private_access = true
-      description           = "This subnet is managed by Terraform"
-    }
+  activate_apis = [
+    "cloudkms.googleapis.com",
   ]
-  secondary_ranges = {
-    (var.subnet_name) = [
-      {
-        range_name    = var.ip_range_pods_name
-        ip_cidr_range = "10.10.64.0/18"
-      },
-      {
-        range_name    = var.ip_range_services_name
-        ip_cidr_range = "10.10.192.0/18"
-      },
-    ]
-  }
-}
-
-module "cluster-nat" {
-  depends_on = [
-    module.vpc,
-  ]
-  source                              = "terraform-google-modules/cloud-nat/google"
-  create_router                       = true
-  project_id                          = local.project_id
-  region                              = var.region
-  router                              = "${var.project_id}-private-cluster-router"
-  network                             = local.vpc_selflink
-  source_subnetwork_ip_ranges_to_nat  = "LIST_OF_SUBNETWORKS"
-  subnetworks                         = [{"name" = local.subnet_selflink, "source_ip_ranges_to_nat" = ["PRIMARY_IP_RANGE"], "secondary_ip_range_names" = []}]
-}
-
-module "bastion" {
-  depends_on = [
-    module.vpc,
-  ]
-  count          = var.private_endpoint ? 1 : 0
-  source         = "terraform-google-modules/bastion-host/google"
-  version        = "~> 3.2"
-  network        = local.vpc_selflink
-  subnet         = local.subnet_selflink
-  project        = module.enabled_google_apis.project_id
-  host_project   = local.project_id
-  name           = local.bastion_name
-  zone           = local.bastion_zone
-  image_project  = "debian-cloud"
-  image_family   = "debian-10"
-  machine_type   = "g1-small"
-  startup_script = data.template_file.startup_script.rendered
-  members        = local.bastion_members
-  shielded_vm    = "true"
 }
 
 // Create the service accounts for GKE and KCC from a map declared in locals.
@@ -236,81 +154,3 @@ module "kms" {
   ]
 }
 
-module "gke" {
-  depends_on = [
-    module.bastion,
-    module.kms,
-  ]
-  source                  = "terraform-google-modules/kubernetes-engine/google//modules/safer-cluster"
-  version                 = "14.0.1"
-  project_id              = module.enabled_google_apis.project_id
-  name                    = var.cluster_name
-  region                  = var.region
-  config_connector        = var.config_connector
-  network                 = local.network_name
-  subnetwork              = local.subnetwork_name
-  network_project_id      = local.project_id
-  ip_range_pods           = local.ip_range_pods
-  ip_range_services       = local.ip_range_services
-  enable_private_endpoint = var.private_endpoint
-  enable_shielded_nodes   = true
-  master_ipv4_cidr_block  = "172.16.0.16/28"
-  master_authorized_networks = [{
-    cidr_block   = var.private_endpoint ? "${module.bastion[0].ip_address}/32" : "${var.auth_ip}/32"
-    display_name = var.private_endpoint ? "Bastion Host" : "Workstation Public IP"
-  }]
-
-  compute_engine_service_account = local.gke_service_account_email
-  database_encryption = [{
-    state    = "ENCRYPTED"
-    key_name = local.database-encryption-key
-  }]
-
-  node_pools = var.windows_nodepool == "true" ? local.windows_pool : local.linux_pool
-
-  node_pools_oauth_scopes = {
-    all = []
-    (var.node_pool) = [
-      "https://www.googleapis.com/auth/cloud-platform",
-    ]
-  }
-  node_pools_labels = {
-    all = {}
-
-    default-node-pool = {
-      default-node-pool = false
-    }
-  }
-
-  node_pools_metadata = {
-    all = {}
-
-    (var.node_pool) = {
-      // Set metadata on the VM to supply more entropy
-      google-compute-enable-virtio-rng = "true"
-      // Explicitly remove GCE legacy metadata API endpoint
-      disable-legacy-endpoints = "true"
-    }
-  }
-}
-
-// Bind the KCC operator Kubernetes service account(KSA) to the 
-// KCC Google Service account(GSA) so the KSA can assume the workload identity users role.
-module "service_account-iam-bindings" {
-  depends_on = [
-    module.gke,
-  ]
-  source = "terraform-google-modules/iam/google//modules/service_accounts_iam"
-
-  service_accounts = [local.kcc_service_account_email]
-  project          = module.enabled_google_apis.project_id
-  bindings = {
-    "roles/iam.workloadIdentityUser" = [
-      "serviceAccount:${module.enabled_google_apis.project_id}.svc.id.goog[cnrm-system/cnrm-controller-manager]",
-    ]
-
-    # "roles/iam.serviceAccountCreator" = [
-    #   "serviceAccount:${module.enabled_google_apis.project_id}.svc.id.goog[cnrm-system/cnrm-controller-manager]",
-    # ]
-  }
-}
