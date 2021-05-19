@@ -60,7 +60,6 @@ locals {
       "${module.enabled_google_apis.project_id}=>roles/iam.serviceAccountCreator",
     ]
   }
-
   // Presets for Windows Node Pool
   windows_pool = [{
     name               = format("windows-%s", var.node_pool)
@@ -86,7 +85,7 @@ locals {
     disk_type     = "pd-ssd"
     disk_size_gb  = 30
     image_type    = "COS"
-    preemptible   = var.preemptible_nodes ? true : false
+    preemptible   = var.preemptible_nodes == "true" ? "true" : "false"
     enable_secure_boot = true
   }]
   // Final Node Pool options for Cluster - combines all specified nodepools
