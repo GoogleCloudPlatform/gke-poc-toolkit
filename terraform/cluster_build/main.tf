@@ -59,6 +59,13 @@ resource "random_id" "kms" {
 
 // Locals used to construct names of stuffs.
 locals {
+  project_id                = var.shared_vpc ? var.shared_vpc_project_id : module.enabled_google_apis.project_id
+  network_name              = var.shared_vpc ? var.shared_vpc_name : var.vpc_name
+  subnetwork_name           = var.shared_vpc ? var.shared_vpc_subnet_name : var.subnet_name 
+  ip_range_pods             = var.shared_vpc ? var.shared_vpc_ip_range_pods_name : var.ip_range_pods_name
+  ip_range_services         = var.shared_vpc ? var.shared_vpc_ip_range_services_name : var.ip_range_services_name
+  vpc_selflink              = format("projects/%s/global/networks/%s", local.project_id, local.network_name)
+  subnet_selflink           = format("projects/%s/regions/%s/subnetworks/%s", local.project_id, var.region, local.subnetwork_name)
   kcc_service_account       = format("%s-kcc", var.cluster_name)
   kcc_service_account_email = "${local.kcc_service_account}@${module.enabled_google_apis.project_id}.iam.gserviceaccount.com"
   bastion_name              = format("%s-bastion", var.cluster_name)
@@ -97,6 +104,7 @@ locals {
       disk_type     = "pd-ssd"
       disk_size_gb  = 30
       image_type    = "COS"
+      enable_secure_boot = true
     },
     {
       name               = format("windows-%s", var.node_pool)
@@ -108,6 +116,7 @@ locals {
       initial_node_count = 0
       // Intergrity Monitoring is not enabled in Windows Node pools yet.
       enable_integrity_monitoring = false
+      enable_secure_boot = true
     }
   ]
   linux_pool = [{
@@ -120,16 +129,25 @@ locals {
     disk_type     = "pd-ssd"
     disk_size_gb  = 30
     image_type    = "COS"
+    enable_secure_boot = true
     },
   ]
 }
 
+data "template_file" "startup_script" {
+  template = <<-EOF
+  sudo apt-get update -y
+  sudo apt-get install -y tinyproxy
+  EOF
+}
+
 module "vpc" {
+  count   = var.shared_vpc ? 0 : 1
   source  = "terraform-google-modules/network/google"
   version = "~> 2.5"
 
   project_id   = module.enabled_google_apis.project_id
-  network_name = var.network_name
+  network_name = var.vpc_name
   routing_mode = "GLOBAL"
 
   subnets = [
@@ -156,37 +174,38 @@ module "vpc" {
 }
 
 module "cluster-nat" {
-  source        = "terraform-google-modules/cloud-nat/google"
-  project_id    = module.enabled_google_apis.project_id
-  region        = var.region
-  router        = "private-cluster-router"
-  network       = module.vpc.network_self_link
-  create_router = true
-}
-
-data "template_file" "startup_script" {
-  template = <<-EOF
-  sudo apt-get update -y
-  sudo apt-get install -y tinyproxy
-  EOF
+  depends_on = [
+    module.vpc,
+  ]
+  source                              = "terraform-google-modules/cloud-nat/google"
+  create_router                       = true
+  project_id                          = local.project_id
+  region                              = var.region
+  router                              = "${var.project_id}-private-cluster-router"
+  network                             = local.vpc_selflink
+  source_subnetwork_ip_ranges_to_nat  = "LIST_OF_SUBNETWORKS"
+  subnetworks                         = [{"name" = local.subnet_selflink, "source_ip_ranges_to_nat" = ["PRIMARY_IP_RANGE"], "secondary_ip_range_names" = []}]
 }
 
 module "bastion" {
+  depends_on = [
+    module.vpc,
+  ]
+  count          = var.private_endpoint ? 1 : 0
   source         = "terraform-google-modules/bastion-host/google"
-  version        = "~> 3.1"
-  network        = module.vpc.network_self_link
-  subnet         = module.vpc.subnets_self_links[0]
+  version        = "~> 3.2"
+  network        = local.vpc_selflink
+  subnet         = local.subnet_selflink
   project        = module.enabled_google_apis.project_id
-  host_project   = module.enabled_google_apis.project_id
+  host_project   = local.project_id
   name           = local.bastion_name
   zone           = local.bastion_zone
   image_project  = "debian-cloud"
-  image_family   = "debian-9"
+  image_family   = "debian-10"
   machine_type   = "g1-small"
   startup_script = data.template_file.startup_script.rendered
   members        = local.bastion_members
-  shielded_vm    = "false"
-  count          = var.private_endpoint ? 1 : 0
+  shielded_vm    = "true"
 }
 
 // Create the service accounts for GKE and KCC from a map declared in locals.
@@ -228,11 +247,13 @@ module "gke" {
   name                    = var.cluster_name
   region                  = var.region
   config_connector        = var.config_connector
-  network                 = module.vpc.network_name
-  subnetwork              = module.vpc.subnets_names[0]
-  ip_range_pods           = module.vpc.subnets_secondary_ranges[0].*.range_name[0]
-  ip_range_services       = module.vpc.subnets_secondary_ranges[0].*.range_name[1]
+  network                 = local.network_name
+  subnetwork              = local.subnetwork_name
+  network_project_id      = local.project_id
+  ip_range_pods           = local.ip_range_pods
+  ip_range_services       = local.ip_range_services
   enable_private_endpoint = var.private_endpoint
+  enable_shielded_nodes   = true
   master_ipv4_cidr_block  = "172.16.0.16/28"
   master_authorized_networks = [{
     cidr_block   = var.private_endpoint ? "${module.bastion[0].ip_address}/32" : "${var.auth_ip}/32"
