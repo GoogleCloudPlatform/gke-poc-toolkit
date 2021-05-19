@@ -37,7 +37,9 @@ export PUBLIC_CLUSTER=true
 export WINDOWS_CLUSTER=true
 ```
 
-[Shared VPC](https://cloud.google.com/vpc/docs/shared-vpc) - By default the GKE cluster deploys to a standalone VPC in the project where the cluster is created. Setting the following environment variables will deploy the GKE cluster to a shared VPC in a Host Project of your choice..
+[Shared VPC](https://cloud.google.com/vpc/docs/shared-vpc) - By default the GKE cluster deploys to a standalone VPC in the project where the cluster is created. Setting the following environment variables will deploy the GKE cluster to a shared VPC in a Host Project of your choice.
+
+<b>NOTE:</b> Deploying multiple GKE Toolkit environments to the same shared VPC is not currently supported. This feature will be added in the future. 
 
 ```shell
 # The following prerequisites must be completed prior to running the deployment:
