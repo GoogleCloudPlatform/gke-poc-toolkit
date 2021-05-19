@@ -198,6 +198,7 @@ if [[ ${SHARED_VPC} == true ]]; then
     fi
 else 
     SHARED_VPC="false"
+    echo "deploying GKE cluster in standalone VPC" 1>&2
 fi
 
 # If Terraform is run without this file, the user will be prompted for values.
