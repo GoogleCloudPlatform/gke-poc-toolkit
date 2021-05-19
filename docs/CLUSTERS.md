@@ -1,7 +1,14 @@
 # GKE Cluster Deployments
 
-## Before you start
+* [Before you begin](#before-you-begin)
+* [Configure the GKE cluster](#configure-the-gke-cluster)
+* [Validate GKE cluster config](#validate-gke-cluster-config)
+* [Next steps](#next-steps)
+* [Cleaning up](#cleaning-up)
 
+## Before you begin
+
+#### Required Variables
 The provided scripts will populate the required variables from the region, zone, and project envars.
 
 ```shell
@@ -16,7 +23,52 @@ An additional environment variable for the governance project is also required. 
 export GOVERNANCE_PROJECT=<project-name>
 ```
 
-## GKE Cluster with Private Endpoint
+#### Optional Variables
+
+[Private Endpoint Cluster](docs/CLUSTERS.md#GKE-Cluster-with-private-endpoint) - By default access to the cluster master endpoints is limited to a bastion host in the GKE VPC. Setting the following environment variable will deploy the customer with public access to the cluster master endpoints. The bastion host will not be deployed if this option is selected. 
+
+```shell
+export PUBLIC_CLUSTER=true
+```
+
+[Windows Node Pool](https://cloud.google.com/kubernetes-engine/docs/concepts/windows-server-gkec) - By default the GKE cluster deploys a linux node pool. Setting the following environment variable will deploy an additional Windows node pool for deploying Windows Server container workloads.
+
+```shell
+export WINDOWS_CLUSTER=true
+```
+
+[Shared VPC](https://cloud.google.com/vpc/docs/shared-vpc) - By default the GKE cluster deploys to a standalone VPC in the project where the cluster is created. Setting the following environment variables will deploy the GKE cluster to a shared VPC in a Host Project of your choice..
+
+```shell
+# The following prerequisites must be completed prior to running the deployment:
+#
+#  - These APIs must be enabled on both the host and service projects prior to attaching the service project:
+#     - compute.googleapis.com
+#     - containerregistry.googleapis.com
+#
+#  - The service project must be attached to the shared VPC and the following must be true:
+#     - Kubernetes Engine access must be enabled for the attached VPC
+#     - The target subnet must be shared with the service project
+#
+#  - Two secondary IP ranges must be created on the target shared VPC subnet and configured with
+#    the pod and service IP CIDR ranges. Examples below: 
+#     - pod-ip-range       10.1.64.0/18
+#     - service-ip-range   10.2.64.0/18
+#
+#  - The account used for the deployment must have Compute Network User permissions to the shared VPC project.
+
+# All variables are required in order to deploy to a shared VPC
+export SHARED_VPC=true
+export SHARED_VPC_PROJECT_ID=<shared VPC project ID>
+export SHARED_VPC_NAME=<shared VPC name>
+export SHARED_VPC_SUBNET_NAME=<shared VPC subnet name>
+export POD_IP_RANGE_NAME=<the name of the secondary IP range used for cluster pod IPs>
+export SERVICE_IP_RANGE_NAME=<the name of the secondary IP range used for cluster services>
+```
+
+## Configure the GKE cluster
+
+#### Configure GKE Cluster with Private Endpoint
 
 This cluster features both private nodes and a private control plane node.
 
@@ -71,7 +123,7 @@ make stop-proxy
 
 Proceed to [validation steps](#kubernetes-app-layer-secrets-validation) once installation completes. 
 
-## GKE Cluster with Public endpoint
+#### Configure GKE Cluster with Public endpoint
 
 This cluster features cluster nodes with private IP's and a control plane api with a public IP.
 
@@ -97,7 +149,7 @@ In the root of this repository, there is a script to create the cluster:
 make create CLUSTER=public
 ```
 
-## GKE Cluster with Windows Nodepool
+#### Configure GKE Cluster with Windows Nodepool
 
 Create a GKE cluster with a Windows nodepool:
 
@@ -120,7 +172,9 @@ Validate Windows Server Node pool has been created:
 kubectl get nodes --label-columns beta.kubernetes.io/os
 ```
 
-## Kubernetes App Layer Secrets Validation
+## Validate GKE cluster config
+
+#### Kubernetes App Layer Secrets Validation
 
 Execute the following command to retrieve the kubernetes config for the cluster if not collected in the previous step:
 

@@ -18,11 +18,11 @@ Terraform modules found in the [Cloud Foundations Toolkit](https://github.com/Go
 
 The steps described in this document require the installation of several tools and the proper configuration of authentication to allow them to access your GCP resources.
 
-### Cloud Project
+#### Cloud Project
 
 You'll need access to at least one Google Cloud Project with billing enabled. See **Creating and Managing Projects** (https://cloud.google.com/resource-manager/docs/creating-managing-projects) for creating a new project. To make cleanup easier, it's recommended to create a new project.
 
-### Required GCP APIs
+#### Required GCP APIs
 
 The following APIs will be enabled in your projects:
 
@@ -39,7 +39,7 @@ The following APIs will be enabled in your projects:
 * Binary Authorization API
 * Cloud Key Management Service API
 
-### Tools
+#### Tools
 
 * [Terraform >= 0.13](https://www.terraform.io/downloads.html)
 * [Google Cloud SDK version >= 325.0.0](https://cloud.google.com/sdk/docs/downloads-versioned-archives)
@@ -72,26 +72,26 @@ The Terraform configuration will execute against your GCP environment and create
 
 [GKE Cluster Install Instructions](docs/CLUSTERS.md)
 
+#### Standard Build
+
 Private clusters allow you to isolate nodes from the public internet.
 Every GKE cluster has a Kubernetes API server that is managed by the control plane (master). In private clusters, the control plane's VPC network is connected to your cluster's VPC network with VPC Network Peering. Your VPC network contains the cluster nodes, and a separate Google Cloud VPC network contains your cluster's control plane. The control plane's VPC network is located in a project controlled by Google. Traffic between nodes and the control plane is routed entirely using internal IP addresses.
 
 Private clusters also restrict access to the internet by default. A NAT gateway of some form needs to be deployed should you want to enable outbound internet access from pods running in private clusters. Keep in mind this includes base container images not stored in the container registries that Google cloud maintains. In the following examples, a Google Cloud Nat Gateway is deployed alongs side the GKE clusters. 
 
-The GKE Cluster Install step in this repository will build a GKE Private cluster with access to the control plane restricted in one of two configurations:
+The GKE Cluster Install step in this repository will build a GKE Private cluster with access to the control plane with the following configuration:
 
-* [Private Endpoint](docs/CLUSTERS.md#GKE-Cluster-with-private-endpoint):
+* [Private Endpoint Cluster](docs/CLUSTERS.md#GKE-Cluster-with-private-endpoint):
   * Public endpoint for control plane is disabled
   * Nodes receive private IP addresses
   * Restricts access to addresses specified in the authorized networks list
   * Authorized networks range must containe internal IP addresses
 
-* [Public Endpoint](docs/CLUSTERS.md#GKE-Cluster-with-public-endpoint):
-  * Public endpoint for control plane is enabled
-  * Nodes receive private IP addresses
-  * Restricts access to addresses specified in the authorized networks list
-  * Authorized networks range can contain internal or public IP addresses
-
 The following best practices are also enforced as part of the cluster build process:
+
+* [Shielded VMs and Secure Boot](https://cloud.google.com/kubernetes-engine/docs/how-to/shielded-gke-nodes)
+  * The GKE cluster and bastion host are deployed with Shielded VMs. Doing so provides strong, verifiable node identity and integrity to increase the security of GCE instances.
+  * Additionally, the GKE Shielded nodes are deployed with [Secure Boot](https://cloud.google.com/security/shielded-cloud/shielded-vm#secure-boot). Third-party unsigned kernel modules cannot be loaded when secure boot is enabled.
 
 * [Least Privilege Service Accounts](https://cloud.google.com/kubernetes-engine/docs/how-to/hardening-your-cluster#use_least_privilege_sa)
   * The build process generates a service account used for running the GKE nodes. This service account operates under the concept of least privilege and only has permissions needed for sending logging data, metrics, and downloading containers from the given GCR project. 
@@ -104,6 +104,21 @@ The following best practices are also enforced as part of the cluster build proc
 
 * [Safe-Cluster GKE Module](https://registry.terraform.io/modules/terraform-google-modules/kubernetes-engine/google/latest/submodules/safer-cluster):
   * This deployment uses the Safe-Cluster GKE module which fixes a set of parameters to values suggested in the [GKE hardening guide](https://cloud.google.com/kubernetes-engine/docs/how-to/hardening-your-cluster), the CIS framework, and other best practices. Reference the above link for project configurations, cluster settings, and basic kubernetes objects that are provisioned as part of this module and permit a safer-than-default configuration.
+
+#### Optional Settings
+The following <b>OPTIONAL</b> configurations are also available and can be enabled by setting environment variables prior to deployment. Guidance on how to enable these features can be found in the Cloud Build and Hardening steps provided later in this document:
+
+* [Public Endpoint Cluster](docs/CLUSTERS.md#GKE-Cluster-with-public-endpoint) - The cluster can be deployed with public access to the master endpoints therefore eliminating the need for a bastion host. Doing so configures the cluster as follows:
+  * Public endpoint for control plane is enabled
+  * Nodes receive private IP addresses
+  * Restricts access to addresses specified in the authorized networks list
+  * Authorized networks range can contain internal or public IP addresses
+
+* [Windows Node Pool](https://cloud.google.com/kubernetes-engine/docs/concepts/windows-server-gkec) 
+  * By default the GKE cluster deploys a linux node pool. Enabling this feature will deploy an additional Windows node pool for deploying Windows Server container workloads.
+
+* [Shared VPC](https://cloud.google.com/vpc/docs/shared-vpc) 
+  * By default the GKE cluster deploys to a standalone VPC in the project where the cluster is created. Enabling this feature will deploy the GKE cluster to a shared VPC in a Host Project of your choice.
 
 ## Harden GKE Security
 
@@ -121,13 +136,14 @@ Once the cluster is created, this step can be executed against the existing envi
     * Two Service Accounts created with identical GCP IAM Roles - IAM roles needed for accessing cluster config
     * Individually mapped to Kubernetes Roles of Viewer and Editor - Simulate auditor and cluster administrator role permissions
 
-## Deploy Secure GKE Workloads
+## Deploy Secure GKE Workloads (Linux example)
 
 [Deploy Secure GKE Workloads Instructions](docs/WORKLOADS.md)
 
-This step provides examples on how to enforce security best practices to workloads deployed to the cluster. This step leverages [Config Connector](https://cloud.google.com/config-connector/docs/overview) to deploy services and resources using Kubernetes tooling and APIs. The following security features are layed into the application deployment:
+This step provides an example of how to enforce security best practices to workloads deployed to a linux GKE cluster. This step leverages [Config Connector](https://cloud.google.com/config-connector/docs/overview) to deploy services and resources using Kubernetes tooling and APIs. The following security features are layed into the application deployment:
 
 * [Workload Identity](docs/SECURITY.md#Workload-Identity)
+  * Example deployed to the linux node pool in the cluster
   * Leveraging Workload Identity, map a GCP Service Account to a Kubernetes Service Account
   * Grant GCP Service Account GCS Storage Permissions
   * Deploy a sample `storage-application` that leverages that identity to access a GCP storage bucket
