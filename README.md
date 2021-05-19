@@ -117,6 +117,9 @@ The following <b>OPTIONAL</b> configurations are also available and can be enabl
 * [Windows Node Pool](https://cloud.google.com/kubernetes-engine/docs/concepts/windows-server-gkec) 
   * By default the GKE cluster deploys a linux node pool. Enabling this feature will deploy an additional Windows node pool for deploying Windows Server container workloads.
 
+* [Preemptible Nodes](https://cloud.google.com/kubernetes-engine/docs/how-to/preemptible-vms) 
+  * By default the GKE cluster leverages non-preemptible nodes which cannot be reclaimed while in use. Enabling this feature will deploy the GKE cluster with preemptible nodes that last a maximum of 24 hours and provide no availability guarentees.
+
 * [Shared VPC](https://cloud.google.com/vpc/docs/shared-vpc) 
   * By default the GKE cluster deploys to a standalone VPC in the project where the cluster is created. Enabling this feature will deploy the GKE cluster to a shared VPC in a Host Project of your choice.
 

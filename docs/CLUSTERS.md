@@ -37,6 +37,12 @@ export PUBLIC_CLUSTER=true
 export WINDOWS_CLUSTER=true
 ```
 
+[Preemptible Nodes](https://cloud.google.com/kubernetes-engine/docs/how-to/preemptible-vms) - By default the GKE cluster non-preemptible nodes which cannot be reclaimed while in use. Setting the following environment variable will deploy the cluster with preemptible nodes that last a maximum of 24 hours and provide no availability guarentees.
+
+```shell
+export PREEMPTIBLE_NODES=true
+```
+
 [Shared VPC](https://cloud.google.com/vpc/docs/shared-vpc) - By default the GKE cluster deploys to a standalone VPC in the project where the cluster is created. Setting the following environment variables will deploy the GKE cluster to a shared VPC in a Host Project of your choice.
 
 <b>NOTE:</b> Deploying multiple GKE Toolkit environments to the same shared VPC is not currently supported. This feature will be added in the future. 
