@@ -125,5 +125,5 @@ subnet_name="$1-cluster-subnet"
 zone = "${ZONE}"
 auth_ip = "${AUTH_IP}"
 windows_nodepool = "${WINDOWS}"
-preemptible_nodepool = "${PREEMPTIBLE}"
+preemptible_nodes = "${PREEMPTIBLE}"
 EOF
