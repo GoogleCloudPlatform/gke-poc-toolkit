@@ -31,7 +31,7 @@ export GOVERNANCE_PROJECT=<project-name>
 export PUBLIC_CLUSTER=true
 ```
 
-[Windows Node Pool](https://cloud.google.com/kubernetes-engine/docs/concepts/windows-server-gkec) - By default the GKE cluster deploys a linux node pool. Setting the following environment variable will deploy an additional Windows node pool for deploying Windows Server container workloads.
+[Windows Node Pool](https://cloud.google.com/kubernetes-engine/docs/concepts/windows-server-gke) - By default the GKE cluster deploys a linux node pool. Setting the following environment variable will deploy an additional Windows node pool for deploying Windows Server container workloads.
 
 ```shell
 export WINDOWS_CLUSTER=true
@@ -49,6 +49,8 @@ export PREEMPTIBLE_NODES=true
 
 ```shell
 # The following prerequisites must be completed prior to running the deployment:
+# 
+#  - A shared VPC in a host project must be created before executing this step. That VPC should follow the guidance below. 
 #
 #  - These APIs must be enabled on both the host and service projects prior to attaching the service project:
 #     - compute.googleapis.com
