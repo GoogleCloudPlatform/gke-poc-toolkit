@@ -1,6 +1,6 @@
-export PROJECT=<replace  project_id>
-export ZONE=<replace zone>
-export GOVERNANCE_PROJECT=<replace govanance project_id
+export PROJECT=$(gcloud config get-value project)
+export ZONE=us-central1-a
+export GOVERNANCE_PROJECT=$(gcloud config get-value project)
 export WINDOWS=false
 export STATE=gcs
 export CLUSTER=private
