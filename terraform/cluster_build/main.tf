@@ -28,7 +28,7 @@ resource "random_id" "kms" {
 locals {
   project_id                = var.shared_vpc ? var.shared_vpc_project_id : module.enabled_google_apis.project_id
   network_name              = var.shared_vpc ? var.shared_vpc_name : var.vpc_name
-  subnetwork_name           = var.shared_vpc ? var.shared_vpc_subnet_name : var.subnet_name 
+  subnetwork_name           = var.shared_vpc ? var.shared_vpc_subnet_name : var.subnet_name
   ip_range_pods             = var.shared_vpc ? var.shared_vpc_ip_range_pods_name : var.ip_range_pods_name
   ip_range_services         = var.shared_vpc ? var.shared_vpc_ip_range_services_name : var.ip_range_services_name
   vpc_selflink              = format("projects/%s/global/networks/%s", local.project_id, local.network_name)
@@ -72,21 +72,21 @@ locals {
     initial_node_count = 0
     // Intergrity Monitoring is not enabled in Windows Node pools yet.
     enable_integrity_monitoring = false
-    enable_secure_boot = true
+    enable_secure_boot          = true
   }]
 
   // Presets for Linux Node Pool
   linux_pool = [{
-    name          = format("linux-%s", var.node_pool)
-    min_count     = 1
-    max_count     = 10
-    auto_upgrade  = true
-    node_metadata = "GKE_METADATA_SERVER"
-    machine_type  = "n1-standard-2"
-    disk_type     = "pd-ssd"
-    disk_size_gb  = 30
-    image_type    = "COS"
-    preemptible   = var.preemptible_nodes ? true : false
+    name               = format("linux-%s", var.node_pool)
+    min_count          = 1
+    max_count          = 10
+    auto_upgrade       = true
+    node_metadata      = "GKE_METADATA_SERVER"
+    machine_type       = "n1-standard-2"
+    disk_type          = "pd-ssd"
+    disk_size_gb       = 30
+    image_type         = "COS"
+    preemptible        = var.preemptible_nodes ? true : false
     enable_secure_boot = true
   }]
   // Final Node Pool options for Cluster - combines all specified nodepools
