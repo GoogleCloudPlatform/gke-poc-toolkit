@@ -103,7 +103,7 @@ The code in the `scripts` directory generates and populates terraform variable i
 In the root of this repository, there is a script to create the cluster:
 
 ```shell
-make create CLUSTER=private
+make create
 ```
 
 Once the GKE cluster has been created, establish an SSH tunnel to the bastion:
@@ -154,7 +154,7 @@ In the root of this repository, there is a script to create the cluster:
 
 ```shell
 # Create cluster
-make create CLUSTER=public
+make create
 ```
 
 #### Configure GKE Cluster with Windows Nodepool
@@ -162,7 +162,7 @@ make create CLUSTER=public
 Create a GKE cluster with a Windows nodepool:
 
 ```shell
-make create CLUSTER=public|private WINDOWS=true
+make create
 ```
 
 Execute the following command to retrieve the kubernetes config for the cluster:
@@ -216,7 +216,7 @@ The next step is to futher harden the newly created cluster.
 Running the command below will destroy all resources with the exception of the Cloud KMS, Key Rings and Keys created by this deployment. Futher deployments will create a new key ring and keys for use by the cluster. This is due to a feature in Cloud KMS requiring a [24 hour scheduled deletion of keys](https://cloud.google.com/kms/docs/faq#cannot_delete). Because of this, it is recommended to manually schedule the deletion of key rings and keys created while testing this deployment. 
 
 ```shell
-make destroy CLUSTER=<private|public>
+make destroy
 
 ```
 
