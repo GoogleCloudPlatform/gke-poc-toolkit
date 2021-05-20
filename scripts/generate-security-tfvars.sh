@@ -69,14 +69,14 @@ if [[ -z "${GOVERNANCE_PROJECT}" ]]; then
     exit 1;
 fi
 
-PRIVATE=$1
-if [ "${PRIVATE}" == private ]; then
+
+if [ "${CLUSTER}" == private ]; then
     PRIVATE="true"
 else
     PRIVATE="false"
 fi
 
-WINDOWS=$2
+
 if [[ "${WINDOWS}" == true ]]; then
     WINDOWS="true"
 else
@@ -85,7 +85,7 @@ else
 fi
 
 
-STATE=$3
+
 if [[ "${STATE}" == gcs ]]; then
     STATE="gcs"
 else
@@ -116,5 +116,5 @@ project_id="${PROJECT}"
 zone="${ZONE}"
 region="${REGION}"
 governance_project_id="${GOVERNANCE_PROJECT}"
-cluster_name="$1-endpoint-cluster"
+cluster_name="$CLUSTER-endpoint-cluster"
 EOF

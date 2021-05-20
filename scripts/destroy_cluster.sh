@@ -22,13 +22,13 @@ ROOT="$( cd "$( dirname "${BASH_SOURCE[0]}" )/.." && pwd )"
 
 # shellcheck source=scripts/common.sh
 source "$ROOT/scripts/common.sh"
-
+source "$ROOT/scripts/set-env.sh"
 # Tear down Terraform-managed resources and remove generated tfvars
 cd "$ROOT/terraform/cluster_build" || exit;
 
 # Perform the destroy
 
-if [ "$2" == gcs ]; then 
+if [ "STATE" == gcs ]; then 
    cd "${ROOT}/terraform/cluster_build"
    sed -i "s/local/gcs/g" backend.tf
    (cd "${ROOT}/terraform/cluster_build"; terraform init -input=false -backend-config="bucket=$PROJECT-$1-cluster-tf-state")

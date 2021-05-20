@@ -29,14 +29,16 @@ source "${ROOT}/scripts/generate-cluster-tfvars.sh"
 # Initialize and run Terraform
 if [ "$STATE" == gcs ]; then
   cd "${ROOT}/terraform/cluster_build"
+  BUCKET==$PROJECT-$CLUSTER-cluster-tf-state  
   sed -i "s/local/gcs/g" backend.tf
-  if [[ $(gsutil ls | grep "$PROJECT-$1-cluster-tf-state/") ]]; then
+  if [[ $(gsutil ls | grep "$BUCKET/") ]]; then
    echo "state bucket exists"
   else
-   gsutil mb gs://$PROJECT-$1-cluster-tf-state
+   gsutil mb gs://$BUCKET
   fi
    (cd "${ROOT}/terraform/cluster_build"; terraform init -input=false -backend-config="bucket=$PROJECT-$1-cluster-tf-state")
-   (cd "${ROOT}/terraform/cluster_build"; terraform apply -input=false -auto-approve) 
+   (cd "${ROOT}/terraform/cluster_build"; terraform apply -input=false -auto-approve)
+   echo -e "export BUCKET=${BUCKET}" >> ${ROOT}/scripts/set-env.sh 
    GET_CREDS="$(terraform output  get_credentials)" 
   
 fi

@@ -24,6 +24,7 @@
 ROOT="$( cd "$( dirname "${BASH_SOURCE[0]}" )/.." && pwd )"
 
 source "$ROOT/scripts/common.sh"
+source "$ROOT/scripts/set-env.sh"
 
 TFVARS_FILE="./terraform/cluster_build/terraform.tfvars"
 
@@ -67,8 +68,8 @@ if [[ -z "${GOVERNANCE_PROJECT}" ]]; then
     exit 1;
 fi
 
-PRIVATE=$1
-if [ "${PRIVATE}" == private ]; then
+
+if [ "${CLUSTER}" == private ]; then
     PRIVATE="true"
 else
     PRIVATE="false"
@@ -81,7 +82,7 @@ if [[ -z ${AUTH_IP} ]] && [ "${PRIVATE}" != "true" ]; then
     echo "replace IP with your IP"
 fi
 
-WINDOWS=$2
+
 if [[ "${WINDOWS}" == true ]]; then
     WINDOWS="true"
 else
@@ -89,12 +90,18 @@ else
 
 fi
 
-STATE=$3
-if [[ "${STATE}" == gcs ]]; then
-    STATE="gcs"
-else
-    STATE="local"
 
+if [[ "${PREEMPTIBLE}" == true ]]; then
+    PREEMPTIBLE="true"
+else
+    PREEMPTIBLE="false"
+
+fi
+
+if [[ -z ${STATE} ]] && [ "${STATE}" != "gcs" ]; then
+   STATE="gcs"
+else
+   STATE="local"
 fi
 
 # If Terraform is run without this file, the user will be prompted for values.
@@ -120,11 +127,11 @@ project_id="${PROJECT}"
 governance_project_id="${GOVERNANCE_PROJECT}"
 region="${REGION}"
 private_endpoint="${PRIVATE}"
-cluster_name="$1-endpoint-cluster"
-network_name="$1-cluster-network"
-subnet_name="$1-cluster-subnet"
-node_pool="$1-node-pool"
+cluster_name="$CLUSTER-endpoint-cluster"
+network_name="$CLUSTER-cluster-network"
+subnet_name="$CLUSTER-cluster-subnet"
 zone = "${ZONE}"
 auth_ip = "${AUTH_IP}"
 windows_nodepool = "${WINDOWS}"
+preemptible_nodes = "${PREEMPTIBLE}"
 EOF

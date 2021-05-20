@@ -5,9 +5,11 @@ SHELL := /usr/bin/env bash
 help:
 	@echo 'Usage:'
 	
-	@echo '	make create CLUSTER=(private|public) WINDOWS=(true|false) STATE=(local|gcs)	Create Cluster and associated resources'
+	@echo '	make create CLUSTER=(private|public)	Create a GKE Cluster and associated resources. Additional Options for node pools:   '
+	@echo '						  WINDOWS=true        Creates an additional Node Pool with Windows Nodes'  
+	@echo '						  PREEMPTIBLE=true    Creates an additional Linux Node Pool, using pre-emptible nodes'
 	@echo	''
-	@echo '	make secure CLUSTER=(private|public) WINDOWS=(true|false) STATE=(local|gcs)	Create GCS + Big Query log sinks for GKE Audit'
+	@echo '	make secure CLUSTER=(private|public)	Create GCS + Big Query log sinks for GKE Audit'
 	@echo '						Logs. Use with make start-proxy,for private' 			
 	@echo	'						clusters'
 	@echo	''
@@ -24,12 +26,12 @@ help:
 	@echo	''
 .PHONY: create
 create:
-	@source	scripts/create_cluster.sh $(CLUSTER) $(WINDOWS) $(STATE)
+	@source	scripts/create_cluster.sh 
 
 
 .PHONY: secure
 secure:
-	@source scripts/secure_cluster.sh $(CLUSTER) $(WINDOWS) $(STATE)
+	@source scripts/secure_cluster.sh 
 
 .PHONY: start-proxy
 start-proxy:
@@ -41,7 +43,7 @@ stop-proxy:
 
 .PHONY: destroy
 destroy:
-	@source scripts/destroy_cluster.sh $(CLUSTER) $(STATE)
+	@source scripts/destroy_cluster.sh 
 
 .PHONY: start-wi-demo
 start-wi-demo:
