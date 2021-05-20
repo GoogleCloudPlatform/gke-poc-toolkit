@@ -49,13 +49,13 @@ Execute the following steps to apply the hardening config to the cluster:
 
 ```shell
 # If running a public cluster simply run the following:
-make secure CLUSTER=public
+make secure
 
 # If running a private master endpoint, validate the proxy is started. Then set the 
 # HTTPS_PROXY environment variable to forward the make command through the tunnel:
 make start-proxy
 
-HTTPS_PROXY=localhost:8888 make secure CLUSTER=private
+HTTPS_PROXY=localhost:8888 make secure
 ```
 
 #### Audit Logs in Cloud Storage Validation
