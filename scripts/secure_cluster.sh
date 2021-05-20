@@ -34,18 +34,20 @@ spec:
 EOF
 
 # Generate the variables to be used by Terraform
+source "${ROOT}/scripts/set-env.sh"
 source "${ROOT}/scripts/generate-security-tfvars.sh"
 
 # Initialize and run Terraform
 if [ "$STATE" == gcs ]; then
   cd "${ROOT}/terraform/cluster_build"
   sed -i "s/local/gcs/g" backend.tf
-  if [[ $(gsutil ls | grep "$PROJECT-$1-cluster-tf-state/") ]]; then
+  if [[ $(gsutil ls | grep "$BUCKET/") ]]; then
    echo "state bucket exists"
   else
-   gsutil mb gs://$PROJECT-$1-cluster-tf-state
+     echo "can not find remote state files"
+     exit 1 
   fi
-   (cd "${ROOT}/terraform/cluster_build"; terraform init -input=false -backend-config="bucket=$PROJECT-$1-cluster-tf-state")
+   (cd "${ROOT}/terraform/cluster_build"; terraform init -input=false -backend-config="bucket=$BUCEKT")
    (cd "${ROOT}/terraform/cluster_build"; terraform apply -input=false -auto-approve) 
    
   

@@ -1,7 +1,7 @@
-PROJECT=rick-chen-demo1
-ZONE=us-west1
-GOVERNANCE_PROJECT=rick-chen-demo1
-WINDOWS=false
-STATE=gcs
-CLUSTER=private
-PREEMPTIBLE=false
+export PROJECT=<replace  project_id>
+export ZONE=<replace zone>
+export GOVERNANCE_PROJECT=<replace govanance project_id
+export WINDOWS=false
+export STATE=gcs
+export CLUSTER=private
+export PREEMPTIBLE=false

@@ -22,22 +22,23 @@ ROOT="$( cd "$( dirname "${BASH_SOURCE[0]}" )/.." && pwd )"
 
 # shellcheck source=scripts/common.sh
 source "${ROOT}/scripts/common.sh"
-
+source "${ROOT}/scripts/set-env.sh"
 # Generate the variables to be used by Terraform
 source "${ROOT}/scripts/generate-cluster-tfvars.sh"
 
 # Initialize and run Terraform
 if [ "$STATE" == gcs ]; then
   cd "${ROOT}/terraform/cluster_build"
-  BUCKET==$PROJECT-$CLUSTER-cluster-tf-state  
+  BUCKET=$PROJECT-$CLUSTER-cluster-tf-state  
   sed -i "s/local/gcs/g" backend.tf
   if [[ $(gsutil ls | grep "$BUCKET/") ]]; then
-   echo "state bucket exists"
+   echo "state $BUCKET exists"
   else
    gsutil mb gs://$BUCKET
   fi
-   (cd "${ROOT}/terraform/cluster_build"; terraform init -input=false -backend-config="bucket=$PROJECT-$1-cluster-tf-state")
+   (cd "${ROOT}/terraform/cluster_build"; terraform init -input=true -backend-config="bucket=$BUCKET")
    (cd "${ROOT}/terraform/cluster_build"; terraform apply -input=false -auto-approve)
+   sed '/^BUCKET/d' ${ROOT}/scripts/set-env.sh
    echo -e "export BUCKET=${BUCKET}" >> ${ROOT}/scripts/set-env.sh 
    GET_CREDS="$(terraform output  get_credentials)" 
   

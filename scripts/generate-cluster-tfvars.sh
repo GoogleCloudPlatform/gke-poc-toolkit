@@ -98,7 +98,7 @@ else
 
 fi
 
-if [[ -z ${STATE} ]] && [ "${STATE}" != "gcs" ]; then
+if [[ "${STATE}" = "gcs" ]]; then
    STATE="gcs"
 else
    STATE="local"

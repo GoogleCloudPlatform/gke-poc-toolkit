@@ -24,17 +24,18 @@ ROOT="$( cd "$( dirname "${BASH_SOURCE[0]}" )/.." && pwd )"
 source "$ROOT/scripts/common.sh"
 source "$ROOT/scripts/set-env.sh"
 # Tear down Terraform-managed resources and remove generated tfvars
-cd "$ROOT/terraform/cluster_build" || exit;
+cd "$ROOT/terraform/cluster_build" 
 
 # Perform the destroy
 
-if [ "STATE" == gcs ]; then 
-   cd "${ROOT}/terraform/cluster_build"
+if [ "$STATE" == gcs ]; then 
+   cd "${ROOT}/terraform/cluster_build" 
    sed -i "s/local/gcs/g" backend.tf
-   (cd "${ROOT}/terraform/cluster_build"; terraform init -input=false -backend-config="bucket=$PROJECT-$1-cluster-tf-state")
+   (cd "${ROOT}/terraform/cluster_build"; terraform init -input=false -backend-config="bucket=$BUCKET")
+   terraform state rm "module.kms" 
    (cd "${ROOT}/terraform/cluster_build"; terraform destroy -input=false -auto-approve) 
 fi
-if [ "$2" == local ]; then
+if [ "$STATE" == local ]; then
  cd "${ROOT}/terraform/cluster_build"
  sed -i "s/gcs/local/g" backend.tf
  (cd "${ROOT}/terraform/cluster_build"; terraform init -input=false)
