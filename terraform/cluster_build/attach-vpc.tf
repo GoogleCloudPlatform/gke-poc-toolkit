@@ -31,7 +31,7 @@ module "shared_vpc_networkuser" {
   source     = "terraform-google-modules/service-accounts/google"
   version    = "~> 3.0"
   project_id = var.shared_vpc_project_id
-  names      = local.ce_service_account
+  names      = [local.ce_service_account]
   project_roles = [
     "${var.project_id}=>roles/compute.networkUser",
     "${var.project_id}=>roles/container.hostServiceAgentUser",
