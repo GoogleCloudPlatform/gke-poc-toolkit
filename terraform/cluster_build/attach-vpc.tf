@@ -28,6 +28,9 @@ module "enabled_shared_vpc_apis" {
 }
 
 module "shared_vpc_networkuser" {
+  depends_on = [
+    module.service_accounts,
+  ]
   source     = "terraform-google-modules/service-accounts/google"
   version    = "~> 3.0"
   project_id = var.shared_vpc_project_id
