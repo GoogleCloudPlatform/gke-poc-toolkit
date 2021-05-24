@@ -64,11 +64,9 @@ resource "google_compute_subnetwork_iam_binding" "subnet_networkuser" {
   ]
 }
 
-resource "google_compute_subnetwork_iam_binding" "subnet_serviceagent" {
+resource "google_project_iam_binding" "shared_vpc_serviceagent" {
+  role    = "roles/container.hostServiceAgentUser"
   project = var.shared_vpc_project_id
-  region = var.region
-  subnetwork = var.shared_vpc_subnet_name
-  role = "roles/container.hostServiceAgentUser"
   members = [
     "serviceAccount:${local.clu_service_account}",
   ]
