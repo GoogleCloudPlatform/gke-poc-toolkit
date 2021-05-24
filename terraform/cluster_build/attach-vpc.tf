@@ -42,9 +42,9 @@ module "enabled_shared_vpc_apis" {
 # }
 
 resource "google_compute_shared_vpc_service_project" "attach_toolkit" {
-  depends_on = [
-    module.shared_vpc_networkuser,
-  ]
+  # depends_on = [
+  #   module.shared_vpc_networkuser,
+  # ]
   host_project    = var.shared_vpc_project_id
   service_project = var.project_id
 }
