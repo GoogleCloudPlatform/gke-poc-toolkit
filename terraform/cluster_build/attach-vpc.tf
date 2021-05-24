@@ -75,7 +75,7 @@ resource "google_project_iam_binding" "shared_vpc_serviceagent" {
 resource "google_compute_shared_vpc_service_project" "attach_toolkit" {
   depends_on = [
     google_compute_subnetwork_iam_binding.subnet_networkuser,
-    google_compute_subnetwork_iam_binding.subnet_serviceagent,
+    google_project_iam_binding.shared_vpc_serviceagent,
   ]
   host_project    = var.shared_vpc_project_id
   service_project = var.project_id
