@@ -27,40 +27,58 @@ module "enabled_shared_vpc_apis" {
   ]
 }
 
-# module "shared_vpc_networkuser" {
-#   depends_on = [
-#     module.service_accounts,
-#   ]
-#   source     = "terraform-google-modules/service-accounts/google"
-#   version    = "~> 3.0"
-#   project_id = var.shared_vpc_project_id
-#   names      = [local.ce_service_account]
-#   project_roles = [
-#     "${var.project_id}=>roles/compute.networkUser",
-#     "${var.project_id}=>roles/container.hostServiceAgentUser",
+# resource "google_project_iam_binding" "shared_vpc_networkuser" {
+#   role    = "roles/compute.networkUser"
+#   project = var.shared_vpc_project_id
+#   members = [
+#     "serviceAccount:${local.prj_service_account}",
 #   ]
 # }
 
-resource "google_project_iam_binding" "shared_vpc_networkuser" {
-  role    = "roles/compute.networkUser"
+# resource "google_project_iam_binding" "shared_vpc_serviceagent" {
+#   role    = "roles/container.hostServiceAgentUser"
+#   project = var.shared_vpc_project_id
+#   members = [
+#     "serviceAccount:${local.prj_service_account}",
+#   ]
+# }
+
+# resource "google_compute_subnetwork_iam_binding" "subnet_networkuser" {
+#   project = var.shared_vpc_project_id
+#   region = var.region
+#   subnetwork = var.shared_vpc_subnet_name
+#   role = "roles/compute.networkUser"
+#   members = [
+#     "serviceAccount:${local.prj_service_account}",
+#   ]
+# }
+
+resource "google_compute_subnetwork_iam_binding" "subnet_networkuser" {
   project = var.shared_vpc_project_id
+  region = var.region
+  subnetwork = var.shared_vpc_subnet_name
+  role = "roles/compute.networkUser"
   members = [
+    "serviceAccount:${local.clu_service_account}",
     "serviceAccount:${local.prj_service_account}",
   ]
 }
 
-resource "google_project_iam_binding" "shared_vpc_serviceagent" {
-  role    = "roles/container.hostServiceAgentUser"
+resource "google_compute_subnetwork_iam_binding" "subnet_serviceagent" {
   project = var.shared_vpc_project_id
+  region = var.region
+  subnetwork = var.shared_vpc_subnet_name
+  role = "roles/container.hostServiceAgentUser"
   members = [
-    "serviceAccount:${local.prj_service_account}",
+    "serviceAccount:${local.clu_service_account}",
   ]
 }
 
 resource "google_compute_shared_vpc_service_project" "attach_toolkit" {
-  # depends_on = [
-  #   module.shared_vpc_networkuser,
-  # ]
+  depends_on = [
+    module.subnet_networkuser,
+    module.subnet_serviceagent,
+  ]
   host_project    = var.shared_vpc_project_id
   service_project = var.project_id
 }
