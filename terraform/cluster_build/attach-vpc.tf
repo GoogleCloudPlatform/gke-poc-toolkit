@@ -41,6 +41,22 @@ module "enabled_shared_vpc_apis" {
 #   ]
 # }
 
+resource "google_project_iam_binding" "shared_vpc_perms" {
+  role    = "roles/compute.networkUser"
+  project = var.shared_vpc_project_id
+  members = [
+    local.prj_service_account
+  ]
+}
+
+resource "google_project_iam_binding" "shared_vpc_perms" {
+  role    = "roles/container.hostServiceAgentUser"
+  project = var.shared_vpc_project_id
+  members = [
+    local.prj_service_account
+  ]
+}
+
 resource "google_compute_shared_vpc_service_project" "attach_toolkit" {
   # depends_on = [
   #   module.shared_vpc_networkuser,
