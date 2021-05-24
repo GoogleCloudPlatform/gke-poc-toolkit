@@ -27,19 +27,19 @@ module "enabled_shared_vpc_apis" {
   ]
 }
 
-module "shared_vpc_networkuser" {
-  depends_on = [
-    module.service_accounts,
-  ]
-  source     = "terraform-google-modules/service-accounts/google"
-  version    = "~> 3.0"
-  project_id = var.shared_vpc_project_id
-  names      = [local.ce_service_account]
-  project_roles = [
-    "${var.project_id}=>roles/compute.networkUser",
-    "${var.project_id}=>roles/container.hostServiceAgentUser",
-  ]
-}
+# module "shared_vpc_networkuser" {
+#   depends_on = [
+#     module.service_accounts,
+#   ]
+#   source     = "terraform-google-modules/service-accounts/google"
+#   version    = "~> 3.0"
+#   project_id = var.shared_vpc_project_id
+#   names      = [local.ce_service_account]
+#   project_roles = [
+#     "${var.project_id}=>roles/compute.networkUser",
+#     "${var.project_id}=>roles/container.hostServiceAgentUser",
+#   ]
+# }
 
 resource "google_compute_shared_vpc_service_project" "attach_toolkit" {
   depends_on = [
