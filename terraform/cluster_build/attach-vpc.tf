@@ -45,7 +45,7 @@ resource "google_project_iam_binding" "shared_vpc_networkuser" {
   role    = "roles/compute.networkUser"
   project = var.shared_vpc_project_id
   members = [
-    local.prj_service_account
+    "serviceAccount:${local.prj_service_account}",
   ]
 }
 
@@ -53,7 +53,7 @@ resource "google_project_iam_binding" "shared_vpc_serviceagent" {
   role    = "roles/container.hostServiceAgentUser"
   project = var.shared_vpc_project_id
   members = [
-    local.prj_service_account
+    "serviceAccount:${local.prj_service_account}",
   ]
 }
 
