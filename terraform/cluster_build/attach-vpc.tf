@@ -28,10 +28,10 @@ module "enabled_shared_vpc_apis" {
 }
 
 resource "google_compute_subnetwork_iam_binding" "subnet_networkuser" {
-  project = var.shared_vpc_project_id
-  region = var.region
+  project    = var.shared_vpc_project_id
+  region     = var.region
   subnetwork = var.shared_vpc_subnet_name
-  role = "roles/compute.networkUser"
+  role       = "roles/compute.networkUser"
   members = [
     "serviceAccount:${local.clu_service_account}",
     "serviceAccount:${local.prj_service_account}",
