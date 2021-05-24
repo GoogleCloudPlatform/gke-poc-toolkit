@@ -51,21 +51,13 @@ export PREEMPTIBLE_NODES=true
 # The following prerequisites must be completed prior to running the deployment:
 # 
 #  - A shared VPC in a host project must be created before executing this step. That VPC should follow the guidance below. 
+# 
+#  - The account used to perform this deployment must have Shared VPC Admin permissions to the shared VPC host project.
 #
-#  - These APIs must be enabled on both the host and service projects prior to attaching the service project:
-#     - compute.googleapis.com
-#     - containerregistry.googleapis.com
-#
-#  - The service project must be attached to the shared VPC and the following must be true:
-#     - Kubernetes Engine access must be enabled for the attached VPC
-#     - The target subnet must be shared with the service project
-#
-#  - Two secondary IP ranges must be created on the target shared VPC subnet and configured with
-#    the pod and service IP CIDR ranges. Examples below: 
+#  - Two secondary IP ranges must be created on the target shared VPC subnet and configured with the pod and service 
+#    IP CIDR ranges. Examples below: 
 #     - pod-ip-range       10.1.64.0/18
 #     - service-ip-range   10.2.64.0/18
-#
-#  - The account used for the deployment must have Compute Network User permissions to the shared VPC project.
 
 # All variables are required in order to deploy to a shared VPC
 export SHARED_VPC=true

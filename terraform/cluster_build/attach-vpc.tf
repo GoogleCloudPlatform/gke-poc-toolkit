@@ -27,32 +27,6 @@ module "enabled_shared_vpc_apis" {
   ]
 }
 
-# resource "google_project_iam_binding" "shared_vpc_networkuser" {
-#   role    = "roles/compute.networkUser"
-#   project = var.shared_vpc_project_id
-#   members = [
-#     "serviceAccount:${local.prj_service_account}",
-#   ]
-# }
-
-# resource "google_project_iam_binding" "shared_vpc_serviceagent" {
-#   role    = "roles/container.hostServiceAgentUser"
-#   project = var.shared_vpc_project_id
-#   members = [
-#     "serviceAccount:${local.prj_service_account}",
-#   ]
-# }
-
-# resource "google_compute_subnetwork_iam_binding" "subnet_networkuser" {
-#   project = var.shared_vpc_project_id
-#   region = var.region
-#   subnetwork = var.shared_vpc_subnet_name
-#   role = "roles/compute.networkUser"
-#   members = [
-#     "serviceAccount:${local.prj_service_account}",
-#   ]
-# }
-
 resource "google_compute_subnetwork_iam_binding" "subnet_networkuser" {
   project = var.shared_vpc_project_id
   region = var.region
