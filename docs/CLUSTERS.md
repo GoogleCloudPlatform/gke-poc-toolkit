@@ -25,13 +25,13 @@ export GOVERNANCE_PROJECT=<project-name>
 
 #### Optional Variables
 
-[Private Endpoint Cluster](docs/CLUSTERS.md#GKE-Cluster-with-private-endpoint) - By default access to the cluster master endpoints is limited to a bastion host in the GKE VPC. Setting the following environment variable will deploy the customer with public access to the cluster master endpoints. The bastion host will not be deployed if this option is selected. 
+[Public Endpoint Cluster](https://cloud.google.com/kubernetes-engine/docs/how-to/authorized-networks) - The default deployment limits GKE control plane access to the bastion host subnet in the GKE VPC. Setting the following environment variable will grant control plane access to the public endpoint of the deployment device. The bastion host will not be deployed if this option is selected. If you choose this deployment option, please use [Configure GKE Cluster with Public endpoint](#configure-gke-cluster-with-public-endpoint) for deployment next steps. 
 
 ```shell
 export PUBLIC_CLUSTER=true
 ```
 
-[Windows Node Pool](https://cloud.google.com/kubernetes-engine/docs/concepts/windows-server-gke) - By default the GKE cluster deploys a linux node pool. Setting the following environment variable will deploy an additional Windows node pool for deploying Windows Server container workloads.
+[Windows Node Pool](https://cloud.google.com/kubernetes-engine/docs/concepts/windows-server-gke) - By default the GKE cluster deploys a linux node pool. Setting the following environment variable will deploy an additional Windows node pool for deploying Windows Server container workloads. 
 
 ```shell
 export WINDOWS_CLUSTER=true
@@ -151,29 +151,6 @@ In the root of this repository, there is a script to create the cluster:
 make create
 ```
 
-#### Configure GKE Cluster with Windows Nodepool
-
-Create a GKE cluster with a Windows nodepool:
-
-```shell
-make create
-```
-
-Execute the following command to retrieve the kubernetes config for the cluster:
-
-```shell
-GKE_NAME=$(gcloud container clusters list --format="value(NAME)")
-GKE_LOCATION=$(gcloud container clusters list --format="value(LOCATION)")
-
-gcloud container clusters get-credentials $GKE_NAME --region $GKE_LOCATION
-```
-
-Validate Windows Server Node pool has been created:
-
-```shell
-kubectl get nodes --label-columns beta.kubernetes.io/os
-```
-
 ## Validate GKE cluster config
 
 #### Kubernetes App Layer Secrets Validation
@@ -195,6 +172,25 @@ gcloud container clusters describe $GKE_NAME \
   --format 'value(databaseEncryption)' \
   --project $PROJECT
 
+```
+
+
+
+#### GKE Cluster with Windows Nodepool Validation (If Windows Node Pools were selected)
+
+Execute the following command to retrieve the kubernetes config for the cluster:
+
+```shell
+GKE_NAME=$(gcloud container clusters list --format="value(NAME)")
+GKE_LOCATION=$(gcloud container clusters list --format="value(LOCATION)")
+
+gcloud container clusters get-credentials $GKE_NAME --region $GKE_LOCATION
+```
+
+Validate Windows Server Node pool has been created:
+
+```shell
+kubectl get nodes --label-columns beta.kubernetes.io/os
 ```
 
 ## Next steps
