@@ -25,11 +25,13 @@ output "endpoint" {
   value       = module.gke.endpoint
 }
 
+
 output "ca_certificate" {
   sensitive   = true
   description = "Cluster ca certificate (base64 encoded)"
   value       = module.gke.ca_certificate
 }
+
 
 output "get_credentials_command" {
   description = "gcloud get-credentials command to generate kubeconfig for the private cluster"
