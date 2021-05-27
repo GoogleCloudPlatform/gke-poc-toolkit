@@ -70,28 +70,31 @@ if [[ -z "${GOVERNANCE_PROJECT}" ]]; then
     exit 1;
 fi
 
-
-if [ "${CLUSTER}" == private ]; then
+if [ -z ${PUBLIC_CLUSTER+x} ] || [[ ${PUBLIC_CLUSTER} != true ]]; then
     PRIVATE="true"
+    CLUSTER_TYPE="private"
+    echo "creating private cluster: access to the the cluster master endpoint will be limited to the bastion host" 1>&2
 else
     PRIVATE="false"
+    CLUSTER_TYPE="public"
+    echo "creating public cluster: cluster master endpoint will be exposed as a public endpoint" 1>&2
 fi
-
-
-if [[ "${WINDOWS}" == true ]]; then
-    WINDOWS="true"
-else
-    WINDOWS="false"
-
-fi
-
-
 
 if [[ "${STATE}" == gcs ]]; then
     STATE="gcs"
 else
     STATE="local"
 
+fi
+# This check verifies if the WINDOWS_CLUSTER boolean value has been set to true
+#  - If set to true, a Windows GKE cluster is created
+#  - If not set, the boolean value defaults to false and a linux GKE cluster is created
+if [ -z ${WINDOWS_CLUSTER+x} ] || [[ ${WINDOWS_CLUSTER} != true ]]; then
+    WINDOWS="false"
+    echo "creating a linux GKE cluster" 1>&2
+else
+    WINDOWS="true"
+    echo "creating a Windows GKE cluster" 1>&2
 fi
 
 # If Terraform is run without this file, the user will be prompted for values.
@@ -117,5 +120,5 @@ project_id="${PROJECT}"
 zone="${ZONE}"
 region="${REGION}"
 governance_project_id="${GOVERNANCE_PROJECT}"
-cluster_name="$CLUSTER-endpoint-cluster"
+cluster_name="${CLUSTER_TYPE}-endpoint-cluster"
 EOF

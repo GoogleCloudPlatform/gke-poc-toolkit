@@ -33,7 +33,9 @@ if [ "$STATE" == gcs ]; then
    sed -i "s/local/gcs/g" backend.tf
    (cd "${ROOT}/terraform/cluster_build"; terraform init -input=false -backend-config="bucket=$BUCKET")
    terraform state rm "module.kms" 
-   (cd "${ROOT}/terraform/cluster_build"; terraform destroy -input=false -auto-approve) 
+   (cd "${ROOT}/terraform/cluster_build"; terraform destroy -input=false -auto-approve)
+   rm -f "$ROOT/terraform/cluster_build/terraform.tfvars"
+   gsutil -m rm -r gs://$BUCKET
 fi
 if [ "$STATE" == local ]; then
  cd "${ROOT}/terraform/cluster_build"

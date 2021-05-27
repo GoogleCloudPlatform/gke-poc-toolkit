@@ -1,6 +1,11 @@
 # Security Considerations for GKE
 
-## Before you Start
+* [Before you begin](#before-you-begin)
+* [What gets enabled](#what-gets-enabled)
+* [Securing the cluster](#securing-the-cluster)
+* [Next steps](#next-steps)
+
+## Before you begin
 
 The provided scripts will populate the required  variables for the logging source from the region, zone, and project configurations of the default Google Cloud SDK profile. Ensure you are using the project that contains the previously created GKE clusters:
 
@@ -12,7 +17,7 @@ export PROJECT=<GCP Project>
 export GOVERNANCE_PROJECT=<project-name>
 ```
 
-## What Gets Enabled
+## What gets enabled
 
 #### Audit Logging
 
@@ -44,13 +49,13 @@ Execute the following steps to apply the hardening config to the cluster:
 
 ```shell
 # If running a public cluster simply run the following:
-make secure CLUSTER=public
+make secure
 
 # If running a private master endpoint, validate the proxy is started. Then set the 
 # HTTPS_PROXY environment variable to forward the make command through the tunnel:
 make start-proxy
 
-HTTPS_PROXY=localhost:8888 make secure CLUSTER=private
+HTTPS_PROXY=localhost:8888 make secure
 ```
 
 #### Audit Logs in Cloud Storage Validation
@@ -100,10 +105,10 @@ kubectl auth can-i get secrets
 HTTPS_PROXY=localhost:8888 kubectl auth can-i get secrets
 ```
 
-#### Next steps
+## Next steps
 
 The next step is to deploy a secure workload to the cluster.
 
-[Deploy Secure GKE Workloads](WORKLOADS.md)
+[Deploy Secure GKE Workloads (Linux Cluster Only)](WORKLOADS.md)
 
 #### Check the [FAQ](FAQ.md) if you run into issues with the build.
