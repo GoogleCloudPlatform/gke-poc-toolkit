@@ -1,14 +1,7 @@
 # GKE Cluster Deployments
 
-* [Before you begin](#before-you-begin)
-* [Configure the GKE cluster](#configure-the-gke-cluster)
-* [Validate GKE cluster config](#validate-gke-cluster-config)
-* [Next steps](#next-steps)
-* [Cleaning up](#cleaning-up)
+## Before you start
 
-## Before you begin
-
-#### Required Variables
 The provided scripts will populate the required variables from the region, zone, and project envars.
 
 ```shell
@@ -23,54 +16,7 @@ An additional environment variable for the governance project is also required. 
 export GOVERNANCE_PROJECT=<project-name>
 ```
 
-#### Optional Variables
-
-[Public Endpoint Cluster](https://cloud.google.com/kubernetes-engine/docs/how-to/authorized-networks) - The default deployment limits GKE control plane access to the bastion host subnet in the GKE VPC. Setting the following environment variable will grant control plane access to the public endpoint of the deployment device. The bastion host will not be deployed if this option is selected. If you choose this deployment option, please use [Configure GKE Cluster with Public endpoint](#configure-gke-cluster-with-public-endpoint) for deployment next steps. 
-
-```shell
-export PUBLIC_CLUSTER=true
-```
-
-[Windows Node Pool](https://cloud.google.com/kubernetes-engine/docs/concepts/windows-server-gke) - By default the GKE cluster deploys a linux node pool. Setting the following environment variable will deploy an additional Windows node pool for deploying Windows Server container workloads. 
-
-```shell
-export WINDOWS_CLUSTER=true
-```
-
-[Preemptible Nodes](https://cloud.google.com/kubernetes-engine/docs/how-to/preemptible-vms) - By default the GKE cluster non-preemptible nodes which cannot be reclaimed while in use. Setting the following environment variable will deploy the cluster with preemptible nodes that last a maximum of 24 hours and provide no availability guarentees.
-
-```shell
-export PREEMPTIBLE_NODES=true
-```
-
-[Shared VPC](https://cloud.google.com/vpc/docs/shared-vpc) - By default the GKE cluster deploys to a standalone VPC in the project where the cluster is created. Setting the following environment variables will deploy the GKE cluster to a shared VPC in a Host Project of your choice.
-
-<b>NOTE:</b> Deploying multiple GKE Toolkit environments to the same shared VPC is not currently supported. This feature will be added in the future. 
-
-```shell
-# The following prerequisites must be completed prior to running the deployment:
-# 
-#  - A shared VPC in a host project must be created before executing this step. That VPC should follow the guidance below. 
-# 
-#  - The account used to perform this deployment must have Shared VPC Admin permissions to the shared VPC host project.
-#
-#  - Two secondary IP ranges must be created on the target shared VPC subnet and configured with the pod and service 
-#    IP CIDR ranges. Examples below: 
-#     - pod-ip-range       10.1.64.0/18
-#     - service-ip-range   10.2.64.0/18
-
-# All variables are required in order to deploy to a shared VPC
-export SHARED_VPC=true
-export SHARED_VPC_PROJECT_ID=<shared VPC project ID>
-export SHARED_VPC_NAME=<shared VPC name>
-export SHARED_VPC_SUBNET_NAME=<shared VPC subnet name>
-export POD_IP_RANGE_NAME=<the name of the secondary IP range used for cluster pod IPs>
-export SERVICE_IP_RANGE_NAME=<the name of the secondary IP range used for cluster services>
-```
-
-## Configure the GKE cluster
-
-#### Configure GKE Cluster with Private Endpoint
+## GKE Cluster with Private Endpoint
 
 This cluster features both private nodes and a private control plane node.
 
@@ -97,7 +43,7 @@ The code in the `scripts` directory generates and populates terraform variable i
 In the root of this repository, there is a script to create the cluster:
 
 ```shell
-make create
+make create CLUSTER=private
 ```
 
 Once the GKE cluster has been created, establish an SSH tunnel to the bastion:
@@ -125,7 +71,7 @@ make stop-proxy
 
 Proceed to [validation steps](#kubernetes-app-layer-secrets-validation) once installation completes. 
 
-#### Configure GKE Cluster with Public endpoint
+## GKE Cluster with Public endpoint
 
 This cluster features cluster nodes with private IP's and a control plane api with a public IP.
 
@@ -148,12 +94,33 @@ In the root of this repository, there is a script to create the cluster:
 
 ```shell
 # Create cluster
-make create
+make create CLUSTER=public
 ```
 
-## Validate GKE cluster config
+## GKE Cluster with Windows Nodepool
 
-#### Kubernetes App Layer Secrets Validation
+Create a GKE cluster with a Windows nodepool:
+
+```shell
+make create CLUSTER=public|private WINDOWS=true
+```
+
+Execute the following command to retrieve the kubernetes config for the cluster:
+
+```shell
+GKE_NAME=$(gcloud container clusters list --format="value(NAME)")
+GKE_LOCATION=$(gcloud container clusters list --format="value(LOCATION)")
+
+gcloud container clusters get-credentials $GKE_NAME --region $GKE_LOCATION
+```
+
+Validate Windows Server Node pool has been created:
+
+```shell
+kubectl get nodes --label-columns beta.kubernetes.io/os
+```
+
+## Kubernetes App Layer Secrets Validation
 
 Execute the following command to retrieve the kubernetes config for the cluster if not collected in the previous step:
 
@@ -174,25 +141,6 @@ gcloud container clusters describe $GKE_NAME \
 
 ```
 
-
-
-#### GKE Cluster with Windows Nodepool Validation (If Windows Node Pools were selected)
-
-Execute the following command to retrieve the kubernetes config for the cluster:
-
-```shell
-GKE_NAME=$(gcloud container clusters list --format="value(NAME)")
-GKE_LOCATION=$(gcloud container clusters list --format="value(LOCATION)")
-
-gcloud container clusters get-credentials $GKE_NAME --region $GKE_LOCATION
-```
-
-Validate Windows Server Node pool has been created:
-
-```shell
-kubectl get nodes --label-columns beta.kubernetes.io/os
-```
-
 ## Next steps
 
 The next step is to futher harden the newly created cluster.
@@ -206,7 +154,7 @@ The next step is to futher harden the newly created cluster.
 Running the command below will destroy all resources with the exception of the Cloud KMS, Key Rings and Keys created by this deployment. Futher deployments will create a new key ring and keys for use by the cluster. This is due to a feature in Cloud KMS requiring a [24 hour scheduled deletion of keys](https://cloud.google.com/kms/docs/faq#cannot_delete). Because of this, it is recommended to manually schedule the deletion of key rings and keys created while testing this deployment. 
 
 ```shell
-make destroy
+make destroy CLUSTER=<private|public>
 
 ```
 

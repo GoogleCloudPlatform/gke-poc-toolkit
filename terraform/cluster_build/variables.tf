@@ -34,15 +34,10 @@ variable "region" {
   type        = string
   description = "The region to host the cluster in"
   default     = "us-central1"
+
 }
 
-variable "shared_vpc" {
-  type        = bool
-  description = "boolean value for determining whether to create Standalone VPC or use a preexisting Shared VPC"
-  default     = false
-}
-
-variable "vpc_name" {
+variable "network_name" {
   type        = string
   description = "The name of the network being created to host the cluster in"
   default     = "cluster-network"
@@ -63,13 +58,15 @@ variable "subnet_ip" {
 variable "ip_range_pods_name" {
   type        = string
   description = "The secondary ip range to use for pods"
-  default     = "ip-range-pods"
+
+  default = "ip-range-pods"
 }
 
 variable "ip_range_services_name" {
   type        = string
   description = "The secondary ip range to use for pods"
-  default     = "ip-range-svc"
+
+  default = "ip-range-svc"
 }
 
 variable "bastion_members" {
@@ -82,36 +79,6 @@ variable "ip_source_ranges_ssh" {
   type        = list(string)
   description = "Additional source ranges to allow for ssh to bastion host. 35.235.240.0/20 allowed by default for IAP tunnel."
   default     = []
-}
-
-variable "shared_vpc_name" {
-  type        = string
-  description = "The name of the Shared VPC - This is optional and only valid if a Shared VPC is used"
-  default     = ""
-}
-
-variable "shared_vpc_subnet_name" {
-  type        = string
-  description = "The names of the Shared VPC subnet where GKE Toolkit resources will be deployed - This is optional and only valid if a Shared VPC is used"
-  default     = ""
-}
-
-variable "shared_vpc_project_id" {
-  type        = string
-  description = "The Share VPC Project ID - This is optional and only valid if a Shared VPC is used"
-  default     = ""
-}
-
-variable "shared_vpc_ip_range_pods_name" {
-  type        = string
-  description = "The secondary ip range to use for pods in the shared vpc  - This is optional and only valid if a Shared VPC is used"
-  default     = ""
-}
-
-variable "shared_vpc_ip_range_services_name" {
-  type        = string
-  description = "The secondary ip range to use for services in the shared vpc  - This is optional and only valid if a Shared VPC is used"
-  default     = ""
 }
 
 variable "node_pool" {
