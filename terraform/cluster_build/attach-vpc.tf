@@ -31,7 +31,7 @@ module "enabled_shared_vpc_apis" {
 }
 
 resource "google_compute_subnetwork_iam_binding" "subnet_networkuser" {
-  count   = var.shared_vpc ? 1 : 0
+  count      = var.shared_vpc ? 1 : 0
   project    = var.shared_vpc_project_id
   region     = var.region
   subnetwork = var.shared_vpc_subnet_name
@@ -52,7 +52,7 @@ resource "google_project_iam_binding" "shared_vpc_serviceagent" {
 }
 
 resource "google_compute_shared_vpc_service_project" "attach_toolkit" {
-  count   = var.shared_vpc ? 1 : 0
+  count = var.shared_vpc ? 1 : 0
   depends_on = [
     google_compute_subnetwork_iam_binding.subnet_networkuser,
     google_project_iam_binding.shared_vpc_serviceagent,
