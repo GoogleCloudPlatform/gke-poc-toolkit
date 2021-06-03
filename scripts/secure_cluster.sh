@@ -22,6 +22,9 @@ ROOT="$( cd "$( dirname "${BASH_SOURCE[0]}" )/.." && pwd )"
 
 source "${ROOT}/scripts/common.sh"
 
+# Generate the variables to be used by Terraform
+source "${ROOT}/scripts/generate-security-tfvars.sh"
+
 # Configure the connfig connector with the project GKE was created in.
 cat <<EOF | kubectl apply -f -
 apiVersion: core.cnrm.cloud.google.com/v1beta1
@@ -30,11 +33,8 @@ metadata:
   name: configconnector.core.cnrm.cloud.google.com
 spec:
   mode: cluster
-  googleServiceAccount: "${1}-endpoint-cluster-kcc@${PROJECT}.iam.gserviceaccount.com" 
+  googleServiceAccount: "${CLUSTER_TYPE}-endpoint-cluster-kcc@${PROJECT}.iam.gserviceaccount.com" 
 EOF
-
-# Generate the variables to be used by Terraform
-source "${ROOT}/scripts/generate-security-tfvars.sh"
 
 # Initialize and run Terraform
 (cd "${ROOT}/terraform/security"; terraform init -input=false)
