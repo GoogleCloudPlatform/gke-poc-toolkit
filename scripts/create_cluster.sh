@@ -29,7 +29,7 @@ source "${ROOT}/scripts/generate-cluster-tfvars.sh"
 # Initialize and run Terraform
 if [ "$STATE" == gcs ]; then
   cd "${ROOT}/terraform/cluster_build"
-  BUCKET=$PROJECT-$CLUSTER_TYPE-cluster-tf-state  
+  BUCKET=$PROJECT-$CLUSTER_TYPE-state  
   sed -i "s/local/gcs/g" backend.tf
   if [[ $(gsutil ls | grep "$BUCKET/") ]]; then
    echo "state $BUCKET exists"
