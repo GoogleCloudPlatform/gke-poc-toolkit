@@ -26,6 +26,7 @@ set -euo pipefail
 ROOT="$( cd "$( dirname "${BASH_SOURCE[0]}" )/.." && pwd )"
 
 source "$ROOT/scripts/common.sh"
+source "$ROOT/scripts/set-env.sh"
 
 TFVARS_FILE="./terraform/security/terraform.tfvars"
 
@@ -79,6 +80,12 @@ else
     echo "creating public cluster: cluster master endpoint will be exposed as a public endpoint" 1>&2
 fi
 
+if [[ "${STATE}" == gcs ]]; then
+    STATE="gcs"
+else
+    STATE="local"
+
+fi
 # This check verifies if the WINDOWS_CLUSTER boolean value has been set to true
 #  - If set to true, a Windows GKE cluster is created
 #  - If not set, the boolean value defaults to false and a linux GKE cluster is created

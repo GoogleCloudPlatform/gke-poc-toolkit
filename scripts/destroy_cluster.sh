@@ -22,14 +22,27 @@ ROOT="$( cd "$( dirname "${BASH_SOURCE[0]}" )/.." && pwd )"
 
 # shellcheck source=scripts/common.sh
 source "$ROOT/scripts/common.sh"
-
+source "$ROOT/scripts/set-env.sh"
 # Tear down Terraform-managed resources and remove generated tfvars
-cd "$ROOT/terraform/cluster_build" || exit;
+cd "$ROOT/terraform/cluster_build" 
 
 # Perform the destroy
-terraform state rm 'module.kms'
-terraform destroy -input=false -auto-approve
 
-# Remove the tfvars file generated during "make create"
-rm -f "$ROOT/terraform/cluster_build/terraform.tfvars"
-rm -f "$ROOT/terraform/cluster_build/terraform.tfstate"
+if [ "$STATE" == gcs ]; then 
+   cd "${ROOT}/terraform/cluster_build" 
+   sed -i "s/local/gcs/g" backend.tf
+   (cd "${ROOT}/terraform/cluster_build"; terraform init -input=false -backend-config="bucket=$BUCKET")
+   terraform state rm "module.kms" 
+   (cd "${ROOT}/terraform/cluster_build"; terraform destroy -input=false -auto-approve)
+   rm -f "$ROOT/terraform/cluster_build/terraform.tfvars"
+   gsutil -m rm -r gs://$BUCKET
+fi
+if [ "$STATE" == local ]; then
+ cd "${ROOT}/terraform/cluster_build"
+ sed -i "s/gcs/local/g" backend.tf
+ (cd "${ROOT}/terraform/cluster_build"; terraform init -input=false)
+ (cd "${ROOT}/terraform/cluster_build"; terraform destroy -input=false -auto-approve)
+ rm -f "$ROOT/terraform/cluster_build/terraform.tfvars"
+ rm -f "$ROOT/terraform/cluster_build/terraform.tfstate"
+fi
+

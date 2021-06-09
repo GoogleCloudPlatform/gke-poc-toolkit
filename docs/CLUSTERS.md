@@ -67,6 +67,10 @@ export SHARED_VPC_SUBNET_NAME=<shared VPC subnet name>
 export POD_IP_RANGE_NAME=<the name of the secondary IP range used for cluster pod IPs>
 export SERVICE_IP_RANGE_NAME=<the name of the secondary IP range used for cluster services>
 ```
+Note:
+For convenience and to avoid manually type all the environment variables for different cluster settings, There is a default environment variables file under 
+scripts/set-env.sh, you can change the settings accordingly. 
+
 
 ## Configure the GKE cluster
 

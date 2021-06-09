@@ -36,7 +36,29 @@ spec:
   googleServiceAccount: "${CLUSTER_TYPE}-endpoint-cluster-kcc@${PROJECT}.iam.gserviceaccount.com" 
 EOF
 
+# Generate the variables to be used by Terraform
+source "${ROOT}/scripts/set-env.sh"
+source "${ROOT}/scripts/generate-security-tfvars.sh"
+
 # Initialize and run Terraform
-(cd "${ROOT}/terraform/security"; terraform init -input=false)
-(cd "${ROOT}/terraform/security"; terraform apply -input=false -auto-approve)
+if [ "$STATE" == gcs ]; then
+  cd "${ROOT}/terraform/security"
+  sed -i "s/local/gcs/g" backend.tf
+  if [[ $(gsutil ls | grep "$BUCKET/") ]]; then
+   echo "state bucket exists"
+  else
+     echo "can not find remote state files"
+     exit 1 
+  fi
+   (cd "${ROOT}/terraform/security"; terraform init -input=false -backend-config="bucket=$BUCEKT")
+   (cd "${ROOT}/terraform/security"; terraform apply -input=false -auto-approve) 
+fi
+if [ "$STATE" == local ]; then
+ cd "${ROOT}/terraform/security"
+ sed -i "s/gcs/local/g" backend.tf
+ (cd "${ROOT}/terraform/security"; terraform init -input=false)
+ (cd "${ROOT}/terraform/security"; terraform apply -input=false -auto-approve)
+ GET_CREDS="$(terraform output --state=./terraform/$1/terraform.tfstate get_credentials)"
+fi
+
 
