@@ -42,7 +42,7 @@ source "${ROOT}/scripts/generate-security-tfvars.sh"
 
 # Initialize and run Terraform
 if [ "$STATE" == gcs ]; then
-  cd "${ROOT}/terraform/cluster_build"
+  cd "${ROOT}/terraform/security"
   sed -i "s/local/gcs/g" backend.tf
   if [[ $(gsutil ls | grep "$BUCKET/") ]]; then
    echo "state bucket exists"
@@ -50,14 +50,14 @@ if [ "$STATE" == gcs ]; then
      echo "can not find remote state files"
      exit 1 
   fi
-   (cd "${ROOT}/terraform/cluster_build"; terraform init -input=false -backend-config="bucket=$BUCEKT")
-   (cd "${ROOT}/terraform/cluster_build"; terraform apply -input=false -auto-approve) 
+   (cd "${ROOT}/terraform/security"; terraform init -input=false -backend-config="bucket=$BUCEKT")
+   (cd "${ROOT}/terraform/security"; terraform apply -input=false -auto-approve) 
 fi
 if [ "$STATE" == local ]; then
- cd "${ROOT}/terraform/cluster_build"
+ cd "${ROOT}/terraform/security"
  sed -i "s/gcs/local/g" backend.tf
- (cd "${ROOT}/terraform/cluster_build"; terraform init -input=false)
- (cd "${ROOT}/terraform/cluster_build"; terraform apply -input=false -auto-approve)
+ (cd "${ROOT}/terraform/security"; terraform init -input=false)
+ (cd "${ROOT}/terraform/security"; terraform apply -input=false -auto-approve)
  GET_CREDS="$(terraform output --state=./terraform/$1/terraform.tfstate get_credentials)"
 fi
 
