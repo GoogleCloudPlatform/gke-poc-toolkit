@@ -6,3 +6,4 @@ export PUBLIC_CLUSTER=false
 export STATE=gcs
 export CLUSTER_TYPE=private
 export PREEMPTIBLE_NODES=false
+export BUCKET=rick-chen-demo1-private-cluster-tf-state
