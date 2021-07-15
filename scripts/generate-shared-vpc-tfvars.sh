@@ -101,15 +101,15 @@ fi
 
 # Verify if the target Shared VPC already exists
 #  - If it does, fail the deployment due to conflict
-if [[ "$(gcloud compute networks describe $SHARED_VPC_NAME --project $SHARED_VPC_PROJECT_ID -q 2>/dev/null | grep name | sed 's/^.*: //')" =~ "$SHARED_VPC_NAME" ]]; then
-    tput setaf 1; echo "" 1>&2
-    echo "a shared VPC named ${SHARED_VPC_NAME} exists in host project $SHARED_VPC_PROJECT_ID and CREATE_SHARED_VPC was set to true." 1>&2
-    echo "to resolve this conflict either delete the existing Shared VPC, choose a different project/VPC name or deploy to the existing Shared VPC." 1>&2
-    echo "" ; tput sgr0
-    exit 1;
-else
-    echo "create shared VPC" 1>&2
-fi
+# if [[ "$(gcloud compute networks describe $SHARED_VPC_NAME --project $SHARED_VPC_PROJECT_ID -q 2>/dev/null | grep name | sed 's/^.*: //')" =~ "$SHARED_VPC_NAME" ]]; then
+#     tput setaf 1; echo "" 1>&2
+#     echo "a shared VPC named ${SHARED_VPC_NAME} exists in host project $SHARED_VPC_PROJECT_ID and CREATE_SHARED_VPC was set to true." 1>&2
+#     echo "to resolve this conflict either delete the existing Shared VPC, choose a different project/VPC name or deploy to the existing Shared VPC." 1>&2
+#     echo "" ; tput sgr0
+#     exit 1;
+# else
+#     echo "create shared VPC" 1>&2
+# fi
 
 if [[ "${STATE}" = "gcs" ]]; then
    STATE="gcs"

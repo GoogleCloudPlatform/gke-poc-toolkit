@@ -49,5 +49,8 @@ module "shared_vpc" {
 }
 
 resource "google_compute_shared_vpc_host_project" "host_project" {
+  depends_on = [
+    module.shared_vpc,
+  ]
   project = var.shared_vpc_project_id
 }
