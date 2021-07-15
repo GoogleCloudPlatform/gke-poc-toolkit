@@ -4,8 +4,8 @@
 # - https://cloud.google.com/compute/docs/images/restricting-image-access#trusted_images
 
 # Outer loop - Loop through Argolis Projects
-declare -a projects=("alw-sprj-04" 
-                "alw-shared-vpc-04"
+declare -a projects=("alw-sprj-05" 
+                "alw-shared-vpc-05"
                 )
 for project in "${projects[@]}"
 do
@@ -59,12 +59,12 @@ WIN+k v
 
 export REGION=us-east1
 export ZONE=us-east1-c
-export PROJECT=alw-sprj-04
-export GOVERNANCE_PROJECT=alw-sprj-05
+export PROJECT=alw-sprj-06
+export GOVERNANCE_PROJECT=alw-sprj-06
 export PUBLIC_CLUSTER=true
 export SHARED_VPC=true
 export CREATE_SHARED_VPC=true
-export SHARED_VPC_PROJECT_ID=alw-shared-vpc-05
+export SHARED_VPC_PROJECT_ID=alw-shared-vpc-06
 export SHARED_VPC_NAME=default
 export SHARED_VPC_SUBNET_NAME=default
 export POD_IP_RANGE_NAME=pod-ip-range
