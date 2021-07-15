@@ -33,14 +33,7 @@ data "google_client_config" "default" {
 data "google_client_openid_userinfo" "me" {
 }
 
-provider "kubernetes" {
-  load_config_file       = false
-  host                   = "https://${module.gke.endpoint}"
-  token                  = data.google_client_config.default.access_token
-  cluster_ca_certificate = base64decode(module.gke.ca_certificate)
-}
-
 provider "google" {
-  project = var.project_id
+  project = var.shared_vpc_project_id
   region  = var.region
 }
