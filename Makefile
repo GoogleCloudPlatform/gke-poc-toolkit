@@ -5,6 +5,8 @@ SHELL := /usr/bin/env bash
 help:
 	@echo 'Usage:'
 	
+	@echo '	make shared-vpc        	Create Shared VPC in a pre-existing host project'
+	@echo	''
 	@echo '	make create        		Create Cluster and associated resources'
 	@echo	''
 	@echo '	make secure        		Create GCS + Big Query log sinks for GKE Audit'
@@ -22,6 +24,11 @@ help:
 	@echo	''
 	@echo '	make stop-wi-demo	        Delete workload identity demo resources from GKE'
 	@echo	''
+
+.PHONY: shared-vpc
+shared-vpc:
+	@source	scripts/create_shared_vpc.sh
+
 .PHONY: create
 create:
 	@source	scripts/create_cluster.sh
