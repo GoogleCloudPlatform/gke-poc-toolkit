@@ -34,6 +34,15 @@ TFVARS_FILE="./terraform/shared_vpc/terraform.tfvars"
 #
 # The - in the initial variable check prevents the script from exiting due
 # from attempting to use an unset variable.
+
+[[ -z "${PROJECT-}" ]] && PROJECT="$(gcloud config get-value core/project)"
+if [[ -z "${PROJECT}" ]]; then
+    echo "gcloud cli must be configured with a default project." 1>&2
+    echo "run 'gcloud config set core/project PROJECT'." 1>&2
+    echo "replace 'PROJECT' with the project name." 1>&2
+    exit 1;
+fi
+
 [[ -z "${REGION-}" ]] && REGION="$(gcloud config get-value compute/region)"
 if [[ -z "${REGION}" ]]; then
     echo "https://cloud.google.com/compute/docs/regions-zones/changing-default-zone-region" 1>&2
@@ -136,6 +145,7 @@ fi
 # Write out all the values we gathered into a tfvars file so you don't
 # have to enter the values manually
 cat <<EOF > "${TFVARS_FILE}"
+project_id="${PROJECT}"
 region="${REGION}"
 shared_vpc_name="${SHARED_VPC_NAME}"
 shared_vpc_subnet_name="${SHARED_VPC_SUBNET_NAME}"

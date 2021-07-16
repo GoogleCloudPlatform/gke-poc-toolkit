@@ -14,6 +14,11 @@
  * limitations under the License.
  */
 
+variable "project_id" {
+  type        = string
+  description = "The project ID to host the cluster in"
+}
+
 variable "shared_vpc_project_id" {
   type        = string
   description = "The Share VPC Project ID - This is optional and only valid if a Shared VPC is used"
