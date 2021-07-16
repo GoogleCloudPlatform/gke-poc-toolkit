@@ -72,7 +72,7 @@ fi
 #  - If set to true, the cluster master endpoint is exposed as a public endpoint and the bastion host is not created
 #  - If not set, the boolean value defaults to false and access to the the cluster master endpoint is limited to a bastion host
 [[ -z "${PUBLIC_CLUSTER-}" ]] && PUBLIC_CLUSTER="$(echo $PUBLIC_CLUSTER)"
-if [[ ${PUBLIC_CLUSTER} == true ]]; then
+if [[ ${PUBLIC_CLUSTER} = true ]]; then
     PRIVATE="false"
     CLUSTER_TYPE="public"
     echo "creating public cluster: cluster master endpoint will be exposed as a public endpoint" 1>&2
@@ -107,7 +107,7 @@ fi
 #  - If set to true, deploy GKE cluster with preemptible nodes
 #  - If not set, the boolean value defaults to false and the cluster deploys with traditional node types
 [[ -z "${PREEMPTIBLE_NODES-}" ]] && PREEMPTIBLE_NODES="$(echo $PREEMPTIBLE_NODES)"
-if [[ ${PREEMPTIBLE_NODES} == true ]]; then
+if [[ ${PREEMPTIBLE_NODES} = true ]]; then
     PREEMPTIBLE="true"
     echo "deploying GKE cluster with preemptible nodes" 1>&2
 else
