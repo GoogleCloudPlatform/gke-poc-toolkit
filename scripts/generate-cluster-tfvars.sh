@@ -72,7 +72,7 @@ fi
 #  - If set to true, the cluster master endpoint is exposed as a public endpoint and the bastion host is not created
 #  - If not set, the boolean value defaults to false and access to the the cluster master endpoint is limited to a bastion host
 [[ -z "${PUBLIC_CLUSTER-}" ]] && PUBLIC_CLUSTER="$(echo $PUBLIC_CLUSTER)"
-if [[ ${PUBLIC_CLUSTER} == true ]]; then
+if [[ ${PUBLIC_CLUSTER} == false ]]; then
     PRIVATE="false"
     CLUSTER_TYPE="public"
     echo "creating public cluster: cluster master endpoint will be exposed as a public endpoint" 1>&2
