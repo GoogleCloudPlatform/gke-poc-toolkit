@@ -15,9 +15,13 @@
  */
 
 // Locals used to construct names of stuffs.
-locals {}
 
-module "enabled_google_apis" {
+locals {
+  clu_service_account       = format("service-%s@container-engine-robot.iam.gserviceaccount.com", data.google_project.project.number)
+  prj_service_account       = format("%s@cloudservices.gserviceaccount.com", data.google_project.project.number)
+}
+
+module "enabled_shared_vpc_apis" {
   source  = "terraform-google-modules/project-factory/google//modules/project_services"
   version = "~> 10.0"
 
@@ -30,7 +34,7 @@ module "enabled_google_apis" {
   ]
 }
 
-module "enabled_google_apis" {
+module "enabled_shared_project_apis" {
   source  = "terraform-google-modules/project-factory/google//modules/project_services"
   version = "~> 10.0"
 
