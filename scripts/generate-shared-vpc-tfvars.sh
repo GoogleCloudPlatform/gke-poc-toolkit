@@ -109,7 +109,7 @@ if [[ -z "${SERVICE_IP_RANGE_NAME}" ]]; then
 fi
 
 # Verify if the target Shared VPC already exists
-#  - If it does, fail the deployment due to conflict
+#  - If it does, query admin for corrective action
 if [[ "$(gcloud compute networks describe $SHARED_VPC_NAME --project $SHARED_VPC_PROJECT_ID -q 2>/dev/null | grep name | sed 's/^.*: //')" =~ "$SHARED_VPC_NAME" ]]; then
     echo ""
         read -p "a shared VPC named ${SHARED_VPC_NAME} already exists in host project $SHARED_VPC_PROJECT_ID. If this is from a previous deployment of this template, please select yes(y) to continue or no(n) to cancel and correct the issue: " yn ; tput sgr0 
