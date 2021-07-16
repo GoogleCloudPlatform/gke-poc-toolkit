@@ -14,19 +14,19 @@
 
 # Set  environment variables to provision the cluster
 #set PROJECT, if current project has been set.
-export PROJECT=$(gcloud config get-value project)
+# export PROJECT=$(gcloud config get-value project)
 #set zone
-export ZONE=$(gcloud config get-value compute/zone)
+# export ZONE=$(gcloud config get-value compute/zone)
 #set GOVERNANCE_PROJECT, replace if it is not curreent project
-export GOVERNANCE_PROJECT=$(gcloud config get-value project)
+# export GOVERNANCE_PROJECT=$(gcloud config get-value project)
 #If cluster is windows cluster, allowed values: true|false
-export WINDOWS_CLUSTER=false
+# export WINDOWS_CLUSTER=false
 #If cluster is public or private, set it to false for private cluster,  allowed values: true|false
-export PUBLIC_CLUSTER=false
+# export PUBLIC_CLUSTER=false
 #where to save terraform state, allowed values: local|gcs   (use gcs for remoate state in cloud storage bucket) 
 export STATE=local
 #whether need preemptible nodes, allowed values: true|false
-export PREEMPTIBLE_NODES=false
+# export PREEMPTIBLE_NODES=false
 #All shared VPC settings, uncomment the following  lines with proper values 
 #export SHARED_VPC=true
 #export SHARED_VPC_PROJECT_ID=<shared VPC project ID>

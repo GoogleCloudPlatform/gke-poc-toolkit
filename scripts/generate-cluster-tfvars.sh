@@ -89,7 +89,7 @@ if [[ -z ${AUTH_IP} ]] && [ "${PRIVATE}" != "true" ]; then
     echo "replace IP with your IP"
     echo "" ; tput sgr0
     exit 1
-fi
+fi 
 
 # This check verifies if the WINDOWS_CLUSTER boolean value has been set to true
 #  - If set to true, a Windows GKE cluster is created
