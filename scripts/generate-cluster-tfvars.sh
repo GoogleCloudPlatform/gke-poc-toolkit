@@ -95,7 +95,7 @@ fi
 #  - If set to true, a Windows GKE cluster is created
 #  - If not set, the boolean value defaults to false and a linux GKE cluster is created
 [[ -z "${WINDOWS_CLUSTER-}" ]] && WINDOWS_CLUSTER="$(echo $WINDOWS_CLUSTER)"
-if [[ ${WINDOWS_CLUSTER} == true ]]; then
+if [[ ${WINDOWS_CLUSTER} = true ]]; then
     WINDOWS="true"
     echo "creating a Windows GKE cluster" 1>&2
 else
