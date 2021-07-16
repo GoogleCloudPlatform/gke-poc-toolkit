@@ -56,7 +56,7 @@ export PREEMPTIBLE_NODES=true
 #       IP CIDR ranges. Examples below: 
 #         - pod-ip-range       10.1.64.0/18
 #         - service-ip-range   10.2.64.0/18
-#     - The Service Project must be attached to the Shared VPC and the target subnet must be shared. 
+#     - The Service Project must be attached to the Shared VPC and the target subnet must be shared and in the deployment region. 
 #     - Kubernetes Engine Access must be enabled on the shared subnet.
 #
 
