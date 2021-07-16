@@ -111,11 +111,13 @@ fi
 # Verify if the target Shared VPC already exists
 #  - If it does, fail the deployment due to conflict
 if [[ "$(gcloud compute networks describe $SHARED_VPC_NAME --project $SHARED_VPC_PROJECT_ID -q 2>/dev/null | grep name | sed 's/^.*: //')" =~ "$SHARED_VPC_NAME" ]]; then
-    tput setaf 1; echo "" 1>&2
-    echo "a shared VPC named ${SHARED_VPC_NAME} exists in host project $SHARED_VPC_PROJECT_ID." 1>&2
-    echo "to resolve this conflict either delete the existing Shared VPC, choose a different project/VPC name or deploy to the existing Shared VPC." 1>&2
-    echo "" ; tput sgr0
-    exit 1;
+    echo ""
+        read -p "a shared VPC named ${SHARED_VPC_NAME} already exists in host project $SHARED_VPC_PROJECT_ID. If this is from a previous deployment of this template, please select yes(y) to continue or no(n) to cancel and correct the issue: " yn ; tput sgr0 
+    case $yn in
+        [Yy]* ) echo "the deployment will attempt to leverage the existing Shared VPC";exit ;;
+        [Nn]* ) echo "to resolve this conflict either delete the existing Shared VPC, choose a different project/VPC name or deploy to the existing Shared VPC";exit ;;
+        * ) echo "Incorrect input. Cancelling execution";exit 1;;
+    esac
 else
     echo "create shared VPC" 1>&2
 fi
@@ -153,3 +155,10 @@ shared_vpc_project_id="${SHARED_VPC_PROJECT_ID}"
 shared_vpc_ip_range_pods_name="${POD_IP_RANGE_NAME}"
 shared_vpc_ip_range_services_name="${SERVICE_IP_RANGE_NAME}"
 EOF
+
+
+    read -p "a shared VPC named b already exists in host project b. If this is from a previous deployment of this template, please select yes(y) to continue or no(n) to cancel and correct the issue: " yn ; tput sgr0 
+    case $yn in
+        [Yy]* ) echo "the deployment will attempt to leverage the existing ";exit ;;
+        [Nn]* ) echo "to resolve this conflict either delete the existing Shared VPC, choose a different project/VPC name or deploy to the existing Shared VPC";exit ;;
+        * ) echo "Incorrect input. Cancelling execution";exit 1;;
