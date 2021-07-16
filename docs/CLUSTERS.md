@@ -50,14 +50,15 @@ export PREEMPTIBLE_NODES=true
 ```shell
 # The following prerequisites must be completed prior to running the deployment:
 # 
-#  - A shared VPC in a host project must be created before executing this step. That VPC should follow the guidance below. 
-# 
-#  - The account used to perform this deployment must have Shared VPC Admin permissions to the shared VPC host project.
+#  - A Shared VPC in a Host Project must be created before executing this step. That VPC must meet the following prerequisites:
 #
-#  - Two secondary IP ranges must be created on the target shared VPC subnet and configured with the pod and service 
-#    IP CIDR ranges. Examples below: 
-#     - pod-ip-range       10.1.64.0/18
-#     - service-ip-range   10.2.64.0/18
+#     - Two secondary IP ranges must be created on the target shared VPC subnet and configured with the pod and service 
+#       IP CIDR ranges. Examples below: 
+#         - pod-ip-range       10.1.64.0/18
+#         - service-ip-range   10.2.64.0/18
+#     - The Service Project must be attached to the Shared VPC and the target subnet must be shared. 
+#     - Kubernetes Engine Access must be enabled on the shared subnet.
+#
 
 # All variables are required in order to deploy to a shared VPC
 export SHARED_VPC=true

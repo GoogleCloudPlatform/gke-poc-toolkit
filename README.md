@@ -123,6 +123,10 @@ The following <b>OPTIONAL</b> configurations are also available and can be enabl
 * [Shared VPC](https://cloud.google.com/vpc/docs/shared-vpc) 
   * By default the GKE cluster deploys to a standalone VPC in the project where the cluster is created. Enabling this feature will deploy the GKE cluster to a shared VPC in a Host Project of your choice.
 
+* [Configure the Shared VPC](https://cloud.google.com/vpc/docs/shared-vpc) 
+  * The default Shared VPC configuration assumes the Shared VPC is configured and the Service Project is attached. Enabling this feature will configure a Shared VPC in a target Host Project and attach the Service Project before deploying the cluster.
+
+
 ## Harden GKE Security
 
 [GKE Hardening Instructions](docs/SECURITY.md)
