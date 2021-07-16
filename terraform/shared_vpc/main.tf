@@ -21,8 +21,8 @@ data "google_project" "project" {
 
 // Locals used to construct names of stuffs.
 locals {
-  clu_service_account       = format("service-%s@container-engine-robot.iam.gserviceaccount.com", data.google_project.project.number)
-  prj_service_account       = format("%s@cloudservices.gserviceaccount.com", data.google_project.project.number)
+  clu_service_account = format("service-%s@container-engine-robot.iam.gserviceaccount.com", data.google_project.project.number)
+  prj_service_account = format("%s@cloudservices.gserviceaccount.com", data.google_project.project.number)
 }
 
 module "enabled_shared_vpc_apis" {
