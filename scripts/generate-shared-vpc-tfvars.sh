@@ -126,7 +126,7 @@ if [[ "${STATE}" = "gcs" ]]; then
    STATE="gcs"
 else
    STATE="local"
-fi 
+fi
 
 # If Terraform is run without this file, the user will be prompted for values.
 # This check verifies if the file exists and prompts user for deletion
@@ -155,10 +155,3 @@ shared_vpc_project_id="${SHARED_VPC_PROJECT_ID}"
 shared_vpc_ip_range_pods_name="${POD_IP_RANGE_NAME}"
 shared_vpc_ip_range_services_name="${SERVICE_IP_RANGE_NAME}"
 EOF
-
-
-    read -p "a shared VPC named b already exists in host project b. If this is from a previous deployment of this template, please select yes(y) to continue or no(n) to cancel and correct the issue: " yn ; tput sgr0 
-    case $yn in
-        [Yy]* ) echo "the deployment will attempt to leverage the existing ";exit ;;
-        [Nn]* ) echo "to resolve this conflict either delete the existing Shared VPC, choose a different project/VPC name or deploy to the existing Shared VPC";exit ;;
-        * ) echo "Incorrect input. Cancelling execution";exit 1;;
