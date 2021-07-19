@@ -126,7 +126,7 @@ if [[ "${STATE}" = "gcs" ]]; then
    STATE="gcs"
 else
    STATE="local"
-fi
+fi 
 
 # If Terraform is run without this file, the user will be prompted for values.
 # This check verifies if the file exists and prompts user for deletion
