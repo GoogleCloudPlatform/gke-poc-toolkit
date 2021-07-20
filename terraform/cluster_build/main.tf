@@ -14,7 +14,6 @@
  * limitations under the License.
  */
 
-
 // Data Resources
 data "google_project" "project" {
   project_id = module.enabled_google_apis.project_id
@@ -27,6 +26,13 @@ resource "random_id" "kms" {
 
 // Locals used to construct names of stuffs.
 locals {
+  project_id                = var.shared_vpc ? var.shared_vpc_project_id : module.enabled_google_apis.project_id
+  network_name              = var.shared_vpc ? var.shared_vpc_name : var.vpc_name
+  subnetwork_name           = var.shared_vpc ? var.shared_vpc_subnet_name : var.subnet_name
+  ip_range_pods             = var.shared_vpc ? var.shared_vpc_ip_range_pods_name : var.ip_range_pods_name
+  ip_range_services         = var.shared_vpc ? var.shared_vpc_ip_range_services_name : var.ip_range_services_name
+  vpc_selflink              = format("projects/%s/global/networks/%s", local.project_id, local.network_name)
+  subnet_selflink           = format("projects/%s/regions/%s/subnetworks/%s", local.project_id, var.region, local.subnetwork_name)
   kcc_service_account       = format("%s-kcc", var.cluster_name)
   kcc_service_account_email = "${local.kcc_service_account}@${module.enabled_google_apis.project_id}.iam.gserviceaccount.com"
   bastion_name              = format("%s-bastion", var.cluster_name)
@@ -34,7 +40,8 @@ locals {
   gke_service_account_email = "${local.gke_service_account}@${module.enabled_google_apis.project_id}.iam.gserviceaccount.com"
   gke_keyring_name          = format("%s-kr-%s", var.cluster_name, random_id.kms.hex)
   gke_key_name              = format("%s-kek", var.cluster_name)
-  kek_service_account       = format("service-%s@container-engine-robot.iam.gserviceaccount.com", data.google_project.project.number)
+  clu_service_account       = format("service-%s@container-engine-robot.iam.gserviceaccount.com", data.google_project.project.number)
+  prj_service_account       = format("%s@cloudservices.gserviceaccount.com", data.google_project.project.number)
   database-encryption-key   = "projects/${var.governance_project_id}/locations/${var.region}/keyRings/${local.gke_keyring_name}/cryptoKeys/${local.gke_key_name}"
   bastion_zone              = var.zone
   bastion_members = [
@@ -65,28 +72,27 @@ locals {
     initial_node_count = 0
     // Intergrity Monitoring is not enabled in Windows Node pools yet.
     enable_integrity_monitoring = false
+    enable_secure_boot          = true
   }]
 
   // Presets for Linux Node Pool
   linux_pool = [{
-    name          = format("linux-%s", var.node_pool)
-    min_count     = 1
-    max_count     = 10
-    auto_upgrade  = true
-    node_metadata = "GKE_METADATA_SERVER"
-    machine_type  = "n1-standard-2"
-    disk_type     = "pd-ssd"
-    disk_size_gb  = 30
-    image_type    = "COS"
-    preemptible   = var.preemptible_nodes == "true" ? "true" : "false"
+    name               = format("linux-%s", var.node_pool)
+    min_count          = 1
+    max_count          = 10
+    auto_upgrade       = true
+    node_metadata      = "GKE_METADATA_SERVER"
+    machine_type       = "n1-standard-2"
+    disk_type          = "pd-ssd"
+    disk_size_gb       = 30
+    image_type         = "COS"
+    preemptible        = var.preemptible_nodes ? true : false
+    enable_secure_boot = true
   }]
   // Final Node Pool options for Cluster - combines all specified nodepools
 
   cluster_node_pools = var.windows_nodepool == "true" ? flatten([local.windows_pool, local.linux_pool]) : flatten(local.linux_pool)
 }
-
-
-
 
 // Enable APIs needed in the gke cluster project
 module "enabled_google_apis" {
@@ -151,6 +157,6 @@ module "kms" {
   keys           = [local.gke_key_name]
   set_owners_for = [local.gke_key_name]
   owners = [
-    "serviceAccount:${local.kek_service_account}",
+    "serviceAccount:${local.clu_service_account}",
   ]
 }
