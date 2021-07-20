@@ -84,6 +84,7 @@ steps:
           cd ${dir}   
           env=${dir%*/}
           env=${env#*/}  
+          current_dir=${PWD##*/}
           echo ""
           echo "******* Executing Terraform Plan against environment: ${env}"
 
@@ -95,12 +96,34 @@ steps:
             rm provider.tf
           fi
 
-          terraform plan -var 'project_id=cloud-build-github-trigger' -var 'governance_project_id=cloud-build-github-trigger' || { 
-            apk add curl
-            echo "{\"body\": \"An error was detected executing \`terraform plan\` against the **/terraform/${env}** directory. Please run \`terraform plan\` locally against that directory to resolve any errors and then resubmit the Pull Request.\"}" > /workspace/api_payload.txt && \
-            curl -s -H "Authorization: token $$GH_TOKEN" -X POST -d @/workspace/api_payload.txt "https://api.github.com/repos/GoogleCloudPlatform/gke-poc-toolkit/issues/$_PR_NUMBER/comments"
-            exit 1
-          }
+
+          if [[ "$current_dir" == "shared_vpc" ]]; then
+              terraform plan -var 'project_id=cloud-build-github-trigger' -var 'shared_vpc_project_id=cloud-build-github-trigger' -var 'shared_vpc_name=default' -var 'shared_vpc_subnet_name=default' -var 'shared_vpc_ip_range_pods_name=pod-ip-range' -var 'shared_vpc_ip_range_services_name=service-ip-range' || { 
+                apk add curl
+                echo "{\"body\": \"An error was detected executing \`terraform plan\` against the **/terraform/${env}** directory. Please run \`terraform plan\` locally against that directory to resolve any errors and then resubmit the Pull Request.\"}" > /workspace/api_payload.txt && \
+                curl -s -H "Authorization: token $$GH_TOKEN" -X POST -d @/workspace/api_payload.txt "https://api.github.com/repos/GoogleCloudPlatform/gke-poc-toolkit/issues/$_PR_NUMBER/comments"
+                exit 1
+              }
+          fi
+
+          if [[ "$current_dir" == "cluster_build" ]]; then
+              terraform plan -var 'project_id=cloud-build-github-trigger' -var 'governance_project_id=cloud-build-github-trigger' || { 
+                apk add curl
+                echo "{\"body\": \"An error was detected executing \`terraform plan\` against the **/terraform/${env}** directory. Please run \`terraform plan\` locally against that directory to resolve any errors and then resubmit the Pull Request.\"}" > /workspace/api_payload.txt && \
+                curl -s -H "Authorization: token $$GH_TOKEN" -X POST -d @/workspace/api_payload.txt "https://api.github.com/repos/GoogleCloudPlatform/gke-poc-toolkit/issues/$_PR_NUMBER/comments"
+                exit 1
+              }
+          fi
+
+          if [[ "$current_dir" == "security" ]]; then
+              terraform plan -var 'project_id=cloud-build-github-trigger' -var 'governance_project_id=cloud-build-github-trigger' || { 
+                apk add curl
+                echo "{\"body\": \"An error was detected executing \`terraform plan\` against the **/terraform/${env}** directory. Please run \`terraform plan\` locally against that directory to resolve any errors and then resubmit the Pull Request.\"}" > /workspace/api_payload.txt && \
+                curl -s -H "Authorization: token $$GH_TOKEN" -X POST -d @/workspace/api_payload.txt "https://api.github.com/repos/GoogleCloudPlatform/gke-poc-toolkit/issues/$_PR_NUMBER/comments"
+                exit 1
+              }
+          fi
+
           cd ../../
         done
       fi 

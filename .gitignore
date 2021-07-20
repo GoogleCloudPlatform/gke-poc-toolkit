@@ -48,3 +48,6 @@ creds/
 # terraform locks
 .terraform.lock.hcl
 
+# local bash command file
+_local.sh
+

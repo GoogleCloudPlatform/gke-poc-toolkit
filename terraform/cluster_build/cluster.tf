@@ -18,7 +18,6 @@ module "gke" {
   depends_on = [
     module.bastion,
     module.kms,
-    google_compute_shared_vpc_service_project.attach_toolkit,
   ]
   source                  = "terraform-google-modules/kubernetes-engine/google//modules/safer-cluster"
   version                 = "14.0.1"
