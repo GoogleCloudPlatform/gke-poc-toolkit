@@ -98,7 +98,6 @@ steps:
 
 
           if [[ "$current_dir" == "shared_vpc" ]]; then
-            if 
               terraform plan -var 'project_id=cloud-build-github-trigger' -var 'governance_project_id=cloud-build-github-trigger' -var 'shared_vpc_project_id=cloud-build-github-trigger' -var 'shared_vpc_name=default' -var 'shared_vpc_subnet_name=default' -var 'shared_vpc_ip_range_pods_name=pod-ip-range' -var 'shared_vpc_ip_range_services_name=service-ip-range' || { 
                 apk add curl
                 echo "{\"body\": \"An error was detected executing \`terraform plan\` against the **/terraform/${env}** directory. Please run \`terraform plan\` locally against that directory to resolve any errors and then resubmit the Pull Request.\"}" > /workspace/api_payload.txt && \
@@ -108,7 +107,6 @@ steps:
           fi
 
           if [[ "$current_dir" == "cluster_build" ]]; then
-            if 
               terraform plan -var 'project_id=cloud-build-github-trigger' -var 'governance_project_id=cloud-build-github-trigger' || { 
                 apk add curl
                 echo "{\"body\": \"An error was detected executing \`terraform plan\` against the **/terraform/${env}** directory. Please run \`terraform plan\` locally against that directory to resolve any errors and then resubmit the Pull Request.\"}" > /workspace/api_payload.txt && \
