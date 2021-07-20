@@ -19,12 +19,6 @@ variable "project_id" {
   description = "The project ID to host the cluster in"
 }
 
-variable "governance_project_id" {
-  description = "The project to use for governance resources such as kvm and log sinks"
-  type        = string
-  default     = ""
-}
-
 variable "shared_vpc_project_id" {
   type        = string
   description = "The Share VPC Project ID - This is optional and only valid if a Shared VPC is used"
