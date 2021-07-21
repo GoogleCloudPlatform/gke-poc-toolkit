@@ -22,7 +22,7 @@ ROOT="$( cd "$( dirname "${BASH_SOURCE[0]}" )/.." && pwd )"
 
 # shellcheck source=scripts/common.sh
 source "$ROOT/scripts/common.sh"
-source "$ROOT/scripts/set-env.sh"
+source "${ROOT}/environment-variables"
 # Tear down Terraform-managed resources and remove generated tfvars
 cd "$ROOT/terraform/cluster_build" 
 

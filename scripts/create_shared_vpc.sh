@@ -23,7 +23,7 @@ ROOT="$( cd "$( dirname "${BASH_SOURCE[0]}" )/.." && pwd )"
 source "${ROOT}/scripts/common.sh"
 
 # Generate the variables to be used by Terraform
-source "${ROOT}/scripts/set-env.sh"
+source "${ROOT}/environment-variables"
 source "${ROOT}/scripts/generate-shared-vpc-tfvars.sh"
 
 # Initialize and run Terraform

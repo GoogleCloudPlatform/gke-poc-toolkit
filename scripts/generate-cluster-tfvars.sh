@@ -24,7 +24,7 @@
 ROOT="$( cd "$( dirname "${BASH_SOURCE[0]}" )/.." && pwd )"
 
 source "$ROOT/scripts/common.sh"
-source "$ROOT/scripts/set-env.sh"
+source "${ROOT}/environment-variables"
 
 TFVARS_FILE="./terraform/cluster_build/terraform.tfvars"
 
