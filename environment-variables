@@ -38,7 +38,7 @@ PREEMPTIBLE_NODES=false
 
 # Where to save terraform state, allowed values: local|gcs   (use gcs for remote state in cloud storage bucket) 
 
-STATE=gcs
+STATE=local
  
 #Whether to enable Shared VPC configuration,  allowed values: true|false
 SHARED_VPC=false
