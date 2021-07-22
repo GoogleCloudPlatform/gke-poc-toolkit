@@ -51,4 +51,4 @@ SHARED_VPC=false
 #SERVICE_IP_RANGE_NAME=<the name of the secondary IP range used for cluster services>
 
 AUTH_IP=(curl ifconfig.me)
-export BUCKET=automate-270420-private-state
+export BUCKET=
