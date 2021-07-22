@@ -37,7 +37,7 @@ spec:
 EOF
 
 # Generate the variables to be used by Terraform
-source "${ROOT}/scripts/set-env.sh"
+source "${ROOT}/scripts/environment-variables"
 source "${ROOT}/scripts/generate-security-tfvars.sh"
 
 # Initialize and run Terraform

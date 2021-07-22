@@ -37,8 +37,8 @@ if [ "$STATE" == gcs ]; then
   fi
    (cd "${ROOT}/terraform/cluster_build"; terraform init -input=true -backend-config="bucket=$BUCKET")
    (cd "${ROOT}/terraform/cluster_build"; terraform apply -input=false -auto-approve)
-   sed '/^BUCKET/d' ${ROOT}/scripts/set-env.sh
-   echo -e "export BUCKET=${BUCKET}" >> ${ROOT}/scripts/set-env.sh 
+   sed '/^BUCKET/d' ${ROOT}/environment-variables
+   echo -e "BUCKET=${BUCKET}" >> ${ROOT}/environment-variables 
    GET_CREDS="$(terraform output  get_credentials)" 
   
 fi
