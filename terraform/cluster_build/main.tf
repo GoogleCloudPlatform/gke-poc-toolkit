@@ -61,6 +61,7 @@ locals {
       "${module.enabled_google_apis.project_id}=>roles/iam.serviceAccountCreator",
     ]
   }
+
   // Presets for Windows Node Pool
   windows_pool = [{
     name               = format("windows-%s", var.node_pool)
