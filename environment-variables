@@ -14,26 +14,31 @@
 
 # Set environment variables to provision the cluster
 
-
+# 
+REGION=$(gcloud config get-value compute/region)
 # Set PROJECT, if current project has been set.
+
 PROJECT=$(gcloud config get-value project)
 
 # Set zone
 ZONE=$(gcloud config get-value compute/zone)
 
-# set GOVERNANCE_PROJECT, replace if it is not curreent project
+# set GOVERNANCE_PROJECT, replace if it is not current project
 GOVERNANCE_PROJECT=$(gcloud config get-value project)
 
 # If cluster is windows cluster, allowed values: true|false
 WINDOWS_CLUSTER=false
 
 # If cluster is public or private, set it to false for private cluster,  allowed values: true|false
+
 PUBLIC_CLUSTER=false
 
-# Where to save terraform state, allowed values: local|gcs   (use gcs for remote state in cloud storage bucket) 
-STATE=gcs
 # Whether need preemptible nodes, allowed values: true|false
 PREEMPTIBLE_NODES=false
+
+# Where to save terraform state, allowed values: local|gcs   (use gcs for remote state in cloud storage bucket) 
+
+STATE=gcs
  
 #Whether to enable Shared VPC configuration,  allowed values: true|false
 SHARED_VPC=false
@@ -46,3 +51,4 @@ SHARED_VPC=false
 #SERVICE_IP_RANGE_NAME=<the name of the secondary IP range used for cluster services>
 
 AUTH_IP=(curl ifconfig.me)
+export BUCKET=automate-270420-private-state
