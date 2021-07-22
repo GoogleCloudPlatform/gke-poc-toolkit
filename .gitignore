@@ -39,6 +39,9 @@ crash.log
 
 terraform.tfvars
 
+## adding to ignore changes to backend.tf
+backend.tf
+
 # gcloud service account credentials
 credentials.json
 creds/
@@ -51,3 +54,4 @@ creds/
 # local bash command file
 _local.sh
 
+github.key
