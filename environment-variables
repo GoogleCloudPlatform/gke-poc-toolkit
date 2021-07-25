@@ -50,4 +50,4 @@ SHARED_VPC=false
 #POD_IP_RANGE_NAME=<the name of the secondary IP range used for cluster pod IPs>
 #SERVICE_IP_RANGE_NAME=<the name of the secondary IP range used for cluster services>
 
-AUTH_IP=$(curl ifconfig.me)
+AUTH_IP=$(curl -sS ifconfig.me)
