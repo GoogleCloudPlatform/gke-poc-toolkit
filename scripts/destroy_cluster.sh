@@ -19,21 +19,28 @@ set -o pipefail
 
 # Locate the root directory
 ROOT="$( cd "$( dirname "${BASH_SOURCE[0]}" )/.." && pwd )"
-TERRAFORM_ROOT="${ROOT}/terraform/cluster_build"
+
+
 # Tear down Terraform-managed resources and remove generated tfvars
-
+cd "${ROOT}/terraform/cluster_build"
 # Perform the destroy
+terraform state rm "module.kms"
+terraform destroy -input=false -auto-approve
 
-if [ -f backend.tf ]; then 
-		(cd "${TERRAFORM_ROOT}";terraform state rm "module.kms")
-		(cd "${TERRAFORM_ROOT}"; terraform destroy -input=false -auto-approve)
-		rm -f "${TERRAFORM_ROOT}/terraform.tfvars"
-		gsutil -m rm -r gs://$BUCKET
+if [ -f terraform.tfvars ]; then
+		rm -f terraform.tfvars
 	else
-		(cd "${TERRAFORM_ROOT}"; terraform destroy -input=false -auto-approve)
-		rm -f "${TERRAFORM_ROOT}/terraform.tfvars"
-		rm -f "${TERRAFORM_ROOT}/terraform.tfstate"
-		rm -rf "${TERRAFORM_ROOT}/.terraform"
+		exit
+fi
+if [ -d .terraforms ]; then
+		rm -rf .terraform
+	else
+		exit
+fi
+if [ -f backend.tf ]; then 
+		gsutil -m rm -r gs://"${BUCKET}"
+	else
+		rm -f terraform.tfstate
 fi
 
 
