@@ -20,7 +20,7 @@
 # "---------------------------------------------------------"
 set -o errexit
 set -o pipefail
-set -x
+
 # Locate the root directory. Used by scripts that source this one.
 # shellcheck disable=SC2034
 ROOT="$( cd "$( dirname "${BASH_SOURCE[0]}" )/.." && pwd )"
@@ -81,10 +81,13 @@ if [ -f "${ROOT}/cluster_config" ]; then
 		read -p $'ERROR: Cannot load configuration information.Would you like to generate a new configuration?\n\nPlease enter yes(y) to generate a new configuration or no(n) to cancel initialization: ' yn ; tput sgr0 
 
 		case $yn in
-        [Yy]* ) echo $'INFO: Creating cluster configuration from template.  Please update the required variables and restart';
+        [Yy]* ) tput setaf 3; echo "" 1>&2;
+				echo $'INFO: Creating cluster configuration from template.  Please update the required variables and restart';
 				cp "${SCRIPT_ROOT}/cluster_config.example" "${ROOT}/cluster_config" ;exit ;;
-				[Nn]* ) echo $'Cancelling initializtion, please verify your cluster_config file and restart';exit ;;
-				* ) echo "Incorrect input. Cancelling execution";exit 1;;
+				[Nn]* ) tput setaf 2; echo "" 1>&2;
+				echo $'WARN: Cancelling initialization, please verify your cluster_config file and restart';exit ;;
+				* ) tput setaf 1; echo "" 1>&2;
+				echo "ERROR: Incorrect input. Cancelling execution";exit 1;;
 		esac
 fi
 
@@ -97,32 +100,22 @@ fi
 # The - in the initial variable check prevents the script from exiting due
 # from attempting to use an unset variable.
 if [[ -z "${REGION}" ]]; then
-    echo "https://cloud.google.com/compute/docs/regions-zones/changing-default-zone-region" 1>&2
-    echo "gcloud cli must be configured with a default region." 1>&2
-    echo "run 'gcloud config set compute/region REGION'." 1>&2
-    echo "replace 'REGION' with the region name like us-west1." 1>&2
+    echo $''1>&2
     exit 1;
 fi
 
 if [[ -z "${PROJECT}" ]]; then
-    echo "gcloud cli must be configured with a default project." 1>&2
-    echo "run 'gcloud config set core/project PROJECT'." 1>&2
-    echo "replace 'PROJECT' with the project name." 1>&2
+    echo $''1>&2
     exit 1;
 fi
 
 if [[ -z "${ZONE}" ]]; then
-    echo "https://cloud.google.com/compute/docs/regions-zones/changing-default-zone-region" 1>&2
-    echo "gcloud cli must be configured with a default zone." 1>&2
-    echo "run 'gcloud config set compute/zone ZONE'." 1>&2
-    echo "replace 'ZONE' with the zone name like us-west1-a." 1>&2
+    echo $''1>&2
     exit 1;
 fi
 
 if [[ -z "${GOVERNANCE_PROJECT}" ]]; then
-    echo "This script requires a project for governance resources." 1>&2
-    echo "run 'export GOVERNANCE_PROJECT=PROJECT'." 1>&2
-    echo "replace 'PROJECT' with the project name." 1>&2
+    echo $''1>&2
     exit 1;
 fi
 
@@ -132,16 +125,17 @@ fi
 if [[ ${PUBLIC_CLUSTER} == true ]]; then
     PRIVATE="false"
     CLUSTER_TYPE="public"
-    echo "creating public cluster: cluster master endpoint will be exposed as a public endpoint" 1>&2
+    echo "INFO: creating public cluster: cluster master endpoint will be exposed as a public endpoint" 1>&2
 	else
     PRIVATE="true"
     CLUSTER_TYPE="private"
-    echo "creating private cluster: access to the the cluster master endpoint will be limited to the bastion host" 1>&2
+    echo "INFO: creating private cluster: access to the the cluster master endpoint will be limited to the bastion host" 1>&2
 fi
 
 if [[ -z ${AUTH_IP} ]] && [ "${PUBLIC}" != "true" ]; then
     tput setaf 1; echo "" 1>&2
-    echo "Please set your public IP address"
+
+    echo $'Please set your public IP address'
     echo "run export AUTH_IP=IP"
     echo "replace IP with your IP"
     echo "" ; tput sgr0
@@ -153,10 +147,10 @@ fi
 #  - If not set, the boolean value defaults to false and a linux GKE cluster is created
 if [[ ${WINDOWS_CLUSTER} == true ]]; then
     WINDOWS="true"
-    echo "creating a Windows GKE cluster" 1>&2
+    echo "INFO: creating a Windows GKE cluster" 1>&2
 	else
     WINDOWS="false"
-    echo "creating a linux GKE cluster" 1>&2
+    echo "INFO: creating a linux GKE cluster" 1>&2
 fi
 
 # This check verifies if the PREEMPTIBLE_NODES boolean value has been set to true
@@ -164,7 +158,7 @@ fi
 #  - If not set, the boolean value defaults to false and the cluster deploys with traditional node types
 if [[ ${PREEMPTIBLE_NODES} == true ]]; then
     PREEMPTIBLE="true"
-    echo "deploying GKE cluster with preemptible nodes" 1>&2
+    echo "INFO: deploying GKE cluster with preemptible nodes" 1>&2
 	else
     PREEMPTIBLE="false"
 fi
@@ -173,11 +167,11 @@ fi
 #  - If set to true, additional variables are required to deployed to an existing shared VPC
 #  - If not set, the boolean value defaults to false and GKE is deployed to an standalone VPC
 if [[ ${SHARED_VPC} == true ]]; then
-    echo "deploying GKE to shared VPC" 1>&2
+    echo "INFO: Verifying Shared VPC Configuration Information" 1>&2
 
     if [[ -z "${SHARED_VPC_NAME}" ]]; then
         tput setaf 1; echo "" 1>&2
-        echo "deploying to a shared VPC requires the shared VPC name to be set." 1>&2
+        echo $'deploying to a shared VPC requires the shared VPC name to be set.' 1>&2
         echo "run 'export SHARED_VPC_NAME=<SHARED_VPC_NAME>'." 1>&2
         echo "replace <SHARED_VPC_NAME> with the shared VPC name." 1>&2
         echo "alternatively, changing the value of SHARED_VPC to false will create a standalone VPC in the service project where GKE is deployed." 1>&2
@@ -308,3 +302,4 @@ case $buildtype in
 			*) 
 				;;
 esac
+TF_IN_AUTOMATION="true"
