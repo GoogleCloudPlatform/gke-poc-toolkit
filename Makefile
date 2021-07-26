@@ -27,15 +27,15 @@ help:
 
 .PHONY: shared-vpc
 shared-vpc:
-	@source	scripts/create_shared_vpc.sh
+	@source	scripts/create_shared_vpc.sh vpc
 
 .PHONY: create
 create:
-	@source	scripts/create_cluster.sh
+	@source	scripts/create_cluster.sh cluster
 
 .PHONY: secure
 secure:
-	@source scripts/secure_cluster.sh
+	@source scripts/secure_cluster.sh secure
 
 .PHONY: start-proxy
 start-proxy:
@@ -47,7 +47,7 @@ stop-proxy:
 
 .PHONY: destroy
 destroy:
-	@source scripts/destroy_cluster.sh
+	@source scripts/destroy_cluster.sh cluster
 
 .PHONY: start-wi-demo
 start-wi-demo:

@@ -28,20 +28,6 @@ ROOT="$( cd "$( dirname "${BASH_SOURCE[0]}" )/.." && pwd )"
 # shellcheck source=scripts/common.sh
 source "$ROOT"/scripts/common.sh
 
-# Obtain the needed env variables. Variables are only created if they are
-# currently empty. This allows users to set environment variables if they
-# would prefer to do so.
-#
-# The - in the initial variable check prevents the script from exiting due
-# from attempting to use an unset variable.
-[[ -z "${PROJECT-}" ]] && PROJECT="$(gcloud config get-value core/project)"
-if [[ -z "${PROJECT}" ]]; then
-    echo "gcloud cli must be configured with a default project." 1>&2
-    echo "run 'gcloud config set core/project PROJECT'." 1>&2
-    echo "replace 'PROJECT' with the project name." 1>&2
-    exit 1;
-fi
-
 # Configure the connfig connector with the project GKE was created in. 
 # This is done in the hardening build already but I want to ensure this demo
 # can run standalone. 
