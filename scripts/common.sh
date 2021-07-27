@@ -74,49 +74,52 @@ test_cmd() {
   fi
 }
 
+
 if [ -f "${ROOT}/cluster_config" ]; then
     . "${ROOT}/cluster_config"
+		echo $'INFO: Verifying GCP Configuration'
+
+		# Verify the needed env variables. 
+		if [[ -z "${REGION}" ]]; then
+    	tput setaf 1; echo "" 1>&2
+			echo $'ERROR: This script requires Region information to deploy resources. Please update \'REGION\' with an appropriate region name, like \'us-west1\' in the \'cluster_config\' file' 1>&2
+			echo $''1>&2
+			exit 1;
+		fi
+
+		if [[ -z "${PROJECT}" ]]; then
+			tput setaf 1; echo "" 1>&2
+			echo $'ERROR: This script requires a project to deploy resources. Please update \'PROJECT\' with the project name in the \'cluster_config\' file' 1>&2
+			echo $''1>&2
+			exit 1;
+		fi
+
+		if [[ -z "${ZONE}" ]]; then
+			tput setaf 1; echo "" 1>&2
+			echo $'ERROR: This script requires a Zone information to deploy resources. Please update \'ZONE\' with an appropriate zone name, like \'us-west1-a\' in the \'cluster_config\' file' 1>&2
+			echo $''1>&2
+			exit 1;
+		fi
+
+		if [[ -z "${GOVERNANCE_PROJECT}" ]]; then
+			tput setaf 1; echo "" 1>&2
+			echo $'ERROR: This script requires a project for governance resources. \nPlease update the \'GOVERNANCE_PROJECT\' in the \'cluster_config\' file' 1>&2
+			echo $''1>&2
+			exit 1;
+		fi
 	else
 		tput setaf 1; echo "" 1>&2
 		read -p $'ERROR: Cannot load configuration information.Would you like to generate a new configuration?\n\nPlease enter yes(y) to generate a new configuration or no(n) to cancel initialization: ' yn ; tput sgr0 
 
 		case $yn in
-        [Yy]* ) tput setaf 3; echo "" 1>&2;
+        [Yy]* ) tput setaf 7; echo "" 1>&2;
 				echo $'INFO: Creating cluster configuration from template.  Please update the required variables and restart';
 				cp "${SCRIPT_ROOT}/cluster_config.example" "${ROOT}/cluster_config" ;exit ;;
-				[Nn]* ) tput setaf 2; echo "" 1>&2;
+				[Nn]* ) tput setaf 3; echo "" 1>&2;
 				echo $'WARN: Cancelling initialization, please verify your cluster_config file and restart';exit ;;
 				* ) tput setaf 1; echo "" 1>&2;
 				echo "ERROR: Incorrect input. Cancelling execution";exit 1;;
 		esac
-fi
-
-
-
-# Obtain the needed env variables. Variables are only created if they are
-# currently empty. This allows users to set environment variables if they
-# would prefer to do so.
-#
-# The - in the initial variable check prevents the script from exiting due
-# from attempting to use an unset variable.
-if [[ -z "${REGION}" ]]; then
-    echo $''1>&2
-    exit 1;
-fi
-
-if [[ -z "${PROJECT}" ]]; then
-    echo $''1>&2
-    exit 1;
-fi
-
-if [[ -z "${ZONE}" ]]; then
-    echo $''1>&2
-    exit 1;
-fi
-
-if [[ -z "${GOVERNANCE_PROJECT}" ]]; then
-    echo $''1>&2
-    exit 1;
 fi
 
 # This check verifies if the PUBLIC_CLUSTER boolean value has been set to true
@@ -168,50 +171,35 @@ if [[ ${SHARED_VPC} == true ]]; then
 
     if [[ -z "${SHARED_VPC_NAME}" ]]; then
         tput setaf 1; echo "" 1>&2
-        echo $'deploying to a shared VPC requires the shared VPC name to be set.' 1>&2
-        echo "run 'export SHARED_VPC_NAME=<SHARED_VPC_NAME>'." 1>&2
-        echo "replace <SHARED_VPC_NAME> with the shared VPC name." 1>&2
-        echo "alternatively, changing the value of SHARED_VPC to false will create a standalone VPC in the service project where GKE is deployed." 1>&2
+        echo $'ERROR: Deploying to a shared VPC requires the shared VPC name to be set.\n Please set \'SHARED_VPC_NAME\' in the \'cluster_config\' file'  1>&2
         echo "" ; tput sgr0
         exit 1;
     fi
 
     if [[ -z "${SHARED_VPC_SUBNET_NAME}" ]]; then
-        tput setaf 1; echo "" 1>&2        
-        echo "deploying to a shared VPC requires the shared VPC subnet name to be set." 1>&2
-        echo "run 'export SHARED_VPC_SUBNET_NAME=<SHARED_VPC_SUBNET_NAME>'." 1>&2
-        echo "replace <SHARED_VPC_SUBNET_NAME> with the subnet name in the shared VPC where GKE is to be deployed." 1>&2
-        echo "alternatively, changing the value of SHARED_VPC to false will create a standalone VPC in the service project where GKE is deployed." 1>&2
+        tput setaf 1; echo "" 1>&2  
+				echo $'ERROR: Deploying to a shared VPC requires the shared VPC subnet name to be set.\n Please set \'SHARED_VPC_SUBNET_NAME\' in the \'cluster_config\' file'  1>&2      
         echo "" ; tput sgr0
         exit 1;
     fi
 
     if [[ -z "${SHARED_VPC_PROJECT_ID}" ]]; then
         tput setaf 1; echo "" 1>&2
-        echo "deploying to a shared VPC requires the shared VPC project ID to be set." 1>&2
-        echo "run 'export SHARED_VPC_PROJECT_ID=<SHARED_VPC_PROJECT_ID>'." 1>&2
-        echo "replace <SHARED_VPC_PROJECT_ID> with shared VPC project ID." 1>&2
-        echo "alternatively, changing the value of SHARED_VPC to false will create a standalone VPC in the service project where GKE is deployed." 1>&2
+				echo $'ERROR: Deploying to a shared VPC requires the Shared VPC Project ID to be set.\n Please set \'SHARED_VPC_PROJECT_ID\' in the \'cluster_config\' file'  1>&2    
         echo "" ; tput sgr0
         exit 1;
     fi
 
     if [[ -z "${POD_IP_RANGE_NAME}" ]]; then
         tput setaf 1; echo "" 1>&2
-        echo "deploying to a shared VPC requires a secondary IP range be created on the subnet and configured with the pod IP range for the cluster." 1>&2
-        echo "run 'export POD_IP_RANGE_NAME=<POD_IP_RANGE_NAME>'." 1>&2
-        echo "replace <POD_IP_RANGE_NAME> with the name of the secondary IP range created for pod IPs." 1>&2
-        echo "alternatively, changing the value of SHARED_VPC to false will create a standalone VPC in the service project where GKE is deployed." 1>&2
+				echo $'ERROR: Deploying to a shared VPC requires requires a secondary IP range be created on the subnet and configured with the pod IP range for the cluster.\n Please set \'POD_IP_RANGE_NAME\' in the \'cluster_config\' file'  1>&2    
         echo "" ; tput sgr0
         exit 1;
     fi
 
     if [[ -z "${SERVICE_IP_RANGE_NAME}" ]]; then
         tput setaf 1; echo "" 1>&2
-        echo "deploying to a shared VPC requires a secondary IP range be created on the subnet and configured with the service IP range for the cluster." 1>&2
-        echo "run 'export SERVICE_IP_RANGE_NAME=<SERVICE_IP_RANGE_NAME>'." 1>&2
-        echo "replace <SERVICE_IP_RANGE_NAME> with the name of the secondary IP range created for service IPs." 1>&2
-        echo "alternatively, changing the value of SHARED_VPC to false will create a standalone VPC in the service project where GKE is deployed." 1>&2
+				echo $'ERROR: Deploying to a shared VPC requires requires a secondary IP range be created on the subnet and configured with the service IP range for the cluster.\n Please set \' SERVICE_IP_RANGE_NAME\' in the \'cluster_config\' file'  1>&2   
         echo "" ; tput sgr0
         exit 1;
     fi
@@ -220,26 +208,26 @@ if [[ ${SHARED_VPC} == true ]]; then
     #  - Perform same test for both the pod and service secondary subnets
     if [ "$(gcloud compute networks subnets describe $SHARED_VPC_SUBNET_NAME --region $REGION --project $SHARED_VPC_PROJECT_ID | grep name | sed 's/^.*: //')" != "$SHARED_VPC_SUBNET_NAME" ]; then
         tput setaf 1; echo "" 1>&2
-        echo "shared VPC subnet ${SHARED_VPC_SUBNET_NAME} does not exist in region ${REGION} or you do not have access." 1>&2
-        echo "please resolve this issue before continuing." 1>&2
+        echo "ERROR: Shared VPC subnet ${SHARED_VPC_SUBNET_NAME} does not exist in region ${REGION} or you do not have access." 1>&2
+        echo "Please resolve this issue before continuing." 1>&2
         echo "" ; tput sgr0
         exit 1;
     elif [ "$(gcloud compute networks subnets describe $SHARED_VPC_SUBNET_NAME --region $REGION --project $SHARED_VPC_PROJECT_ID | grep $POD_IP_RANGE_NAME | sed 's/^.*: //')" != "$POD_IP_RANGE_NAME" ]; then
         tput setaf 1; echo "" 1>&2
-        echo "secondary subnetwork ${POD_IP_RANGE_NAME} does not exist in shared VPC subnet ${SHARED_VPC_SUBNET_NAME} in region ${REGION} or you do not have access." 1>&2
-        echo "please resolve this issue before continuing." 1>&2
+        echo "ERROR: Secondary subnetwork ${POD_IP_RANGE_NAME} does not exist in shared VPC subnet ${SHARED_VPC_SUBNET_NAME} in region ${REGION} or you do not have access." 1>&2
+        echo "Please resolve this issue before continuing." 1>&2
         echo "" ; tput sgr0
         exit 1;
     elif [ "$(gcloud compute networks subnets describe $SHARED_VPC_SUBNET_NAME --region $REGION --project $SHARED_VPC_PROJECT_ID | grep $SERVICE_IP_RANGE_NAME | sed 's/^.*: //')" != "$SERVICE_IP_RANGE_NAME" ]; then
         tput setaf 1; echo "" 1>&2
-        echo "secondary subnetwork ${SERVICE_IP_RANGE_NAME} does not exist in shared VPC subnet ${SHARED_VPC_SUBNET_NAME} in region ${REGION} or you do not have access." 1>&2
-        echo "please resolve this issue before continuing." 1>&2
+        echo "ERROR: Secondary subnetwork ${SERVICE_IP_RANGE_NAME} does not exist in shared VPC subnet ${SHARED_VPC_SUBNET_NAME} in region ${REGION} or you do not have access." 1>&2
+        echo "Please resolve this issue before continuing." 1>&2
         echo "" ; tput sgr0
         exit 1;
     fi
 	else 
     SHARED_VPC="false"
-    echo "deploying GKE cluster in standalone VPC" 1>&2
+    echo "INFO: Creating GKE cluster in standalone VPC" 1>&2
 fi
 
 buildtype=$1
