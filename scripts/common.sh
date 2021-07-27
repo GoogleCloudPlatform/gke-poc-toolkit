@@ -125,19 +125,16 @@ fi
 if [[ ${PUBLIC_CLUSTER} == true ]]; then
     PRIVATE="false"
     CLUSTER_TYPE="public"
-    echo "INFO: creating public cluster: cluster master endpoint will be exposed as a public endpoint" 1>&2
+    echo $'INFO: Creating Public cluster; access to the the cluster master endpoint will be unrestricted public endpoint' 1>&2
 	else
     PRIVATE="true"
     CLUSTER_TYPE="private"
-    echo "INFO: creating private cluster: access to the the cluster master endpoint will be limited to the bastion host" 1>&2
+    echo $'INFO: Creating private cluster; access to the the cluster master endpoint will be limited to the bastion host' 1>&2
 fi
 
-if [[ -z ${AUTH_IP} ]] && [ "${PUBLIC}" != "true" ]; then
+if [[ -z ${AUTH_IP} ]] && [ "${PRIVATE}" = "true" ]; then
     tput setaf 1; echo "" 1>&2
-
-    echo $'Please set your public IP address'
-    echo "run export AUTH_IP=IP"
-    echo "replace IP with your IP"
+    echo $'ERROR: Private Endpoint GKE Cluster access is restricted to a specified Public IP\n Please set \'AUTH_IP\''
     echo "" ; tput sgr0
     exit 1
 fi
@@ -147,10 +144,10 @@ fi
 #  - If not set, the boolean value defaults to false and a linux GKE cluster is created
 if [[ ${WINDOWS_CLUSTER} == true ]]; then
     WINDOWS="true"
-    echo "INFO: creating a Windows GKE cluster" 1>&2
+    echo "INFO: Creating GKE Cluster with a Windows Node Pool" 1>&2
 	else
     WINDOWS="false"
-    echo "INFO: creating a linux GKE cluster" 1>&2
+    echo "INFO: Creating GKE Cluster with a Linux Node Pool" 1>&2
 fi
 
 # This check verifies if the PREEMPTIBLE_NODES boolean value has been set to true
@@ -158,7 +155,7 @@ fi
 #  - If not set, the boolean value defaults to false and the cluster deploys with traditional node types
 if [[ ${PREEMPTIBLE_NODES} == true ]]; then
     PREEMPTIBLE="true"
-    echo "INFO: deploying GKE cluster with preemptible nodes" 1>&2
+   echo "INFO: Creating GKE Cluster with with preemptible nodes" 1>&2
 	else
     PREEMPTIBLE="false"
 fi
@@ -248,58 +245,74 @@ fi
 buildtype=$1
 
 if [[ "${STATE}" = "gcs" ]]; then
-  	STATE="gcs"
-		BUCKET="${PROJECT}-${buildtype}-state"
-		echo -e "BUCKET=${BUCKET}" >> ${ROOT}/cluster_config
+  STATE="gcs"
+	BUCKET="${PROJECT}-${buildtype}-state"
+	echo -e "BUCKET=${BUCKET}" >> ${ROOT}/cluster_config
+		
 		case $buildtype in
-			cluster) echo $'INFO: Creating Terraform backend configuration Cluster Build';
-			TERRAFORM_ROOT="${ROOT}/terraform/cluster_build";
-			cat > ${TERRAFORM_ROOT}/backend.tf <<-'EOF'
-			terraform {
-			  backend "gcs" {
-			  }
-			}
-			EOF
+			cluster) echo "" 1>&2;
+				echo $'INFO: Creating backend configuration for Cluster Build';
+				TERRAFORM_ROOT="${ROOT}/terraform/cluster_build";
+				cat > ${TERRAFORM_ROOT}/backend.tf <<-'EOF'
+					terraform {
+					  backend "gcs" {
+					  }
+					}
+				EOF
 			;;
-			vpc) echo $'INFO: Creating Terraform backend configuration for Shared VPC Build';
-			TERRAFORM_ROOT="${ROOT}/terraform/shared_vpc";
-			cat > ${TERRAFORM_ROOT}/backend.tf <<- EOF 
-			terraform {
-			  backend "gcs" {
-			  }
-			}
-			EOF
+
+			vpc) echo "" 1>&2;
+					echo $'INFO: Creating  backend configuration for Shared VPC Build';
+					TERRAFORM_ROOT="${ROOT}/terraform/shared_vpc";
+					cat > ${TERRAFORM_ROOT}/backend.tf <<- EOF 
+					terraform {
+					  backend "gcs" {
+					  }
+					}
+					EOF
 			;;
-			security) echo $'INFO: Creating Terraform backend configuration for Cluster Security Build';
-			TERRAFORM_ROOT="${ROOT}/terraform/security";
-			cat > ${TERRAFORM_ROOT}/backend.tf <<- EOF  
-			terraform {
-			  backend "gcs" {
-			  }
-			}
-			EOF
+
+			security) echo "" 1>&2;
+					echo $'INFO: Creating backend configuration for Cluster Security Build';
+					TERRAFORM_ROOT="${ROOT}/terraform/security";
+					cat > ${TERRAFORM_ROOT}/backend.tf <<- EOF  
+					terraform {
+					  backend "gcs" {
+					  }
+					}
+					EOF
 			;;
-			*) 
-				;;
+
+			*) tput setaf 1; echo "" 1>&2;
+				echo "ERROR: Incorrect input. Cancelling execution";
+				exit 1;;
+			;;
 		esac
 	else
    STATE="local"
 fi
 
 case $buildtype in
-			cluster) echo $'INFO: Creating Terraform Variables file for Cluster Build';
-			TERRAFORM_ROOT="${ROOT}/terraform/cluster_build";
-			source "${SCRIPT_ROOT}/generate-tfvars.sh";
-			;;
-			vpc) echo $'INFO: Creating Terraform Variables file for Shared VPC Build';
-			TERRAFORM_ROOT="${ROOT}/terraform/shared_vpc";
-			source "${SCRIPT_ROOT}/generate-tfvars.sh";
-			;;
-			security) echo $'INFO: Creating Terraform Variables file for Cluster Security Build';
-			TERRAFORM_ROOT="${ROOT}/terraform/security";
-			source "${SCRIPT_ROOT}/generate-tfvars.sh";
-			;;
-			*) 
-				;;
+		cluster) echo "" 1>&2;
+				echo $'INFO: Creating terraform.tfvars file for Cluster Build';
+				TERRAFORM_ROOT="${ROOT}/terraform/cluster_build";
+				source "${SCRIPT_ROOT}/generate-tfvars.sh";
+		;;
+
+		vpc) echo "" 1>&2;
+				echo $'INFO:  Creating terraform.tfvars for Shared VPC Build';
+				TERRAFORM_ROOT="${ROOT}/terraform/shared_vpc";
+				source "${SCRIPT_ROOT}/generate-tfvars.sh";
+		;;
+
+		security) echo "" 1>&2;
+				echo $'INFO:  Creating terraform.tfvars for Cluster Security Build';
+				TERRAFORM_ROOT="${ROOT}/terraform/security";
+				source "${SCRIPT_ROOT}/generate-tfvars.sh";
+		;;
+
+		*) tput setaf 1; echo "" 1>&2;
+			echo "ERROR: Incorrect input. Cancelling execution";
+			exit 1;;
+		;;
 esac
-TF_IN_AUTOMATION="true"

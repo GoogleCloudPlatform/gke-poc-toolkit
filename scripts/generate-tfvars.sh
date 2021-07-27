@@ -64,3 +64,4 @@ cat <<-EOF > "${TFVARS_FILE}"
 		shared_vpc_ip_range_pods_name			=	"${POD_IP_RANGE_NAME}"
 		shared_vpc_ip_range_services_name	=	"${SERVICE_IP_RANGE_NAME}"
 EOF
+
