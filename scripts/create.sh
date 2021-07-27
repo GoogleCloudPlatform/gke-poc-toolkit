@@ -34,13 +34,13 @@ fi
 
 case $STATE in
 
-	local) 	(cd "${TERRAFORM_ROOT}";terraform init -input=true);
-  				(cd "${TERRAFORM_ROOT}";terraform apply -input=false -auto-approve);
-					GET_CREDS="$(terraform output get_credentials)";
+	local)	(cd "${TERRAFORM_ROOT}";terraform init -input=true);
+  	(cd "${TERRAFORM_ROOT}";terraform apply -input=false -auto-approve);
+		GET_CREDS="$(terraform output get_credentials)";
 	;;
-	gcs) 	(cd "${TERRAFORM_ROOT}";terraform init -input=true -backend-config="bucket=${BUCKET}");
-				(cd "${TERRAFORM_ROOT}";terraform apply -input=false -auto-approve);
-				GET_CREDS="$(terraform output get_credentials)";
+	gcs)	(cd "${TERRAFORM_ROOT}";terraform init -input=true -backend-config="bucket=${BUCKET}");
+		(cd "${TERRAFORM_ROOT}";terraform apply -input=false -auto-approve);
+		GET_CREDS="$(terraform output get_credentials)";
 	;;
 	*) exit 1
 	;;

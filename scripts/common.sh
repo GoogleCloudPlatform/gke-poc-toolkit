@@ -77,49 +77,54 @@ test_cmd() {
 
 if [ -f "${ROOT}/cluster_config" ]; then
     . "${ROOT}/cluster_config"
-		echo $'INFO: Verifying GCP Configuration'
+    echo $'INFO: Verifying GCP Configuration'
 
-		# Verify the needed env variables. 
-		if [[ -z "${REGION}" ]]; then
-    	tput setaf 1; echo "" 1>&2
-			echo $'ERROR: This script requires Region information to deploy resources. Please update \'REGION\' with an appropriate region name, like \'us-west1\' in the \'cluster_config\' file' 1>&2
-			echo $''1>&2
-			exit 1;
-		fi
+    # Verify the needed env variables. 
+  if [[ -z "${REGION}" ]]; then
+    tput setaf 1; echo "" 1>&2
+    echo $'ERROR: This script requires Region information to deploy resources. Please update \'REGION\' with an appropriate region name, like \'us-west1\' in the \'cluster_config\' file' 1>&2
+    echo $''1>&2
+    exit 1;
+	fi
 
-		if [[ -z "${PROJECT}" ]]; then
-			tput setaf 1; echo "" 1>&2
-			echo $'ERROR: This script requires a project to deploy resources. Please update \'PROJECT\' with the project name in the \'cluster_config\' file' 1>&2
-			echo $''1>&2
-			exit 1;
-		fi
+	if [[ -z "${PROJECT}" ]]; then
+    tput setaf 1; echo "" 1>&2
+    echo $'ERROR: This script requires a project to deploy resources. Please update \'PROJECT\' with the project name in the \'cluster_config\' file' 1>&2
+    echo $''1>&2
+    exit 1;
+	fi
 
-		if [[ -z "${ZONE}" ]]; then
-			tput setaf 1; echo "" 1>&2
-			echo $'ERROR: This script requires a Zone information to deploy resources. Please update \'ZONE\' with an appropriate zone name, like \'us-west1-a\' in the \'cluster_config\' file' 1>&2
-			echo $''1>&2
-			exit 1;
-		fi
+	if [[ -z "${ZONE}" ]]; then
+    tput setaf 1; echo "" 1>&2
+    echo $'ERROR: This script requires a Zone information to deploy resources. Please update \'ZONE\' with an appropriate zone name, like \'us-west1-a\' in the \'cluster_config\' file' 1>&2
+    echo $''1>&2
+    exit 1;
+	fi
 
-		if [[ -z "${GOVERNANCE_PROJECT}" ]]; then
-			tput setaf 1; echo "" 1>&2
-			echo $'ERROR: This script requires a project for governance resources. \nPlease update the \'GOVERNANCE_PROJECT\' in the \'cluster_config\' file' 1>&2
-			echo $''1>&2
-			exit 1;
-		fi
-	else
-		tput setaf 1; echo "" 1>&2
-		read -p $'ERROR: Cannot load configuration information.Would you like to generate a new configuration?\n\nPlease enter yes(y) to generate a new configuration or no(n) to cancel initialization: ' yn ; tput sgr0 
+	if [[ -z "${GOVERNANCE_PROJECT}" ]]; then
+    tput setaf 1; echo "" 1>&2
+    echo $'ERROR: This script requires a project for governance resources. \nPlease update the \'GOVERNANCE_PROJECT\' in the \'cluster_config\' file' 1>&2
+    echo $''1>&2
+    exit 1;
+	fi
 
-		case $yn in
-        [Yy]* ) tput setaf 7; echo "" 1>&2;
-				echo $'INFO: Creating cluster configuration from template.  Please update the required variables and restart';
-				cp "${SCRIPT_ROOT}/cluster_config.example" "${ROOT}/cluster_config" ;exit ;;
-				[Nn]* ) tput setaf 3; echo "" 1>&2;
-				echo $'WARN: Cancelling initialization, please verify your cluster_config file and restart';exit ;;
-				* ) tput setaf 1; echo "" 1>&2;
-				echo "ERROR: Incorrect input. Cancelling execution";exit 1;;
-		esac
+else
+    tput setaf 1; echo "" 1>&2
+    read -p $'ERROR: Cannot load configuration information.Would you like to generate a new configuration?\n\nPlease enter yes(y) to generate a new configuration or no(n) to cancel initialization: ' yn ; tput sgr0 
+
+    case $yn in
+      [Yy]* ) tput setaf 7; echo "" 1>&2;
+      echo $'INFO: Creating cluster configuration from template.  Please update the required variables and restart';
+      cp "${SCRIPT_ROOT}/cluster_config.example" "${ROOT}/cluster_config";
+      exit
+      ;;
+      [Nn]* ) tput setaf 3; echo "" 1>&2;
+      echo $'WARN: Cancelling initialization, please verify your cluster_config file and restart';
+      exit
+      ;;
+      * ) tput setaf 1; echo "" 1>&2;
+      echo "ERROR: Incorrect input. Cancelling execution";exit 1;;
+    esac
 fi
 
 # This check verifies if the PUBLIC_CLUSTER boolean value has been set to true
@@ -136,98 +141,98 @@ if [[ ${PUBLIC_CLUSTER} == true ]]; then
 fi
 
 if [[ -z ${AUTH_IP} ]] && [ "${PRIVATE}" = "true" ]; then
-    tput setaf 1; echo "" 1>&2
-    echo $'ERROR: Private Endpoint GKE Cluster access is restricted to a specified Public IP\n Please set \'AUTH_IP\''
-    echo "" ; tput sgr0
-    exit 1
+  tput setaf 1; echo "" 1>&2
+  echo $'ERROR: Private Endpoint GKE Cluster access is restricted to a specified Public IP\n Please set \'AUTH_IP\''
+  echo "" ; tput sgr0
+  exit 1
 fi
 
 # This check verifies if the WINDOWS_CLUSTER boolean value has been set to true
 #  - If set to true, a Windows GKE cluster is created
 #  - If not set, the boolean value defaults to false and a linux GKE cluster is created
 if [[ ${WINDOWS_CLUSTER} == true ]]; then
-    WINDOWS="true"
-    echo "INFO: Creating GKE Cluster with a Windows Node Pool" 1>&2
+  WINDOWS="true"
+  echo "INFO: Creating GKE Cluster with a Windows Node Pool" 1>&2
 	else
-    WINDOWS="false"
-    echo "INFO: Creating GKE Cluster with a Linux Node Pool" 1>&2
+  WINDOWS="false"
+  echo "INFO: Creating GKE Cluster with a Linux Node Pool" 1>&2
 fi
 
 # This check verifies if the PREEMPTIBLE_NODES boolean value has been set to true
 #  - If set to true, deploy GKE cluster with preemptible nodes
 #  - If not set, the boolean value defaults to false and the cluster deploys with traditional node types
 if [[ ${PREEMPTIBLE_NODES} == true ]]; then
-    PREEMPTIBLE="true"
-   echo "INFO: Creating GKE Cluster with with preemptible nodes" 1>&2
+  PREEMPTIBLE="true"
+  echo "INFO: Creating GKE Cluster with with preemptible nodes" 1>&2
 	else
-    PREEMPTIBLE="false"
+  PREEMPTIBLE="false"
 fi
 
 # This check verifies if the SHARED_VPC boolean value has been set to true
 #  - If set to true, additional variables are required to deployed to an existing shared VPC
 #  - If not set, the boolean value defaults to false and GKE is deployed to an standalone VPC
 if [[ ${SHARED_VPC} == true ]]; then
-    echo "INFO: Verifying Shared VPC Configuration Information" 1>&2
+  echo "INFO: Verifying Shared VPC Configuration Information" 1>&2
 
-    if [[ -z "${SHARED_VPC_NAME}" ]]; then
-        tput setaf 1; echo "" 1>&2
-        echo $'ERROR: Deploying to a shared VPC requires the shared VPC name to be set.\n Please set \'SHARED_VPC_NAME\' in the \'cluster_config\' file'  1>&2
-        echo "" ; tput sgr0
-        exit 1;
-    fi
+  if [[ -z "${SHARED_VPC_NAME}" ]]; then
+    tput setaf 1; echo "" 1>&2
+    echo $'ERROR: Deploying to a shared VPC requires the shared VPC name to be set.\n Please set \'SHARED_VPC_NAME\' in the \'cluster_config\' file'  1>&2
+    echo "" ; tput sgr0
+    exit 1;
+  fi
 
-    if [[ -z "${SHARED_VPC_SUBNET_NAME}" ]]; then
-        tput setaf 1; echo "" 1>&2  
-				echo $'ERROR: Deploying to a shared VPC requires the shared VPC subnet name to be set.\n Please set \'SHARED_VPC_SUBNET_NAME\' in the \'cluster_config\' file'  1>&2      
-        echo "" ; tput sgr0
-        exit 1;
-    fi
+  if [[ -z "${SHARED_VPC_SUBNET_NAME}" ]]; then
+  	tput setaf 1; echo "" 1>&2  
+		echo $'ERROR: Deploying to a shared VPC requires the shared VPC subnet name to be set.\n Please set \'SHARED_VPC_SUBNET_NAME\' in the \'cluster_config\' file'  1>&2      
+    echo "" ; tput sgr0
+    exit 1;
+  fi
 
-    if [[ -z "${SHARED_VPC_PROJECT_ID}" ]]; then
-        tput setaf 1; echo "" 1>&2
-				echo $'ERROR: Deploying to a shared VPC requires the Shared VPC Project ID to be set.\n Please set \'SHARED_VPC_PROJECT_ID\' in the \'cluster_config\' file'  1>&2    
-        echo "" ; tput sgr0
-        exit 1;
-    fi
+  if [[ -z "${SHARED_VPC_PROJECT_ID}" ]]; then
+    tput setaf 1; echo "" 1>&2
+		echo $'ERROR: Deploying to a shared VPC requires the Shared VPC Project ID to be set.\n Please set \'SHARED_VPC_PROJECT_ID\' in the \'cluster_config\' file'  1>&2    
+    echo "" ; tput sgr0
+    exit 1;
+  fi
 
-    if [[ -z "${POD_IP_RANGE_NAME}" ]]; then
-        tput setaf 1; echo "" 1>&2
-				echo $'ERROR: Deploying to a shared VPC requires requires a secondary IP range be created on the subnet and configured with the pod IP range for the cluster.\n Please set \'POD_IP_RANGE_NAME\' in the \'cluster_config\' file'  1>&2    
-        echo "" ; tput sgr0
-        exit 1;
-    fi
+  if [[ -z "${POD_IP_RANGE_NAME}" ]]; then
+    tput setaf 1; echo "" 1>&2
+		echo $'ERROR: Deploying to a shared VPC requires requires a secondary IP range be created on the subnet and configured with the pod IP range for the cluster.\n Please set \'POD_IP_RANGE_NAME\' in the \'cluster_config\' file'  1>&2    
+    echo "" ; tput sgr0
+    exit 1;
+  fi
 
-    if [[ -z "${SERVICE_IP_RANGE_NAME}" ]]; then
-        tput setaf 1; echo "" 1>&2
-				echo $'ERROR: Deploying to a shared VPC requires requires a secondary IP range be created on the subnet and configured with the service IP range for the cluster.\n Please set \' SERVICE_IP_RANGE_NAME\' in the \'cluster_config\' file'  1>&2   
-        echo "" ; tput sgr0
-        exit 1;
-    fi
+  if [[ -z "${SERVICE_IP_RANGE_NAME}" ]]; then
+    tput setaf 1; echo "" 1>&2
+		echo $'ERROR: Deploying to a shared VPC requires requires a secondary IP range be created on the subnet and configured with the service IP range for the cluster.\n Please set \' SERVICE_IP_RANGE_NAME\' in the \'cluster_config\' file'  1>&2   
+    echo "" ; tput sgr0
+    exit 1;
+  fi
 
-    # Verify if the target shared VPC subnet exists and we have access to it - If not, fail the test
-    #  - Perform same test for both the pod and service secondary subnets
-    if [ "$(gcloud compute networks subnets describe $SHARED_VPC_SUBNET_NAME --region $REGION --project $SHARED_VPC_PROJECT_ID | grep name | sed 's/^.*: //')" != "$SHARED_VPC_SUBNET_NAME" ]; then
-        tput setaf 1; echo "" 1>&2
-        echo "ERROR: Shared VPC subnet ${SHARED_VPC_SUBNET_NAME} does not exist in region ${REGION} or you do not have access." 1>&2
-        echo "Please resolve this issue before continuing." 1>&2
-        echo "" ; tput sgr0
-        exit 1;
-    elif [ "$(gcloud compute networks subnets describe $SHARED_VPC_SUBNET_NAME --region $REGION --project $SHARED_VPC_PROJECT_ID | grep $POD_IP_RANGE_NAME | sed 's/^.*: //')" != "$POD_IP_RANGE_NAME" ]; then
-        tput setaf 1; echo "" 1>&2
-        echo "ERROR: Secondary subnetwork ${POD_IP_RANGE_NAME} does not exist in shared VPC subnet ${SHARED_VPC_SUBNET_NAME} in region ${REGION} or you do not have access." 1>&2
-        echo "Please resolve this issue before continuing." 1>&2
-        echo "" ; tput sgr0
-        exit 1;
-    elif [ "$(gcloud compute networks subnets describe $SHARED_VPC_SUBNET_NAME --region $REGION --project $SHARED_VPC_PROJECT_ID | grep $SERVICE_IP_RANGE_NAME | sed 's/^.*: //')" != "$SERVICE_IP_RANGE_NAME" ]; then
-        tput setaf 1; echo "" 1>&2
-        echo "ERROR: Secondary subnetwork ${SERVICE_IP_RANGE_NAME} does not exist in shared VPC subnet ${SHARED_VPC_SUBNET_NAME} in region ${REGION} or you do not have access." 1>&2
-        echo "Please resolve this issue before continuing." 1>&2
-        echo "" ; tput sgr0
-        exit 1;
-    fi
-	else 
-    SHARED_VPC="false"
-    echo "INFO: Creating GKE cluster in standalone VPC" 1>&2
+	# Verify if the target shared VPC subnet exists and we have access to it - If not, fail the test
+	#  - Perform same test for both the pod and service secondary subnets
+	if [ "$(gcloud compute networks subnets describe $SHARED_VPC_SUBNET_NAME --region $REGION --project $SHARED_VPC_PROJECT_ID | grep name | sed 's/^.*: //')" != "$SHARED_VPC_SUBNET_NAME" ]; then
+		tput setaf 1; echo "" 1>&2
+		echo "ERROR: Shared VPC subnet ${SHARED_VPC_SUBNET_NAME} does not exist in region ${REGION} or you do not have access." 1>&2
+		echo "Please resolve this issue before continuing." 1>&2
+		echo "" ; tput sgr0
+		exit 1;
+	elif [ "$(gcloud compute networks subnets describe $SHARED_VPC_SUBNET_NAME --region $REGION --project $SHARED_VPC_PROJECT_ID | grep $POD_IP_RANGE_NAME | sed 's/^.*: //')" != "$POD_IP_RANGE_NAME" ]; then
+		tput setaf 1; echo "" 1>&2
+		echo "ERROR: Secondary subnetwork ${POD_IP_RANGE_NAME} does not exist in shared VPC subnet ${SHARED_VPC_SUBNET_NAME} in region ${REGION} or you do not have access." 1>&2
+		echo "Please resolve this issue before continuing." 1>&2
+		echo "" ; tput sgr0
+		exit 1;
+	elif [ "$(gcloud compute networks subnets describe $SHARED_VPC_SUBNET_NAME --region $REGION --project $SHARED_VPC_PROJECT_ID | grep $SERVICE_IP_RANGE_NAME | sed 's/^.*: //')" != "$SERVICE_IP_RANGE_NAME" ]; then
+		tput setaf 1; echo "" 1>&2
+		echo "ERROR: Secondary subnetwork ${SERVICE_IP_RANGE_NAME} does not exist in shared VPC subnet ${SHARED_VPC_SUBNET_NAME} in region ${REGION} or you do not have access." 1>&2
+		echo "Please resolve this issue before continuing." 1>&2
+		echo "" ; tput sgr0
+		exit 1;
+	fi
+else 
+	SHARED_VPC="false"
+	echo "INFO: Creating GKE cluster in standalone VPC" 1>&2
 fi
 
 buildtype=$1
@@ -237,81 +242,79 @@ if [[ "${STATE}" = "gcs" ]]; then
 	BUCKET="${PROJECT}-${buildtype}-state"
 	echo -e "BUCKET=${BUCKET}" >> ${ROOT}/cluster_config
 		
-		case $buildtype in
-			cluster) echo "" 1>&2;
-				echo $'INFO: Creating backend configuration for Cluster Build';
-				TERRAFORM_ROOT="${ROOT}/terraform/cluster_build";
-				cat > ${TERRAFORM_ROOT}/backend.tf <<-'EOF'
-					terraform {
-					  backend "gcs" {
-					  }
-					}
-				EOF
-			;;
+  case $buildtype in
+    cluster) echo "" 1>&2;
+    echo $'INFO: Creating backend configuration for Cluster Build';
+    TERRAFORM_ROOT="${ROOT}/terraform/cluster_build";
+    cat > ${TERRAFORM_ROOT}/backend.tf <<-'EOF'
+    terraform {
+      backend "gcs" {
+      }
+    }
+		EOF
+    ;;
 
-			vpc) echo "" 1>&2;
-					echo $'INFO: Creating  backend configuration for Shared VPC Build';
-					TERRAFORM_ROOT="${ROOT}/terraform/shared_vpc";
-					cat > ${TERRAFORM_ROOT}/backend.tf <<- EOF 
-					terraform {
-					  backend "gcs" {
-					  }
-					}
-					EOF
-			;;
+    vpc) echo "" 1>&2;
+    echo $'INFO: Creating  backend configuration for Shared VPC Build';
+    TERRAFORM_ROOT="${ROOT}/terraform/shared_vpc";
+    cat > ${TERRAFORM_ROOT}/backend.tf <<-'EOF'
+    terraform {
+      backend "gcs" {
+      }
+    }
+		EOF
+    ;;
 
-			security) echo "" 1>&2;
-					echo $'INFO: Creating backend configuration for Cluster Security Build';
-					TERRAFORM_ROOT="${ROOT}/terraform/security";
-					cat > ${TERRAFORM_ROOT}/backend.tf <<- EOF  
-					terraform {
-					  backend "gcs" {
-					  }
-					}
-					EOF
-			;;
+    security) echo "" 1>&2;
+		echo $'INFO: Creating backend configuration for Cluster Security Build';
+		TERRAFORM_ROOT="${ROOT}/terraform/security";
+    cat > ${TERRAFORM_ROOT}/backend.tf <<-'EOF'
+    terraform {
+      backend "gcs" {
+      }
+    }
+		EOF
+    ;;
 
-			*) tput setaf 1; echo "" 1>&2;
-				echo "ERROR: Incorrect input. Cancelling execution";
-				exit 1
-			;;
-		esac
-	else
+      *) tput setaf 1; echo "" 1>&2;
+      echo "ERROR: Incorrect input. Cancelling execution";
+      exit 1
+      ;;
+    esac
+  else
    STATE="local"
 fi
 
 case $buildtype in
 		cluster) echo "" 1>&2;
-				echo $'INFO: Creating terraform.tfvars file for Cluster Build';
-				TERRAFORM_ROOT="${ROOT}/terraform/cluster_build";
-				source "${SCRIPT_ROOT}/generate-tfvars.sh";
-
+		echo $'INFO: Creating terraform.tfvars file for Cluster Build';
+		TERRAFORM_ROOT="${ROOT}/terraform/cluster_build";
+		source "${SCRIPT_ROOT}/generate-tfvars.sh";
 		;;
 
 		vpc) echo "" 1>&2;
-				echo $'INFO:  Creating terraform.tfvars for Shared VPC Build';
-				TERRAFORM_ROOT="${ROOT}/terraform/shared_vpc";
-				source "${SCRIPT_ROOT}/generate-tfvars.sh";
+		echo $'INFO:  Creating terraform.tfvars for Shared VPC Build';
+		TERRAFORM_ROOT="${ROOT}/terraform/shared_vpc";
+		source "${SCRIPT_ROOT}/generate-tfvars.sh";
 		;;
 
 		security) echo "" 1>&2;
-				echo $'INFO:  Creating terraform.tfvars for Cluster Security Build';
-				TERRAFORM_ROOT="${ROOT}/terraform/security";
-				source "${SCRIPT_ROOT}/generate-tfvars.sh";
-				cat <<-EOF | kubectl apply -f -
-				apiVersion: core.cnrm.cloud.google.com/v1beta1
-				kind: ConfigConnector
-				metadata:
-				  name: configconnector.core.cnrm.cloud.google.com
-				spec:
-				  mode: cluster
-				  googleServiceAccount: "${CLUSTER_TYPE}-endpoint-cluster-kcc@${PROJECT}.iam.gserviceaccount.com" 
-				EOF
-
+		echo $'INFO:  Creating terraform.tfvars for Cluster Security Build';
+		TERRAFORM_ROOT="${ROOT}/terraform/security";
+		source "${SCRIPT_ROOT}/generate-tfvars.sh";
+		cat <<-EOF | kubectl apply -f -
+		apiVersion: core.cnrm.cloud.google.com/v1beta1
+		kind: ConfigConnector
+		metadata:
+		  name: configconnector.core.cnrm.cloud.google.com
+		spec:
+		  mode: cluster
+		  googleServiceAccount: "${CLUSTER_TYPE}-endpoint-cluster-kcc@${PROJECT}.iam.gserviceaccount.com" 
+		EOF
 		;;
 
 		*) tput setaf 1; echo "" 1>&2;
-			echo "ERROR: Incorrect input. Cancelling execution";
-			exit 1
+		echo "ERROR: Incorrect input. Cancelling execution";
+		exit 1
 		;;
 esac
