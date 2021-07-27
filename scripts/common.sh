@@ -266,8 +266,8 @@ if [[ "${STATE}" = "gcs" ]]; then
     ;;
 
     security) echo "" 1>&2;
-		echo $'INFO: Creating backend configuration for Cluster Security Build';
-		TERRAFORM_ROOT="${ROOT}/terraform/security";
+    echo $'INFO: Creating backend configuration for Cluster Security Build';
+    TERRAFORM_ROOT="${ROOT}/terraform/security";
     cat > ${TERRAFORM_ROOT}/backend.tf <<-'EOF'
     terraform {
       backend "gcs" {
@@ -276,11 +276,11 @@ if [[ "${STATE}" = "gcs" ]]; then
 		EOF
     ;;
 
-      *) tput setaf 1; echo "" 1>&2;
-      echo "ERROR: Incorrect input. Cancelling execution";
-      exit 1
-      ;;
-    esac
+    *) tput setaf 1; echo "" 1>&2;
+    echo "ERROR: Incorrect input. Cancelling execution";
+    exit 1
+    ;;
+  esac
   else
    STATE="local"
 fi
