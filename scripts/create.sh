@@ -26,26 +26,26 @@ source "${ROOT}/scripts/common.sh"
 # Initialize and run Terraform
 if [ "$STATE" == gcs ]; then
   if [[ $(gsutil ls | grep "$BUCKET/") ]]; then
-   		echo "state $BUCKET exists"
-  	else
-   		gsutil mb gs://$BUCKET
+    echo "state $BUCKET exists"
+  else
+    gsutil mb gs://$BUCKET
   fi
 fi
 
 case $STATE in
 
-	local)	(cd "${TERRAFORM_ROOT}";terraform init -input=true);
-  	(cd "${TERRAFORM_ROOT}";terraform apply -input=false -auto-approve);
-		GET_CREDS="$(terraform output get_credentials)";
-	;;
-	gcs)	(cd "${TERRAFORM_ROOT}";terraform init -input=true -backend-config="bucket=${BUCKET}");
-		(cd "${TERRAFORM_ROOT}";terraform apply -input=false -auto-approve);
-		GET_CREDS="$(terraform output get_credentials)";
-	;;
-	*) exit 1
-	;;
-esac
+  local)
+  (cd "${TERRAFORM_ROOT}";terraform init -input=true);
+  (cd "${TERRAFORM_ROOT}";terraform apply -input=false -auto-approve);
+  GET_CREDS="$(terraform output get_credentials)";
+  ;;
 	
- 
+  gcs)	
+	(cd "${TERRAFORM_ROOT}";terraform init -input=true -backend-config="bucket=${BUCKET}");
+  (cd "${TERRAFORM_ROOT}";terraform apply -input=false -auto-approve);
+  GET_CREDS="$(terraform output get_credentials)";
+  ;;
 
-
+  *) exit 1
+  ;;
+esac
