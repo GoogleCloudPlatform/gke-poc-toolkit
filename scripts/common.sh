@@ -285,7 +285,7 @@ if [[ "${STATE}" = "gcs" ]]; then
 
 			*) tput setaf 1; echo "" 1>&2;
 				echo "ERROR: Incorrect input. Cancelling execution";
-				exit 1;;
+				exit 1
 			;;
 		esac
 	else
@@ -297,6 +297,7 @@ case $buildtype in
 				echo $'INFO: Creating terraform.tfvars file for Cluster Build';
 				TERRAFORM_ROOT="${ROOT}/terraform/cluster_build";
 				source "${SCRIPT_ROOT}/generate-tfvars.sh";
+
 		;;
 
 		vpc) echo "" 1>&2;
@@ -309,10 +310,20 @@ case $buildtype in
 				echo $'INFO:  Creating terraform.tfvars for Cluster Security Build';
 				TERRAFORM_ROOT="${ROOT}/terraform/security";
 				source "${SCRIPT_ROOT}/generate-tfvars.sh";
+				cat <<-EOF | kubectl apply -f -
+				apiVersion: core.cnrm.cloud.google.com/v1beta1
+				kind: ConfigConnector
+				metadata:
+				  name: configconnector.core.cnrm.cloud.google.com
+				spec:
+				  mode: cluster
+				  googleServiceAccount: "${CLUSTER_TYPE}-endpoint-cluster-kcc@${PROJECT}.iam.gserviceaccount.com" 
+				EOF
+
 		;;
 
 		*) tput setaf 1; echo "" 1>&2;
 			echo "ERROR: Incorrect input. Cancelling execution";
-			exit 1;;
+			exit 1
 		;;
 esac

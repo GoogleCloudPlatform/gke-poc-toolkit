@@ -24,7 +24,7 @@ ROOT="$( cd "$( dirname "${BASH_SOURCE[0]}" )/.." && pwd )"
 # Tear down Terraform-managed resources and remove generated tfvars
 cd "${ROOT}/terraform/cluster_build"
 # Perform the destroy
-terraform state rm "module.kms"
+terraform state rm 'module.kms'
 terraform destroy -input=false -auto-approve
 
 if [ -f terraform.tfvars ]; then

@@ -33,11 +33,18 @@ if [[ -f "${TFVARS_FILE}" ]]
 then
     while true; do
         echo ""
-         read -p "${TFVARS_FILE} already exists indicating a previous execution. This file needs to be removed or renamed before rerunning the deployment. Select yes(y) to delete or no(n) to cancel execution: " yn ; tput sgr0 
+         read -p "ERROR: Found an existing terraform.tfvars indicating a previous execution. This file needs to be removed or renamed before rerunning the deployment. Select yes(y) to delete or no(n) to cancel execution: " yn ; tput sgr0 
         case $yn in
-            [Yy]* ) echo "Deleting and recreating ${TFVARS_FILE}"; rm ${TFVARS_FILE}; break;;
-            [Nn]* ) echo "Cancelling execution";exit ;;
-            * ) echo "Incorrect input. Cancelling execution";exit 1;;
+            [Yy]* ) echo "Deleting and recreating terraform.tfvars"; 
+								rm ${TFVARS_FILE}; 
+								break
+						;;
+            [Nn]* ) echo "Cancelling execution";
+								exit 
+						;;
+            * ) echo "Incorrect input. Cancelling execution";
+								exit 1
+						;;
         esac
     done
 fi
