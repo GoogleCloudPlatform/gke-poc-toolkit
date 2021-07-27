@@ -29,18 +29,11 @@ terraform destroy -input=false -auto-approve
 
 if [ -f terraform.tfvars ]; then
 		rm -f terraform.tfvars
-	else
-		exit
-fi
-if [ -d .terraforms ]; then
-		rm -rf .terraform
-	else
-		exit
 fi
 if [ -f backend.tf ]; then 
 		gsutil -m rm -r gs://"${BUCKET}"
 	else
-		rm -f terraform.tfstate
+		rm -f terraform.tfstate*
 fi
 
 
