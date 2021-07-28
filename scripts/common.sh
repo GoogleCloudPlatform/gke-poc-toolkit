@@ -109,7 +109,7 @@ if [ -f "${ROOT}/cluster_config" ]; then
 	fi
 
 else
-    tput setaf 196; echo "" 1>&2
+    tput setaf 1; echo "" 1>&2
     read -p $'ERROR: Cannot load configuration information.Would you like to generate a new configuration?\n\nPlease enter yes(y) to generate a new configuration or no(n) to cancel initialization: ' yn ; tput sgr0 
 
     case $yn in
