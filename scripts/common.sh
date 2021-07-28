@@ -115,7 +115,7 @@ else
     case $yn in
       [Yy]* ) tput setaf 2; echo "" 1>&2;
       echo $'A cluster_config file will now be created in the root directory. Please review the inputs and update as needed before restarting the deployment. \n\nFor guidance on the cluster_config file and your deployment options, please reference'; tput sgr0
-      echo "https://github.com/GoogleCloudPlatform/gke-poc-toolkit/blob/main/docs/CLUSTERS.md'"
+      echo "https://github.com/GoogleCloudPlatform/gke-poc-toolkit/blob/main/docs/CLUSTERS.md"\n
       cp "${SCRIPT_ROOT}/cluster_config.example" "${ROOT}/cluster_config";
       exit
       ;;
