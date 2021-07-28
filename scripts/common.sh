@@ -109,12 +109,12 @@ if [ -f "${ROOT}/cluster_config" ]; then
 	fi
 
 else
-    tput setaf 1; echo "" 1>&2
-    read -p $'ERROR: Cannot load configuration information.Would you like to generate a new configuration?\n\nPlease enter yes(y) to generate a new configuration or no(n) to cancel initialization: ' yn ; tput sgr0 
+    tput setaf 3; echo "" 1>&2
+    read -p $'WARN: A cluster_config file does not exist in the root of the directory. \n\nIf this is a new deployment, please enter yes(y) to generate a new configuration file or no(n) to cancel initialization and troublshoot: ' yn ; tput sgr0 
 
     case $yn in
       [Yy]* ) tput setaf 7; echo "" 1>&2;
-      echo $'INFO: Creating cluster configuration from template.  Please update the required variables and restart'; tput sgr0
+      echo $'INFO: A cluster_config file will now be created in the root directory. Please update the required variables and restart the deployment. \n\nFor guidance on the cluster_config file and your deployment options, please reference: https://github.com/GoogleCloudPlatform/gke-poc-toolkit/blob/main/docs/CLUSTERS.md'; tput sgr0
       cp "${SCRIPT_ROOT}/cluster_config.example" "${ROOT}/cluster_config";
       exit
       ;;
@@ -123,7 +123,9 @@ else
       exit
       ;;
       * ) tput setaf 1; echo "" 1>&2;
-      echo "ERROR: Incorrect input. Cancelling execution";exit 1; tput sgr0
+      echo "ERROR: Incorrect input. Cancelling execution"; tput sgr0
+      exit 1
+      ;;
     esac
 fi
 
@@ -277,7 +279,7 @@ if [[ "${STATE}" = "gcs" ]]; then
     ;;
 
     *) tput setaf 1; echo "" 1>&2;
-    echo "ERROR: Incorrect input. Cancelling execution";
+    echo "ERROR: Incorrect input. Cancelling execution"; tput sgr0
     exit 1
     ;;
   esac
@@ -315,7 +317,7 @@ case $buildtype in
   ;;
 
   *) tput setaf 1; echo "" 1>&2;
-  echo "ERROR: Incorrect input. Cancelling execution";
+  echo "ERROR: Incorrect input. Cancelling execution"; tput sgr0
   exit 1
   ;;
 esac
