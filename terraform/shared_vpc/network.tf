@@ -17,6 +17,7 @@
 module "shared_vpc" {
   depends_on = [
     module.enabled_shared_vpc_apis,
+    module.enabled_service_project_apis
   ]
   source  = "terraform-google-modules/network/google"
   version = "~> 2.5"

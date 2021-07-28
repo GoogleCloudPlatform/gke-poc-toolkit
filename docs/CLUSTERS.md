@@ -8,13 +8,15 @@
 
 ## Before you begin
 
-The scripts provided in this repository require the existence of a `cluster_config` file in the root directory. This config file contains a baseline set of information, including the GCP Region, Zone and Project to be used when creating the GKE cluster. A template configuration file can be found [here](./scripts/cluster_config.example).
+The scripts provided in this repository require the existence of a `cluster_config` file in the root directory. This config file contains a baseline set of variables, including the GCP Region, Zone and Project ID to be used when creating the GKE cluster. A template of this configuration file named [cluster_config.example](../scripts/cluster_config.example) can be found in the scripts directory. Please create a copy of this file in the root directory, rename to `cluster_config` and modify as needed.
 
-The section below outlines the required and optional configuration settings, including default values
+>**NOTE:** If a `cluster_config` file is not detected in the root, the script will attempt to create one for you with the default values set.
+
+The section below outlines the required and optional configuration settings, including default values.
 
 ## GKE Cluster Creation Values
 
-Default values for required information have be populated to use the current configuration of the Google Cloud SDK, during cluster deployment. If you need to deploy the GKE cluster in a region,zone or project that is different than your current Google Cloud SDK configuration information, update the following settings in the `cluster_config` file
+Default values for required information have be populated to use the current configuration of the Google Cloud SDK, during cluster deployment. If you need to deploy the GKE cluster in a region, zone or project that is different than your current Google Cloud SDK configuration information, update the following settings in the `cluster_config` file:
 
 ### Required Settings
 
@@ -26,12 +28,12 @@ Default values for required information have be populated to use the current con
 
 ### Optional Settings
 
-Included in the `cluster_config` configuration file are options for Shared VPC configurations, GKE Cluster Node Pools with Windows nodes,  pre-emptible node configurations, and GKE control plane access configurations. In the sections below, the available optional settings and their default values are described. Update the `cluster_config` file as needed to use these additional features
+Included in the `cluster_config` configuration file are options for Shared VPC configurations, GKE Cluster Node Pools with Windows nodes,  pre-emptible node configurations, and GKE control plane access configurations. In the sections below, the available optional settings and their default values are described. Update the `cluster_config` file as needed to use these additional features.
 
 
 **Log Sinks**
 
-The default deployment reuses the GCP project configred to host resources such as the KVM and log sinks. As a best practice it is recommended that a separate project is used, however the default value can be used for testing purposes
+The default deployment reuses the GCP project configred to host resources such as the KVM and log sinks. As a best practice it is recommended that a separate project is used, however the default value can be used for testing purposes.
 
 | Setting | Description| Default Value|
 |:-|:-|:-|
@@ -65,11 +67,11 @@ PREEMPTIBLE_NODES||false|
 
 The default deployment deploys to a standalone VPC in the project where the cluster is created. Enabling the following configuration settings will deploy the GKE cluster to a shared VPC in a Host Project of your choice.
 
->**NOTE:** Deploying multiple GKE Toolkit environments to the same shared VPC is not currently supported. This feature will be added in the future. 
+>**NOTE:** Deploying multiple GKE Toolkit environments to the same Shared VPC is not currently supported. This feature will be added in the future. 
 
 **The following pre-requisites must be completed prior to running the deployment**
 
-* A Shared VPC in a Host Project must be created before executing this step. That VPC must meet the following prerequisites:
+* A Shared VPC in a Host Project must exist before deploying the GKE cluster(s). That VPC must meet the following prerequisites:
   * Two secondary IP ranges must be created on the target shared VPC subnet and configured with the pod and service IP CIDR ranges.
     * Example:
       * pod-ip-range       10.1.64.0/18
@@ -77,10 +79,12 @@ The default deployment deploys to a standalone VPC in the project where the clus
   * The Service Project must be attached to the Shared VPC and the target subnet must be shared and in the deployment region. 
   * Kubernetes Engine Access must be enabled on the shared subnet.
 
+>**NOTE:** Optionally, you can run `make shared-vpc` to automate the deployment of the Shared VPC in an existing Host Project. Shared VPC Admin permissions are required to perform that step.
+
 | Setting | Description| Default Value|
 |:-|:-|:-| 
 |SHARED_VPC||false|
-|SHARED_VPC_PROJECT_ID|shared VPC project ID||
+|SHARED_VPC_PROJECT_ID|Shared VPC project ID||
 |SHARED_VPC_NAME|The Shared VPC name||
 |SHARED_VPC_SUBNET_NAME|The name of the shared VPC subnet name||
 |POD_IP_RANGE_NAME|The name of the secondary IP range used for cluster pod IPs||
