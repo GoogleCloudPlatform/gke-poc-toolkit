@@ -214,26 +214,29 @@ if [[ ${SHARED_VPC} == true ]]; then
   fi
 
 	# Verify if the target shared VPC subnet exists and we have access to it - If not, fail the test
+  #  - Skip this step if creating the Shared VPC (since it will not exist yet)
 	#  - Perform same test for both the pod and service secondary subnets
-	if [ "$(gcloud compute networks subnets describe $SHARED_VPC_SUBNET_NAME --region $REGION --project $SHARED_VPC_PROJECT_ID | grep name | sed 's/^.*: //')" != "$SHARED_VPC_SUBNET_NAME" ]; then
-		tput setaf 1; echo "" 1>&2
-		echo "ERROR: Shared VPC subnet ${SHARED_VPC_SUBNET_NAME} does not exist in region ${REGION} or you do not have access." 1>&2
-		echo "Please resolve this issue before continuing." 1>&2
-		echo "" ; tput sgr0
-		exit 1;
-	elif [ "$(gcloud compute networks subnets describe $SHARED_VPC_SUBNET_NAME --region $REGION --project $SHARED_VPC_PROJECT_ID | grep $POD_IP_RANGE_NAME | sed 's/^.*: //')" != "$POD_IP_RANGE_NAME" ]; then
-		tput setaf 1; echo "" 1>&2
-		echo "ERROR: Secondary subnetwork ${POD_IP_RANGE_NAME} does not exist in shared VPC subnet ${SHARED_VPC_SUBNET_NAME} in region ${REGION} or you do not have access." 1>&2
-		echo "Please resolve this issue before continuing." 1>&2
-		echo "" ; tput sgr0
-		exit 1;
-	elif [ "$(gcloud compute networks subnets describe $SHARED_VPC_SUBNET_NAME --region $REGION --project $SHARED_VPC_PROJECT_ID | grep $SERVICE_IP_RANGE_NAME | sed 's/^.*: //')" != "$SERVICE_IP_RANGE_NAME" ]; then
-		tput setaf 1; echo "" 1>&2
-		echo "ERROR: Secondary subnetwork ${SERVICE_IP_RANGE_NAME} does not exist in shared VPC subnet ${SHARED_VPC_SUBNET_NAME} in region ${REGION} or you do not have access." 1>&2
-		echo "Please resolve this issue before continuing." 1>&2
-		echo "" ; tput sgr0
-		exit 1;
-	fi
+  if [ "$buildtype" != "vpc" ]; then
+    if [ "$(gcloud compute networks subnets describe $SHARED_VPC_SUBNET_NAME --region $REGION --project $SHARED_VPC_PROJECT_ID | grep name | sed 's/^.*: //')" != "$SHARED_VPC_SUBNET_NAME" ]; then
+      tput setaf 1; echo "" 1>&2
+      echo "ERROR: Shared VPC subnet ${SHARED_VPC_SUBNET_NAME} does not exist in region ${REGION} or you do not have access." 1>&2
+      echo "Please resolve this issue before continuing." 1>&2
+      echo "" ; tput sgr0
+      exit 1;
+    elif [ "$(gcloud compute networks subnets describe $SHARED_VPC_SUBNET_NAME --region $REGION --project $SHARED_VPC_PROJECT_ID | grep $POD_IP_RANGE_NAME | sed 's/^.*: //')" != "$POD_IP_RANGE_NAME" ]; then
+      tput setaf 1; echo "" 1>&2
+      echo "ERROR: Secondary subnetwork ${POD_IP_RANGE_NAME} does not exist in shared VPC subnet ${SHARED_VPC_SUBNET_NAME} in region ${REGION} or you do not have access." 1>&2
+      echo "Please resolve this issue before continuing." 1>&2
+      echo "" ; tput sgr0
+      exit 1;
+    elif [ "$(gcloud compute networks subnets describe $SHARED_VPC_SUBNET_NAME --region $REGION --project $SHARED_VPC_PROJECT_ID | grep $SERVICE_IP_RANGE_NAME | sed 's/^.*: //')" != "$SERVICE_IP_RANGE_NAME" ]; then
+      tput setaf 1; echo "" 1>&2
+      echo "ERROR: Secondary subnetwork ${SERVICE_IP_RANGE_NAME} does not exist in shared VPC subnet ${SHARED_VPC_SUBNET_NAME} in region ${REGION} or you do not have access." 1>&2
+      echo "Please resolve this issue before continuing." 1>&2
+      echo "" ; tput sgr0
+      exit 1;
+    fi
+  fi
 else 
 	SHARED_VPC="false"
 	echo "INFO: Creating GKE cluster in standalone VPC" 1>&2
