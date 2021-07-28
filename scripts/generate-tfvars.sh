@@ -33,7 +33,7 @@ if [[ -f "${TFVARS_FILE}" ]]
 then
     while true; do
         echo ""
-         read -p setaf 3; "WARN: Found an existing terraform.tfvars indicating a previous execution. This file needs to be removed or renamed before rerunning the deployment. Select yes(y) to delete or no(n) to cancel execution: " yn ; tput sgr0 
+         read -p "WARN: Found an existing terraform.tfvars indicating a previous execution. This file needs to be removed or renamed before rerunning the deployment. Select yes(y) to delete or no(n) to cancel execution: " yn ; tput sgr0 
         case $yn in
             [Yy]* ) echo "Deleting and recreating terraform.tfvars"; 
             rm ${TFVARS_FILE}; 
