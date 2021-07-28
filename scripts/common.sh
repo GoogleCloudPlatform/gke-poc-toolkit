@@ -269,7 +269,7 @@ if [[ "${STATE}" = "gcs" ]]; then
 		EOF
     ;;
 
-    security) echo "" 1>&2;
+    secure) echo "" 1>&2;
     echo $'INFO: Creating backend configuration for Cluster Security Build';
     TERRAFORM_ROOT="${ROOT}/terraform/security";
     cat > ${TERRAFORM_ROOT}/backend.tf <<-'EOF'
