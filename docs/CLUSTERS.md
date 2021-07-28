@@ -39,7 +39,7 @@ The default deployment reuses the GCP project configred to host resources such a
 
 **[Public Endpoint Cluster](https://cloud.google.com/kubernetes-engine/docs/how-to/authorized-networks)** 
 
-The default deployment limits GKE control plane access to the bastion host subnet in the GKE VPC. Enabling the following configuration setting will grant control plane access to the public endpoint of the deployment device. The bastion host will not be deployed if this option is selected. If you choose this deployment option, please use [Configure GKE Cluster with Public endpoint](#configure-gke-cluster-with-public-endpoint) for deployment next steps. 
+The default deployment limits GKE control plane access to the bastion host subnet in the GKE VPC. Enabling the following configuration setting will grant control plane access to the public endpoint of the deployment device. The bastion host will not be deployed if this option is selected. If you choose this deployment option, please use [Deploy a GKE Cluster with Public endpoint](#deploy-a-gke-cluster-with-public-endpoint) for deployment next steps. 
 
 | Setting | Description| Default Value|
 |:-|:-|:-|
@@ -144,7 +144,7 @@ make stop-proxy
 
 Proceed to [validation steps](#kubernetes-app-layer-secrets-validation) once installation completes. 
 
-### Deploying a GKE Cluster with Public endpoint
+### Deploy a GKE Cluster with Public endpoint
 
 This cluster features cluster nodes with private IP's and a control plane api with a public IP.
 

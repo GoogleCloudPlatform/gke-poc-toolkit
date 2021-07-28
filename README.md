@@ -82,7 +82,7 @@ Private clusters also restrict access to the internet by default. A NAT gateway 
 
 The GKE Cluster Install step in this repository will build a GKE Private cluster with access to the control plane with the following configuration:
 
-* [Private Endpoint Cluster](docs/CLUSTERS.md#GKE-Cluster-with-private-endpoint):
+* [Private Endpoint Cluster](docs/CLUSTERS.md#deploy-a-GKE-Cluster-with-private-endpoint):
   * Public endpoint for control plane is disabled
   * Nodes receive private IP addresses
   * Restricts access to addresses specified in the authorized networks list
@@ -109,7 +109,7 @@ The following best practices are also enforced as part of the cluster build proc
 #### Optional Settings
 The following <b>OPTIONAL</b> configurations are also available and can be enabled by setting the appropriate configuration values prior to deployment. Guidance on how to enable these features can be found in under [Optional Settings](docs/CLUSTERS.md#optional-settings) in the Cluster Build guide:
 
-* [Public Endpoint Cluster](docs/CLUSTERS.md#GKE-Cluster-with-public-endpoint) - The cluster can be deployed with public access to the master endpoints therefore eliminating the need for a bastion host. Doing so configures the cluster as follows:
+* [Public Endpoint Cluster](docs/CLUSTERS.md#deploy-a-GKE-Cluster-with-public-endpoint) - The cluster can be deployed with public access to the master endpoints therefore eliminating the need for a bastion host. Doing so configures the cluster as follows:
   * Public endpoint for control plane is enabled
   * Nodes receive private IP addresses
   * Restricts access to addresses specified in the authorized networks list
