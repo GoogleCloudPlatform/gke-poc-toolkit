@@ -83,47 +83,47 @@ if [ -f "${ROOT}/cluster_config" ]; then
   if [[ -z "${REGION}" ]]; then
     tput setaf 1; echo "" 1>&2
     echo $'ERROR: This script requires Region information to deploy resources. Please update \'REGION\' with an appropriate region name, like \'us-west1\' in the \'cluster_config\' file' 1>&2
-    echo $''1>&2
+    echo $''1>&2; tput sgr0
     exit 1;
 	fi
 
 	if [[ -z "${PROJECT}" ]]; then
     tput setaf 1; echo "" 1>&2
     echo $'ERROR: This script requires a project to deploy resources. Please update \'PROJECT\' with the project name in the \'cluster_config\' file' 1>&2
-    echo $''1>&2
+    echo $''1>&2; tput sgr0
     exit 1;
 	fi
 
 	if [[ -z "${ZONE}" ]]; then
     tput setaf 1; echo "" 1>&2
     echo $'ERROR: This script requires a Zone information to deploy resources. Please update \'ZONE\' with an appropriate zone name, like \'us-west1-a\' in the \'cluster_config\' file' 1>&2
-    echo $''1>&2
+    echo $''1>&2; tput sgr0
     exit 1;
 	fi
 
 	if [[ -z "${GOVERNANCE_PROJECT}" ]]; then
     tput setaf 1; echo "" 1>&2
     echo $'ERROR: This script requires a project for governance resources. \nPlease update the \'GOVERNANCE_PROJECT\' in the \'cluster_config\' file' 1>&2
-    echo $''1>&2
+    echo $''1>&2; tput sgr0
     exit 1;
 	fi
 
 else
-    tput setaf 1; echo "" 1>&2
+    tput setaf 196; echo "" 1>&2
     read -p $'ERROR: Cannot load configuration information.Would you like to generate a new configuration?\n\nPlease enter yes(y) to generate a new configuration or no(n) to cancel initialization: ' yn ; tput sgr0 
 
     case $yn in
       [Yy]* ) tput setaf 7; echo "" 1>&2;
-      echo $'INFO: Creating cluster configuration from template.  Please update the required variables and restart';
+      echo $'INFO: Creating cluster configuration from template.  Please update the required variables and restart'; tput sgr0
       cp "${SCRIPT_ROOT}/cluster_config.example" "${ROOT}/cluster_config";
       exit
       ;;
       [Nn]* ) tput setaf 3; echo "" 1>&2;
-      echo $'WARN: Cancelling initialization, please verify your cluster_config file and restart';
+      echo $'WARN: Cancelling initialization, please verify your cluster_config file and restart'; tput sgr0
       exit
       ;;
       * ) tput setaf 1; echo "" 1>&2;
-      echo "ERROR: Incorrect input. Cancelling execution";exit 1;;
+      echo "ERROR: Incorrect input. Cancelling execution";exit 1; tput sgr0
     esac
 fi
 
