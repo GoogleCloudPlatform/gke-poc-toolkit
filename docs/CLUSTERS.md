@@ -8,7 +8,7 @@
 
 ## Before you begin
 
-The scripts provided in this repository require a baseline set of information, including the GCP Region, Zone and Project to be used when creating the GKE cluster. A template environment variables file is included in the root of this repository. The section below outlines the required and optional variable information, including default values
+The scripts provided in this repository require a baseline set of information, including the GCP Region, Zone and Project to be used when creating the GKE cluster. A template configuration file is included in the root of this repository. The section below outlines the required and optional configuration values, including default values
 
 ## GKE Cluster Creation Variables
 

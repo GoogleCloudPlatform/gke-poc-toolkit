@@ -107,7 +107,7 @@ The following best practices are also enforced as part of the cluster build proc
   * This deployment uses the Safe-Cluster GKE module which fixes a set of parameters to values suggested in the [GKE hardening guide](https://cloud.google.com/kubernetes-engine/docs/how-to/hardening-your-cluster), the CIS framework, and other best practices. Reference the above link for project configurations, cluster settings, and basic kubernetes objects that are provisioned as part of this module and permit a safer-than-default configuration.
 
 #### Optional Settings
-The following <b>OPTIONAL</b> configurations are also available and can be enabled by setting the appropriate environment variables prior to deployment. Guidance on how to enable these features can be found in under [Optional Settings](docs/CLUSTERS.md#optional-variables) in the Cluster Build guide:
+The following <b>OPTIONAL</b> configurations are also available and can be enabled by setting the appropriate configuration values prior to deployment. Guidance on how to enable these features can be found in under [Optional Settings](docs/CLUSTERS.md#optional-variables) in the Cluster Build guide:
 
 * [Public Endpoint Cluster](docs/CLUSTERS.md#GKE-Cluster-with-public-endpoint) - The cluster can be deployed with public access to the master endpoints therefore eliminating the need for a bastion host. Doing so configures the cluster as follows:
   * Public endpoint for control plane is enabled
