@@ -12,7 +12,7 @@ The scripts provided in this repository require a baseline set of information, i
 
 ## GKE Cluster Creation Variables
 
-Default values for required information have be populated to use the current configuration of the Google Cloud SDK, during cluster deployment. If you need to deploy the GKE cluster in a region,zone or project that is different than your current Google Cloud SDK configuration information, update the following variables in the `environment-variables` file
+Default values for required information have be populated to use the current configuration of the Google Cloud SDK, during cluster deployment. If you need to deploy the GKE cluster in a region,zone or project that is different than your current Google Cloud SDK configuration information, update the following variables in the `cluster_config` file
 
 **Required Variables** 
 
@@ -24,7 +24,7 @@ Default values for required information have be populated to use the current con
 
 **Optional Variables**
 
-Included in the `environment-variables` configuration file are options for Shared VPC configurations, GKE Cluster Node Pools with Windows nodes,  pre-emptible node configurations, and GKE control plane access configurations. In the sections below, the available optional arguments and their default values are described. Update the `environment-variables` file as needed to use these additional features
+Included in the `cluster_config` configuration file are options for Shared VPC configurations, GKE Cluster Node Pools with Windows nodes,  pre-emptible node configurations, and GKE control plane access configurations. In the sections below, the available optional arguments and their default values are described. Update the `cluster_config` file as needed to use these additional features
 
 
 **Log Sinks**
