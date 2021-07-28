@@ -5,7 +5,7 @@ SHELL := /usr/bin/env bash
 help:
 	@echo 'Usage:'
 	
-	@echo '	make shared-vpc        	Create Shared VPC in a pre-existing host project'
+	@echo '	make shared-vpc        		Create Shared VPC in a pre-existing host project'
 	@echo	''
 	@echo '	make create        		Create Cluster and associated resources'
 	@echo	''
