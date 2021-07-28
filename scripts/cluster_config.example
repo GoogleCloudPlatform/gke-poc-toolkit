@@ -26,7 +26,7 @@ STATE=local
 ## Defaults to current region. 
 ## To use a different region, update the region name below
 
-REGION=$(gcloud config get-value compute/region)
+REGION=$(gcloud config get-value compute/region -q 2>/dev/null )
 
 
 ## Defaults to current project. 
