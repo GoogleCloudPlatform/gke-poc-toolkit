@@ -110,7 +110,7 @@ if [ -f "${ROOT}/cluster_config" ]; then
 
 else
     tput setaf 7; echo "" 1>&2
-    read -p $'INFO: A cluster_config file does not exist in the root of the directory. \n\nIf this is a new deployment, please enter yes(y) to generate a new configuration file or no(n) to cancel initialization and troublshoot: ' yn ; tput sgr0 
+    read -p $'INFO: A cluster_config file does not exist in the root of the directory indicating this is the first time this deployment has been run. \n\nIf this is a new deployment, please enter yes(y) to generate a new configuration file or no(n) to cancel initialization and troublshoot: ' yn ; tput sgr0 
 
     case $yn in
       [Yy]* ) tput setaf 7; echo "" 1>&2;
