@@ -303,7 +303,7 @@ case $buildtype in
   source "${SCRIPT_ROOT}/generate-tfvars.sh";
   ;;
 
-  security) echo "" 1>&2;
+  secure) echo "" 1>&2;
   echo $'INFO:  Creating terraform.tfvars for Cluster Security Build';
   TERRAFORM_ROOT="${ROOT}/terraform/security";
   source "${SCRIPT_ROOT}/generate-tfvars.sh";
