@@ -8,7 +8,7 @@
 
 ## Before you begin
 
-The scripts provided in this repository require a baseline set of information, including the GCP Region, Zone and Project to be used when creating the GKE cluster. A template configuration file is included in this repository. 
+The scripts provided in this repository require the existence of a `cluster_config` file in the root directory. This config file contains a baseline set of information, including the GCP Region, Zone and Project to be used when creating the GKE cluster. A template configuration file can be found [here](./scripts/cluster_config.example).
 
 The section below outlines the required and optional configuration settings, including default values
 

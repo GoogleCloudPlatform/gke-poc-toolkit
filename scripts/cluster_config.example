@@ -20,6 +20,7 @@
 
 STATE=local
 
+
 ### GCP Configuration Settings
 
 
@@ -28,23 +29,21 @@ STATE=local
 
 REGION=$(gcloud config get-value compute/region -q 2>/dev/null)
 
+## Defaults to current zone. If you would like 
+## To use a different zone, update the zone name below
+
+ZONE=$(gcloud config get-value compute/zone -q 2>/dev/null)
 
 ## Defaults to current project. 
 ## To use a different project, update the project name below
 
-PROJECT=$(gcloud config get-value project)
-
-
-## Defaults to current zone. If you would like 
-## To use a different zone, update the zone name below
-
-ZONE=$(gcloud config get-value compute/zone)
-
+PROJECT=$(gcloud config get-value project -q 2>/dev/null)
 
 ## Defaults to current project. 
 ## To use a different project update the project name below
 
-GOVERNANCE_PROJECT=$(gcloud config get-value project)
+GOVERNANCE_PROJECT=$(gcloud config get-value project -q 2>/dev/null)
+
 
 ### Cluster Configuration Settings
 
@@ -55,8 +54,8 @@ GOVERNANCE_PROJECT=$(gcloud config get-value project)
 
 PUBLIC_CLUSTER=false
 
-## Setting configures public IP for Bastion node access on private Clusters.
-## If  PUBLIC_CLUSTER is true, comment out the line below
+## Setting stores the local public IP address of the deployment workstation
+## If PUBLIC_CLUSTER is true, the AUTH_IP value is added to the master authorized network of the GKE clusters deployed
 
 AUTH_IP=$(curl -sS ifconfig.me)
 
@@ -66,13 +65,11 @@ AUTH_IP=$(curl -sS ifconfig.me)
 
 WINDOWS_CLUSTER=false
 
-
 ## Setting allows for cluster with pre-emptible nodes 
 ## Defaults to false
 ## allowed values: true|false
 
 PREEMPTIBLE_NODES=false
-
  
 ### Shared VPC Configuration Information
 

@@ -87,16 +87,16 @@ if [ -f "${ROOT}/cluster_config" ]; then
     exit 1;
 	fi
 
-	if [[ -z "${PROJECT}" ]]; then
+	if [[ -z "${ZONE}" ]]; then
     tput setaf 1; echo "" 1>&2
-    echo $'ERROR: This script requires a project to deploy resources. Please update \'PROJECT\' with the project name in the \'cluster_config\' file' 1>&2
+    echo $'ERROR: This script requires a Zone information to deploy resources. Please update \'ZONE\' with an appropriate zone name, like \'us-west1-a\' in the \'cluster_config\' file' 1>&2
     echo $''1>&2; tput sgr0
     exit 1;
 	fi
 
-	if [[ -z "${ZONE}" ]]; then
+	if [[ -z "${PROJECT}" ]]; then
     tput setaf 1; echo "" 1>&2
-    echo $'ERROR: This script requires a Zone information to deploy resources. Please update \'ZONE\' with an appropriate zone name, like \'us-west1-a\' in the \'cluster_config\' file' 1>&2
+    echo $'ERROR: This script requires a project to deploy resources. Please update \'PROJECT\' with the project name in the \'cluster_config\' file' 1>&2
     echo $''1>&2; tput sgr0
     exit 1;
 	fi
