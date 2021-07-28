@@ -216,7 +216,7 @@ if [[ ${SHARED_VPC} == true ]]; then
 	# Verify if the target shared VPC subnet exists and we have access to it - If not, fail the test
   #  - Skip this step if creating the Shared VPC (since it will not exist yet)
 	#  - Perform same test for both the pod and service secondary subnets
-  if [ $buildtype != "vpc" ]; then
+  if [ "${buildtype}" != "vpc" ]; then
     if [ "$(gcloud compute networks subnets describe $SHARED_VPC_SUBNET_NAME --region $REGION --project $SHARED_VPC_PROJECT_ID | grep name | sed 's/^.*: //')" != "$SHARED_VPC_SUBNET_NAME" ]; then
       tput setaf 1; echo "" 1>&2
       echo "ERROR: Shared VPC subnet ${SHARED_VPC_SUBNET_NAME} does not exist in region ${REGION} or you do not have access." 1>&2
