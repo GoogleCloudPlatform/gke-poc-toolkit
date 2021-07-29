@@ -10,7 +10,7 @@
 
 The scripts provided in this repository require the existence of a `cluster_config` file in the root directory. This config file contains a baseline set of variables, including the GCP Region, Zone and Project ID to be used when creating the GKE cluster. A template of this configuration file named [cluster_config.example](../scripts/cluster_config.example) can be found in the scripts directory. Please create a copy of this file in the root directory, rename to `cluster_config` and modify as needed.
 
->**NOTE:** If a `cluster_config` file is not detected in the root, the script will attempt to create one for you with the default values set. By default, these values will deploy a Private Linux GKE cluster in a standalone VPC. 
+>**NOTE:** If a `cluster_config` file is not detected in the root, the script will attempt to create one for you with the default values set. By default, these values will deploy a Private GKE cluster with a default linux nodepool in a standalone VPC. 
 
 The section below outlines the required and optional configuration settings.
 
