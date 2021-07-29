@@ -138,16 +138,16 @@ fi
 if [[ ${PUBLIC_CLUSTER} == true ]]; then
     PRIVATE="false"
     CLUSTER_TYPE="public"
-    echo $'INFO: Creating Public cluster; access to the the cluster master endpoint will be unrestricted public endpoint' 1>&2
+    echo $'INFO: Setting deployment value to Public Cluster; access to the the cluster master endpoint will be unrestricted public endpoint' 1>&2
 	else
     PRIVATE="true"
     CLUSTER_TYPE="private"
-    echo $'INFO: Creating private cluster; access to the the cluster master endpoint will be limited to the bastion host' 1>&2
+    echo $'INFO: Setting deployment value to Private Cluster; access to the the cluster master endpoint will be limited to the bastion host' 1>&2
 fi
 
-if [[ -z ${AUTH_IP} ]] && [ "${PRIVATE}" = "true" ]; then
+if [[ -z ${AUTH_IP} ]] && [ "${PRIVATE}" = "false" ]; then
   tput setaf 1; echo "" 1>&2
-  echo $'ERROR: Private Endpoint GKE Cluster access is restricted to a specified Public IP\n Please set \'AUTH_IP\''
+  echo $'ERROR: Public Endpoint GKE Cluster access will be restricted to a specified Public IP\n Please set \'AUTH_IP\''
   echo "" ; tput sgr0
   exit 1
 fi
@@ -157,10 +157,10 @@ fi
 #  - If not set, the boolean value defaults to false and a linux GKE cluster is created
 if [[ ${WINDOWS_CLUSTER} == true ]]; then
   WINDOWS="true"
-  echo "INFO: Creating GKE Cluster with a Windows Node Pool" 1>&2
+  echo "INFO: Setting GKE Node Pool type to Windows" 1>&2
 	else
   WINDOWS="false"
-  echo "INFO: Creating GKE Cluster with a Linux Node Pool" 1>&2
+  echo "INFO: Setting GKE Node Pool type to Linux" 1>&2
 fi
 
 # This check verifies if the PREEMPTIBLE_NODES boolean value has been set to true
@@ -168,7 +168,7 @@ fi
 #  - If not set, the boolean value defaults to false and the cluster deploys with traditional node types
 if [[ ${PREEMPTIBLE_NODES} == true ]]; then
   PREEMPTIBLE="true"
-  echo "INFO: Creating GKE Cluster with with preemptible nodes" 1>&2
+  echo "INFO: Setting GKE Node type to preemptible nodes" 1>&2
 	else
   PREEMPTIBLE="false"
 fi
@@ -240,7 +240,7 @@ if [[ ${SHARED_VPC} == true ]]; then
   fi
 else 
 	SHARED_VPC="false"
-	echo "INFO: Creating GKE cluster in standalone VPC" 1>&2
+	echo "INFO: Setting VPC type to standalone" 1>&2
 fi
 
 if [[ "${STATE}" = "gcs" ]]; then
@@ -250,7 +250,7 @@ if [[ "${STATE}" = "gcs" ]]; then
 		
   case $buildtype in
     cluster) echo "" 1>&2;
-    echo $'INFO: Creating backend configuration for Cluster Build';
+    echo $'INFO: Setting values for backend configuration for Cluster Build';
     TERRAFORM_ROOT="${ROOT}/terraform/cluster_build";
     cat > ${TERRAFORM_ROOT}/backend.tf <<-'EOF'
     terraform {
@@ -261,7 +261,7 @@ if [[ "${STATE}" = "gcs" ]]; then
     ;;
 
     vpc) echo "" 1>&2;
-    echo $'INFO: Creating  backend configuration for Shared VPC Build';
+    echo $'INFO: Setting values for backend configuration for Shared VPC Build';
     TERRAFORM_ROOT="${ROOT}/terraform/shared_vpc";
     cat > ${TERRAFORM_ROOT}/backend.tf <<-'EOF'
     terraform {
@@ -272,7 +272,7 @@ if [[ "${STATE}" = "gcs" ]]; then
     ;;
 
     secure) echo "" 1>&2;
-    echo $'INFO: Creating backend configuration for Cluster Security Build';
+    echo $'INFO: Setting values for backend configuration for Cluster Security Build';
     TERRAFORM_ROOT="${ROOT}/terraform/security";
     cat > ${TERRAFORM_ROOT}/backend.tf <<-'EOF'
     terraform {
