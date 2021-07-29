@@ -32,7 +32,7 @@ buildtype=$1
 # git is required for this tutorial
 # https://git-scm.com/book/en/v2/Getting-Started-Installing-Git
 command -v git >/dev/null 2>&1 || { \
- echo >&2 "I require git but it's not installed.  Aborting."
+ echo >&2 "git require but it's not installed.  Aborting."
  echo >&2 "Refer to: https://git-scm.com/book/en/v2/Getting-Started-Installing-Git"
  exit 1
 }
@@ -40,7 +40,7 @@ command -v git >/dev/null 2>&1 || { \
 # glcoud is required for this tutorial
 # https://cloud.google.com/sdk/install
 command -v gcloud >/dev/null 2>&1 || { \
- echo >&2 "I require gcloud but it's not installed.  Aborting."
+ echo >&2 "gcloud required but it's not installed.  Aborting."
  echo >&2 "Refer to: https://cloud.google.com/sdk/install"
  exit 1
 }
@@ -48,7 +48,7 @@ command -v gcloud >/dev/null 2>&1 || { \
 # Make sure kubectl is installed.  If not, refer to:
 # https://kubernetes.io/docs/tasks/tools/install-kubectl/
 command -v kubectl >/dev/null 2>&1 || { \
- echo >&2 "I require kubectl but it's not installed.  Aborting."
+ echo >&2 "kubectl required but it's not installed.  Aborting."
  echo >&2 "Refer to: https://kubernetes.io/docs/tasks/tools/install-kubectl/"
  exit 1
 }
