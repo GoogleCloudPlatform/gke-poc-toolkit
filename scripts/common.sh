@@ -179,7 +179,6 @@ fi
 if [[ ${SHARED_VPC} == true ]]; then
   echo "INFO: Verifying Shared VPC Configuration Information" 1>&2
 
-  [[ -z "${SHARED_VPC_NAME-}" ]] && SHARED_VPC_NAME="$(echo $SHARED_VPC_NAME)"
   if [[ -z "${SHARED_VPC_NAME}" ]]; then
     tput setaf 1; echo "" 1>&2
     echo $'ERROR: Deploying to a shared VPC requires the shared VPC name to be set.\n Please set \'SHARED_VPC_NAME\' in the \'cluster_config\' file'  1>&2
