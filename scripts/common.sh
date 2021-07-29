@@ -26,6 +26,8 @@ set -o pipefail
 ROOT="$( cd "$( dirname "${BASH_SOURCE[0]}" )/.." && pwd )"
 SCRIPT_ROOT="${ROOT}/scripts"
 
+# Set input variable
+buildtype=$1
 
 # git is required for this tutorial
 # https://git-scm.com/book/en/v2/Getting-Started-Installing-Git
@@ -73,7 +75,6 @@ test_cmd() {
 			exit $result
   fi
 }
-
 
 if [ -f "${ROOT}/cluster_config" ]; then
     . "${ROOT}/cluster_config"
@@ -178,6 +179,7 @@ fi
 if [[ ${SHARED_VPC} == true ]]; then
   echo "INFO: Verifying Shared VPC Configuration Information" 1>&2
 
+  [[ -z "${SHARED_VPC_NAME-}" ]] && SHARED_VPC_NAME="$(echo $SHARED_VPC_NAME)"
   if [[ -z "${SHARED_VPC_NAME}" ]]; then
     tput setaf 1; echo "" 1>&2
     echo $'ERROR: Deploying to a shared VPC requires the shared VPC name to be set.\n Please set \'SHARED_VPC_NAME\' in the \'cluster_config\' file'  1>&2
@@ -241,8 +243,6 @@ else
 	SHARED_VPC="false"
 	echo "INFO: Creating GKE cluster in standalone VPC" 1>&2
 fi
-
-buildtype=$1
 
 if [[ "${STATE}" = "gcs" ]]; then
   STATE="gcs"
