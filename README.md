@@ -74,7 +74,7 @@ The Terraform configuration will execute against your GCP environment and create
 
 #### Standard Build
 
-This template defaults to deploying a Private Cluster in a Standalone VPC with the settings below. Instructions are included to modify the default build to include optional settings. Those settings are covered in the following section, [Optional Settings](#optional-settings).
+This template defaults to deploying a Private Cluster in a Standalone VPC with the settings below. Instructions are included to modify the default build to include optional settings. Those options are covered in the following section, [Optional Settings](#optional-settings).
 
 Private clusters allow you to isolate nodes from the public internet. Every GKE cluster has a Kubernetes API server that is managed by the control plane (master). In private clusters, the control plane's VPC network is connected to your cluster's VPC network with VPC Network Peering. Your VPC network contains the cluster nodes, and a separate Google Cloud VPC network contains your cluster's control plane. The control plane's VPC network is located in a project controlled by Google. Traffic between nodes and the control plane is routed entirely using internal IP addresses.
 
