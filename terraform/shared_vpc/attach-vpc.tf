@@ -32,6 +32,9 @@ resource "google_compute_subnetwork_iam_binding" "subnet_networkuser" {
 }
 
 resource "google_project_iam_binding" "shared_vpc_serviceagent" {
+  depends_on = [
+    resource.google_compute_subnetwork_iam_binding.subnet_networkuser
+  ]
   role    = "roles/container.hostServiceAgentUser"
   project = var.shared_vpc_project_id
   members = [
