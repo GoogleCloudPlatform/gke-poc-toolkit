@@ -1,0 +1,93 @@
+# Copyright 2020 Google LLC
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#      http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+
+### Terraform State configuration
+
+## Location to save terraform state
+## allowed values: local|gcs
+## Defaults to local
+
+STATE=local
+
+
+### GCP Configuration Settings
+
+
+## Defaults to current region. 
+## To use a different region, update the region name below
+
+REGION=$(gcloud config get-value compute/region -q 2>/dev/null)
+
+## Defaults to current zone. If you would like 
+## To use a different zone, update the zone name below
+
+ZONE=$(gcloud config get-value compute/zone -q 2>/dev/null)
+
+## Defaults to current project. 
+## To use a different project, update the project name below
+
+PROJECT=$(gcloud config get-value project -q 2>/dev/null)
+
+## Defaults to current project. 
+## To use a different project update the project name below
+
+GOVERNANCE_PROJECT=$(gcloud config get-value project -q 2>/dev/null)
+
+
+### Cluster Configuration Settings
+
+
+## Setting allows for cluster with public or private endpoints 
+## Defaults to false for private cluster
+## allowed values: true|false
+
+PUBLIC_CLUSTER=false
+
+## Setting stores the local public IP address of the deployment workstation
+## If PUBLIC_CLUSTER is true, the AUTH_IP value is added to the master authorized network of the GKE clusters deployed
+
+AUTH_IP=$(curl -sS ifconfig.me)
+
+## Setting allows creation of windows node pool for cluster
+## Defaults to false
+## allowed values: true|false
+
+WINDOWS_CLUSTER=false
+
+## Setting allows for cluster with pre-emptible nodes 
+## Defaults to false
+## allowed values: true|false
+
+PREEMPTIBLE_NODES=false
+ 
+### Shared VPC Configuration Information
+
+## Enable Shared VPC configuration
+## allowed values: true|false
+## Defaults to false
+
+SHARED_VPC=false
+
+## If using a shared VPC, uncomment the lines below and provide appropriate values
+
+#SHARED_VPC_PROJECT_ID=
+#SHARED_VPC_NAME=
+#SHARED_VPC_SUBNET_NAME=
+#POD_IP_RANGE_NAME=
+#SERVICE_IP_RANGE_NAME=
+
+
+
+
+

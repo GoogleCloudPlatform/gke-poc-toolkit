@@ -18,6 +18,9 @@
 // Modules and resources below do not get executed if SHARED_VPC=false
 
 resource "google_compute_subnetwork_iam_binding" "subnet_networkuser" {
+  depends_on = [
+    module.shared_vpc
+  ]
   project    = var.shared_vpc_project_id
   region     = var.region
   subnetwork = var.shared_vpc_subnet_name
@@ -29,6 +32,9 @@ resource "google_compute_subnetwork_iam_binding" "subnet_networkuser" {
 }
 
 resource "google_project_iam_binding" "shared_vpc_serviceagent" {
+  depends_on = [
+    google_compute_subnetwork_iam_binding.subnet_networkuser
+  ]
   role    = "roles/container.hostServiceAgentUser"
   project = var.shared_vpc_project_id
   members = [

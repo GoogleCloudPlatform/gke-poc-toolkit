@@ -13,24 +13,39 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-# "---------------------------------------------------------"
-# "-                                                       -"
-# "-  Sets up the gcloud compute ssh proxy to the bastion  -"
-# "-                                                       -"
-# "---------------------------------------------------------"
-
 # Bash safeties: exit on error, no unset variables, pipelines can't hide errors
-set -euo pipefail
+set -o errexit
+set -o pipefail
 
-# Directory of this script.
+# Locate the root directory
 ROOT="$( cd "$( dirname "${BASH_SOURCE[0]}" )/.." && pwd )"
 
 # shellcheck source=scripts/common.sh
-source "$ROOT"/scripts/common.sh
+source "${ROOT}/scripts/common.sh"
 
-# Set variables for the demo folder kubernetes config location.
-WORKLOAD_ID_DIR="./demos/workload-identity"
+# Initialize and run Terraform
+if [ "$STATE" == gcs ]; then
+  if [[ $(gsutil ls | grep "$BUCKET/") ]]; then
+    echo "state $BUCKET exists"
+  else
+    gsutil mb gs://$BUCKET
+  fi
+fi
 
-# Delete the kubernetes resources.
-echo "Deleting all of the KCC and native k8s resources, be patient this can take a minute or two."
-kubectl delete -f ${WORKLOAD_ID_DIR}/. -n workload-id-demo 
+case $STATE in
+
+  local)
+  (cd "${TERRAFORM_ROOT}";terraform init -input=true);
+  (cd "${TERRAFORM_ROOT}";terraform apply -input=false -auto-approve -compact-warnings);
+  GET_CREDS="$(terraform output get_credentials)";
+  ;;
+	
+  gcs)	
+	(cd "${TERRAFORM_ROOT}";terraform init -input=true -backend-config="bucket=${BUCKET}");
+  (cd "${TERRAFORM_ROOT}";terraform apply -input=false -auto-approve -compact-warnings);
+  GET_CREDS="$(terraform output get_credentials)";
+  ;;
+
+  *) exit 1
+  ;;
+esac

@@ -1,81 +1,99 @@
 # GKE Cluster Deployments
 
 * [Before you begin](#before-you-begin)
-* [Configure the GKE cluster](#configure-the-gke-cluster)
+* [Deploying the GKE cluster](#deploying-the-gke-cluster)
 * [Validate GKE cluster config](#validate-gke-cluster-config)
 * [Next steps](#next-steps)
 * [Cleaning up](#cleaning-up)
 
 ## Before you begin
 
-#### Required Variables
-The provided scripts will populate the required variables from the region, zone, and project envars.
+The scripts provided in this repository require the existence of a `cluster_config` file in the root directory. This config file contains a baseline set of variables, including the GCP Region, Zone and Project ID to be used when creating the GKE cluster. A template of this configuration file named [cluster_config.example](../scripts/cluster_config.example) can be found in the scripts directory. Please create a copy of this file in the root directory, rename to `cluster_config` and modify as needed.
 
-```shell
-export REGION=<target compute region for gke>
-export ZONE=<target compute zone for bastion host>
-export PROJECT=<GCP Project>
-```
+>**NOTE:** If a `cluster_config` file is not detected in the root, the script will attempt to create one for you with the default values set. By default, these values will deploy a Private GKE cluster with a default linux nodepool in a standalone VPC. 
 
-An additional environment variable for the governance project is also required. This project will be used to host resources such as the KVM and log sinks. As a best practice it is recommended that a separate project is used, however, the existing project can be used for testing purposes:
+The section below outlines the required and optional configuration settings.
 
-```shell
-export GOVERNANCE_PROJECT=<project-name>
-```
+## GKE Cluster Creation Values
 
-#### Optional Variables
+Default values for required information have be populated to use the current configuration of the Google Cloud SDK, during cluster deployment. If you need to deploy the GKE cluster in a region, zone or project that is different than your current Google Cloud SDK configuration information, update the following settings in the `cluster_config` file:
 
-[Public Endpoint Cluster](https://cloud.google.com/kubernetes-engine/docs/how-to/authorized-networks) - The default deployment limits GKE control plane access to the bastion host subnet in the GKE VPC. Setting the following environment variable will grant control plane access to the public endpoint of the deployment device. The bastion host will not be deployed if this option is selected. If you choose this deployment option, please use [Configure GKE Cluster with Public endpoint](#configure-gke-cluster-with-public-endpoint) for deployment next steps. 
+### Required Settings
 
-```shell
-export PUBLIC_CLUSTER=true
-```
+| Setting | Description| Default Value|
+|:-|:-|:-| 
+|REGION |Target compute region for GKE|`gcloud config get-value compute/region` |
+|ZONE| Target compute zone for bastion host| `gcloud config get-value compute/zone`|
+|PROJECT| GCP Project to use| `gcloud config get-value project`|
 
-[Windows Node Pool](https://cloud.google.com/kubernetes-engine/docs/concepts/windows-server-gke) - By default the GKE cluster deploys a linux node pool. Setting the following environment variable will deploy an additional Windows node pool for deploying Windows Server container workloads. 
+### Optional Settings
 
-```shell
-export WINDOWS_CLUSTER=true
-```
-
-[Preemptible Nodes](https://cloud.google.com/kubernetes-engine/docs/how-to/preemptible-vms) - By default the GKE cluster non-preemptible nodes which cannot be reclaimed while in use. Setting the following environment variable will deploy the cluster with preemptible nodes that last a maximum of 24 hours and provide no availability guarentees.
-
-```shell
-export PREEMPTIBLE_NODES=true
-```
-
-[Shared VPC](https://cloud.google.com/vpc/docs/shared-vpc) - By default the GKE cluster deploys to a standalone VPC in the project where the cluster is created. Setting the following environment variables will deploy the GKE cluster to a shared VPC in a Host Project of your choice.
-
-<b>NOTE:</b> Deploying multiple GKE Toolkit environments to the same shared VPC is not currently supported. This feature will be added in the future. 
-
-```shell
-# The following prerequisites must be completed prior to running the deployment:
-# 
-#  - A Shared VPC in a Host Project must be created before executing this step. That VPC must meet the following prerequisites:
-#
-#     - Two secondary IP ranges must be created on the target shared VPC subnet and configured with the pod and service 
-#       IP CIDR ranges. Examples below: 
-#         - pod-ip-range       10.1.64.0/18
-#         - service-ip-range   10.2.64.0/18
-#     - The Service Project must be attached to the Shared VPC and the target subnet must be shared and in the deployment region. 
-#     - Kubernetes Engine Access must be enabled on the shared subnet.
-#
-
-# All variables are required in order to deploy to a shared VPC
-export SHARED_VPC=true
-export SHARED_VPC_PROJECT_ID=<shared VPC project ID>
-export SHARED_VPC_NAME=<shared VPC name>
-export SHARED_VPC_SUBNET_NAME=<shared VPC subnet name>
-export POD_IP_RANGE_NAME=<the name of the secondary IP range used for cluster pod IPs>
-export SERVICE_IP_RANGE_NAME=<the name of the secondary IP range used for cluster services>
-```
-Note:
-For convenience and to avoid manually type all the environment variables for different cluster settings, There is a default environment variables file under 
-scripts/set-env.sh, you can change the settings accordingly. 
+Included in the `cluster_config` configuration file are options for Shared VPC configurations, GKE Cluster Node Pools with Windows nodes,  pre-emptible node configurations, and GKE control plane access configurations. In the sections below, the available optional settings and their default values are described. Update the `cluster_config` file as needed to use these additional features.
 
 
-## Configure the GKE cluster
+**Log Sinks**
 
-#### Configure GKE Cluster with Private Endpoint
+The default deployment reuses the GCP project configred to host resources such as the KVM and log sinks. As a best practice it is recommended that a separate project is used, however the default value can be used for testing purposes.
+
+| Setting | Description| Default Value|
+|:-|:-|:-|
+|GOVERNANCE_PROJECT| GCP Project used for KVM, Log Sinks and Governance|`gcloud config get-value project`|
+
+**[Public Endpoint Cluster](https://cloud.google.com/kubernetes-engine/docs/how-to/authorized-networks)** 
+
+The default deployment limits GKE control plane access to the bastion host subnet in the GKE VPC. Enabling the following configuration setting will grant control plane access to the public endpoint of the deployment device. The bastion host will not be deployed if this option is selected. If you choose this deployment option, please use [Deploy a GKE Cluster with Public endpoint](#deploy-a-gke-cluster-with-public-endpoint) for deployment next steps. 
+
+| Setting | Description| Default Value|
+|:-|:-|:-|
+PUBLIC_CLUSTER||false|
+
+**[Windows Node Pool](https://cloud.google.com/kubernetes-engine/docs/concepts/windows-server-gke)**
+
+The default deployment limits the GKE cluster deploys a linux node pool. Enabling the following configuration setting will deploy an additional Windows node pool for deploying Windows Server container workloads. 
+
+| setting | Description| Default Value|
+|:-|:-|:-|
+WINDOWS_CLUSTER||false|
+
+**[Preemptible Nodes](https://cloud.google.com/kubernetes-engine/docs/how-to/preemptible-vms)** 
+
+The default deployment limits the GKE cluster to non-preemptible nodes which cannot be reclaimed while in use. Enabling the following configuration setting will deploy the cluster with preemptible nodes that last a maximum of 24 hours and provide no availability guarentees.
+
+| setting | Description| Default Value|
+|:-|:-|:-|
+PREEMPTIBLE_NODES||false|
+
+**[Shared VPC](https://cloud.google.com/vpc/docs/shared-vpc)**
+
+The default deployment deploys to a standalone VPC in the project where the cluster is created. Enabling the following configuration settings will deploy the GKE cluster to a shared VPC in a Host Project of your choice.
+
+>**NOTE:** Deploying multiple GKE Toolkit environments to the same Shared VPC is not currently supported. This feature will be added in the future. 
+
+**The following pre-requisites must be completed prior to running the deployment**
+
+* A Shared VPC in a Host Project must exist before deploying the GKE cluster(s). That VPC must meet the following prerequisites:
+  * Two secondary IP ranges must be created on the target shared VPC subnet and configured with the pod and service IP CIDR ranges.
+    * Example:
+      * pod-ip-range       10.1.64.0/18
+      * service-ip-range   10.2.64.0/18
+  * The Service Project must be attached to the Shared VPC and the target subnet must be shared and in the deployment region. 
+  * Kubernetes Engine Access must be enabled on the shared subnet.
+
+>**NOTE:** Optionally, you can run `make shared-vpc` to automate the deployment of the Shared VPC in an existing Host Project. Shared VPC Admin permissions are required to perform that step.
+
+| Setting | Description| Default Value|
+|:-|:-|:-| 
+|SHARED_VPC||false|
+|SHARED_VPC_PROJECT_ID|Shared VPC project ID||
+|SHARED_VPC_NAME|The Shared VPC name||
+|SHARED_VPC_SUBNET_NAME|The name of the shared VPC subnet name||
+|POD_IP_RANGE_NAME|The name of the secondary IP range used for cluster pod IPs||
+|SERVICE_IP_RANGE_NAME|The name of the secondary IP range used for cluster services||
+
+
+## Deploying the GKE cluster
+
+### Deploy a GKE Cluster with Private Endpoint
 
 This cluster features both private nodes and a private control plane node.
 
@@ -130,25 +148,14 @@ make stop-proxy
 
 Proceed to [validation steps](#kubernetes-app-layer-secrets-validation) once installation completes. 
 
-#### Configure GKE Cluster with Public endpoint
+### Deploy a GKE Cluster with Public endpoint
 
 This cluster features cluster nodes with private IP's and a control plane api with a public IP.
 
 The code in the `scripts` directory generates and populates terraform variable information and creates all the same resources as the private endpoint cluster with the exception of the bastion host, which is not created. 
 
-Store external IP of the client you plan to run commands from as local variable ```AUTH_IP```:
+The `AUTH_IP` configuration setting contains an example command to extract and store the external IP of the system running the script. Update this setting to the external IP for Public IP of the  client you plan to use
 
-```shell
-# export your Public IP Address
-export AUTH_IP=$(dig +short myip.opendns.com @resolver1.opendns.com)
-```
-
-Verify ```AUTH_IP``` stored your external IP address before moving forward. If not, use an alternate means to update ```AUTH_IP``` with the external IP address for the console: 
-
-```shell
-# Check AUTH_IP for external IP
-echo $AUTH_IP
-```
 In the root of this repository, there is a script to create the cluster:
 
 ```shell
@@ -158,7 +165,7 @@ make create
 
 ## Validate GKE cluster config
 
-#### Kubernetes App Layer Secrets Validation
+### Kubernetes App Layer Secrets Validation
 
 Execute the following command to retrieve the kubernetes config for the cluster if not collected in the previous step:
 
@@ -181,7 +188,7 @@ gcloud container clusters describe $GKE_NAME \
 
 
 
-#### GKE Cluster with Windows Nodepool Validation (If Windows Node Pools were selected)
+### GKE Cluster with Windows Nodepool Validation (If Windows Node Pools were selected)
 
 Execute the following command to retrieve the kubernetes config for the cluster:
 
@@ -204,7 +211,7 @@ The next step is to futher harden the newly created cluster.
 
 [GKE Hardening Instructions](SECURITY.md)
 
-#### Check the [FAQ](FAQ.md) if you run into issues with the build.
+### Check the [FAQ](FAQ.md) if you run into issues with the build.
 
 ## Cleaning up
 
