@@ -16,37 +16,47 @@ limitations under the License.
 package cmd
 
 import (
-	config "gkekitctl/pkg"
 	"fmt"
+	config "gkekitctl/pkg"
+
 	"github.com/spf13/cobra"
-	"github.com/spf13/viper"
 )
 
+// // Create a new config instance.
+// var (
+// 	conf *config.Config
+// )
 
-// Create a new config instance.
-var (
-  conf *config.Config
-)
- 
-// Read the config file from the current directory and marshal
-// into the conf config struct.
-func getConf() *config.Config {
-	viper.AddConfigPath(".")
-	viper.SetConfigName("config")
-	err := viper.ReadInConfig()
+// // Read the config file from the current directory and marshal
+// // into the conf config struct.
+// func getConf() *config.Config {
+// 	if cfgFile != "" {
+// 		// Use config file from the flag.
+// 		viper.SetConfigFile(cfgFile)
+// 	} else {
+// 		// Find home directory.
+// 		// home, err := os.UserHomeDir()
+// 		// cobra.CheckErr(err)
 
-	if err != nil {
-		fmt.Printf("%v", err)
-	}
+// 		// Search config in home directory with name ".gkekitctl" (without extension).
+// 		viper.AddConfigPath(".")
+// 		viper.SetConfigType("yaml")
+// 		viper.SetConfigName(".gkekitctl")
+// 	}
+// 	err := viper.ReadInConfig()
 
-	conf := &config.Config{}
-	err = viper.Unmarshal(conf)
-	if err != nil {
-		fmt.Printf("unable to decode into config struct, %v", err)
-	}
+// 	if err != nil {
+// 		fmt.Printf("%v", err)
+// 	}
 
-	return conf
-}
+// 	conf := &config.Config{}
+// 	err = viper.Unmarshal(conf)
+// 	if err != nil {
+// 		fmt.Printf("unable to decode into config struct, %v", err)
+// 	}
+
+// 	return conf
+// }
 
 // createCmd represents the create command
 var createCmd = &cobra.Command{
@@ -56,7 +66,7 @@ var createCmd = &cobra.Command{
 	gkekitctl --config <file.yaml>`,
 	Run: func(cmd *cobra.Command, args []string) {
 		out := cmd.OutOrStdout()
-		conf = getConf()
+		conf := config.GetConf(cfgFile)
 		fmt.Fprintln(out, conf.TerraformState)
 		fmt.Fprintln(out, conf.ConfigSync)
 

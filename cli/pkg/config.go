@@ -1,5 +1,10 @@
 package config
 
+import (
+	"fmt"
+
+	"github.com/spf13/viper"
+)
 
 // Create private data struct to hold config options.
 type Config struct {
@@ -26,4 +31,38 @@ type Config struct {
 			Os string `yaml:"os"`
 		} `yaml:"nodePools"`
 	} `yaml:"clustersConfig"`
+}
+
+// Create a new config instance.
+var conf *Config
+
+// Read the config file from the current directory and marshal
+// into the conf config struct.
+func GetConf(cfgFile string) *Config {
+	if cfgFile != "" {
+		// Use config file from the flag.
+		viper.SetConfigFile(cfgFile)
+	} else {
+		// Find home directory.
+		// home, err := os.UserHomeDir()
+		// cobra.CheckErr(err)
+
+		// Search config in home directory with name ".gkekitctl" (without extension).
+		viper.AddConfigPath(".")
+		viper.SetConfigType("yaml")
+		viper.SetConfigName(".gkekitctl")
+	}
+	err := viper.ReadInConfig()
+
+	if err != nil {
+		fmt.Printf("%v", err)
+	}
+
+	conf := &Config{}
+	err = viper.Unmarshal(conf)
+	if err != nil {
+		fmt.Printf("unable to decode into config struct, %v", err)
+	}
+
+	return conf
 }
