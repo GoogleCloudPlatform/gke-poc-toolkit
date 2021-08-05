@@ -63,6 +63,24 @@ func GetConf(cfgFile string) *Config {
 	if err != nil {
 		fmt.Printf("unable to decode into config struct, %v", err)
 	}
+	// print(err)
+	// vars := make(map[string]interface{})
+	// vars["ClustersProjectName"] = conf.ClustersProjectName
+	// tmpl, _ := template.ParseFiles("/tfvars.tf.tmpl")
+	// file, _ := os.Create("tfvars.tf")
+	// defer file.Close()
+	// tmpl.Execute(file, vars)
 
 	return conf
 }
+
+// func GenerateTfvars(cfgFile string) {
+// 	conf := GetConf(cfgFile)
+// 	vars := make(map[string]interface{})
+// 	vars["ClustersProjectName"] = conf.ClustersProjectName
+// 	tmpl, _ := template.ParseFiles("/tfvars.tf.tmpl")
+// 	file, _ := os.Create("tfvars.tf")
+// 	defer file.Close()
+// 	tmpl.Execute(file, vars)
+
+// }

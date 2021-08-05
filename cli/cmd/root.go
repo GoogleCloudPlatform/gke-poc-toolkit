@@ -18,6 +18,7 @@ package cmd
 import (
 	"fmt"
 	"os"
+
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
 )
@@ -28,7 +29,7 @@ var cfgFile string
 var rootCmd = &cobra.Command{
 	Use:   "gkekitctl",
 	Short: "Tool to quickly deploy some pretty dope GKE demos",
-	Example: ` gkekitctl create
+	Example: `        gkekitctl create
 	gkekitctl delete
 	gkekitctl update
 	gkekitctl describe`,

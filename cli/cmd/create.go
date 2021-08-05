@@ -16,47 +16,10 @@ limitations under the License.
 package cmd
 
 import (
-	"fmt"
 	config "gkekitctl/pkg"
 
 	"github.com/spf13/cobra"
 )
-
-// // Create a new config instance.
-// var (
-// 	conf *config.Config
-// )
-
-// // Read the config file from the current directory and marshal
-// // into the conf config struct.
-// func getConf() *config.Config {
-// 	if cfgFile != "" {
-// 		// Use config file from the flag.
-// 		viper.SetConfigFile(cfgFile)
-// 	} else {
-// 		// Find home directory.
-// 		// home, err := os.UserHomeDir()
-// 		// cobra.CheckErr(err)
-
-// 		// Search config in home directory with name ".gkekitctl" (without extension).
-// 		viper.AddConfigPath(".")
-// 		viper.SetConfigType("yaml")
-// 		viper.SetConfigName(".gkekitctl")
-// 	}
-// 	err := viper.ReadInConfig()
-
-// 	if err != nil {
-// 		fmt.Printf("%v", err)
-// 	}
-
-// 	conf := &config.Config{}
-// 	err = viper.Unmarshal(conf)
-// 	if err != nil {
-// 		fmt.Printf("unable to decode into config struct, %v", err)
-// 	}
-
-// 	return conf
-// }
 
 // createCmd represents the create command
 var createCmd = &cobra.Command{
@@ -65,11 +28,19 @@ var createCmd = &cobra.Command{
 	Example: ` gkekitctl create
 	gkekitctl --config <file.yaml>`,
 	Run: func(cmd *cobra.Command, args []string) {
-		out := cmd.OutOrStdout()
+		// out := cmd.OutOrStdout()
 		conf := config.GetConf(cfgFile)
-		fmt.Fprintln(out, conf.TerraformState)
-		fmt.Fprintln(out, conf.ConfigSync)
+		config.GenerateTfvars(conf)
+		// fmt.Fprintln(out, conf.ClustersConfig[0].Region)
+		// vars := make(map[string]interface{})
+		// vars["ClustersProjectName"] = "Test"
+		// fmt.Printf("%v", vars)
 
+		// tmpl, _ := template.ParseFiles("templates/tfvars.tf.tmpl")
+		// file, _ := os.Create("tfvars.tf")
+		// defer file.Close()
+		// tmpl.Execute(file, vars)
+		// print(tmpl.Name)
 	},
 }
 

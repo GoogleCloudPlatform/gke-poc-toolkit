@@ -1,6 +1,6 @@
 terraformState: local
 configSync: true
-clustersProjectName: ## String used to provide project name
+clustersProjectName: mysweetproject ## String used to provide project name
 prefix: ## String used to generate object naming through script
 governanceProjectName: ## String used to provide governance project name (Default=clustersProjectName)
 vpcConfig:
@@ -14,8 +14,8 @@ clustersConfig: ## list of configs for n number of clusters
     nodeSize:
     clusterType: public
     authIP: ## only needed if using public clusters 
-    region:
-    zone: 
+    region: us-east1
+    zone: us-east1b
     nodePools: ## list of configs for n number of nodepools
       - os: COS
   - projectName: ## String used to provide project name for specific cluster (Default=clustersProjectName)
