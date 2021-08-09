@@ -41,32 +41,19 @@ The following APIs will be enabled in your projects:
 
 #### Tools
 
+* bash or bash compatible shell
 * [Terraform >= 0.13](https://www.terraform.io/downloads.html)
 * [Google Cloud SDK version >= 325.0.0](https://cloud.google.com/sdk/docs/downloads-versioned-archives)
-* [kubectl matching the latest GKE version](https://kubernetes.io/docs/tasks/tools/install-kubectl/)
-* bash or bash compatible shell
-
-#### Install Cloud SDK
-
-The Google Cloud SDK is used to interact with your GCP resources.
-[Installation instructions](https://cloud.google.com/sdk/downloads) for multiple platforms are available online.
-
-#### Install kubectl CLI
-
-The kubectl CLI is used to interact with both Kubernetes Engine and kubernetes in general.
-[Installation instructions](https://cloud.google.com/kubernetes-engine/docs/quickstart)
-for multiple platforms are available online.
-
-#### Install Terraform
-
-Terraform is used to automate the manipulation of cloud infrastructure. Its
-[installation instructions](https://www.terraform.io/intro/getting-started/install.html) are also available online.
+* [kubectl](https://kubernetes.io/docs/tasks/tools/)
+  >**NOTE:** [It is recommended the major/minor version at least match the current default GKE release channel](https://cloud.google.com/kubernetes-engine/docs/release-notes#current_versions) (version 1.20 at the time of this document).
 
 #### Configure Authentication
 
 The Terraform configuration will execute against your GCP environment and create various resources.  The script will use your personal account to build out these resources.  To setup the default account the script will use, run the following command to select the appropriate account:
 
 `gcloud auth login`
+
+>**NOTE:** If this is your first time deploying, you should also run `gcloud init` and reinitialize your configuration. 
 
 ## Deploy a Cluster
 

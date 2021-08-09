@@ -119,6 +119,31 @@ variable "node_pool" {
   default = "node-pool"
 }
 
+variable "initial_node_count" {
+  type    = number
+  default = 1
+}
+
+variable "min_node_count" {
+  type    = number
+  default = 1
+}
+
+variable "max_node_count" {
+  type    = number
+  default = 10
+}
+
+variable "linux_machine_type" {
+  type    = string
+  default = "n1-standard-2"
+}
+
+variable "windows_machine_type" {
+  type    = string
+  default = "n1-standard-4"
+}
+
 variable "private_endpoint" {
   type    = bool
   default = false

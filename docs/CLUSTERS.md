@@ -26,18 +26,11 @@ Default values for required information have be populated to use the current con
 |ZONE| Target compute zone for bastion host| `gcloud config get-value compute/zone`|
 |PROJECT| GCP Project to use| `gcloud config get-value project`|
 
+>**NOTE:** If using the default `gcloud` values, please verify they have been set before moving forward or you will receive an error the first time you attempt to deploy. 
+
 ### Optional Settings
 
 Included in the `cluster_config` configuration file are options for Shared VPC configurations, GKE Cluster Node Pools with Windows nodes,  pre-emptible node configurations, and GKE control plane access configurations. In the sections below, the available optional settings and their default values are described. Update the `cluster_config` file as needed to use these additional features.
-
-
-**Log Sinks**
-
-The default deployment reuses the GCP project configred to host resources such as the KVM and log sinks. As a best practice it is recommended that a separate project is used, however the default value can be used for testing purposes.
-
-| Setting | Description| Default Value|
-|:-|:-|:-|
-|GOVERNANCE_PROJECT| GCP Project used for KVM, Log Sinks and Governance|`gcloud config get-value project`|
 
 **[Public Endpoint Cluster](https://cloud.google.com/kubernetes-engine/docs/how-to/authorized-networks)** 
 
@@ -46,6 +39,14 @@ The default deployment limits GKE control plane access to the bastion host subne
 | Setting | Description| Default Value|
 |:-|:-|:-|
 PUBLIC_CLUSTER||false|
+
+**[Consolidate Logging and Security](https://cloud.google.com/docs/enterprise/best-practices-for-enterprise-organizations#centralization)**
+
+A common practice for security conscious customers is to consolidate logging, monitoring and security resources in projects managed by the security team and applying least priviledge permissions. By default, this deployment reuses the GKE Project to host the KVM and log sinks. If you'd like to host these resources in a separate governance specific project, provide a different project name for `GOVERNANCE_PROJECT`.
+
+| Setting | Description| Default Value|
+|:-|:-|:-|
+|GOVERNANCE_PROJECT| GCP Project used for KVM, Log Sinks and Governance|`gcloud config get-value project`|
 
 **[Windows Node Pool](https://cloud.google.com/kubernetes-engine/docs/concepts/windows-server-gke)**
 
@@ -69,7 +70,7 @@ The default deployment deploys to a standalone VPC in the project where the clus
 
 >**NOTE:** Deploying multiple GKE Toolkit environments to the same Shared VPC is not currently supported. This feature will be added in the future. 
 
-**The following pre-requisites must be completed prior to running the deployment**
+**The following pre-requisites must be completed prior to running the deployment if a Shared VPC is chosen**
 
 * A Shared VPC in a Host Project must exist before deploying the GKE cluster(s). That VPC must meet the following prerequisites:
   * Two secondary IP ranges must be created on the target shared VPC subnet and configured with the pod and service IP CIDR ranges.
@@ -93,35 +94,47 @@ The default deployment deploys to a standalone VPC in the project where the clus
 
 ## Deploying the GKE cluster
 
-### Deploy a GKE Cluster with Private Endpoint
-
-This cluster features both private nodes and a private control plane node.
-
 The code in the `scripts` directory generates and populates terraform variable information and creates the following resources in the region, zone, and project specified:
 
-* GKE Cluster with Private Endpoint
-  * Workload Identity enabled 
+* GKE Cluster 
   * A least privileged Google Service Account assigned to compute engine instances
-  * Master Authorized Networks enabled - Allows traffic from specified IP addresses to the GKE Control plane
-  * Application layer secrets
-  * Kubernetes Config Connector enabled
+  * [Workload Identity](https://cloud.google.com/kubernetes-engine/docs/how-to/workload-identity) enabled 
+  * [Master Authorized Networks](https://cloud.google.com/kubernetes-engine/docs/how-to/authorized-networks) enabled - Limits GKE Control Plane access to specific IPs
+  * [Application Layer Secrets](https://cloud.google.com/kubernetes-engine/docs/how-to/encrypting-secrets) enabled - Added encryption for sensitive GKE resources
+  * [Kubernetes Config Connector](https://cloud.google.com/config-connector/docs/overview) enabled - Manage GCP resourcs through GKE
 
-* VPC Networks
-  * subnets
-  * firewall rules
+* Network resources
+  * Firewall rules
   * Cloud NAT - provide outbound internet access for the clusters
   * Cloud Routers
 
 * Cloud KMS
-  * key ring for storing the application layer secret KEK
+  * Key ring for storing the key encryption key (KEK) used for Application Layer Secrets 
 
-* Compute Engine instance - acts as a bastion host, mapped to the GKE Cluster's Master Authorized Network
+* Variable settings
+  * If `SHARED_VPC=false` a standaone VPC w/ subnets will also be created in the GKE project for hosting the GKE Agent Nodes and Bastion Host (if needed)
+  * If `PUBLIC_CLUSTER=false` a Compute Engine Instance will deployed as a bastion host and mapped to the GKE Cluster's Master Authorized Network
 
-In the root of this repository, there is a script to create the cluster:
+### GKE Cluster Deployment Steps
+
+If you are deploying a **Private Endpoint Cluster** (ie. `PUBLIC_CLUSTER=false`) then proceed to the next section. 
+
+Otherwise, if you are deploying a **Public Endpoint Cluster** (ie. `PUBLIC_CLUSTER=true`), please skip to the following section for [steps on how to deploy a GKE Cluster with Public Endpoints](#steps-for-deploying-a-gke-cluster-with-public-endpoints). 
+
+#### Steps for deploying a GKE Cluster with Private Endpoints
+
+If choosing `PUBLIC_CLUSTER=false` the cluster will deploy with both private nodes and a private control plane node. To administer the cluster, a Linux Compute Engine instance will be deployed in the subnet with the GKE Agent Nodes and it's internal IP address will be mapped to the GKE Cluster's Master Authorized Network.
+
+First, [clone the repository](https://docs.github.com/en/github/creating-cloning-and-archiving-repositories/cloning-a-repository-from-github/cloning-a-repository).
+
+In the root of the cloned repository, there is a script to create the cluster:
 
 ```shell
+# Create cluster 
+#   - Deployment will take approximately 10 minutes to complete 
+#   - Expected output - Apply complete! Resources: XX added, 0 changed, 0 destroyed
 make create
-```
+```  
 
 Once the GKE cluster has been created, establish an SSH tunnel to the bastion:
 
@@ -129,7 +142,7 @@ Once the GKE cluster has been created, establish an SSH tunnel to the bastion:
 make start-proxy
 ```
 
-Retrieve the kubernetes config for the cluster, then set the `HTTPS_PROXY` environment variable to validate you can forward kubectl commands through the tunnel:
+When the deployment is complete, retrieve the kubernetes config for the cluster, then set the `HTTPS_PROXY` environment variable to validate you can forward kubectl commands through the tunnel and manage the GKE cluster:
 
 ```shell
 GKE_NAME=$(gcloud container clusters list --format="value(NAME)")
@@ -146,28 +159,47 @@ Stopping the SSH Tunnel:
 make stop-proxy
 ```
 
-Proceed to [validation steps](#kubernetes-app-layer-secrets-validation) once installation completes. 
+Proceed to [validation steps](#additional-validation-of-the-gke-cluster-config) once installation completes. 
 
-### Deploy a GKE Cluster with Public endpoint
+#### Steps for deploying a GKE Cluster with Public Endpoints
 
-This cluster features cluster nodes with private IP's and a control plane api with a public IP.
+If choosing `PUBLIC_CLUSTER=true` the cluster will deploy with control plane nodes accessible from the public internet. In order to limit access to the control plane nodes, the public IP address used for running this deployment will be stored as `AUTH_IP` and mapped to the GKE Cluster's Master Authorized Network.
 
-The code in the `scripts` directory generates and populates terraform variable information and creates all the same resources as the private endpoint cluster with the exception of the bastion host, which is not created. 
+>**NOTE:** To change the client that can administer the cluster, update the setting for `AUTH_IP`. 
 
-The `AUTH_IP` configuration setting contains an example command to extract and store the external IP of the system running the script. Update this setting to the external IP for Public IP of the  client you plan to use
+First, [clone the repository](https://docs.github.com/en/github/creating-cloning-and-archiving-repositories/cloning-a-repository-from-github/cloning-a-repository).
 
-In the root of this repository, there is a script to create the cluster:
+In the root of the cloned repository, there is a script to create the cluster:
 
 ```shell
-# Create cluster
+# Create cluster 
+#   - Deployment will take approximately 10 minutes to complete 
+#   - Expected output - Apply complete! Resources: XX added, 0 changed, 0 destroyed
 make create
 ```
 
-## Validate GKE cluster config
+When the deployment is complete, retrieve the kubernetes config for the cluster to validate you can manage the GKE cluster:
+
+```shell
+GKE_NAME=$(gcloud container clusters list --format="value(NAME)")
+GKE_LOCATION=$(gcloud container clusters list --format="value(LOCATION)")
+
+gcloud container clusters get-credentials $GKE_NAME --region $GKE_LOCATION
+
+kubectl get ns
+```
+
+Proceed to [validation steps](#additional-validation-of-the-gke-cluster-config) once installation completes. 
+
+## Additional Validation of the GKE Cluster Config
+
+For additional validation of the cluster's overall health and configuration, perform the following steps after the GKE cluster has completed its initial deployment. 
+
+Proceed to [Next Steps](#next-steps) if you'd like to skip this step and move on to hardening the GKE Cluster.
 
 ### Kubernetes App Layer Secrets Validation
 
-Execute the following command to retrieve the kubernetes config for the cluster if not collected in the previous step:
+Execute the following command to retrieve the kubernetes config for the GKE Cluster:
 
 ```shell
 GKE_NAME=$(gcloud container clusters list --format="value(NAME)")
@@ -186,8 +218,6 @@ gcloud container clusters describe $GKE_NAME \
 
 ```
 
-
-
 ### GKE Cluster with Windows Nodepool Validation (If Windows Node Pools were selected)
 
 Execute the following command to retrieve the kubernetes config for the cluster:
@@ -205,7 +235,7 @@ Validate Windows Server Node pool has been created:
 kubectl get nodes --label-columns beta.kubernetes.io/os
 ```
 
-## Next steps
+## Next Steps
 
 The next step is to futher harden the newly created cluster.
 
