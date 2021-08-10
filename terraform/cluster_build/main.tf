@@ -93,7 +93,7 @@ locals {
   }]
   // Final Node Pool options for Cluster - combines all specified nodepools
 
-  cluster_node_pools = var.windows_nodepool == "true" ? flatten([local.windows_pool, local.linux_pool]) : flatten(local.linux_pool)
+  cluster_node_pools = var.windows_nodepool ? flatten([local.windows_pool, local.linux_pool]) : flatten(local.linux_pool)
 }
 
 // Enable APIs needed in the gke cluster project

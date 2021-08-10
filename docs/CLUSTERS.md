@@ -131,8 +131,11 @@ In the root of the cloned repository, there is a script to create the cluster:
 
 ```shell
 # Create cluster 
-#   - Deployment will take approximately 10 minutes to complete 
-#   - Expected output - Apply complete! Resources: XX added, 0 changed, 0 destroyed
+#   - Expected Deployment Time:
+#     - Linux - Approximately 10 minutes with default n1-standard-2 nodes
+#     - Windows - Approximately __ minutes with default n1-standard-4 nodes
+#   - Expected output 
+#     - Apply complete! Resources: XX added, 0 changed, 0 destroyed
 make create
 ```  
 
@@ -173,8 +176,11 @@ In the root of the cloned repository, there is a script to create the cluster:
 
 ```shell
 # Create cluster 
-#   - Deployment will take approximately 10 minutes to complete 
-#   - Expected output - Apply complete! Resources: XX added, 0 changed, 0 destroyed
+#   - Expected Deployment Time:
+#     - Linux - Approximately 10 minutes with default n1-standard-2 nodes
+#     - Windows - Approximately __ minutes with default n1-standard-4 nodes
+#   - Expected output 
+#     - Apply complete! Resources: XX added, 0 changed, 0 destroyed
 make create
 ```
 
