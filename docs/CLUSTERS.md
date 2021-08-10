@@ -133,7 +133,7 @@ In the root of the cloned repository, there is a script to create the cluster:
 # Create cluster 
 #   - Expected Deployment Time:
 #     - Linux - Approximately 10 minutes with default n1-standard-2 nodes
-#     - Windows - Approximately __ minutes with default n1-standard-4 nodes
+#     - Windows - Approximately 40 minutes with default n1-standard-4 nodes
 #   - Expected output 
 #     - Apply complete! Resources: XX added, 0 changed, 0 destroyed
 make create
@@ -178,7 +178,7 @@ In the root of the cloned repository, there is a script to create the cluster:
 # Create cluster 
 #   - Expected Deployment Time:
 #     - Linux - Approximately 10 minutes with default n1-standard-2 nodes
-#     - Windows - Approximately __ minutes with default n1-standard-4 nodes
+#     - Windows - Approximately 40 minutes with default n1-standard-4 nodes
 #   - Expected output 
 #     - Apply complete! Resources: XX added, 0 changed, 0 destroyed
 make create
