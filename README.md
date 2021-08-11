@@ -22,7 +22,7 @@ The steps described in this document require the installation of several tools a
 
 You'll need access to at least one Google Cloud Project with billing enabled. See **Creating and Managing Projects** (https://cloud.google.com/resource-manager/docs/creating-managing-projects) for creating a new project. To make cleanup easier, it's recommended to create a new project.
 
-#### Required GCP APIs test
+#### Required GCP APIs
 
 The following APIs will be enabled in your projects:
 
