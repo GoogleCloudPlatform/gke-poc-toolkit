@@ -118,6 +118,8 @@ else
       echo $'A cluster_config file will now be created in the root directory. Please review the inputs and update as needed before restarting the deployment. If left unmodified, the default values will deploy a Private GKE cluster with a default linux nodepool in a standalone VPC.\n\nFor guidance on the cluster_config file and your deployment options, please reference:'; tput sgr0
       echo "https://github.com/GoogleCloudPlatform/gke-poc-toolkit/blob/main/docs/CLUSTERS.md"
       echo ""
+      echo "INFO: The default cluster_config file leverages the Project, Region and Zone defaults in the current shell. Please verify these are set or enter new default values in cluster_config before proceeding."
+      echo ""
       cp "${SCRIPT_ROOT}/cluster_config.example" "${ROOT}/cluster_config";
       exit
       ;;
