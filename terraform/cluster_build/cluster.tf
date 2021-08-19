@@ -26,6 +26,7 @@ module "gke" {
 #  name                    = "${each.key}-endpoint-cluster"
   subnetwork              = local.subnetwork_name
   name                    = var.cluster_name
+  region                  = var.region
 #  region                  = each.value.region
   config_connector        = var.config_connector
   network                 = local.network_name
