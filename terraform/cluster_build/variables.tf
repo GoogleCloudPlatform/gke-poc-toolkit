@@ -175,3 +175,8 @@ variable "preemptible_nodes" {
   description = "Whether underlying node GCE instances are preemptible"
   default     = true
 }
+
+variable "cluster_config" {
+  description = "For each cluster, create an object that contain the required fields"
+  default     = {}
+}
