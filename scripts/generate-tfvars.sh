@@ -72,8 +72,8 @@ shared_vpc_ip_range_pods_name     = "${POD_IP_RANGE_NAME}"
 shared_vpc_ip_range_services_name = "${SERVICE_IP_RANGE_NAME}"
 cluster_config					  = {
     "${CLUSTER_TYPE}" = {
-        region:           = "${REGION}"
-        subnet_name:      = "${CLUSTER_TYPE}-cluster-subnet"
+        region:           = ${REGION}
+        subnet_name:      = ${CLUSTER_TYPE}-cluster-subnet
     }
 }
 EOF
