@@ -31,7 +31,9 @@ module "gke" {
   ip_range_pods           = local.ip_range_pods
   ip_range_services       = local.ip_range_services
   enable_private_endpoint = var.private_endpoint
-  enable_shielded_nodes   = true
+  # enable_shielded_nodes   = true default set in terraform-google-kubernetes-engine
+
+  //TODO Enable user to specify master CIDR
   master_ipv4_cidr_block  = "172.16.0.16/28"
   master_authorized_networks = [{
     cidr_block   = var.private_endpoint ? "${module.bastion[0].ip_address}/32" : "${var.auth_ip}/32"
@@ -53,7 +55,7 @@ module "gke" {
     ]
   }
   node_pools_labels = {
-    all = {}
+    # all = {} default set in terraform-google-kubernetes-engine
 
     default-node-pool = {
       default-node-pool = false
@@ -61,7 +63,7 @@ module "gke" {
   }
 
   node_pools_metadata = {
-    all = {}
+    # all = {} default set in terraform-google-kubernetes-engine
 
     (var.node_pool) = {
       // Set metadata on the VM to supply more entropy

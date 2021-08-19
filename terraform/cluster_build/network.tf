@@ -21,7 +21,7 @@ module "vpc" {
 
   project_id   = module.enabled_google_apis.project_id
   network_name = var.vpc_name
-  routing_mode = "GLOBAL"
+  #routing_mode = "GLOBAL" (default set in terraform-google-modules)
 
   subnets = [
     {
@@ -36,10 +36,12 @@ module "vpc" {
     (var.subnet_name) = [
       {
         range_name    = var.ip_range_pods_name
+        #TODO enable users to override this CIDR 
         ip_cidr_range = "10.10.64.0/18"
       },
       {
         range_name    = var.ip_range_services_name
+        #TODO enable users to override this CIDR
         ip_cidr_range = "10.10.192.0/18"
       },
     ]
@@ -85,6 +87,6 @@ module "bastion" {
   machine_type   = "g1-small"
   startup_script = data.template_file.startup_script.rendered
   members        = local.bastion_members
-  shielded_vm    = "true"
+  # shielded_vm    = "true" (default set in terraform-google-bastion-host)
 }
 
