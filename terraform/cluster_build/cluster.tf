@@ -19,15 +19,17 @@ module "gke" {
     module.bastion,
     module.kms,
   ]
-  for_each                = var.cluster_config
+#  for_each                = var.cluster_config
   source                  = "terraform-google-modules/kubernetes-engine/google//modules/safer-cluster"
   version                 = "14.0.1"
   project_id              = module.enabled_google_apis.project_id
   name                    = "${each.key}-endpoint-cluster"
-  region                  = each.value.region
+  subnetwork              = local.subnetwork_name
+  name                    = var.cluster_name
+#  region                  = each.value.region
   config_connector        = var.config_connector
   network                 = local.network_name
-  subnetwork              = each.value.subnet_name
+#  subnetwork              = each.value.subnet_name
   network_project_id      = local.project_id
   ip_range_pods           = local.ip_range_pods
   ip_range_services       = local.ip_range_services
