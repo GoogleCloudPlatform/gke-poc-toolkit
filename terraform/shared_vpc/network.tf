@@ -24,7 +24,7 @@ module "shared_vpc" {
 
   project_id   = var.shared_vpc_project_id
   network_name = var.shared_vpc_name
-  routing_mode = "GLOBAL"
+  # routing_mode = "GLOBAL" default in terraform-google-network
 
   subnets = [
     {
@@ -39,10 +39,12 @@ module "shared_vpc" {
     (var.shared_vpc_subnet_name) = [
       {
         range_name    = var.shared_vpc_ip_range_pods_name
+        // TODO enable user to override this
         ip_cidr_range = "10.10.64.0/18"
       },
       {
         range_name    = var.shared_vpc_ip_range_services_name
+        // TODO enable user to override this
         ip_cidr_range = "10.10.192.0/18"
       },
     ]
