@@ -1,30 +1,34 @@
 terraformState: local
 configSync: true
-clustersProjectName: mysweetproject ## String used to provide project name
+clustersProjectId: mysweetproject ## String used to provide project name
 prefix: ## String used to generate object naming through script
-governanceProjectName: ## String used to provide governance project name (Default=clustersProjectName)
+governanceProjectId: ## String used to provide governance project name (Default=clustersProjectName)
 vpcConfig:
-  type: shared ## String used to provide VPC type. (Default=standalone)
-  subnetName:
-  podCIDRName:
-  svcCIDRName:
-  vpcProjectName:
+  vpcName:
+  vpcType: shared ## String used to provide VPC type. (Default=standalone)
+  vpcProjectId:
 clustersConfig: ## list of configs for n number of clusters
-  - projectName: ## String used to provide project name for specific cluster (Default=clustersProjectName)
+  - projectId: ## String used to provide project name for specific cluster (Default=clustersProjectName)
     nodeSize:
     clusterType: public
     authIP: ## only needed if using public clusters 
     region: us-east1
     zone: us-east1b
-    nodePools: ## list of configs for n number of nodepools
-      - os: COS
-  - projectName: ## String used to provide project name for specific cluster (Default=clustersProjectName)
+    subnetName: 
+    podCIDRName:
+    svcCIDRName:
+    enableWindowsNodepool: False  ##bool
+    enablePreemptibleNodepool: False ##bool
+    defaultNodepoolOS: COS ## list of configs for n number of nodepools
+  - projectId: ## String used to provide project name for specific cluster (Default=clustersProjectName)
     nodeSize:
     clusterType: public
     authIP: ## only needed if using public clusters 
-    region:
-    zone: 
-    nodePools: ## list of configs for n number of nodepools
-      - os: windows     
-
-
+    region: us-east1
+    zone: us-east1b
+    subnetName: 
+    podCIDRName:
+    svcCIDRName:
+    enableWindowsNodepool: False  ##bool
+    enablePreemptibleNodepool: False ##bool
+    defaultNodepoolOS: COS ## list of configs for n number of nodepools

@@ -8,28 +8,29 @@ import (
 
 // Create private data struct to hold config options.
 type Config struct {
-	TerraformState        string      `yaml:"terraformState"`
-	ConfigSync            interface{} `yaml:"configSync"`
-	ClustersProjectName   interface{} `yaml:"clustersProjectName"`
-	Prefix                interface{} `yaml:"prefix"`
-	GovernanceProjectName interface{} `yaml:"governanceProjectName"`
-	VpcConfig             struct {
-		Type           string      `yaml:"type"`
-		SubnetName     interface{} `yaml:"subnetName"`
-		PodCIDRName    interface{} `yaml:"podCIDRName"`
-		SvcCIDRName    interface{} `yaml:"svcCIDRName"`
-		VpcProjectName interface{} `yaml:"vpcProjectName"`
+	TerraformState      string      `yaml:"terraformState"`
+	ConfigSync          bool        `yaml:"configSync"`
+	ClustersProjectID   string      `yaml:"clustersProjectId"`
+	Prefix              interface{} `yaml:"prefix"`
+	GovernanceProjectID interface{} `yaml:"governanceProjectId"`
+	VpcConfig           struct {
+		VpcName      interface{} `yaml:"vpcName"`
+		VpcType      string      `yaml:"vpcType"`
+		VpcProjectID interface{} `yaml:"vpcProjectId"`
 	} `yaml:"vpcConfig"`
 	ClustersConfig []struct {
-		ProjectName interface{} `yaml:"projectName"`
-		NodeSize    interface{} `yaml:"nodeSize"`
-		ClusterType string      `yaml:"clusterType"`
-		AuthIP      interface{} `yaml:"authIP"`
-		Region      interface{} `yaml:"region"`
-		Zone        interface{} `yaml:"zone"`
-		NodePools   []struct {
-			Os string `yaml:"os"`
-		} `yaml:"nodePools"`
+		ProjectID                 interface{} `yaml:"projectId"`
+		NodeSize                  interface{} `yaml:"nodeSize"`
+		ClusterType               string      `yaml:"clusterType"`
+		AuthIP                    interface{} `yaml:"authIP"`
+		Region                    string      `yaml:"region"`
+		Zone                      string      `yaml:"zone"`
+		SubnetName                interface{} `yaml:"subnetName"`
+		PodCIDRName               interface{} `yaml:"podCIDRName"`
+		SvcCIDRName               interface{} `yaml:"svcCIDRName"`
+		EnableWindowsNodepool     bool        `yaml:"enableWindowsNodepool"`
+		EnablePreemptibleNodepool bool        `yaml:"enablePreemptibleNodepool"`
+		DefaultNodepoolOS         string      `yaml:"defaultNodepoolOS"`
 	} `yaml:"clustersConfig"`
 }
 
@@ -73,14 +74,3 @@ func GetConf(cfgFile string) *Config {
 
 	return conf
 }
-
-// func GenerateTfvars(cfgFile string) {
-// 	conf := GetConf(cfgFile)
-// 	vars := make(map[string]interface{})
-// 	vars["ClustersProjectName"] = conf.ClustersProjectName
-// 	tmpl, _ := template.ParseFiles("/tfvars.tf.tmpl")
-// 	file, _ := os.Create("tfvars.tf")
-// 	defer file.Close()
-// 	tmpl.Execute(file, vars)
-
-// }

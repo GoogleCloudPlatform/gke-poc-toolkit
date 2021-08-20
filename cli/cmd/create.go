@@ -28,19 +28,8 @@ var createCmd = &cobra.Command{
 	Example: ` gkekitctl create
 	gkekitctl --config <file.yaml>`,
 	Run: func(cmd *cobra.Command, args []string) {
-		// out := cmd.OutOrStdout()
 		conf := config.GetConf(cfgFile)
 		config.GenerateTfvars(conf)
-		// fmt.Fprintln(out, conf.ClustersConfig[0].Region)
-		// vars := make(map[string]interface{})
-		// vars["ClustersProjectName"] = "Test"
-		// fmt.Printf("%v", vars)
-
-		// tmpl, _ := template.ParseFiles("templates/tfvars.tf.tmpl")
-		// file, _ := os.Create("tfvars.tf")
-		// defer file.Close()
-		// tmpl.Execute(file, vars)
-		// print(tmpl.Name)
 	},
 }
 
