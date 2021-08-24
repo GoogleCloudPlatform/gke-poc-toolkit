@@ -1,37 +1,45 @@
 package config
 
 import (
+	"bufio"
 	"fmt"
+	"os"
 
 	"github.com/spf13/viper"
 )
 
+type VpcConfig struct {
+	VpcName      interface{} `yaml:"vpcName"`
+	VpcType      string      `yaml:"vpcType"`
+	VpcProjectID interface{} `yaml:"vpcProjectId"`
+}
+
+type ClusterConfig struct {
+	ProjectID                  interface{} `yaml:"projectId"`
+	NumNodes                   interface{} `yaml:"nodeSize"`
+	MachineType                interface{} `yaml:"machineType"`
+	ClusterType                string      `yaml:"clusterType"`
+	AuthIP                     interface{} `yaml:"authIP"`
+	Region                     string      `yaml:"region"`
+	Zone                       string      `yaml:"zone"`
+	SubnetName                 interface{} `yaml:"subnetName"`
+	PodCIDRName                interface{} `yaml:"podCIDRName"`
+	SvcCIDRName                interface{} `yaml:"svcCIDRName"`
+	EnableWorkloadIdentitybool bool        `yaml:"enableWorkloadIdentity"`
+	EnableWindowsNodepool      bool        `yaml:"enableWindowsNodepool"`
+	EnablePreemptibleNodepool  bool        `yaml:"enablePreemptibleNodepool"`
+	DefaultNodepoolOS          string      `yaml:"defaultNodepoolOS"`
+}
+
 // Create private data struct to hold config options.
 type Config struct {
-	TerraformState      string      `yaml:"terraformState"`
-	ConfigSync          bool        `yaml:"configSync"`
-	ClustersProjectID   string      `yaml:"clustersProjectId"`
-	Prefix              interface{} `yaml:"prefix"`
-	GovernanceProjectID interface{} `yaml:"governanceProjectId"`
-	VpcConfig           struct {
-		VpcName      interface{} `yaml:"vpcName"`
-		VpcType      string      `yaml:"vpcType"`
-		VpcProjectID interface{} `yaml:"vpcProjectId"`
-	} `yaml:"vpcConfig"`
-	ClustersConfig []struct {
-		ProjectID                 interface{} `yaml:"projectId"`
-		NodeSize                  interface{} `yaml:"nodeSize"`
-		ClusterType               string      `yaml:"clusterType"`
-		AuthIP                    interface{} `yaml:"authIP"`
-		Region                    string      `yaml:"region"`
-		Zone                      string      `yaml:"zone"`
-		SubnetName                interface{} `yaml:"subnetName"`
-		PodCIDRName               interface{} `yaml:"podCIDRName"`
-		SvcCIDRName               interface{} `yaml:"svcCIDRName"`
-		EnableWindowsNodepool     bool        `yaml:"enableWindowsNodepool"`
-		EnablePreemptibleNodepool bool        `yaml:"enablePreemptibleNodepool"`
-		DefaultNodepoolOS         string      `yaml:"defaultNodepoolOS"`
-	} `yaml:"clustersConfig"`
+	TerraformState      string          `yaml:"terraformState"`
+	ConfigSync          bool            `yaml:"configSync"`
+	ClustersProjectID   string          `yaml:"clustersProjectId"`
+	Prefix              interface{}     `yaml:"prefix"`
+	GovernanceProjectID interface{}     `yaml:"governanceProjectId"`
+	VpcConfig           VpcConfig       `yaml:"vpcConfig"`
+	ClustersConfig      []ClusterConfig `yaml:"clustersConfig"`
 }
 
 // Create a new config instance.
@@ -53,17 +61,29 @@ func GetConf(cfgFile string) *Config {
 		viper.SetConfigType("yaml")
 		viper.SetConfigName(".gkekitctl")
 	}
-	err := viper.ReadInConfig()
-
-	if err != nil {
-		fmt.Printf("%v", err)
+	if err := viper.ReadInConfig(); err != nil {
+		if _, ok := err.(viper.ConfigFileNotFoundError); ok {
+			// Config file not found; ignore error if desired
+			fmt.Println("Config file not found - using default values")
+			projectId, err := ReadProjectId()
+			if err != nil {
+				fmt.Println("Could not read project ID; quitting")
+				os.Exit(1)
+			}
+			InitWithDefaults(projectId)
+		} else {
+			// Config file was found but another error was produced
+			fmt.Println(err)
+			os.Exit(1)
+		}
 	}
 
 	conf := &Config{}
-	err = viper.Unmarshal(conf)
+	err := viper.Unmarshal(conf)
 	if err != nil {
 		fmt.Printf("unable to decode into config struct, %v", err)
 	}
+	fmt.Printf("%+v\n", conf)
 	// print(err)
 	// vars := make(map[string]interface{})
 	// vars["ClustersProjectName"] = conf.ClustersProjectName
@@ -73,4 +93,17 @@ func GetConf(cfgFile string) *Config {
 	// tmpl.Execute(file, vars)
 
 	return conf
+}
+
+// reads project ID from user input - used when default values are used over config.yaml
+func ReadProjectId() (string, error) {
+	reader := bufio.NewReader(os.Stdin)
+	fmt.Print("Enter your Google Cloud Project ID: ")
+	projectId, err := reader.ReadString('\n')
+	if err != nil {
+		return "", err
+	}
+	fmt.Printf("Using project ID: %s", projectId)
+
+	return projectId, nil
 }
