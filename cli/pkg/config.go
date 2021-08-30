@@ -8,27 +8,34 @@ import (
 	"github.com/spf13/viper"
 )
 
+// Enum for cluster type 
+type ClusterType string 
+const (
+	"public" ClusterType = iota
+	"private"
+)
+
 type VpcConfig struct {
-	VpcName      interface{} `yaml:"vpcName"`
-	VpcType      string      `yaml:"vpcType"`
-	VpcProjectID interface{} `yaml:"vpcProjectId"`
+	VpcName      string `yaml:"vpcName"`
+	VpcType      string `yaml:"vpcType"`
+	VpcProjectID string `yaml:"vpcProjectId"`
 }
 
 type ClusterConfig struct {
-	ProjectID                  interface{} `yaml:"projectId"`
-	NumNodes                   interface{} `yaml:"nodeSize"`
-	MachineType                interface{} `yaml:"machineType"`
-	ClusterType                string      `yaml:"clusterType"`
-	AuthIP                     interface{} `yaml:"authIP"`
-	Region                     string      `yaml:"region"`
-	Zone                       string      `yaml:"zone"`
-	SubnetName                 interface{} `yaml:"subnetName"`
-	PodCIDRName                interface{} `yaml:"podCIDRName"`
-	SvcCIDRName                interface{} `yaml:"svcCIDRName"`
-	EnableWorkloadIdentitybool bool        `yaml:"enableWorkloadIdentity"`
-	EnableWindowsNodepool      bool        `yaml:"enableWindowsNodepool"`
-	EnablePreemptibleNodepool  bool        `yaml:"enablePreemptibleNodepool"`
-	DefaultNodepoolOS          string      `yaml:"defaultNodepoolOS"`
+	ProjectID                  string `yaml:"projectId"`
+	NumNodes                   int    `yaml:"nodeSize"`
+	MachineType                string `yaml:"machineType"`
+	ClusterType                string `yaml:"clusterType"`
+	AuthIP                     string `yaml:"authIP"`
+	Region                     string `yaml:"region"`
+	Zone                       string `yaml:"zone"`
+	SubnetName                 string `yaml:"subnetName"`
+	PodCIDRName                string `yaml:"podCIDRName"`
+	SvcCIDRName                string `yaml:"svcCIDRName"`
+	EnableWorkloadIdentitybool bool   `yaml:"enableWorkloadIdentity"`
+	EnableWindowsNodepool      bool   `yaml:"enableWindowsNodepool"`
+	EnablePreemptibleNodepool  bool   `yaml:"enablePreemptibleNodepool"`
+	DefaultNodepoolOS          string `yaml:"defaultNodepoolOS"`
 }
 
 // Create private data struct to hold config options.
@@ -36,8 +43,8 @@ type Config struct {
 	TerraformState      string          `yaml:"terraformState"`
 	ConfigSync          bool            `yaml:"configSync"`
 	ClustersProjectID   string          `yaml:"clustersProjectId"`
-	Prefix              interface{}     `yaml:"prefix"`
-	GovernanceProjectID interface{}     `yaml:"governanceProjectId"`
+	Prefix              string          `yaml:"prefix"`
+	GovernanceProjectID string          `yaml:"governanceProjectId"`
 	VpcConfig           VpcConfig       `yaml:"vpcConfig"`
 	ClustersConfig      []ClusterConfig `yaml:"clustersConfig"`
 }

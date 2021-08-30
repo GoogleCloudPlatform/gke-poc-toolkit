@@ -1,5 +1,5 @@
 project_id                        = "<no value>"
-governance_project_id             = "meganrocks
+governance_project_id             = "my-awesome-project
 "
 region                            = "us-central1"
 private_endpoint                  = "Standard"
@@ -14,7 +14,7 @@ preemptible_nodes                 = "false"
 shared_vpc                        = ""
 shared_vpc_name                   = "default"
 shared_vpc_subnet_name            = "default"
-shared_vpc_project_id             = "meganrocks
+shared_vpc_project_id             = "my-awesome-project
 "
 shared_vpc_ip_range_pods_name     = ""
 shared_vpc_ip_range_services_name = ""
