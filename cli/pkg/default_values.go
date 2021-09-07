@@ -1,28 +1,15 @@
 package config
 
-import (
-	"github.com/spf13/viper"
-)
-
 // Sets Config default values to allow for setup without a custom config.yaml file
 // Default config uses a single 3-node cluster.
-func InitWithDefaults(projectId string) {
-	viper.SetDefault("TerraformState", "local")
-	viper.SetDefault("ConfigSync", true)
-	viper.SetDefault("ClustersProjectID", projectId)
-	viper.SetDefault("Prefix", "")
-	viper.SetDefault("GovernanceProjectID", projectId)
-
-	vpcConfig := &VpcConfig{
-		VpcName:      "default",
-		VpcType:      "standalone",
-		VpcProjectID: projectId,
+func InitWithDefaults() *Config {
+	vpcConfig := VpcConfig{
+		VpcName: "default",
+		VpcType: "standalone",
 	}
-	viper.SetDefault("VpcConfig", vpcConfig)
 
 	clustersConfig := []ClusterConfig{
 		ClusterConfig{
-			ProjectID:                 projectId,
 			NumNodes:                  3,
 			MachineType:               "e2-standard-4",
 			ClusterType:               "public",
@@ -38,5 +25,12 @@ func InitWithDefaults(projectId string) {
 			DefaultNodepoolOS:         "COS",
 		},
 	}
-	viper.SetDefault("ClustersConfig", clustersConfig)
+
+	return &Config{
+		TerraformState: "local",
+		ConfigSync:     true,
+		Prefix:         "",
+		VpcConfig:      vpcConfig,
+		ClustersConfig: clustersConfig,
+	}
 }
