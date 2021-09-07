@@ -4,6 +4,7 @@ import (
 	"bufio"
 	"fmt"
 	"os"
+	"strings"
 
 	"github.com/spf13/viper"
 )
@@ -66,7 +67,7 @@ func GetConf(cfgFile string) *Config {
 	if err := viper.ReadInConfig(); err != nil {
 		if _, ok := err.(viper.ConfigFileNotFoundError); ok {
 			// Config file not found; ignore error if desired
-			fmt.Println("Config file not found - using default values")
+			fmt.Println("Config file not found or provided - using default values")
 			projectId, err := ReadProjectId()
 			if err != nil {
 				fmt.Println("Could not read project ID; quitting")
@@ -85,7 +86,6 @@ func GetConf(cfgFile string) *Config {
 	if err != nil {
 		fmt.Printf("unable to decode into config struct, %v", err)
 	}
-	fmt.Printf("%+v\n", conf)
 	// print(err)
 	// vars := make(map[string]interface{})
 	// vars["ClustersProjectName"] = conf.ClustersProjectName
@@ -93,6 +93,13 @@ func GetConf(cfgFile string) *Config {
 	// file, _ := os.Create("tfvars.tf")
 	// defer file.Close()
 	// tmpl.Execute(file, vars)
+
+	// The default []clusterconfig has a single cluster, but the user config could have many.
+	// Set any unset default values for all the clusters.
+	for i, cc := range conf.ClustersConfig {
+		cc = SetClusterDefaults(cc)
+		conf.ClustersConfig[i] = cc
+	}
 
 	// Validate config values
 	if err := ValidateConf(conf); err != nil {
@@ -111,6 +118,8 @@ func ReadProjectId() (string, error) {
 	if err != nil {
 		return "", err
 	}
+	// trim all whitespace
+	projectId = strings.TrimSpace(projectId)
 	fmt.Printf("Using project ID: %s", projectId)
 
 	return projectId, nil
@@ -118,6 +127,7 @@ func ReadProjectId() (string, error) {
 
 // Validate config before writing to tfvars
 func ValidateConf(c *Config) error {
+	fmt.Println("⏱ Validating Config...")
 	if c.TerraformState != "local" && c.TerraformState != "cloud" {
 		return fmt.Errorf("Terraform state must be one of: local, cloud")
 	}
@@ -153,10 +163,23 @@ func ValidateConf(c *Config) error {
 	}
 
 	fmt.Println("✅ Config is valid. Ready to write to tfvars.")
+	fmt.Printf("%+v\n", c)
 	return nil
 }
 
+// TODO - use compute engine API call to get the most up to date list
 func validateMachineType(machType string) error {
+	// read in file: machine-types.txt
+	machineTypes, err := readLines("pkg/machine-types.txt")
+	if err != nil {
+		return fmt.Errorf("Could not read machine-types.txt: %v", err)
+	}
+	for _, t := range machineTypes {
+		if machType == t {
+			return nil
+		}
+	}
+	return fmt.Errorf("Invalid machine type")
 	return nil
 }
 
@@ -192,4 +215,20 @@ func validateZone(zone string) error {
 		}
 	}
 	return fmt.Errorf("Zone must be one of: %v", validZones)
+}
+
+// Helper function - read in text file
+func readLines(path string) ([]string, error) {
+	file, err := os.Open(path)
+	if err != nil {
+		return nil, err
+	}
+	defer file.Close()
+
+	var lines []string
+	scanner := bufio.NewScanner(file)
+	for scanner.Scan() {
+		lines = append(lines, scanner.Text())
+	}
+	return lines, scanner.Err()
 }

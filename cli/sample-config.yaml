@@ -21,4 +21,17 @@ clustersConfig:  # a list of one or more clusters, each with their own config
   svcCIDRName: "my-svc-cidr"
   enableWorkloadIdentity: true
   enablePreemptibleNodepool: false 
-  defaultNodepoolOS: "COS" # COS, windows, preemptible 
+  defaultNodepoolOS: "cos_containerd" 
+- projectId: "my-project"
+  numNodes: 1
+  machineType: "e2-standard-2"
+  clusterType: "public" #public, private 
+  authIP: "10.10.10.10" # only needed if using public clusters 
+  region: "us-central1" 
+  zone: "us-central1-b"
+  subnetName: "default"
+  podCIDRName: "my-pod-cidr"
+  svcCIDRName: "my-svc-cidr"
+  enableWorkloadIdentity: true
+  enablePreemptibleNodepool: false 
+  defaultNodepoolOS: "cos"  
