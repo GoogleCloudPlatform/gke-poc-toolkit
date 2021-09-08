@@ -19,16 +19,16 @@ output "cluster_names" {
   value       = flatten([for s in module.gke : s.name])
 }
 
-output "endpoint" {
+output "endpoints" {
   sensitive   = true
-  description = "Cluster endpoint"
-  value       = module.gke[*].endpoint
+  description = "List of GKE cluster endpoints"
+  value       = flatten([for s in module.gke : s.endpoint])
 }
 
-output "ca_certificate" {
+output "ca_certificates" {
   sensitive   = true
-  description = "Cluster ca certificate (base64 encoded)"
-  value       = module.gke[*].ca_certificate
+  description = "List of GKE cluster ca certificates (base64 encoded)"
+  value       = flatten([for s in module.gke : s.ca_certificate])
 }
 
 output "get_credentials_command" {
