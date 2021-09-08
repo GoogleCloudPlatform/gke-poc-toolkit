@@ -31,11 +31,6 @@ output "ca_certificates" {
   value       = flatten([for s in module.gke : s.ca_certificate])
 }
 
-output "get_credentials_command" {
-  description = "gcloud get-credentials command to generate kubeconfig for the private cluster"
-  value       = (var.private_endpoint ? (format("gcloud container clusters get-credentials --project %s --zone %s --internal-ip %s", var.project_id, module.gke.location, module.gke.name)) : (format("gcloud container clusters get-credentials --project %s --zone %s %s", var.project_id, module.gke.location, module.gke.name)))
-}
-
 output "bastion_name" {
   description = "Name of the bastion host"
   value       = (var.private_endpoint ? module.bastion[0].hostname : "")
@@ -51,3 +46,9 @@ output "bastion_kubectl_command" {
   value       = (var.private_endpoint ? "HTTPS_PROXY=localhost:8888 kubectl get pods --all-namespaces" : "kubectl get pods --all-namespaces")
 
 }
+
+ENV:=$(shell awk '$$1=="variable" && $$2=="\"env\"" {i=1} $$1=="}" {i=0} i && $$1=="default" {split($$0,a,"\""); print a[2]}' test.tf)
+
+REGION:=$(shell awk '$$1=="variable" && $$2=="\"region\"" {i=1} $$1=="}" {i=0} i && $$1=="default" {split($$0,a,"\""); print a[2]}' test.tf)
+
+AWS_PROFILE:=$(shell awk '$$1=="variable" && $$2=="\"profile\"" {i=1} $$1=="}" {i=0} i && $$1=="default" {split($$0,a,"\""); print a[2]}' test.tf)
