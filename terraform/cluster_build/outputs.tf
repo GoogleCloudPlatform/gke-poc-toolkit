@@ -14,9 +14,9 @@
  * limitations under the License.
  */
 
-output "cluster_name" {
-  description = "Cluster name"
-  value       = module.gke[*].name
+output "cluster_names" {
+  description = "List of GKE cluster names"
+  value       = flatten([for s in module.gke : s.name])
 }
 
 output "endpoint" {
