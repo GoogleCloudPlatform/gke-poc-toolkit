@@ -16,19 +16,19 @@
 
 output "cluster_name" {
   description = "Cluster name"
-  value       = module.gke.name
+  value       = module.gke[*].name
 }
 
 output "endpoint" {
   sensitive   = true
   description = "Cluster endpoint"
-  value       = module.gke.endpoint
+  value       = module.gke[*].endpoint
 }
 
 output "ca_certificate" {
   sensitive   = true
   description = "Cluster ca certificate (base64 encoded)"
-  value       = module.gke.ca_certificate
+  value       = module.gke[*].ca_certificate
 }
 
 output "get_credentials_command" {
