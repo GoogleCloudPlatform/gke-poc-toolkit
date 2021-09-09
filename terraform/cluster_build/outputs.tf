@@ -14,25 +14,10 @@
  * limitations under the License.
  */
 
-# output "cluster_list" {
-#   description = "List of GKE cluster configs"
-#   value       = flatten([for s in module.gke : s.name])
-# }
-
-output "get_credentials_command" {
+output "get_credential_commands" {
   description = "gcloud get-credentials command to generate kubeconfig for the private cluster"
   value       = flatten([for s in module.gke : (var.private_endpoint ? (format("gcloud container clusters get-credentials --project %s --zone %s --internal-ip %s", var.project_id, s.location, s.name)) : (format("gcloud container clusters get-credentials --project %s --zone %s %s", var.project_id, s.location, s.name)))])
 }
-
-# output "virtual_network_address_space" {
-#   description = "List of address spaces that are used the virtual network."
-#   value       = element(coalescelist(azurerm_virtual_network.vnet.*.address_space, [""]), 0)
-# }
-
-# output "get_credentials_command" {
-#   description = "gcloud get-credentials command to generate kubeconfig for the private cluster"
-#   value       = (var.private_endpoint ? (format("gcloud container clusters get-credentials --project %s --zone %s --internal-ip %s", var.project_id, module.gke.location, module.gke.name)) : (format("gcloud container clusters get-credentials --project %s --zone %s %s", var.project_id, module.gke.location, module.gke.name)))
-# }
 
 output "cluster_names" {
   description = "List of GKE cluster names"

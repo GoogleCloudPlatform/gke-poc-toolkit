@@ -26,7 +26,7 @@ set -euo pipefail
 ROOT="$( cd "$( dirname "${BASH_SOURCE[0]}" )/.." && pwd )"
 
 start_proxy() {
-    echo "What cluster is the bastion host configuring: "
+    echo "What is the target cluster name for this configuration: "
     read Target_Cluster 
 
 	echo "Detecting SSH Bastion Tunnel/Proxy"
