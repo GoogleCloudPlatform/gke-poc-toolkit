@@ -23,27 +23,27 @@ module "vpc" {
   network_name = var.vpc_name
   routing_mode = "GLOBAL"
 
-  subnets = [
-    {
-      subnet_name           = var.subnet_name
-      subnet_ip             = var.subnet_ip
-      subnet_region         = var.region
-      subnet_private_access = true
-      description           = "This subnet is managed by Terraform"
-    }
-  ]
-  secondary_ranges = {
-    (var.subnet_name) = [
-      {
-        range_name    = var.ip_range_pods_name
-        ip_cidr_range = "10.10.64.0/18"
-      },
-      {
-        range_name    = var.ip_range_services_name
-        ip_cidr_range = "10.10.192.0/18"
-      },
-    ]
-  }
+  # subnets = [
+  #   {
+  #     subnet_name           = var.subnet_name
+  #     subnet_ip             = var.subnet_ip
+  #     subnet_region         = var.region
+  #     subnet_private_access = true
+  #     description           = "This subnet is managed by Terraform"
+  #   }
+  # ]
+  # secondary_ranges = {
+  #   (var.subnet_name) = [
+  #     {
+  #       range_name    = var.ip_range_pods_name
+  #       ip_cidr_range = "10.10.64.0/18"
+  #     },
+  #     {
+  #       range_name    = var.ip_range_services_name
+  #       ip_cidr_range = "10.10.192.0/18"
+  #     },
+  #   ]
+  # }
 }
 
 module "cluster-nat" {
