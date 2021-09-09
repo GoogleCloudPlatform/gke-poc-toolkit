@@ -14,27 +14,27 @@
  * limitations under the License.
  */
 
-output "get_credential_commands" {
-  description = "gcloud get-credentials command to generate kubeconfig for the private cluster"
-  value       = flatten([for s in module.gke : (var.private_endpoint ? (format("gcloud container clusters get-credentials --project %s --zone %s --internal-ip %s", var.project_id, s.location, s.name)) : (format("gcloud container clusters get-credentials --project %s --zone %s %s", var.project_id, s.location, s.name)))])
-}
+# output "get_credential_commands" {
+#   description = "gcloud get-credentials command to generate kubeconfig for the private cluster"
+#   value       = flatten([for s in module.gke : (var.private_endpoint ? (format("gcloud container clusters get-credentials --project %s --zone %s --internal-ip %s", var.project_id, s.location, s.name)) : (format("gcloud container clusters get-credentials --project %s --zone %s %s", var.project_id, s.location, s.name)))])
+# }
 
-output "cluster_names" {
-  description = "List of GKE cluster names"
-  value       = flatten([for s in module.gke : s.name])
-}
+# output "cluster_names" {
+#   description = "List of GKE cluster names"
+#   value       = flatten([for s in module.gke : s.name])
+# }
 
-output "endpoints" {
-  sensitive   = true
-  description = "List of GKE cluster endpoints"
-  value       = flatten([for s in module.gke : s.endpoint])
-}
+# output "endpoints" {
+#   sensitive   = true
+#   description = "List of GKE cluster endpoints"
+#   value       = flatten([for s in module.gke : s.endpoint])
+# }
 
-output "ca_certificates" {
-  sensitive   = true
-  description = "List of GKE cluster ca certificates (base64 encoded)"
-  value       = flatten([for s in module.gke : s.ca_certificate])
-}
+# output "ca_certificates" {
+#   sensitive   = true
+#   description = "List of GKE cluster ca certificates (base64 encoded)"
+#   value       = flatten([for s in module.gke : s.ca_certificate])
+# }
 
 output "bastion_name" {
   description = "Name of the bastion host"
