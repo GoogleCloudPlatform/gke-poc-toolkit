@@ -327,8 +327,3 @@ case $buildtype in
   exit 1
   ;;
 esac
-
-
-  if [ $buildtype != "vpc" ]; then
-    echo "hi"
-  fi
