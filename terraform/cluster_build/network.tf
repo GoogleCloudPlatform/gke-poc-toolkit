@@ -23,6 +23,8 @@ module "vpc" {
   network_name = var.vpc_name
   routing_mode = "GLOBAL"
 
+  subnets = []
+
   # subnets = [
   #   {
   #     subnet_name           = var.subnet_name
