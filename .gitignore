@@ -71,5 +71,8 @@ github.key
 # Output of the go coverage tool, specifically when used with LiteIDE
 *.out
 
+# cli binary
+gkekitctl
+
 # Dependency directories (remove the comment below to include it)
 # vendor/

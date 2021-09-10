@@ -10,12 +10,20 @@ func GenerateTfvars(conf *Config) {
 	vars["ClustersProjectName"] = conf.ClustersProjectID
 	vars["GovernanceProjectName"] = conf.GovernanceProjectID
 	vars["Region"] = conf.ClustersConfig[0].Region
-	vars["ClusterType"] = conf.ClustersConfig[0].ClusterType
+	if conf.ClustersConfig[0].ClusterType == "public" {
+		vars["ClusterType"] = true
+	} else {
+		vars["ClusterType"] = false
+	}
 	vars["Zone"] = conf.ClustersConfig[0].Zone
 	vars["AuthIP"] = conf.ClustersConfig[0].AuthIP
 	vars["EnableWindowsNodepool"] = conf.ClustersConfig[0].EnableWindowsNodepool
 	vars["EnablePreemptibleNodepool"] = conf.ClustersConfig[0].EnablePreemptibleNodepool
-	vars["VpcType"] = conf.VpcConfig.VpcType
+	if conf.VpcConfig.VpcType == "standalone" {
+		vars["VpcType"] = false
+	} else {
+		vars["VpcType"] = true
+	}
 	vars["VpcName"] = conf.VpcConfig.VpcName
 	vars["SubnetName"] = conf.ClustersConfig[0].SubnetName
 	vars["VpcProjectId"] = conf.VpcConfig.VpcProjectID
