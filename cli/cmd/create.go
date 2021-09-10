@@ -16,7 +16,8 @@ limitations under the License.
 package cmd
 
 import (
-	config "gkekitctl/pkg"
+	"gkekitctl/pkg/config"
+	"gkekitctl/pkg/deploy"
 
 	"github.com/spf13/cobra"
 )
@@ -30,6 +31,7 @@ var createCmd = &cobra.Command{
 	Run: func(cmd *cobra.Command, args []string) {
 		conf := config.GetConf(cfgFile)
 		config.GenerateTfvars(conf)
+		deploy.InitTF()
 	},
 }
 
