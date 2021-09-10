@@ -1,4 +1,4 @@
-package config
+package deploy
 
 import (
 	"context"
@@ -29,12 +29,12 @@ func InitTF() {
 		log.Fatalf("error running NewTerraform: %s", err)
 	}
 
+	tf.SetStdout(os.Stdout)
+
 	err = tf.Init(context.Background(), tfexec.Upgrade(true))
 	if err != nil {
 		log.Fatalf("error running Init: %s", err)
 	}
-
-	tf.SetStdout(os.Stdout)
 
 	state, err := tf.Show(context.Background())
 	if err != nil {
@@ -48,6 +48,27 @@ func InitTF() {
 		log.Fatalf("error running Plan: %s", err)
 	}
 	fmt.Println(plan)
+}
+
+func ApplyTF() {
+	tmpDir, err := ioutil.TempDir("", "tfinstall")
+	if err != nil {
+		log.Fatalf("error creating temp dir: %s", err)
+	}
+	defer os.RemoveAll(tmpDir)
+
+	execPath, err := tfinstall.Find(context.Background(), tfinstall.LatestVersion(tmpDir, false))
+	if err != nil {
+		log.Fatalf("error locating Terraform binary: %s", err)
+	}
+
+	workingDir := "../terraform/cluster_build"
+	tf, err := tfexec.NewTerraform(workingDir, execPath)
+	if err != nil {
+		log.Fatalf("error running NewTerraform: %s", err)
+	}
+
+	tf.SetStdout(os.Stdout)
 
 	err = tf.Apply(context.Background(), tfexec.VarFile("../../cli/tfvars.tf"))
 	if err != nil {

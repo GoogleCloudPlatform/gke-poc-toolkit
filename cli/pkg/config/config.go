@@ -170,7 +170,7 @@ func ValidateConf(c *Config) error {
 // TODO - use compute engine API call to get the most up to date list
 func validateMachineType(machType string) error {
 	// read in file: machine-types.txt
-	machineTypes, err := readLines("pkg/machine-types.txt")
+	machineTypes, err := readLines("pkg/config/machine-types.txt")
 	if err != nil {
 		return fmt.Errorf("Could not read machine-types.txt: %v", err)
 	}
