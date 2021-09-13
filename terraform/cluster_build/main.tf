@@ -47,6 +47,19 @@ locals {
   bastion_members = [
     format("user:%s", data.google_client_openid_userinfo.me.email),
   ]
+
+  nested_subnets = flatten([
+    for cluster in var.cluster_config : [
+      {
+        subnet_name           = cluster.subnet_name
+        subnet_ip             = cluster.subnet_ip
+        subnet_region         = cluster.region
+        subnet_private_access = true
+        description           = "This subnet is managed by Terraform"
+      }
+    ]
+  ])
+
   service_accounts = {
     (local.gke_service_account) = [
       "${module.enabled_google_apis.project_id}=>roles/artifactregistry.reader",
