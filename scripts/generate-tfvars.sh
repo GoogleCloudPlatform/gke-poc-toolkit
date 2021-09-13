@@ -76,11 +76,6 @@ cluster_config					  = {
         subnet_name      = "cluster-01-cluster-subnet"
         subnet_ip        = "10.1.0.0/24"
     }
-    cluster-02 = {
-        region           = "${REGION}"
-        subnet_name      = "cluster-02-cluster-subnet"
-        subnet_ip        = "10.2.0.0/24"
-    }
 }
 EOF
 
