@@ -52,6 +52,7 @@ resource "google_compute_subnetwork" "subnetnetworks-with-secondary-ip-ranges" {
   depends_on = [
     module.vpc,
   ]
+  count   = var.shared_vpc ? 0 : 1
   for_each      = var.cluster_config
   name          = each.value.subnet_name
   ip_cidr_range = "10.2.0.0/16"
