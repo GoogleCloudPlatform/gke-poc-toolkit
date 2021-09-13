@@ -25,15 +25,6 @@ module "vpc" {
 
   subnets = local.nested_subnets
 
-  # subnets = [
-  #   {
-  #     subnet_name           = var.subnet_name
-  #     subnet_ip             = var.subnet_ip
-  #     subnet_region         = var.region
-  #     subnet_private_access = true
-  #     description           = "This subnet is managed by Terraform"
-  #   }
-  # ]
   # secondary_ranges = {
   #   (var.subnet_name) = [
   #     {
@@ -74,7 +65,6 @@ module "cluster-nat" {
   depends_on = [
     module.vpc,
   ]
-  for_each                           = var.cluster_config
   source                             = "terraform-google-modules/cloud-nat/google"
   create_router                      = true
   project_id                         = local.project_id
@@ -82,7 +72,7 @@ module "cluster-nat" {
   router                             = "${var.project_id}-private-cluster-router"
   network                            = local.vpc_selflink
   source_subnetwork_ip_ranges_to_nat = "LIST_OF_SUBNETWORKS"
-  subnetworks                        = [{ "name" = each.value.subnet_name, "source_ip_ranges_to_nat" = ["PRIMARY_IP_RANGE"], "secondary_ip_range_names" = [] }]
+  subnetworks                        = local.subnetworks_to_nat
 }
 
 data "template_file" "startup_script" {
