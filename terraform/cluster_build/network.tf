@@ -52,6 +52,7 @@ module "cluster-nat" {
   depends_on = [
     module.vpc,
   ]
+  for_each                           = var.cluster_config
   source                             = "terraform-google-modules/cloud-nat/google"
   create_router                      = true
   project_id                         = local.project_id
@@ -59,7 +60,7 @@ module "cluster-nat" {
   router                             = "${var.project_id}-private-cluster-router"
   network                            = local.vpc_selflink
   source_subnetwork_ip_ranges_to_nat = "LIST_OF_SUBNETWORKS"
-  subnetworks                        = [{ "name" = local.subnet_selflink, "source_ip_ranges_to_nat" = ["PRIMARY_IP_RANGE"], "secondary_ip_range_names" = [] }]
+  subnetworks                        = [{ "name" = each.value.subnet_name, "source_ip_ranges_to_nat" = ["PRIMARY_IP_RANGE"], "secondary_ip_range_names" = [] }]
 }
 
 data "template_file" "startup_script" {
