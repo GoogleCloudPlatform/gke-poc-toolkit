@@ -48,6 +48,22 @@ module "vpc" {
   # }
 }
 
+resource "google_compute_subnetwork" "subnetnetworks-with-secondary-ip-ranges" {
+  for_each      = var.cluster_config
+  name          = each.value.subnet_name
+  ip_cidr_range = "10.2.0.0/16"
+  region        = each.value.region
+  network       = module.vpc.network_id
+  secondary_ip_range {
+    range_name    = "secondary1"
+    ip_cidr_range = "10.10.64.0/18"
+  }
+  secondary_ip_range {
+    range_name    = "secondary2"
+    ip_cidr_range = "10.10.192.0/18"
+  }
+}
+
 module "cluster-nat" {
   depends_on = [
     module.vpc,
