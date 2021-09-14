@@ -130,8 +130,8 @@ locals {
     preemptible        = var.preemptible_nodes ? true : false
     enable_secure_boot = true
   }]
-  // Final Node Pool options for Cluster - combines all specified nodepools
 
+  // Final Node Pool options for Cluster - combines all specified nodepools
   cluster_node_pools = var.windows_nodepool ? flatten([local.windows_pool, local.linux_pool]) : flatten(local.linux_pool)
 }
 
