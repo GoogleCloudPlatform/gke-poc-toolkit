@@ -34,7 +34,9 @@ locals {
   cluster_regions           = flatten([ 
     for cluster in var.cluster_config : cluster.region 
   ])
-  distinct_cluster_regions  = distinct([ local.cluster_regions ])
+  distinct_cluster_regions  = distinct([ 
+    for cluster in var.cluster_regions : cluster.region 
+  ])
 
   // Presets for KMS and Key Ring
   gke_keyring_name          = format("gke-toolkit-kr-%s", random_id.kms.hex)
