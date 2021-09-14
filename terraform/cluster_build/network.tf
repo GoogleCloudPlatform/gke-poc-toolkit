@@ -15,30 +15,30 @@
  */
 
 module "vpc" {
-  count   = var.shared_vpc ? 0 : 1
-  source  = "terraform-google-modules/network/google"
-  version = "~> 2.5"
+  count        = var.shared_vpc ? 0 : 1
+  source       = "terraform-google-modules/network/google"
+  version      = "~> 2.5"
 
   project_id   = module.enabled_google_apis.project_id
   network_name = var.vpc_name
   routing_mode = "GLOBAL"
 
-  subnets = local.nested_subnets
+  subnets      = local.nested_subnets
 
-  # secondary_ranges = {
-  #   (var.subnet_name) = [
-  #     {
-  #       range_name    = var.ip_range_pods_name
-  #       #TODO enable users to override this CIDR 
-  #       ip_cidr_range = "10.10.64.0/18"
-  #     },
-  #     {
-  #       range_name    = var.ip_range_services_name
-  #       #TODO enable users to override this CIDR
-  #       ip_cidr_range = "10.10.192.0/18"
-  #     },
-  #   ]
-  # }
+  secondary_ranges = {
+    (var.subnet_name) = [
+      {
+        range_name    = var.ip_range_pods_name
+        #TODO enable users to override this CIDR 
+        ip_cidr_range = "10.10.64.0/18"
+      },
+      {
+        range_name    = var.ip_range_services_name
+        #TODO enable users to override this CIDR
+        ip_cidr_range = "10.10.192.0/18"
+      },
+    ]
+  }
 }
 
 # resource "google_compute_subnetwork" "subnetnetworks-with-secondary-ip-ranges" {

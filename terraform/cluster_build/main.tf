@@ -60,6 +60,27 @@ locals {
     ]
   ])
 
+  nested_secondary_subnets = flatten([
+    for cluster in var.cluster_config : [{ 
+      "name" = cluster.subnet_name, 
+      "source_ip_ranges_to_nat" = ["PRIMARY_IP_RANGE"], 
+      "secondary_ip_range_names" = [] 
+    }]
+  ])
+
+  team_members = flatten({
+    for cluster in var.cluster_config : cluster.subnet_name => [
+      {
+        range_name    = "subnet1"
+        ip_cidr_range = "10.10.64.0/18"
+      },
+      {
+        range_name    = "subnet2"
+        ip_cidr_range = "10.10.192.0/18"
+      }
+    ]
+  })
+
   subnetworks_to_nat = flatten([
     for cluster in var.cluster_config : [{ "name" = cluster.subnet_name, "source_ip_ranges_to_nat" = ["PRIMARY_IP_RANGE"], "secondary_ip_range_names" = [] }]
   ])
