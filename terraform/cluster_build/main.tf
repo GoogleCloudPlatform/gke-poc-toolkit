@@ -31,7 +31,7 @@ locals {
   vpc_selflink              = format("projects/%s/global/networks/%s", local.project_id, local.network_name)
   ip_range_pods             = var.shared_vpc ? var.shared_vpc_ip_range_pods_name : var.ip_range_pods_name
   ip_range_services         = var.shared_vpc ? var.shared_vpc_ip_range_services_name : var.ip_range_services_name
-  distinct_cluster_regions  = toset([ flatten([ for cluster in var.cluster_config : "${cluster.region}" ]) ])
+  distinct_cluster_regions  = toset([ for cluster in var.cluster_config : "${cluster.region}" ])
 
   # distinct_cluster_regions = {
   # for config in var.cluster_config : config.subnet_name => config.region
