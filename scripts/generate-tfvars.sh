@@ -49,8 +49,7 @@ then
     done
 fi
 
-# Write out all the values we gathered into a tfvars file so you don't
-# have to enter the values manually
+## Shared VPC Example
 cat <<-EOF > "${TFVARS_FILE}"
 project_id                        = "${PROJECT}"
 governance_project_id             = "${GOVERNANCE_PROJECT}"
@@ -80,6 +79,7 @@ cluster_config					  = {
 }
 EOF
 
+## Standalone VPC Example
 # cat <<-EOF > "${TFVARS_FILE}"
 # project_id                        = "${PROJECT}"
 # governance_project_id             = "${GOVERNANCE_PROJECT}"
@@ -109,6 +109,7 @@ EOF
 # }
 # EOF
 
+## Retired - DO NOT USE BUT KEEP FOR REFERENCE FOR NOW
 # cat <<-EOF > "${TFVARS_FILE}"
 # project_id                        = "${PROJECT}"
 # governance_project_id             = "${GOVERNANCE_PROJECT}"
