@@ -25,6 +25,8 @@ module "vpc" {
 
   subnets      = local.nested_subnets
 
+  secondary_ranges = local.nested_secondary_subnets
+
   # secondary_ranges = {
   #   (var.subnet_name) = [
   #     {
