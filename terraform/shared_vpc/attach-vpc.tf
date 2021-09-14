@@ -21,9 +21,10 @@ resource "google_compute_subnetwork_iam_binding" "subnet_networkuser" {
   depends_on = [
     module.shared_vpc
   ]
+  for_each   = var.cluster_config
   project    = var.shared_vpc_project_id
-  region     = var.region
-  subnetwork = var.shared_vpc_subnet_name
+  region     = each.value.region
+  subnetwork = each.value.subnet_name
   role       = "roles/compute.networkUser"
   members = [
     "serviceAccount:${local.clu_service_account}",
