@@ -55,3 +55,7 @@
 output "nested_subnets_test" {
   value       = local.nested_subnets_test
 }
+
+output "nested_secondary_subnets_test" {
+  value       = local.nested_secondary_subnets_test
+}

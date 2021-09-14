@@ -60,6 +60,19 @@ locals {
     ]
   ])
 
+  nested_secondary_subnets_test = {
+  for cluster, count in var.cluster_config : cluster.subnet_name => [
+      {
+        range_name    = "ip-range-pods"
+        ip_cidr_range = "${count}"
+      },
+      {
+        range_name    = "ip-range-svc"
+        ip_cidr_range = "10.10.192.0/18"
+      }
+    ]
+  }
+
   nested_subnets = flatten([
     for cluster in var.cluster_config : [
       {
