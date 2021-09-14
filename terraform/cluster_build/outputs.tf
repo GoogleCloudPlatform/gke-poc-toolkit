@@ -52,6 +52,9 @@
 
 # }
 
-output "regions_with_clusters" {
-  value       = local.regions_with_clusters
+output "cluster_regions" {
+  value       = local.cluster_regions
+}
+output "distinct_cluster_regions" {
+  value       = local.disctinct_cluster_regions
 }
