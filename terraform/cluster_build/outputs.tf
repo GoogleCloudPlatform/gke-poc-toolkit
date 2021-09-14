@@ -51,10 +51,3 @@
 #   value       = (var.private_endpoint ? "HTTPS_PROXY=localhost:8888 kubectl get pods --all-namespaces" : "kubectl get pods --all-namespaces")
 
 # }
-
-output "cluster_regions" {
-  value       = local.cluster_regions
-}
-output "distinct_cluster_regions" {
-  value       = local.distinct_cluster_regions
-}
