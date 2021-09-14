@@ -36,7 +36,6 @@ locals {
   // Presets for KMS and Key Ring
   gke_keyring_name          = format("gke-toolkit-kr-%s", random_id.kms.hex)
   gke_key_name              = "gke-toolkit-kek"
-  database-encryption-key   = "projects/${var.governance_project_id}/locations/${var.region}/keyRings/${local.gke_keyring_name}/cryptoKeys/${local.gke_key_name}"
 
   // Presets for Bastion Host
   default_subnetwork_name   = lookup(var.cluster_config, element(keys(var.cluster_config), 0), "").subnet_name
