@@ -49,10 +49,10 @@ locals {
   ]
 
   nested_subnets_test = flatten([
-    for count, cluster in var.cluster_config : [
+    for i, cluster in var.cluster_config : [
       {
         subnet_name           = cluster.subnet_name
-        subnet_ip             = "${count}"
+        subnet_ip             = "${i}"
         subnet_region         = cluster.region
         subnet_private_access = true
         description           = "This subnet is managed by Terraform"
