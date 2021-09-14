@@ -41,11 +41,11 @@ locals {
   nested_secondary_subnets = {
   for name, config in var.cluster_config : config.subnet_name => [
       {
-        range_name    = local.ip_range_pods
+        range_name    = var.shared_vpc_ip_range_pods_name
         ip_cidr_range = "10.${index(keys(var.cluster_config), name)+1}.0.0/17"
       },
       {
-        range_name    = local.ip_range_services
+        range_name    = var.shared_vpc_ip_range_services_name
         ip_cidr_range = "10.${index(keys(var.cluster_config), name)+1}.128.0/17"
       }
     ]
