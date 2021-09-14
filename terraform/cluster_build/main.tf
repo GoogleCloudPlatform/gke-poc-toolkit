@@ -32,7 +32,7 @@ locals {
   ip_range_pods             = var.shared_vpc ? var.shared_vpc_ip_range_pods_name : var.ip_range_pods_name
   ip_range_services         = var.shared_vpc ? var.shared_vpc_ip_range_services_name : var.ip_range_services_name
   regions_with_clusters     = flatten([
-    for cluster in var.cluster_config : ["${cluster.value.region}"]
+    for cluster in var.cluster_config : ["${cluster.region}"]
   ])
 
   // Presets for KMS and Key Ring
