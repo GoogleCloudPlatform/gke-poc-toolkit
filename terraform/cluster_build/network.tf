@@ -32,12 +32,12 @@ module "cluster-nat" {
   depends_on = [
     module.vpc,
   ]
-  for_each                           = local.distinct_cluster_regions
+  for_each                           = {for region in local.distinct_cluster_regions: "region" => region
   source                             = "terraform-google-modules/cloud-nat/google"
   create_router                      = true
   project_id                         = local.project_id
-  region                             = each.value
-  router                             = "gke-toolkit-route-${each.value}"
+  region                             = each.value.region
+  router                             = "gke-toolkit-route-${each.value.region}"
   network                            = local.vpc_selflink
   source_subnetwork_ip_ranges_to_nat = "ALL_SUBNETWORKS_ALL_PRIMARY_IP_RANGES"
 }
