@@ -72,6 +72,10 @@ cluster_config					  = {
     cluster-02 = {
         region           = "us-west1"
         subnet_name      = "cluster-02-cluster-subnet"
+    },
+    cluster-03 = {
+        region           = "us-west1"
+        subnet_name      = "cluster-03-cluster-subnet"
     }
 }
 EOF
