@@ -48,8 +48,8 @@ locals {
     format("user:%s", data.google_client_openid_userinfo.me.email),
   ]
 
-  nested_subnets = flatten([
-    for cluster, count in var.cluster_config : [
+  nested_subnets_test = flatten([
+    for cluster in var.cluster_config : [
       {
         subnet_name           = cluster.subnet_name
         subnet_ip             = cluster.subnet_ip
@@ -60,11 +60,11 @@ locals {
     ]
   ])
 
-  nested_subnets_test = flatten([
-    for cluster, count in var.cluster_config : [
+  nested_subnets = flatten([
+    for cluster in var.cluster_config : [
       {
         subnet_name           = cluster.subnet_name
-        subnet_ip             = "10.${count}.0.0/24"
+        subnet_ip             = cluster.subnet_ip
         subnet_region         = cluster.region
         subnet_private_access = true
         description           = "This subnet is managed by Terraform"
