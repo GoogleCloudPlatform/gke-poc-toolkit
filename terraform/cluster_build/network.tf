@@ -56,8 +56,8 @@ module "bastion" {
   count          = var.private_endpoint ? 1 : 0
   source         = "terraform-google-modules/bastion-host/google"
   version        = "~> 3.2"
-  network        = local.vpc_selflink
-  subnet         = local.subnet_selflink
+  network        = local.bastion_vpc_selflink
+  subnet         = local.bastion_subnet_selflink
   project        = module.enabled_google_apis.project_id
   host_project   = local.project_id
   name           = local.bastion_name

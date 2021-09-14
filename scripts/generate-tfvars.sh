@@ -54,29 +54,23 @@ fi
 cat <<-EOF > "${TFVARS_FILE}"
 project_id                        = "${PROJECT}"
 governance_project_id             = "${GOVERNANCE_PROJECT}"
-region                            = "${REGION}"
-private_endpoint                  = "${PRIVATE}"
-cluster_name                      = "${CLUSTER_TYPE}-endpoint-cluster"
-vpc_name                          = "${CLUSTER_TYPE}-cluster-network"
-subnet_name                       = "${CLUSTER_TYPE}-cluster-subnet"
-node_pool                         = "${CLUSTER_TYPE}-node-pool"
-zone                              = "${ZONE}"
-auth_ip                           = "${AUTH_IP}"
-windows_nodepool                  = "${WINDOWS}"
-preemptible_nodes                 = "${PREEMPTIBLE}"
 shared_vpc                        = "${SHARED_VPC}"
 shared_vpc_name                   = "${SHARED_VPC_NAME}"
-shared_vpc_subnet_name            = "${SHARED_VPC_SUBNET_NAME}"
 shared_vpc_project_id             = "${SHARED_VPC_PROJECT_ID}"
 shared_vpc_ip_range_pods_name     = "${POD_IP_RANGE_NAME}"
 shared_vpc_ip_range_services_name = "${SERVICE_IP_RANGE_NAME}"
+region                            = "${REGION}"
+private_endpoint                  = "${PRIVATE}"
+auth_ip                           = "${AUTH_IP}"
+windows_nodepool                  = "${WINDOWS}"
+preemptible_nodes                 = "${PREEMPTIBLE}"
 cluster_config					  = {
     cluster-01 = {
-        region           = "${REGION}"
+        region           = "us-east1"
         subnet_name      = "cluster-01-cluster-subnet"
     },
     cluster-02 = {
-        region           = "${REGION}"
+        region           = "us-west1"
         subnet_name      = "cluster-02-cluster-subnet"
     }
 }

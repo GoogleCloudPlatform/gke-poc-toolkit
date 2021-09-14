@@ -24,29 +24,26 @@ resource "random_id" "kms" {
   byte_length = 2
 }
 
-// Locals used to construct names of stuffs.
 locals {
+  // Presets for project and network settings
   project_id                = var.shared_vpc ? var.shared_vpc_project_id : module.enabled_google_apis.project_id
   network_name              = var.shared_vpc ? var.shared_vpc_name : var.vpc_name
-  subnetwork_name           = var.shared_vpc ? var.shared_vpc_subnet_name : lookup(var.cluster_config, element(keys(var.cluster_config), 0), "").subnet_name
   ip_range_pods             = var.shared_vpc ? var.shared_vpc_ip_range_pods_name : var.ip_range_pods_name
   ip_range_services         = var.shared_vpc ? var.shared_vpc_ip_range_services_name : var.ip_range_services_name
-  vpc_selflink              = format("projects/%s/global/networks/%s", local.project_id, local.network_name)
-  subnet_selflink           = format("projects/%s/regions/%s/subnetworks/%s", local.project_id, var.region, local.subnetwork_name)
-  kcc_service_account       = format("%s-kcc", var.cluster_name)
-  kcc_service_account_email = "${local.kcc_service_account}@${module.enabled_google_apis.project_id}.iam.gserviceaccount.com"
-  gke_service_account       = format("%s-sa", var.cluster_name)
-  gke_service_account_email = "${local.gke_service_account}@${module.enabled_google_apis.project_id}.iam.gserviceaccount.com"
-  gke_keyring_name          = format("%s-kr-%s", var.cluster_name, random_id.kms.hex)
-  gke_key_name              = format("%s-kek", var.cluster_name)
-  clu_service_account       = format("service-%s@container-engine-robot.iam.gserviceaccount.com", data.google_project.project.number)
-  prj_service_account       = format("%s@cloudservices.gserviceaccount.com", data.google_project.project.number)
+
+  // Presets for KMS and Key Ring
+  gke_keyring_name          = format("gke-toolkit-kr-%s", random_id.kms.hex)
+  gke_key_name              = "gke-toolkit-kek"
   database-encryption-key   = "projects/${var.governance_project_id}/locations/${var.region}/keyRings/${local.gke_keyring_name}/cryptoKeys/${local.gke_key_name}"
 
-  // Bastion Host presets
-  bastion_name              = format("%s-bastion", var.cluster_name)
-  bastion_zone              = var.zone
-  bastion_members = [
+  // Presets for Bastion Host
+  default_subnetwork_name   = lookup(var.cluster_config, element(keys(var.cluster_config), 0), "").subnet_name
+  default_subnetwork_region = lookup(var.cluster_config, element(keys(var.cluster_config), 0), "").region
+  bastion_name              = "gke-tk-bastion"
+  bastion_vpc_selflink      = format("projects/%s/global/networks/%s", local.project_id, local.network_name)
+  bastion_subnet_selflink   = format("projects/%s/regions/%s/subnetworks/%s", local.project_id, local.default_subnetwork_region, local.default_subnetwork_name)
+  bastion_zone              = format("%s-b", local.default_subnetwork_name)
+  bastion_members           = [
     format("user:%s", data.google_client_openid_userinfo.me.email),
   ]
 
@@ -80,8 +77,15 @@ locals {
     for cluster in var.cluster_config : [{ "name" = cluster.subnet_name, "source_ip_ranges_to_nat" = ["PRIMARY_IP_RANGE"], "secondary_ip_range_names" = [] }]
   ])
 
+  // Presets for Sevice Account
+  gke_service_account       = "gke-toolkit-sa"
+  gke_service_account_email = "${local.gke_service_account}@${module.enabled_google_apis.project_id}.iam.gserviceaccount.com"
+  clu_service_account       = format("service-%s@container-engine-robot.iam.gserviceaccount.com", data.google_project.project.number)
+  prj_service_account       = format("%s@cloudservices.gserviceaccount.com", data.google_project.project.number)
+  # kcc_service_account       = format("%s-kcc", var.cluster_name)
+  # kcc_service_account_email = "${local.kcc_service_account}@${module.enabled_google_apis.project_id}.iam.gserviceaccount.com"
 
-  // Presets for Service Accounts
+  // Presets for Service Account permissions
   service_accounts = {
     (local.gke_service_account) = [
       "${module.enabled_google_apis.project_id}=>roles/artifactregistry.reader",
