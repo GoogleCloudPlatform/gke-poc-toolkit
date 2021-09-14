@@ -51,11 +51,3 @@
 #   value       = (var.private_endpoint ? "HTTPS_PROXY=localhost:8888 kubectl get pods --all-namespaces" : "kubectl get pods --all-namespaces")
 
 # }
-
-output "nested_subnets_test" {
-  value       = local.nested_subnets_test
-}
-
-output "nested_secondary_subnets_test" {
-  value       = local.nested_secondary_subnets_test
-}

@@ -28,14 +28,13 @@ resource "random_id" "kms" {
 locals {
   project_id                = var.shared_vpc ? var.shared_vpc_project_id : module.enabled_google_apis.project_id
   network_name              = var.shared_vpc ? var.shared_vpc_name : var.vpc_name
-  subnetwork_name           = var.shared_vpc ? var.shared_vpc_subnet_name : var.subnet_name
+  subnetwork_name           = var.shared_vpc ? var.shared_vpc_subnet_name : lookup(var.cluster_config, element(keys(var.cluster_config), 0), "").subnet_name
   ip_range_pods             = var.shared_vpc ? var.shared_vpc_ip_range_pods_name : var.ip_range_pods_name
   ip_range_services         = var.shared_vpc ? var.shared_vpc_ip_range_services_name : var.ip_range_services_name
   vpc_selflink              = format("projects/%s/global/networks/%s", local.project_id, local.network_name)
   subnet_selflink           = format("projects/%s/regions/%s/subnetworks/%s", local.project_id, var.region, local.subnetwork_name)
   kcc_service_account       = format("%s-kcc", var.cluster_name)
   kcc_service_account_email = "${local.kcc_service_account}@${module.enabled_google_apis.project_id}.iam.gserviceaccount.com"
-  bastion_name              = format("%s-bastion", var.cluster_name)
   gke_service_account       = format("%s-sa", var.cluster_name)
   gke_service_account_email = "${local.gke_service_account}@${module.enabled_google_apis.project_id}.iam.gserviceaccount.com"
   gke_keyring_name          = format("%s-kr-%s", var.cluster_name, random_id.kms.hex)
@@ -43,39 +42,15 @@ locals {
   clu_service_account       = format("service-%s@container-engine-robot.iam.gserviceaccount.com", data.google_project.project.number)
   prj_service_account       = format("%s@cloudservices.gserviceaccount.com", data.google_project.project.number)
   database-encryption-key   = "projects/${var.governance_project_id}/locations/${var.region}/keyRings/${local.gke_keyring_name}/cryptoKeys/${local.gke_key_name}"
+
+  // Bastion Host presets
+  bastion_name              = format("%s-bastion", var.cluster_name)
   bastion_zone              = var.zone
   bastion_members = [
     format("user:%s", data.google_client_openid_userinfo.me.email),
   ]
 
-  base_subnet_cidr_block = "10.0.0.0/24"
-  base_secondary_subnet_cidr_block = "10.0.0.0/24"
-
-  nested_subnets_test = flatten([
-    for name, config in var.cluster_config : [
-      {
-        subnet_name           = config.subnet_name
-        subnet_ip             = "10.0.${index(keys(var.cluster_config), name)}.0/24"
-        subnet_region         = config.region
-        subnet_private_access = true
-        description           = "This subnet is managed by Terraform"
-      }
-    ]
-  ])
-
-  nested_secondary_subnets_test = {
-  for name, config in var.cluster_config : config.subnet_name => [
-      {
-        range_name    = "ip-range-pods"
-        ip_cidr_range = "10.10.${index(keys(var.cluster_config), name)}.0/24"
-      },
-      {
-        range_name    = "ip-range-svc"
-        ip_cidr_range = "10.11.${index(keys(var.cluster_config), name)}.0/24"
-      }
-    ]
-  }
-
+  // Dynamically create subnet and secondary subnet inputs for multi-cluster creation
   nested_subnets = flatten([
     for name, config in var.cluster_config : [
       {
@@ -91,11 +66,11 @@ locals {
   nested_secondary_subnets = {
   for name, config in var.cluster_config : config.subnet_name => [
       {
-        range_name    = "ip-range-pods"
+        range_name    = local.ip_range_pods
         ip_cidr_range = "10.10.${index(keys(var.cluster_config), name)}.0/24"
       },
       {
-        range_name    = "ip-range-svc"
+        range_name    = local.ip_range_services
         ip_cidr_range = "10.11.${index(keys(var.cluster_config), name)}.0/24"
       }
     ]
@@ -105,6 +80,8 @@ locals {
     for cluster in var.cluster_config : [{ "name" = cluster.subnet_name, "source_ip_ranges_to_nat" = ["PRIMARY_IP_RANGE"], "secondary_ip_range_names" = [] }]
   ])
 
+
+  // Presets for Service Accounts
   service_accounts = {
     (local.gke_service_account) = [
       "${module.enabled_google_apis.project_id}=>roles/artifactregistry.reader",
