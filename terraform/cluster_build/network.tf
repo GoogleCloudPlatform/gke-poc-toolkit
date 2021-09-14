@@ -49,24 +49,24 @@ data "template_file" "startup_script" {
   EOF
 }
 
-# module "bastion" {
-#   depends_on = [
-#     module.vpc,
-#   ]
-#   count          = var.private_endpoint ? 1 : 0
-#   source         = "terraform-google-modules/bastion-host/google"
-#   version        = "~> 3.2"
-#   network        = local.vpc_selflink
-#   subnet         = local.subnet_selflink
-#   project        = module.enabled_google_apis.project_id
-#   host_project   = local.project_id
-#   name           = local.bastion_name
-#   zone           = local.bastion_zone
-#   image_project  = "debian-cloud"
-#   image_family   = "debian-10"
-#   machine_type   = "g1-small"
-#   startup_script = data.template_file.startup_script.rendered
-#   members        = local.bastion_members
-#   shielded_vm    = "true"
-# }
+module "bastion" {
+  depends_on = [
+    module.vpc,
+  ]
+  count          = var.private_endpoint ? 1 : 0
+  source         = "terraform-google-modules/bastion-host/google"
+  version        = "~> 3.2"
+  network        = local.vpc_selflink
+  subnet         = local.subnet_selflink
+  project        = module.enabled_google_apis.project_id
+  host_project   = local.project_id
+  name           = local.bastion_name
+  zone           = local.bastion_zone
+  image_project  = "debian-cloud"
+  image_family   = "debian-10"
+  machine_type   = "g1-small"
+  startup_script = data.template_file.startup_script.rendered
+  members        = local.bastion_members
+  shielded_vm    = "true"
+}
 
