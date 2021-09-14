@@ -32,7 +32,7 @@ module "cluster-nat" {
   depends_on = [
     module.vpc,
   ]
-  for_each                           = {for region in local.distinct_cluster_regions: "region" => region
+  for_each                           = {for region in local.distinct_cluster_regions: "region" => region}
   source                             = "terraform-google-modules/cloud-nat/google"
   create_router                      = true
   project_id                         = local.project_id
