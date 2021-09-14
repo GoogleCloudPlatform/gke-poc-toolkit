@@ -54,11 +54,11 @@ fi
 cat <<-EOF > "${TFVARS_FILE}"
 project_id                        = "${PROJECT}"
 governance_project_id             = "${GOVERNANCE_PROJECT}"
-shared_vpc                        = "${SHARED_VPC}"
-shared_vpc_name                   = "${SHARED_VPC_NAME}"
-shared_vpc_project_id             = "${SHARED_VPC_PROJECT_ID}"
-shared_vpc_ip_range_pods_name     = "${POD_IP_RANGE_NAME}"
-shared_vpc_ip_range_services_name = "${SERVICE_IP_RANGE_NAME}"
+shared_vpc                        = true
+shared_vpc_name                   = gke-tk-shared-vpc
+shared_vpc_project_id             = "alw-tk-svpc-10"
+shared_vpc_ip_range_pods_name     = "ip-range-pods"
+shared_vpc_ip_range_services_name = "ip-range-svc"
 region                            = "${REGION}"
 private_endpoint                  = "${PRIVATE}"
 auth_ip                           = "${AUTH_IP}"
@@ -79,6 +79,35 @@ cluster_config					  = {
     }
 }
 EOF
+
+# cat <<-EOF > "${TFVARS_FILE}"
+# project_id                        = "${PROJECT}"
+# governance_project_id             = "${GOVERNANCE_PROJECT}"
+# shared_vpc                        = "${SHARED_VPC}"
+# shared_vpc_name                   = "${SHARED_VPC_NAME}"
+# shared_vpc_project_id             = "${SHARED_VPC_PROJECT_ID}"
+# shared_vpc_ip_range_pods_name     = "${POD_IP_RANGE_NAME}"
+# shared_vpc_ip_range_services_name = "${SERVICE_IP_RANGE_NAME}"
+# region                            = "${REGION}"
+# private_endpoint                  = "${PRIVATE}"
+# auth_ip                           = "${AUTH_IP}"
+# windows_nodepool                  = "${WINDOWS}"
+# preemptible_nodes                 = "${PREEMPTIBLE}"
+# cluster_config					  = {
+#     cluster-01 = {
+#         region           = "us-east1"
+#         subnet_name      = "cluster-01-cluster-subnet"
+#     },
+#     cluster-02 = {
+#         region           = "us-west1"
+#         subnet_name      = "cluster-02-cluster-subnet"
+#     },
+#     cluster-03 = {
+#         region           = "us-west1"
+#         subnet_name      = "cluster-03-cluster-subnet"
+#     }
+# }
+# EOF
 
 # cat <<-EOF > "${TFVARS_FILE}"
 # project_id                        = "${PROJECT}"

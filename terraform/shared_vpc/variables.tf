@@ -48,3 +48,8 @@ variable "shared_vpc_ip_range_services_name" {
   description = "The secondary ip range to use for services in the shared vpc  - This is optional and only valid if a Shared VPC is used"
   default     = ""
 }
+
+variable "cluster_config" {
+  description = "For each cluster, create an object that contain the required fields"
+  default     = {}
+}
