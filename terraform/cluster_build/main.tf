@@ -77,7 +77,7 @@ locals {
   }
 
   nested_subnets = flatten([
-    for cluster in var.cluster_config : [
+    for name, cluster in var.cluster_config : [
       {
         subnet_name           = cluster.subnet_name
         subnet_ip             = "10.0.${index(keys(var.cluster_config), name)}.0/24"
