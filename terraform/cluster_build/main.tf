@@ -31,6 +31,7 @@ locals {
   vpc_selflink              = format("projects/%s/global/networks/%s", local.project_id, local.network_name)
   ip_range_pods             = var.shared_vpc ? var.shared_vpc_ip_range_pods_name : var.ip_range_pods_name
   ip_range_services         = var.shared_vpc ? var.shared_vpc_ip_range_services_name : var.ip_range_services_name
+  regions_with_clusters     = [for cluster in var.cluster_config: cluster.value.region]
 
   // Presets for KMS and Key Ring
   gke_keyring_name          = format("gke-toolkit-kr-%s", random_id.kms.hex)
@@ -73,9 +74,9 @@ locals {
     ]
   }
 
-  subnetworks_to_nat = flatten([
-    for cluster in var.cluster_config : [{ "name" = cluster.subnet_name, "source_ip_ranges_to_nat" = ["PRIMARY_IP_RANGE"], "secondary_ip_range_names" = [] }]
-  ])
+  # subnetworks_to_nat = flatten([
+  #   for cluster in var.cluster_config : [{ "name" = cluster.subnet_name, "source_ip_ranges_to_nat" = ["PRIMARY_IP_RANGE"], "secondary_ip_range_names" = [] }]
+  # ])
 
   // Presets for Sevice Account
   gke_service_account       = "gke-toolkit-sa"

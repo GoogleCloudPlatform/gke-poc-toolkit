@@ -39,8 +39,7 @@ module "cluster-nat" {
   region                             = each.value.region
   router                             = "${each.key}-router"
   network                            = local.vpc_selflink
-  source_subnetwork_ip_ranges_to_nat = "LIST_OF_SUBNETWORKS"
-  subnetworks                        = [{ "name" = each.value.subnet_name, "source_ip_ranges_to_nat" = ["PRIMARY_IP_RANGE"], "secondary_ip_range_names" = [] }]
+  source_subnetwork_ip_ranges_to_nat = "ALL_SUBNETWORKS_ALL_PRIMARY_IP_RANGES"
 }
 
 data "template_file" "startup_script" {
