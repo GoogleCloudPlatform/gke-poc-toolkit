@@ -28,19 +28,19 @@ module "vpc" {
   secondary_ranges = local.nested_secondary_subnets
 }
 
-# module "cluster-nat" {
-#   depends_on = [
-#     module.vpc,
-#   ]
-#   for_each                           = local.distinct_cluster_regions
-#   source                             = "terraform-google-modules/cloud-nat/google"
-#   create_router                      = true
-#   project_id                         = local.project_id
-#   region                             = each.key
-#   router                             = "gke-toolkit-route-${each.key}"
-#   network                            = local.vpc_selflink
-#   source_subnetwork_ip_ranges_to_nat = "ALL_SUBNETWORKS_ALL_PRIMARY_IP_RANGES"
-# }
+module "cluster-nat" {
+  depends_on = [
+    module.vpc,
+  ]
+  for_each                           = local.distinct_cluster_regions
+  source                             = "terraform-google-modules/cloud-nat/google"
+  create_router                      = true
+  project_id                         = local.project_id
+  region                             = each.key
+  router                             = "gke-toolkit-route-${each.key}"
+  network                            = local.vpc_selflink
+  source_subnetwork_ip_ranges_to_nat = "ALL_SUBNETWORKS_ALL_PRIMARY_IP_RANGES"
+}
 
 data "template_file" "startup_script" {
   template = <<-EOF
