@@ -49,7 +49,7 @@ locals {
   ]
 
   nested_subnets = flatten([
-    for cluster in var.cluster_config : [
+    for cluster, count in var.cluster_config : [
       {
         subnet_name           = cluster.subnet_name
         subnet_ip             = cluster.subnet_ip
@@ -60,32 +60,30 @@ locals {
     ]
   ])
 
+  nested_subnets_test = flatten([
+    for cluster, count in var.cluster_config : [
+      {
+        subnet_name           = cluster.subnet_name
+        subnet_ip             = "10.${count}.0.0/24"
+        subnet_region         = cluster.region
+        subnet_private_access = true
+        description           = "This subnet is managed by Terraform"
+      }
+    ]
+  ])
+
   nested_secondary_subnets = {
   for cluster in var.cluster_config : cluster.subnet_name => [
       {
-        range_name    = "subnet1"
+        range_name    = "ip-range-pods"
         ip_cidr_range = "10.10.64.0/18"
       },
       {
-        range_name    = "subnet2"
+        range_name    = "ip-range-svc"
         ip_cidr_range = "10.10.192.0/18"
       }
     ]
   }
-
-  # team_members = flatten({
-  #   for cluster in var.cluster_config : cluster.subnet_name => 
-  #     flatten [
-  #     {
-  #       range_name    = "subnet1"
-  #       ip_cidr_range = "10.10.64.0/18"
-  #     },
-  #     {
-  #       range_name    = "subnet2"
-  #       ip_cidr_range = "10.10.192.0/18"
-  #     }
-  #   ]
-  # })
 
   subnetworks_to_nat = flatten([
     for cluster in var.cluster_config : [{ "name" = cluster.subnet_name, "source_ip_ranges_to_nat" = ["PRIMARY_IP_RANGE"], "secondary_ip_range_names" = [] }]

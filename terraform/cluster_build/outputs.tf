@@ -52,6 +52,6 @@
 
 # }
 
-output "nested_secondary_subnets" {
+output "nested_subnets_test" {
   value       = local.nested_secondary_subnets
 }
