@@ -32,7 +32,7 @@ locals {
   ip_range_pods             = var.shared_vpc ? var.shared_vpc_ip_range_pods_name : var.ip_range_pods_name
   ip_range_services         = var.shared_vpc ? var.shared_vpc_ip_range_services_name : var.ip_range_services_name
   cluster_regions           = flatten([ for cluster in var.cluster_config : ["${cluster.region}"] ])
-  distinct_cluster_regions  = distinct[( local.cluster_regions )]
+  distinct_cluster_regions  = distinct([ local.cluster_regions ])
 
   // Presets for KMS and Key Ring
   gke_keyring_name          = format("gke-toolkit-kr-%s", random_id.kms.hex)
