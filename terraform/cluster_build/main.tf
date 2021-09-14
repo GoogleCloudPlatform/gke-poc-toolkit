@@ -74,13 +74,7 @@ locals {
     ]
   }
 
-  # subnetworks_to_nat = flatten([
-  #   for cluster in var.cluster_config : [{ 
-  #     "name" = cluster.subnet_name, 
-  #     "source_ip_ranges_to_nat" = ["PRIMARY_IP_RANGE"], 
-  #     "secondary_ip_range_names" = [] 
-  #   }]
-  # ])
+  # subnetworks_to_nat = flatten([ for cluster in var.cluster_config : [{ "name" = cluster.subnet_name, "source_ip_ranges_to_nat" = ["PRIMARY_IP_RANGE"], "secondary_ip_range_names" = [] }] ])
 
   // Presets for Sevice Account
   gke_service_account       = "gke-toolkit-sa"
