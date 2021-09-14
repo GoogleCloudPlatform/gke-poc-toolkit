@@ -33,14 +33,6 @@ locals {
   ip_range_services         = var.shared_vpc ? var.shared_vpc_ip_range_services_name : var.ip_range_services_name
   distinct_cluster_regions  = toset([ for cluster in var.cluster_config : "${cluster.region}" ])
 
-  # distinct_cluster_regions = {
-  # for config in var.cluster_config : config.subnet_name => config.region
-  # }
-
-  # distinct_cluster_regions  = distinct([ 
-  #   for cluster in var.cluster_config : cluster.region 
-  # ])
-
   // Presets for KMS and Key Ring
   gke_keyring_name          = format("gke-toolkit-kr-%s", random_id.kms.hex)
   gke_key_name              = "gke-toolkit-kek"
@@ -193,11 +185,12 @@ module "kms" {
   depends_on = [
     module.service_accounts,
   ]
+  for_each       = local.distinct_cluster_regions
   source         = "terraform-google-modules/kms/google"
   version        = "~> 2.0"
   project_id     = var.governance_project_id
-  location       = var.region
-  keyring        = local.gke_keyring_name
+  location       = each.key
+  keyring        = "${local.gke_keyring_name}-${each.key}"
   keys           = [local.gke_key_name]
   set_owners_for = [local.gke_key_name]
   owners = [
