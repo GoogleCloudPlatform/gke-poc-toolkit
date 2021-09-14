@@ -61,7 +61,7 @@ locals {
   ])
 
   nested_secondary_subnets_test = {
-  for cluster, count in var.cluster_config : cluster.subnet_name => [
+  for count, cluster in var.cluster_config : cluster.subnet_name => [
       {
         range_name    = "ip-range-pods"
         ip_cidr_range = "${count}"
