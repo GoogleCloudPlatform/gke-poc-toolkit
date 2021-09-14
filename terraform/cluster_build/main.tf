@@ -52,11 +52,11 @@ locals {
   base_secondary_subnet_cidr_block = "10.0.0.0/24"
 
   nested_subnets_test = flatten([
-    for cluster in var.cluster_config : [
+    for name, config in var.cluster_config : [
       {
-        subnet_name           = cluster.subnet_name
-        subnet_ip             = index(keys(var.cluster_config), cluster.key)
-        subnet_region         = cluster.region
+        subnet_name           = config.subnet_name
+        subnet_ip             = index(keys(var.cluster_config), name)
+        subnet_region         = config.region
         subnet_private_access = true
         description           = "This subnet is managed by Terraform"
       }
