@@ -67,11 +67,11 @@ locals {
   for cluster in var.cluster_config : cluster.subnet_name => [
       {
         range_name    = "ip-range-pods"
-        ip_cidr_range = "10.10.192.0/18"
+        ip_cidr_range = "10.10.${index(keys(var.cluster_config), name)}.0/24"
       },
       {
         range_name    = "ip-range-svc"
-        ip_cidr_range = "10.10.192.0/18"
+        ip_cidr_range = "10.11.${index(keys(var.cluster_config), name)}.0/24"
       }
     ]
   }
@@ -92,11 +92,11 @@ locals {
   for cluster in var.cluster_config : cluster.subnet_name => [
       {
         range_name    = "ip-range-pods"
-        ip_cidr_range = "10.10.64.0/18"
+        ip_cidr_range = "10.10.${index(keys(var.cluster_config), name)}.0/24"
       },
       {
         range_name    = "ip-range-svc"
-        ip_cidr_range = "10.10.192.0/18"
+        ip_cidr_range = "10.11.${index(keys(var.cluster_config), name)}.0/24"
       }
     ]
   }

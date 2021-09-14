@@ -15,15 +15,15 @@
  */
 
 module "vpc" {
-  count        = var.shared_vpc ? 0 : 1
-  source       = "terraform-google-modules/network/google"
-  version      = "~> 2.5"
+  count            = var.shared_vpc ? 0 : 1
+  source           = "terraform-google-modules/network/google"
+  version          = "~> 2.5"
 
-  project_id   = module.enabled_google_apis.project_id
-  network_name = var.vpc_name
-  routing_mode = "GLOBAL"
+  project_id       = module.enabled_google_apis.project_id
+  network_name     = var.vpc_name
+  routing_mode     = "GLOBAL"
 
-  subnets      = local.nested_subnets
+  subnets          = local.nested_subnets
 
   secondary_ranges = local.nested_secondary_subnets
 
