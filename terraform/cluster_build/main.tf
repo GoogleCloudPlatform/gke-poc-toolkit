@@ -42,7 +42,7 @@ locals {
   default_subnetwork_region = lookup(var.cluster_config, element(keys(var.cluster_config), 0), "").region
   bastion_name              = "gke-tk-bastion"
   bastion_subnet_selflink   = format("projects/%s/regions/%s/subnetworks/%s", local.project_id, local.default_subnetwork_region, local.default_subnetwork_name)
-  bastion_zone              = format("%s-b", local.default_subnetwork_name)
+  bastion_zone              = format("%s-b", local.default_subnetwork_region)
   bastion_members           = [
     format("user:%s", data.google_client_openid_userinfo.me.email),
   ]
