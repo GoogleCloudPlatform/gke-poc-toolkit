@@ -51,7 +51,7 @@ fi
 
 ## Shared VPC Example
 cat <<-EOF > "${TFVARS_FILE}"
-project_id                        = "${PROJECT}"
+project_id                        = "alw-tk-10"
 governance_project_id             = "${GOVERNANCE_PROJECT}"
 shared_vpc                        = true
 shared_vpc_name                   = "gke-tk-shared-vpc"
