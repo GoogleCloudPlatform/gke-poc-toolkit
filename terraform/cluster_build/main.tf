@@ -31,11 +31,7 @@ locals {
   vpc_selflink              = format("projects/%s/global/networks/%s", local.project_id, local.network_name)
   ip_range_pods             = var.shared_vpc ? var.shared_vpc_ip_range_pods_name : var.ip_range_pods_name
   ip_range_services         = var.shared_vpc ? var.shared_vpc_ip_range_services_name : var.ip_range_services_name
-  regions_with_clusters     = distinct([ 
-    flatten([
-      for cluster in var.cluster_config : ["${cluster.region}"]
-    ])
-  ])
+  regions_with_clusters     = distinct([ flatten([ for cluster in var.cluster_config : ["${cluster.region}"] ]) ])
 
   // Presets for KMS and Key Ring
   gke_keyring_name          = format("gke-toolkit-kr-%s", random_id.kms.hex)
