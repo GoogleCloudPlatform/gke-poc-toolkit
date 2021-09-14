@@ -55,7 +55,7 @@ locals {
     for cluster in var.cluster_config : [
       {
         subnet_name           = cluster.subnet_name
-        subnet_ip             = index(keys(var.cluster_config), cluster)
+        subnet_ip             = index(keys(var.cluster_config), cluster.key)
         subnet_region         = cluster.region
         subnet_private_access = true
         description           = "This subnet is managed by Terraform"
