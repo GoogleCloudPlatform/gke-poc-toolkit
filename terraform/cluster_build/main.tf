@@ -49,7 +49,7 @@ locals {
   ]
 
   nested_subnets_test = flatten([
-    for cluster in var.cluster_config : [
+    for cluster, count in var.cluster_config : [
       {
         subnet_name           = cluster.subnet_name
         subnet_ip             = "${count}"
