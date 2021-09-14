@@ -48,11 +48,14 @@ locals {
     format("user:%s", data.google_client_openid_userinfo.me.email),
   ]
 
+  base_subnet_cidr_block = "10.0.0.0/24"
+  base_secondary_subnet_cidr_block = "10.0.0.0/24"
+
   nested_subnets_test = flatten([
-    for i, cluster in var.cluster_config : [
+    for cluster in var.cluster_config : [
       {
         subnet_name           = cluster.subnet_name
-        subnet_ip             = "${i}"
+        subnet_ip             = cidrsubnet(local.base_subnet_cidr_block, 2, 0)
         subnet_region         = cluster.region
         subnet_private_access = true
         description           = "This subnet is managed by Terraform"
@@ -60,18 +63,18 @@ locals {
     ]
   ])
 
-  nested_secondary_subnets_test = {
-  for count, cluster in var.cluster_config : cluster.subnet_name => [
-      {
-        range_name    = "ip-range-pods"
-        ip_cidr_range = "${count}"
-      },
-      {
-        range_name    = "ip-range-svc"
-        ip_cidr_range = "10.10.192.0/18"
-      }
-    ]
-  }
+  # nested_secondary_subnets_test = {
+  # for cluster in var.cluster_config : cluster.subnet_name => [
+  #     {
+  #       range_name    = "ip-range-pods"
+  #       ip_cidr_range = 
+  #     },
+  #     {
+  #       range_name    = "ip-range-svc"
+  #       ip_cidr_range = "10.10.192.0/18"
+  #     }
+  #   ]
+  # }
 
   nested_subnets = flatten([
     for cluster in var.cluster_config : [
