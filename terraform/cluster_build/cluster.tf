@@ -33,7 +33,7 @@ module "gke" {
   ip_range_services       = local.ip_range_services
   enable_private_endpoint = var.private_endpoint
   enable_shielded_nodes   = true
-  master_ipv4_cidr_block  = "172.16.0.16/28"
+  master_ipv4_cidr_block  = "172.16.${index(keys(var.cluster_config), each.key)}.16/28"
   master_authorized_networks = [{
     cidr_block   = var.private_endpoint ? "${module.bastion[0].ip_address}/32" : "${var.auth_ip}/32"
     display_name = var.private_endpoint ? "Bastion Host" : "Workstation Public IP"
