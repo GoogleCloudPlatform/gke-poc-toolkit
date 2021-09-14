@@ -23,7 +23,7 @@ module "gke" {
   source                  = "terraform-google-modules/kubernetes-engine/google//modules/safer-cluster"
   version                 = "14.0.1"
   project_id              = module.enabled_google_apis.project_id
-  name                    = "${each.key}-endpoint-cluster"
+  name                    = each.key
   region                  = each.value.region
   config_connector        = var.config_connector
   network                 = local.network_name
