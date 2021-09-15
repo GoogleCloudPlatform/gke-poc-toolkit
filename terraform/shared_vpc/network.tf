@@ -26,29 +26,9 @@ module "shared_vpc" {
   network_name = var.shared_vpc_name
   # routing_mode = "GLOBAL" default in terraform-google-network
 
-  subnets = [
-    {
-      subnet_name           = var.shared_vpc_subnet_name
-      subnet_ip             = var.shared_vpc_subnet_ip
-      subnet_region         = var.region
-      subnet_private_access = true
-      description           = "This subnet is managed by Terraform"
-    }
-  ]
-  secondary_ranges = {
-    (var.shared_vpc_subnet_name) = [
-      {
-        range_name    = var.shared_vpc_ip_range_pods_name
-        // TODO enable user to override this
-        ip_cidr_range = "10.10.64.0/18"
-      },
-      {
-        range_name    = var.shared_vpc_ip_range_services_name
-        // TODO enable user to override this
-        ip_cidr_range = "10.10.192.0/18"
-      },
-    ]
-  }
+  subnets          = local.nested_subnets
+
+  secondary_ranges = local.nested_secondary_subnets
 }
 
 resource "google_compute_shared_vpc_host_project" "host_project" {
