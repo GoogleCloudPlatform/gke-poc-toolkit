@@ -37,7 +37,7 @@ module "cluster-nat" {
   create_router                      = true
   project_id                         = local.project_id
   region                             = each.key
-  router                             = "gke-toolkit-route-${each.key}"
+  router                             = "gke-toolkit-rtr-${each.key}"
   network                            = local.vpc_selflink
   source_subnetwork_ip_ranges_to_nat = "ALL_SUBNETWORKS_ALL_PRIMARY_IP_RANGES"
 }
