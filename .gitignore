@@ -16,6 +16,9 @@
 Session.vim
 .netrwhist
 
+# ignore local CLI binary
+cli/gkekitctl
+
 ### https://raw.github.com/github/gitignore/90f149de451a5433aebd94d02d11b0e28843a1af/Terraform.gitignore
 
 # Local .terraform directories
@@ -51,6 +54,25 @@ creds/
 # local bash command file
 _local.sh
 
-## Ignore cluster_config vars file
+# Ignore cluster_config vars file
 cluster_config
 github.key
+
+# Binaries for programs and plugins
+*.exe
+*.exe~
+*.dll
+*.so
+*.dylib
+
+# Test binary, built with `go test -c`
+*.test
+
+# Output of the go coverage tool, specifically when used with LiteIDE
+*.out
+
+# cli binary
+gkekitctl
+
+# Dependency directories (remove the comment below to include it)
+# vendor/

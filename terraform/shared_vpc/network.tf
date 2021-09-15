@@ -24,7 +24,7 @@ module "shared_vpc" {
 
   project_id   = var.shared_vpc_project_id
   network_name = var.shared_vpc_name
-  routing_mode = "GLOBAL"
+  # routing_mode = "GLOBAL" default in terraform-google-network
 
   subnets          = local.nested_subnets
 

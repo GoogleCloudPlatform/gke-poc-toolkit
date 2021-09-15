@@ -67,6 +67,6 @@ module "bastion" {
   machine_type   = "g1-small"
   startup_script = data.template_file.startup_script.rendered
   members        = local.bastion_members
-  shielded_vm    = "true"
+  # shielded_vm    = "true" (default set in terraform-google-bastion-host)
 }
 

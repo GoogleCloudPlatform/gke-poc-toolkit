@@ -54,7 +54,7 @@ module "gke" {
     ]
   }
   node_pools_labels = {
-    all = {}
+    # all = {} default set in terraform-google-kubernetes-engine
 
     default-node-pool = {
       default-node-pool = false
@@ -62,7 +62,7 @@ module "gke" {
   }
 
   node_pools_metadata = {
-    all = {}
+    # all = {} default set in terraform-google-kubernetes-engine
 
     (var.node_pool) = {
       // Set metadata on the VM to supply more entropy
