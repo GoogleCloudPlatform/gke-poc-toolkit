@@ -109,7 +109,7 @@ EOF
 # }
 # EOF
 
-## Retired - DO NOT USE BUT KEEP FOR REFERENCE FOR NOW
+## Retired - KEEP FOR REFERENCE FOR NOW BUT DO NOT USE
 # cat <<-EOF > "${TFVARS_FILE}"
 # project_id                        = "${PROJECT}"
 # governance_project_id             = "${GOVERNANCE_PROJECT}"
