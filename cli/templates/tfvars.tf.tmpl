@@ -2,17 +2,17 @@ project_id                        = "{{.ClustersProjectName}}"
 governance_project_id             = "{{.GovernanceProjectName}}"
 region                            = "{{.Region}}"
 private_endpoint                  = "{{.ClusterType}}"
-cluster_name                      = "{{.ClusterType}}-endpoint-cluster"
-vpc_name                          = "{{.ClusterType}}-cluster-network"
-subnet_name                       = "{{.ClusterType}}-cluster-subnet"
-node_pool                         = "{{.ClusterType}}-node-pool"
-zone                              = "{{.Zone}}"
 auth_ip                           = "{{.AuthIP}}"
 windows_nodepool                  = "{{.EnableWindowsNodepool}}"
 preemptible_nodes                 = "{{.EnablePreemptibleNodepool}}"
 shared_vpc                        = "{{.VpcType}}"
 shared_vpc_name                   = "{{.VpcName}}"
-shared_vpc_subnet_name            = "{{.SubnetName}}"
 shared_vpc_project_id             = "{{.VpcProjectId}}"
 shared_vpc_ip_range_pods_name     = "{{.PodCidrName}}"
 shared_vpc_ip_range_services_name = "{{.SvcCidrName}}"
+cluster_config					  = {
+    cluster-01 = {
+        region           = "{{.Region}}"
+        subnet_name      = "{{.SubnetName}}"
+    }
+}

@@ -32,6 +32,7 @@ var createCmd = &cobra.Command{
 		conf := config.GetConf(cfgFile)
 		config.GenerateTfvars(conf)
 		deploy.InitTF()
+		deploy.ApplyTF()
 	},
 }
 

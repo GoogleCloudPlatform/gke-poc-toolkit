@@ -14,5 +14,9 @@ cluster_config					  = {
     cluster-01 = {
         region           = "us-central1"
         subnet_name      = "default"
+    },
+    cluster-02 = {
+        region           = "us-east1"
+        subnet_name      = "default"
     }
 }
