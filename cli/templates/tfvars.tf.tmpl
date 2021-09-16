@@ -1,18 +1,21 @@
-project_id                        = "{{.ClustersProjectName}}"
-governance_project_id             = "{{.GovernanceProjectName}}"
+## Base Config
+prefix                            = "{{.Prefix}}"
 region                            = "{{.Region}}"
-private_endpoint                  = "{{.ClusterType}}"
+project_id                        = "{{.ClustersProjectId}}"
+governance_project_id             = "{{.GovernanceProjectId}}"
+config_sync                       = "{{.ConfigSync}}"
+private_endpoint                  = "{{.PrivateEndpoint}}"
 auth_ip                           = "{{.AuthIP}}"
 windows_nodepool                  = "{{.EnableWindowsNodepool}}"
 preemptible_nodes                 = "{{.EnablePreemptibleNodepool}}"
+
+## VPC Config
 shared_vpc                        = "{{.VpcType}}"
 shared_vpc_name                   = "{{.VpcName}}"
 shared_vpc_project_id             = "{{.VpcProjectId}}"
 shared_vpc_ip_range_pods_name     = "{{.PodCidrName}}"
 shared_vpc_ip_range_services_name = "{{.SvcCidrName}}"
-cluster_config					  = {
-    cluster-01 = {
-        region           = "{{.Region}}"
-        subnet_name      = "{{.SubnetName}}"
-    }
-}
+
+
+## Clusters Config
+cluster_config                    = {
