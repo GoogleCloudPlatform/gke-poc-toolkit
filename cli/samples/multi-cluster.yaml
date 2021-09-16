@@ -2,8 +2,8 @@
 terraformState: local  # local, cloud
 prefix: "mc"  # String used to generate object naming through script
 region: "us-east1" # Region for resources aside from GKE clusters
-clustersProjectId: "gke-poc-toolkit-001"
-governanceProjectId: "gke-poc-toolkit-001"
+clustersProjectId: "gke-poc-toolkit-002"
+governanceProjectId: "gke-poc-toolkit-002"
 configSync: true 
 privateEndpoint: true
 defaultNodepoolOS: "cos_containerd" 
@@ -13,7 +13,7 @@ enablePreemptibleNodepool: false
 vpcConfig:
   vpcName: "default"
   vpcType: "standalone" # standalone, shared 
-  vpcProjectId: "gke-poc-toolkit-001"
+  vpcProjectId: "gke-poc-toolkit-002"
   sharedVpcIpRangePodsName: "my-pod-cidr"
   sharedVpcIpRangeServicesName: "my-svc-cidr"
   authIp: 10.10.10.10 # only needed if enabling private endpoints for clusters
