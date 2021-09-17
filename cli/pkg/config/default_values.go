@@ -4,34 +4,37 @@ package config
 // Default config uses a single 3-node cluster.
 func InitWithDefaults() *Config {
 	vpcConfig := VpcConfig{
-		VpcName: "default",
-		VpcType: "standalone",
+		VpcName:     "default",
+		VpcType:     "standalone",
+		AuthIP:      "", //only needed for private cluster
+		PodCIDRName: "podCidr",
+		SvcCIDRName: "svcCidr",
 	}
 
 	clustersConfig := []ClusterConfig{
 		ClusterConfig{
-			NumNodes:                  3,
-			MachineType:               "e2-standard-4",
-			ClusterType:               "public",
-			AuthIP:                    "", //only needed for private cluster
-			Region:                    "us-central1",
-			Zone:                      "us-central1-b",
-			SubnetName:                "default",
-			PodCIDRName:               "",
-			SvcCIDRName:               "",
-			EnableWorkloadIdentity:    true,
-			EnableWindowsNodepool:     false,
-			EnablePreemptibleNodepool: false,
-			DefaultNodepoolOS:         "cos",
+			ClusterName: "gke-tk-01",
+			NumNodes:    3,
+			MachineType: "e2-standard-4",
+			ClusterType: "public",
+			Region:      "us-central1",
+			Zone:        "us-central1-b",
+			SubnetName:  "default",
 		},
 	}
 
 	return &Config{
-		TerraformState: "local",
-		ConfigSync:     true,
-		Prefix:         "",
-		VpcConfig:      vpcConfig,
-		ClustersConfig: clustersConfig,
+		TerraformState:            "local",
+		Prefix:                    "love",
+		Region:                    "us-central1",
+		ConfigSync:                false,
+		PrivateEndpoint:           true,
+		VpcConfig:                 vpcConfig,
+		ClustersConfig:            clustersConfig,
+		EnableWorkloadIdentity:    true,
+		EnableWindowsNodepool:     false,
+		EnablePreemptibleNodepool: false,
+		DefaultNodepoolOS:         "cos_containerd",
 	}
 }
 
@@ -54,9 +57,6 @@ func SetClusterDefaults(cc ClusterConfig) ClusterConfig {
 	}
 	if cc.SubnetName == "" {
 		cc.SubnetName = "default"
-	}
-	if cc.DefaultNodepoolOS == "" {
-		cc.DefaultNodepoolOS = "cos"
 	}
 	return cc
 }

@@ -10,37 +10,39 @@ import (
 )
 
 type VpcConfig struct {
-	VpcName      string `yaml:"vpcName"`
 	VpcType      string `yaml:"vpcType"`
+	VpcName      string `yaml:"vpcName"`
 	VpcProjectID string `yaml:"vpcProjectId"`
+	PodCIDRName  string `yaml:"podCIDRName"`
+	SvcCIDRName  string `yaml:"svcCIDRName"`
+	AuthIP       string `yaml:"authIP"`
 }
 
 type ClusterConfig struct {
-	ProjectID                 string `yaml:"projectId"`
-	NumNodes                  int    `yaml:"nodeSize"`
-	MachineType               string `yaml:"machineType"`
-	ClusterType               string `yaml:"clusterType"`
-	AuthIP                    string `yaml:"authIP"`
-	Region                    string `yaml:"region"`
-	Zone                      string `yaml:"zone"`
-	SubnetName                string `yaml:"subnetName"`
-	PodCIDRName               string `yaml:"podCIDRName"`
-	SvcCIDRName               string `yaml:"svcCIDRName"`
-	EnableWorkloadIdentity    bool   `yaml:"enableWorkloadIdentity"`
-	EnableWindowsNodepool     bool   `yaml:"enableWindowsNodepool"`
-	EnablePreemptibleNodepool bool   `yaml:"enablePreemptibleNodepool"`
-	DefaultNodepoolOS         string `yaml:"defaultNodepoolOS"`
+	ClusterName string `yaml:"clusterName"`
+	NumNodes    int    `yaml:"nodeSize"`
+	MachineType string `yaml:"machineType"`
+	ClusterType string `yaml:"clusterType"`
+	Region      string `yaml:"region"`
+	Zone        string `yaml:"zone"`
+	SubnetName  string `yaml:"subnetName"`
 }
 
 // Create private data struct to hold config options.
 type Config struct {
-	TerraformState      string          `yaml:"terraformState"`
-	ConfigSync          bool            `yaml:"configSync"`
-	ClustersProjectID   string          `yaml:"clustersProjectId"`
-	Prefix              string          `yaml:"prefix"`
-	GovernanceProjectID string          `yaml:"governanceProjectId"`
-	VpcConfig           VpcConfig       `yaml:"vpcConfig"`
-	ClustersConfig      []ClusterConfig `yaml:"clustersConfig"`
+	Prefix                    string          `yaml:"prefix"`
+	Region                    string          `yaml:"region"`
+	TerraformState            string          `yaml:"terraformState"`
+	ClustersProjectID         string          `yaml:"clustersProjectId"`
+	GovernanceProjectID       string          `yaml:"governanceProjectId"`
+	ConfigSync                bool            `yaml:"configSync"`
+	PrivateEndpoint           bool            `yaml:"privateEndpoint"`
+	DefaultNodepoolOS         string          `yaml:"defaultNodepoolOS"`
+	EnableWorkloadIdentity    bool            `yaml:"enableWorkloadIdentity"`
+	EnableWindowsNodepool     bool            `yaml:"enableWindowsNodepool"`
+	EnablePreemptibleNodepool bool            `yaml:"enablePreemptibleNodepool"`
+	VpcConfig                 VpcConfig       `yaml:"vpcConfig"`
+	ClustersConfig            []ClusterConfig `yaml:"clustersConfig"`
 }
 
 // Create a new config instance.
@@ -86,13 +88,6 @@ func GetConf(cfgFile string) *Config {
 	if err != nil {
 		fmt.Printf("unable to decode into config struct, %v", err)
 	}
-	// print(err)
-	// vars := make(map[string]interface{})
-	// vars["ClustersProjectName"] = conf.ClustersProjectName
-	// tmpl, _ := template.ParseFiles("/tfvars.tf.tmpl")
-	// file, _ := os.Create("tfvars.tf")
-	// defer file.Close()
-	// tmpl.Execute(file, vars)
 
 	// The default []clusterconfig has a single cluster, but the user config could have many.
 	// Set any unset default values for all the clusters.
@@ -137,6 +132,9 @@ func ValidateConf(c *Config) error {
 	if c.VpcConfig.VpcName == "" {
 		return fmt.Errorf("VPC Name cannot be empty")
 	}
+	if err := validateNodeOS(c.DefaultNodepoolOS); err != nil {
+		return fmt.Errorf("Default Nodepool OS must be one of: cos, ubuntu")
+	}
 
 	// Validate each ClusterConfig
 	for i, cc := range c.ClustersConfig {
@@ -148,9 +146,6 @@ func ValidateConf(c *Config) error {
 				return fmt.Errorf("ClustersConfig[%d] SubnetName cannot be empty", i)
 			}
 			if err := validateMachineType(cc.MachineType); err != nil {
-				return fmt.Errorf("ClustersConfig[%d]: %s", i, err)
-			}
-			if err := validateNodeOS(cc.DefaultNodepoolOS); err != nil {
 				return fmt.Errorf("ClustersConfig[%d]: %s", i, err)
 			}
 			if err := validateRegion(cc.Region); err != nil {

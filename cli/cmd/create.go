@@ -17,7 +17,7 @@ package cmd
 
 import (
 	"gkekitctl/pkg/config"
-	"gkekitctl/pkg/deploy"
+	"gkekitctl/pkg/lifecycle"
 
 	"github.com/spf13/cobra"
 )
@@ -31,7 +31,8 @@ var createCmd = &cobra.Command{
 	Run: func(cmd *cobra.Command, args []string) {
 		conf := config.GetConf(cfgFile)
 		config.GenerateTfvars(conf)
-		deploy.InitTF()
+		lifecycle.InitTF()
+		lifecycle.ApplyTF()
 	},
 }
 
