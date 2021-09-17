@@ -26,16 +26,16 @@ resource "random_id" "kms" {
 
 locals {
   // Presets for project and network settings
-  project_id                = var.shared_vpc ? var.shared_vpc_project_id : module.enabled_google_apis.project_id
-  network_name              = var.shared_vpc ? var.shared_vpc_name : var.vpc_name
-  vpc_selflink              = format("projects/%s/global/networks/%s", local.project_id, local.network_name)
-  ip_range_pods             = var.shared_vpc ? var.shared_vpc_ip_range_pods_name : var.ip_range_pods_name
-  ip_range_services         = var.shared_vpc ? var.shared_vpc_ip_range_services_name : var.ip_range_services_name
-  distinct_cluster_regions  = toset([ for cluster in var.cluster_config : "${cluster.region}" ])
+  project_id               = var.shared_vpc ? var.shared_vpc_project_id : module.enabled_google_apis.project_id
+  network_name             = var.shared_vpc ? var.shared_vpc_name : var.vpc_name
+  vpc_selflink             = format("projects/%s/global/networks/%s", local.project_id, local.network_name)
+  ip_range_pods            = var.shared_vpc ? var.shared_vpc_ip_range_pods_name : var.ip_range_pods_name
+  ip_range_services        = var.shared_vpc ? var.shared_vpc_ip_range_services_name : var.ip_range_services_name
+  distinct_cluster_regions = toset([for cluster in var.cluster_config : "${cluster.region}"])
 
   // Presets for KMS and Key Ring
-  gke_keyring_name          = format("gke-toolkit-kr-%s", random_id.kms.hex)
-  gke_key_name              = "gke-toolkit-kek"
+  gke_keyring_name = format("gke-toolkit-kr-%s", random_id.kms.hex)
+  gke_key_name     = "gke-toolkit-kek"
 
   // Presets for Bastion Host
   default_subnetwork_name   = lookup(var.cluster_config, element(keys(var.cluster_config), 0), "").subnet_name
@@ -43,7 +43,7 @@ locals {
   bastion_name              = "gke-tk-bastion"
   bastion_subnet_selflink   = format("projects/%s/regions/%s/subnetworks/%s", local.project_id, local.default_subnetwork_region, local.default_subnetwork_name)
   bastion_zone              = format("%s-b", local.default_subnetwork_region)
-  bastion_members           = [
+  bastion_members = [
     format("user:%s", data.google_client_openid_userinfo.me.email),
   ]
 
@@ -61,14 +61,14 @@ locals {
   ])
 
   nested_secondary_subnets = {
-  for name, config in var.cluster_config : config.subnet_name => [
+    for name, config in var.cluster_config : config.subnet_name => [
       {
         range_name    = local.ip_range_pods
-        ip_cidr_range = "10.${index(keys(var.cluster_config), name)+1}.0.0/17"
+        ip_cidr_range = "10.${index(keys(var.cluster_config), name) + 1}.0.0/17"
       },
       {
         range_name    = local.ip_range_services
-        ip_cidr_range = "10.${index(keys(var.cluster_config), name)+1}.128.0/17"
+        ip_cidr_range = "10.${index(keys(var.cluster_config), name) + 1}.128.0/17"
       }
     ]
   }
@@ -184,14 +184,15 @@ module "kms" {
   depends_on = [
     module.service_accounts,
   ]
-  for_each       = local.distinct_cluster_regions
-  source         = "terraform-google-modules/kms/google"
-  version        = "~> 2.0"
-  project_id     = var.governance_project_id
-  location       = each.key
-  keyring        = "${local.gke_keyring_name}-${each.key}"
-  keys           = [local.gke_key_name]
-  set_owners_for = [local.gke_key_name]
+  for_each        = local.distinct_cluster_regions
+  source          = "terraform-google-modules/kms/google"
+  version         = "~> 2.0"
+  project_id      = var.governance_project_id
+  location        = each.key
+  keyring         = "${local.gke_keyring_name}-${each.key}"
+  keys            = [local.gke_key_name]
+  set_owners_for  = [local.gke_key_name]
+  prevent_destroy = false
   owners = [
     "serviceAccount:${local.clu_service_account}",
   ]
