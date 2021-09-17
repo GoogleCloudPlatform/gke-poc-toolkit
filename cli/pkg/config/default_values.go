@@ -13,6 +13,7 @@ func InitWithDefaults() *Config {
 
 	clustersConfig := []ClusterConfig{
 		ClusterConfig{
+			ClusterName: "gke-tk-01",
 			NumNodes:    3,
 			MachineType: "e2-standard-4",
 			ClusterType: "public",
@@ -24,8 +25,10 @@ func InitWithDefaults() *Config {
 
 	return &Config{
 		TerraformState:            "local",
-		ConfigSync:                true,
 		Prefix:                    "love",
+		Region:                    "us-central1",
+		ConfigSync:                false,
+		PrivateEndpoint:           true,
 		VpcConfig:                 vpcConfig,
 		ClustersConfig:            clustersConfig,
 		EnableWorkloadIdentity:    true,
