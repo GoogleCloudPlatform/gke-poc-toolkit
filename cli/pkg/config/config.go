@@ -19,9 +19,13 @@ type VpcConfig struct {
 	VpcName      string `yaml:"vpcName"`
 	VpcType      string `yaml:"vpcType"`
 	VpcProjectID string `yaml:"vpcProjectId"`
+	PodCIDRName  string `yaml:"podCIDRName"`
+	SvcCIDRName  string `yaml:"svcCIDRName"`
+	AuthIP       string `yaml:"authIP"`
 }
 
 type ClusterConfig struct {
+	ClusterName               string `yaml:"clusterName"`
 	ProjectID                 string `yaml:"projectId"`
 	NumNodes                  int    `yaml:"nodeSize"`
 	MachineType               string `yaml:"machineType"`
@@ -40,13 +44,19 @@ type ClusterConfig struct {
 
 // Create private data struct to hold config options.
 type Config struct {
-	TerraformState      string          `yaml:"terraformState"`
-	ConfigSync          bool            `yaml:"configSync"`
-	ClustersProjectID   string          `yaml:"clustersProjectId"`
-	Prefix              string          `yaml:"prefix"`
-	GovernanceProjectID string          `yaml:"governanceProjectId"`
-	VpcConfig           VpcConfig       `yaml:"vpcConfig"`
-	ClustersConfig      []ClusterConfig `yaml:"clustersConfig"`
+	Prefix                    string          `yaml:"prefix"`
+	Region                    string          `yaml:"region"`
+	TerraformState            string          `yaml:"terraformState"`
+	ClustersProjectID         string          `yaml:"clustersProjectId"`
+	GovernanceProjectID       string          `yaml:"governanceProjectId"`
+	ConfigSync                bool            `yaml:"configSync"`
+	PrivateEndpoint           bool            `yaml:"privateEndpoint"`
+	DefaultNodepoolOS         string          `yaml:"defaultNodepoolOS"`
+	EnableWorkloadIdentity    bool            `yaml:"enableWorkloadIdentity"`
+	EnableWindowsNodepool     bool            `yaml:"enableWindowsNodepool"`
+	EnablePreemptibleNodepool bool            `yaml:"enablePreemptibleNodepool"`
+	VpcConfig                 VpcConfig       `yaml:"vpcConfig"`
+	ClustersConfig            []ClusterConfig `yaml:"clustersConfig"`
 }
 
 // Create a new config instance.
