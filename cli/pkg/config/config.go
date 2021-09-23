@@ -7,11 +7,17 @@ import (
 	"strings"
 
 	"github.com/spf13/viper"
+
+	"context"
+
+	compute "cloud.google.com/go/compute/apiv1"
+	"google.golang.org/api/iterator"
+	computepb "google.golang.org/genproto/googleapis/cloud/compute/v1"
 )
 
 type VpcConfig struct {
-	VpcType      string `yaml:"vpcType"`
 	VpcName      string `yaml:"vpcName"`
+	VpcType      string `yaml:"vpcType"`
 	VpcProjectID string `yaml:"vpcProjectId"`
 	PodCIDRName  string `yaml:"podCIDRName"`
 	SvcCIDRName  string `yaml:"svcCIDRName"`
@@ -19,13 +25,21 @@ type VpcConfig struct {
 }
 
 type ClusterConfig struct {
-	ClusterName string `yaml:"clusterName"`
-	NumNodes    int    `yaml:"nodeSize"`
-	MachineType string `yaml:"machineType"`
-	ClusterType string `yaml:"clusterType"`
-	Region      string `yaml:"region"`
-	Zone        string `yaml:"zone"`
-	SubnetName  string `yaml:"subnetName"`
+	ClusterName               string `yaml:"clusterName"`
+	ProjectID                 string `yaml:"projectId"`
+	NumNodes                  int    `yaml:"nodeSize"`
+	MachineType               string `yaml:"machineType"`
+	ClusterType               string `yaml:"clusterType"`
+	AuthIP                    string `yaml:"authIP"`
+	Region                    string `yaml:"region"`
+	Zone                      string `yaml:"zone"`
+	SubnetName                string `yaml:"subnetName"`
+	PodCIDRName               string `yaml:"podCIDRName"`
+	SvcCIDRName               string `yaml:"svcCIDRName"`
+	EnableWorkloadIdentity    bool   `yaml:"enableWorkloadIdentity"`
+	EnableWindowsNodepool     bool   `yaml:"enableWindowsNodepool"`
+	EnablePreemptibleNodepool bool   `yaml:"enablePreemptibleNodepool"`
+	DefaultNodepoolOS         string `yaml:"defaultNodepoolOS"`
 }
 
 // Create private data struct to hold config options.
@@ -88,6 +102,13 @@ func GetConf(cfgFile string) *Config {
 	if err != nil {
 		fmt.Printf("unable to decode into config struct, %v", err)
 	}
+	// print(err)
+	// vars := make(map[string]interface{})
+	// vars["ClustersProjectName"] = conf.ClustersProjectName
+	// tmpl, _ := template.ParseFiles("/tfvars.tf.tmpl")
+	// file, _ := os.Create("tfvars.tf")
+	// defer file.Close()
+	// tmpl.Execute(file, vars)
 
 	// The default []clusterconfig has a single cluster, but the user config could have many.
 	// Set any unset default values for all the clusters.
@@ -115,7 +136,7 @@ func ReadProjectId() (string, error) {
 	}
 	// trim all whitespace
 	projectId = strings.TrimSpace(projectId)
-	fmt.Printf("Using project ID: %s", projectId)
+	fmt.Printf("Using project ID: %s/n", projectId)
 
 	return projectId, nil
 }
@@ -132,9 +153,6 @@ func ValidateConf(c *Config) error {
 	if c.VpcConfig.VpcName == "" {
 		return fmt.Errorf("VPC Name cannot be empty")
 	}
-	if err := validateNodeOS(c.DefaultNodepoolOS); err != nil {
-		return fmt.Errorf("Default Nodepool OS must be one of: cos, ubuntu")
-	}
 
 	// Validate each ClusterConfig
 	for i, cc := range c.ClustersConfig {
@@ -145,13 +163,13 @@ func ValidateConf(c *Config) error {
 			if cc.SubnetName == "" {
 				return fmt.Errorf("ClustersConfig[%d] SubnetName cannot be empty", i)
 			}
-			if err := validateMachineType(cc.MachineType); err != nil {
+			if err := validateRegionAndZone(c.ClustersProjectID, cc.Region, cc.Zone); err != nil {
 				return fmt.Errorf("ClustersConfig[%d]: %s", i, err)
 			}
-			if err := validateRegion(cc.Region); err != nil {
+			if err := validateMachineType(c.ClustersProjectID, cc.MachineType, cc.Zone); err != nil {
 				return fmt.Errorf("ClustersConfig[%d]: %s", i, err)
 			}
-			if err := validateZone(cc.Zone); err != nil {
+			if err := validateNodeOS(cc.DefaultNodepoolOS); err != nil {
 				return fmt.Errorf("ClustersConfig[%d]: %s", i, err)
 			}
 		}
@@ -159,22 +177,6 @@ func ValidateConf(c *Config) error {
 
 	fmt.Println("✅ Config is valid. Ready to write to tfvars.")
 	fmt.Printf("%+v\n", c)
-	return nil
-}
-
-// TODO - use compute engine API call to get the most up to date list
-func validateMachineType(machType string) error {
-	// read in file: machine-types.txt
-	machineTypes, err := readLines("pkg/config/machine-types.txt")
-	if err != nil {
-		return fmt.Errorf("Could not read machine-types.txt: %v", err)
-	}
-	for _, t := range machineTypes {
-		if machType == t {
-			return nil
-		}
-	}
-	return fmt.Errorf("Invalid machine type")
 	return nil
 }
 
@@ -190,40 +192,93 @@ func validateNodeOS(nodeOS string) error {
 	return fmt.Errorf("NodePoolOS must be one of: %v", validOS)
 }
 
-// TODO - call the google compute engine API to get the most up to date region/zone list.
-func validateRegion(region string) error {
-	validRegions := []string{"asia-east1", "asia-east2", "asia-northeast1", "asia-northeast2", "asia-northeast3", "asia-south1", "asia-south2", "asia-southeast1", "asia-southeast2", "australia-southeast1", "australia-southeast2", "europe-central2", "europe-north1", "europe-west1", "europe-west2", "europe-west3", "europe-west4", "europe-west6", "northamerica-northeast1", "northamerica-northeast2", "southamerica-east1", "us-central1", "us-east1", "us-east4", "us-west1", "us-west2", "us-west3", "us-west4"}
+func validateRegionAndZone(projectId string, region string, zone string) error {
+	regions := map[string]bool{} // region --> true
+	zones := map[string]string{} // zone --> region
 
-	for _, r := range validRegions {
-		if region == r {
-			return nil
-		}
-	}
-	return fmt.Errorf("Region must be one of: %v", validRegions)
-}
-
-func validateZone(zone string) error {
-	validZones := []string{"us-east1-b", "us-east1-c", "us-east1-d", "us-east4-c", "us-east4-b", "us-east4-a", "us-central1-c", "us-central1-a", "us-central1-f", "us-central1-b", "us-west1-b", "us-west1-c", "us-west1-a", "europe-west4-a", "europe-west4-b", "europe-west4-c", "europe-west1-b", "europe-west1-d", "europe-west1-c", "europe-west3-c", "europe-west3-a", "europe-west3-b", "europe-west2-c", "europe-west2-b", "europe-west2-a", "asia-east1-b", "asia-east1-a", "asia-east1-c", "asia-southeast1-b", "asia-southeast1-a", "asia-southeast1-c", "asia-northeast1-b", "asia-northeast1-c", "asia-northeast1-a", "asia-south1-c", "asia-south1-b", "asia-south1-a", "australia-southeast1-b", "australia-southeast1-c", "australia-southeast1-a", "southamerica-east1-b", "southamerica-east1-c", "southamerica-east1-a", "asia-east2-a", "asia-east2-b", "asia-east2-c", "asia-northeast2-a", "asia-northeast2-b", "asia-northeast2-c", "asia-northeast3-a", "asia-northeast3-b", "asia-northeast3-c", "asia-south2-a", "asia-south2-b", "asia-south2-c", "asia-southeast2-a", "asia-southeast2-b", "asia-southeast2-c", "australia-southeast2-a", "australia-southeast2-b", "australia-southeast2-c", "europe-central2-a", "europe-central2-b", "europe-central2-c", "europe-north1-a", "europe-north1-b", "europe-north1-c", "europe-west6-a", "europe-west6-b", "europe-west6-c", "northamerica-northeast1-a", "northamerica-northeast1-b", "northamerica-northeast1-c", "northamerica-northeast2-a", "northamerica-northeast2-b", "northamerica-northeast2-c", "us-west2-a", "us-west2-b", "us-west2-c", "us-west3-a", "us-west3-b", "us-west3-c", "us-west4-a", "us-west4-b", "us-west4-c"}
-	for _, z := range validZones {
-		if zone == z {
-			return nil
-		}
-	}
-	return fmt.Errorf("Zone must be one of: %v", validZones)
-}
-
-// Helper function - read in text file
-func readLines(path string) ([]string, error) {
-	file, err := os.Open(path)
+	ctx := context.Background()
+	c, err := compute.NewZonesRESTClient(ctx)
 	if err != nil {
-		return nil, err
+		return err
 	}
-	defer file.Close()
+	defer c.Close()
 
-	var lines []string
-	scanner := bufio.NewScanner(file)
-	for scanner.Scan() {
-		lines = append(lines, scanner.Text())
+	req := &computepb.ListZonesRequest{
+		Project: projectId,
 	}
-	return lines, scanner.Err()
+	it := c.List(ctx, req)
+	var sanitizedRegion string
+
+	// Populate map of regions + zones for this project
+	for {
+		resp, err := it.Next()
+		if err == iterator.Done {
+			break
+		}
+		if err != nil {
+			return err
+		}
+		r := *resp.Region
+
+		spl := strings.Split(r, "/")
+		if len(spl) < 2 {
+			fmt.Printf("Zone %s does not have a valid region - %s\n", *resp.Name, *resp.Region)
+		}
+		// Format region from https://www.googleapis.com/compute/v1/projects/megan-2021/regions/us-central1  --> us-central1
+		sanitizedRegion = spl[len(spl)-1]
+		regions[sanitizedRegion] = true
+		zones[*resp.Name] = sanitizedRegion
+		_ = resp
+	}
+
+	// Region must exist
+	if _, ok := regions[region]; !ok {
+		return fmt.Errorf("Region %s invalid - must be one of: %v", region, regions)
+	}
+
+	// Zone must exist
+	if _, ok := zones[zone]; !ok {
+		return fmt.Errorf("Zone %s invalid - must be one of: %v", zone, zones)
+	}
+
+	// Zone must be in the right region
+	if zoneRegion, _ := zones[zone]; zoneRegion != region {
+		return fmt.Errorf("Zone %s must be in region %s, not region %s", zone, zoneRegion, region)
+	}
+
+	fmt.Println("✅ Region and zone valid.")
+	return nil
+}
+
+func validateMachineType(projectId string, machineType string, zone string) error {
+	ctx := context.Background()
+	c, err := compute.NewMachineTypesRESTClient(ctx)
+	if err != nil {
+		return err
+	}
+	defer c.Close()
+
+	req := &computepb.ListMachineTypesRequest{
+		Project: projectId,
+		Zone:    zone,
+	}
+	it := c.List(ctx, req)
+	validMachineTypes := []string{}
+	for {
+		resp, err := it.Next()
+		if err == iterator.Done {
+			break
+		}
+		if err != nil {
+			return err
+		}
+		if *resp.Name == machineType {
+			fmt.Printf("✅ Machine type %s is valid\n", machineType)
+			return nil
+		}
+		validMachineTypes = append(validMachineTypes, *resp.Name)
+		_ = resp
+	}
+
+	return fmt.Errorf("Machine type %s is invalid, must be one of: %v", machineType, validMachineTypes)
 }
