@@ -21,8 +21,35 @@ data "google_project" "project" {
 
 // Locals used to construct names of stuffs.
 locals {
+  // Presets for Service Accounts
   clu_service_account = format("service-%s@container-engine-robot.iam.gserviceaccount.com", data.google_project.project.number)
   prj_service_account = format("%s@cloudservices.gserviceaccount.com", data.google_project.project.number)
+
+  // Dynamically create subnet and secondary subnet inputs for multi-cluster creation
+  nested_subnets = flatten([
+    for name, config in var.cluster_config : [
+      {
+        subnet_name           = config.subnet_name
+        subnet_ip             = "10.0.${index(keys(var.cluster_config), name)}.0/24"
+        subnet_region         = config.region
+        subnet_private_access = true
+        description           = "This subnet is managed by Terraform"
+      }
+    ]
+  ])
+
+  nested_secondary_subnets = {
+  for name, config in var.cluster_config : config.subnet_name => [
+      {
+        range_name    = var.shared_vpc_ip_range_pods_name
+        ip_cidr_range = "10.${index(keys(var.cluster_config), name)+1}.0.0/17"
+      },
+      {
+        range_name    = var.shared_vpc_ip_range_services_name
+        ip_cidr_range = "10.${index(keys(var.cluster_config), name)+1}.128.0/17"
+      }
+    ]
+  }
 }
 
 module "enabled_shared_vpc_apis" {

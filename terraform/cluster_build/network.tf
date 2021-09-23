@@ -21,45 +21,25 @@ module "vpc" {
 
   project_id   = module.enabled_google_apis.project_id
   network_name = var.vpc_name
-  #routing_mode = "GLOBAL" (default set in terraform-google-modules)
+  routing_mode = "GLOBAL"
 
-  subnets = [
-    {
-      subnet_name           = var.subnet_name
-      subnet_ip             = var.subnet_ip
-      subnet_region         = var.region
-      subnet_private_access = true
-      description           = "This subnet is managed by Terraform"
-    }
-  ]
-  secondary_ranges = {
-    (var.subnet_name) = [
-      {
-        range_name    = var.ip_range_pods_name
-        #TODO enable users to override this CIDR 
-        ip_cidr_range = "10.10.64.0/18"
-      },
-      {
-        range_name    = var.ip_range_services_name
-        #TODO enable users to override this CIDR
-        ip_cidr_range = "10.10.192.0/18"
-      },
-    ]
-  }
+  subnets = local.nested_subnets
+
+  secondary_ranges = local.nested_secondary_subnets
 }
 
 module "cluster-nat" {
   depends_on = [
     module.vpc,
   ]
+  for_each                           = local.distinct_cluster_regions
   source                             = "terraform-google-modules/cloud-nat/google"
   create_router                      = true
   project_id                         = local.project_id
-  region                             = var.region
-  router                             = "${var.project_id}-private-cluster-router"
+  region                             = each.key
+  router                             = "gke-toolkit-rtr-${each.key}"
   network                            = local.vpc_selflink
-  source_subnetwork_ip_ranges_to_nat = "LIST_OF_SUBNETWORKS"
-  subnetworks                        = [{ "name" = local.subnet_selflink, "source_ip_ranges_to_nat" = ["PRIMARY_IP_RANGE"], "secondary_ip_range_names" = [] }]
+  source_subnetwork_ip_ranges_to_nat = "ALL_SUBNETWORKS_ALL_PRIMARY_IP_RANGES"
 }
 
 data "template_file" "startup_script" {
@@ -77,7 +57,7 @@ module "bastion" {
   source         = "terraform-google-modules/bastion-host/google"
   version        = "~> 3.2"
   network        = local.vpc_selflink
-  subnet         = local.subnet_selflink
+  subnet         = local.bastion_subnet_selflink
   project        = module.enabled_google_apis.project_id
   host_project   = local.project_id
   name           = local.bastion_name

@@ -24,12 +24,6 @@ variable "governance_project_id" {
   description = "The project ID to host governance resources"
 }
 
-variable "cluster_name" {
-  type        = string
-  description = "The name of the cluster"
-  default     = "cluster"
-}
-
 variable "region" {
   type        = string
   description = "The region to host the cluster in"
@@ -45,19 +39,7 @@ variable "shared_vpc" {
 variable "vpc_name" {
   type        = string
   description = "The name of the network being created to host the cluster in"
-  default     = "cluster-network"
-}
-
-variable "subnet_name" {
-  type        = string
-  description = "The name of the subnet being created to host the cluster in"
-  default     = "cluster-subnet"
-}
-
-variable "subnet_ip" {
-  type        = string
-  description = "The cidr range of the subnet"
-  default     = "10.10.10.0/24"
+  default     = "gke-toolkit-network"
 }
 
 variable "ip_range_pods_name" {
@@ -90,12 +72,6 @@ variable "shared_vpc_name" {
   default     = ""
 }
 
-variable "shared_vpc_subnet_name" {
-  type        = string
-  description = "The names of the Shared VPC subnet where GKE Toolkit resources will be deployed - This is optional and only valid if a Shared VPC is used"
-  default     = ""
-}
-
 variable "shared_vpc_project_id" {
   type        = string
   description = "The Share VPC Project ID - This is optional and only valid if a Shared VPC is used"
@@ -116,7 +92,7 @@ variable "shared_vpc_ip_range_services_name" {
 
 variable "node_pool" {
   type    = string
-  default = "node-pool"
+  default = "gke-toolkit-pool"
 }
 
 variable "initial_node_count" {
@@ -149,10 +125,6 @@ variable "private_endpoint" {
   default = false
 }
 
-variable "zone" {
-  type    = string
-  default = "us-central1-a"
-}
 # Need this default to run PR build test
 variable "auth_ip" {
   type    = string
@@ -174,4 +146,9 @@ variable "preemptible_nodes" {
   type        = bool
   description = "Whether underlying node GCE instances are preemptible"
   default     = true
+}
+
+variable "cluster_config" {
+  description = "For each cluster, create an object that contain the required fields"
+  default     = {}
 }
