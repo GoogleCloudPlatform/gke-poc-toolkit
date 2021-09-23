@@ -136,7 +136,7 @@ func ReadProjectId() (string, error) {
 	}
 	// trim all whitespace
 	projectId = strings.TrimSpace(projectId)
-	fmt.Printf("Using project ID: %s", projectId)
+	fmt.Printf("Using project ID: %s/n", projectId)
 
 	return projectId, nil
 }
@@ -163,10 +163,10 @@ func ValidateConf(c *Config) error {
 			if cc.SubnetName == "" {
 				return fmt.Errorf("ClustersConfig[%d] SubnetName cannot be empty", i)
 			}
-			if err := validateRegionAndZone(cc.ProjectID, cc.Region, cc.Zone); err != nil {
+			if err := validateRegionAndZone(c.ClustersProjectID, cc.Region, cc.Zone); err != nil {
 				return fmt.Errorf("ClustersConfig[%d]: %s", i, err)
 			}
-			if err := validateMachineType(cc.ProjectID, cc.MachineType, cc.Zone); err != nil {
+			if err := validateMachineType(c.ClustersProjectID, cc.MachineType, cc.Zone); err != nil {
 				return fmt.Errorf("ClustersConfig[%d]: %s", i, err)
 			}
 			if err := validateNodeOS(cc.DefaultNodepoolOS); err != nil {
