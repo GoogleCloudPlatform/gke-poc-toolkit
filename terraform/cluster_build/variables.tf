@@ -152,3 +152,11 @@ variable "cluster_config" {
   description = "For each cluster, create an object that contain the required fields"
   default     = {}
 }
+
+variable "k8s_users" {
+  type = map(string)
+  default = {
+    rbac-demo-auditor = "view"
+    rbac-demo-editor  = "edit"
+  }
+}
