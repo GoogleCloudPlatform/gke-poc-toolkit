@@ -12,7 +12,6 @@ func GenerateTfvars(conf *Config) {
 	vars := make(map[string]interface{})
 
 	// Set base config vars
-	vars["Prefix"] = conf.Prefix
 	vars["Region"] = conf.Region
 	//tfstate is handled in go deploy not terraform
 	// vars["TerraformState"] = conf.TerraformState
