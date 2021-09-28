@@ -143,6 +143,7 @@ module "enabled_google_apis" {
 
   activate_apis = [
     "iam.googleapis.com",
+    "storage.googleapis.com",
     "compute.googleapis.com",
     "logging.googleapis.com",
     "monitoring.googleapis.com",
