@@ -139,13 +139,13 @@ In the root of the cloned repository, there is a script to create the cluster:
 make create
 ```  
 
-Once the GKE cluster has been created, establish an SSH tunnel to the bastion:
+When the deployment is complete, establish an SSH tunnel to the bastion:
 
 ```shell
 make start-proxy
 ```
 
-When the deployment is complete, retrieve the kubernetes config for the cluster, then set the `HTTPS_PROXY` environment variable to validate you can forward kubectl commands through the tunnel and manage the GKE cluster:
+When the tunnel is established, retrieve the kubernetes config for the cluster, then set the `HTTPS_PROXY` environment variable to validate you can forward kubectl commands through the tunnel and manage the GKE cluster:
 
 ```shell
 GKE_NAME=$(gcloud container clusters list --format="value(NAME)")
