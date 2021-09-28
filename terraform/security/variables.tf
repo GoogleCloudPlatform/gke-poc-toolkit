@@ -15,74 +15,74 @@
  */
 
 // Required values to be set in terraform.tfvars
-variable "project_id" {
-  description = "The project in which to hold the components"
-  type        = string
-}
+# variable "project_id" {
+#   description = "The project in which to hold the components"
+#   type        = string
+# }
 
-variable "region" {
-  type        = string
-  description = "The region to host the cluster in"
-  default     = "us-central1"
+# variable "region" {
+#   type        = string
+#   description = "The region to host the cluster in"
+#   default     = "us-central1"
 
-}
+# }
 
-variable "zone" {
-  type    = string
-  default = "us-central1-a"
-}
+# variable "zone" {
+#   type    = string
+#   default = "us-central1-a"
+# }
 
-variable "cluster_name" {
-  description = "The name to give the new Kubernetes cluster."
-  type        = string
-  default     = ""
-}
+# variable "cluster_name" {
+#   description = "The name to give the new Kubernetes cluster."
+#   type        = string
+#   default     = ""
+# }
 
-variable "service_account_iam_roles" {
-  type = list(any)
+# variable "service_account_iam_roles" {
+#   type = list(any)
 
-  default = [
-    "roles/storage.objectCreator"
-  ]
-  description = <<-EOF
-  List of the IAM roles to attach to the Workload Identity service account for use with GCS.
-  EOF
-}
+#   default = [
+#     "roles/storage.objectCreator"
+#   ]
+#   description = <<-EOF
+#   List of the IAM roles to attach to the Workload Identity service account for use with GCS.
+#   EOF
+# }
 
-variable "project_services" {
-  type = list(any)
+# variable "project_services" {
+#   type = list(any)
 
-  default = [
-    "storage.googleapis.com",
-    "iap.googleapis.com",
+#   default = [
+#     "storage.googleapis.com",
+#     "iap.googleapis.com",
 
-  ]
-  description = <<-EOF
-  The GCP APIs that should be enabled in this project.
-  EOF
-}
+#   ]
+#   description = <<-EOF
+#   The GCP APIs that should be enabled in this project.
+#   EOF
+# }
 
-variable "governance_project_id" {
-  description = "The project to use for governance resources such as kvm and log sinks"
-  type        = string
-}
+# variable "governance_project_id" {
+#   description = "The project to use for governance resources such as kvm and log sinks"
+#   type        = string
+# }
 
-variable "k8s_namespace" {
-  description = "Kubernetes Namespace to be created"
-  type        = string
-  default     = "storage-application"
-}
-variable "k8s_sa_name" {
-  description = "Kubernetes service account for Workload Identity"
-  type        = string
-  default     = "storage-service-account"
+# variable "k8s_namespace" {
+#   description = "Kubernetes Namespace to be created"
+#   type        = string
+#   default     = "storage-application"
+# }
+# variable "k8s_sa_name" {
+#   description = "Kubernetes service account for Workload Identity"
+#   type        = string
+#   default     = "storage-service-account"
 
-}
+# }
 
-variable "k8s_users" {
-  type = map(string)
-  default = {
-    rbac-demo-auditor = "view"
-    rbac-demo-editor  = "edit"
-  }
-}
+# variable "k8s_users" {
+#   type = map(string)
+#   default = {
+#     rbac-demo-auditor = "view"
+#     rbac-demo-editor  = "edit"
+#   }
+# }
