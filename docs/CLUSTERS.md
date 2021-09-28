@@ -148,9 +148,14 @@ make start-proxy
 When the tunnel is established, retrieve the kubernetes config for the cluster, then set the `HTTPS_PROXY` environment variable to validate you can forward kubectl commands through the tunnel and manage the GKE cluster:
 
 ```shell
-GKE_NAME=$(gcloud container clusters list --format="value(NAME)")
-GKE_LOCATION=$(gcloud container clusters list --format="value(LOCATION)")
+# The following command lists the cluster names and locations created in the deployment phases:
+gcloud container clusters list --format="value(NAME, LOCATION)"
 
+# Specify the name and location of the cluster you would like to validate:
+GKE_NAME=<Cluster_Name>
+GKE_LOCATION=<Cluster_Location>
+
+# Retrieve the cluster credentials and validate you can forward commmands: 
 gcloud container clusters get-credentials $GKE_NAME --region $GKE_LOCATION
 
 HTTPS_PROXY=localhost:8888 kubectl get ns
@@ -187,9 +192,14 @@ make create
 When the deployment is complete, retrieve the kubernetes config for the cluster to validate you can manage the GKE cluster:
 
 ```shell
-GKE_NAME=$(gcloud container clusters list --format="value(NAME)")
-GKE_LOCATION=$(gcloud container clusters list --format="value(LOCATION)")
+# The following command lists the cluster names and locations created in the deployment phases:
+gcloud container clusters list --format="value(NAME, LOCATION)"
 
+# Specify the name and location of the cluster you would like to validate:
+GKE_NAME=<Cluster_Name>
+GKE_LOCATION=<Cluster_Location>
+
+# Retrieve the cluster credentials and validate you can have access to the cluster: 
 gcloud container clusters get-credentials $GKE_NAME --region $GKE_LOCATION
 
 kubectl get ns
@@ -208,9 +218,14 @@ Proceed to [Next Steps](#next-steps) if you'd like to skip this step and move on
 Execute the following command to retrieve the kubernetes config for the GKE Cluster:
 
 ```shell
-GKE_NAME=$(gcloud container clusters list --format="value(NAME)")
-GKE_LOCATION=$(gcloud container clusters list --format="value(LOCATION)")
+# The following command lists the cluster names and locations created in the deployment phases:
+gcloud container clusters list --format="value(NAME, LOCATION)"
 
+# Specify the name and location of the cluster you would like to validate:
+GKE_NAME=<Cluster_Name>
+GKE_LOCATION=<Cluster_Location>
+
+# Retrieve the cluster credentials:
 gcloud container clusters get-credentials $GKE_NAME --region $GKE_LOCATION
 ```
 
@@ -229,9 +244,14 @@ gcloud container clusters describe $GKE_NAME \
 Execute the following command to retrieve the kubernetes config for the cluster:
 
 ```shell
-GKE_NAME=$(gcloud container clusters list --format="value(NAME)")
-GKE_LOCATION=$(gcloud container clusters list --format="value(LOCATION)")
+# The following command lists the cluster names and locations created in the deployment phases:
+gcloud container clusters list --format="value(NAME, LOCATION)"
 
+# Specify the name and location of the cluster you would like to validate:
+GKE_NAME=<Cluster_Name>
+GKE_LOCATION=<Cluster_Location>
+
+# Retrieve the cluster credentials:
 gcloud container clusters get-credentials $GKE_NAME --region $GKE_LOCATION
 ```
 

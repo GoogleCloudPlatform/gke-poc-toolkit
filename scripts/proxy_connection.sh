@@ -26,7 +26,7 @@ set -euo pipefail
 ROOT="$( cd "$( dirname "${BASH_SOURCE[0]}" )/.." && pwd )"
 
 start_proxy() {
-    echo "What is the target cluster name for this configuration: "
+    echo "What cluster will you be managing: "
     read Target_Cluster 
 
 	echo "Detecting SSH Bastion Tunnel/Proxy"
@@ -34,15 +34,7 @@ start_proxy() {
 		echo "Did not detect a running SSH tunnel.  Opening a new one."
 		BASTION_CMD="$(terraform output --state=terraform/cluster_build/terraform.tfstate bastion_ssh_command | tr -d \")"
 		$BASTION_CMD -f tail -f /dev/null
-	
-		CREDENTIALS="$(terraform output --state=terraform/cluster_build/terraform.tfstate get_credentials_command | grep $Target_Cluster | cut -d'"' -f 2 | tr -d \")"
-		KUBECTL="$(terraform output --state=terraform/cluster_build/terraform.tfstate bastion_kubectl_command | tr -d \")"
 		tput setaf 2; echo "SSH Tunnel/Proxy is now running.
-		Generate cluster credentials with gcloud:
-		$CREDENTIALS
-		
-		Connect to the cluster with kubectl:  
-		$KUBECTL"; tput sgr0
 	else
 		echo "Detected a running SSH tunnel.  Skipping."
 	fi
