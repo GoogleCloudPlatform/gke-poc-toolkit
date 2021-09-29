@@ -29,7 +29,7 @@ var createCmd = &cobra.Command{
 	Example: ` gkekitctl create
 	gkekitctl --config <file.yaml>`,
 	Run: func(cmd *cobra.Command, args []string) {
-		conf := config.GetConf(cfgFile)
+		conf := config.InitConf(cfgFile)
 		config.GenerateTfvars(conf)
 		lifecycle.InitTF()
 		lifecycle.ApplyTF()
@@ -38,14 +38,4 @@ var createCmd = &cobra.Command{
 
 func init() {
 	rootCmd.AddCommand(createCmd)
-
-	// Here you will define your flags and configuration settings.
-
-	// Cobra supports Persistent Flags which will work for this command
-	// and all subcommands, e.g.:
-	// createCmd.PersistentFlags().String("foo", "", "A help for foo")
-
-	// Cobra supports local flags which will only run when this command
-	// is called directly, e.g.:
-	// createCmd.Flags().BoolP("toggle", "t", false, "Help message for toggle")
 }
