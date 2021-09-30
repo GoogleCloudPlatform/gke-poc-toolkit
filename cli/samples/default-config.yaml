@@ -5,7 +5,7 @@
 terraformState: local  
 clustersProjectId: "my-project"
 governanceProjectId: "my-project"
-region: "us-central1"
+region: "us-central1x"
 enableWorkloadIdentity: false 
 enablePreemptibleNodepool: false 
 enableWindowsNodepool: false

@@ -7,6 +7,8 @@ import (
 	"os"
 	"strings"
 
+	log "github.com/sirupsen/logrus"
+
 	"github.com/spf13/viper"
 
 	"context"
@@ -66,21 +68,21 @@ func InitConf(cfgFile string) *Config {
 	if cfgFile == "" {
 		conf, err = InitWithDefaults()
 		if err != nil {
-			fmt.Println(err)
+			log.Error(err)
 			os.Exit(1)
 		}
 	} else {
 		// if cfgFile is set, reads in + validates the user's config.
 		conf, err = readConf(cfgFile)
 		if err != nil {
-			fmt.Println(err)
+			log.Error(err)
 			os.Exit(1)
 		}
 	}
 	// Validate config
 	err = ValidateConf(conf)
 	if err != nil {
-		fmt.Println(err)
+		log.Error(err)
 		os.Exit(1)
 	}
 
@@ -106,14 +108,14 @@ func readConf(cfgFile string) (*Config, error) {
 // This will prompt them for their GCP project id, which will be used in the default config.
 func ReadProjectId() (string, error) {
 	reader := bufio.NewReader(os.Stdin)
-	fmt.Print("Enter your Google Cloud Project ID: ")
+	log.Print("Enter your Google Cloud Project ID: ")
 	projectId, err := reader.ReadString('\n')
 	if err != nil {
 		return "", err
 	}
 	// trim all whitespace
 	projectId = strings.TrimSpace(projectId)
-	fmt.Printf("Using project ID: %s \n", projectId)
+	log.Printf("Using project ID: %s \n", projectId)
 
 	return projectId, nil
 }
@@ -147,7 +149,7 @@ func InitWithDefaults() (*Config, error) {
 
 // Validate config before writing to tfvars
 func ValidateConf(c *Config) error {
-	fmt.Println("⏱ Validating Config...")
+	log.Println("⏱ Validating Config...")
 
 	// Config-wide vars
 	if c.TerraformState != "local" && c.TerraformState != "cloud" {
@@ -193,7 +195,7 @@ func ValidateConf(c *Config) error {
 		}
 	}
 
-	fmt.Println("✅ Config is valid. Ready to write to tfvars.")
+	log.Println("✅ Config is valid. Ready to write to tfvars.")
 	return nil
 }
 
@@ -202,7 +204,6 @@ func validateAuthIP(authIp string) error {
 	if net.ParseIP(authIp) == nil {
 		return fmt.Errorf("Auth IP Address: %s is an invalid IP\n", authIp)
 	}
-	// fmt.Printf("🔎 Auth IP Address: %s - Valid\n", authIp)
 	return nil
 }
 
@@ -219,43 +220,45 @@ func validateNodeOS(nodeOS string) error {
 }
 
 // Validate config-wide region
-// TODO - currently this client lib func is returning an empty list of regions, rather than a list of GCP regions. need to investigate why, possible client lib bug.
+// NOTE - the ListRegionsRequest client lib function is returning an empty list for any GCP
+// project. ListZones works fine. So for now, using ListZones result (where each zone has a region)
+// to bootstrap a list of valid regions.
 func validateConfigRegion(projectID, region string) error {
-	return nil
-	// ctx := context.Background()
-	// c, err := compute.NewRegionsRESTClient(ctx)
-	// if err != nil {
-	// 	return err
-	// }
-	// defer c.Close()
+	ctx := context.Background()
+	c, err := compute.NewZonesRESTClient(ctx)
+	if err != nil {
+		return err
+	}
+	defer c.Close()
 
-	// req := &computepb.ListRegionsRequest{
-	// 	Project: projectID,
-	// }
-	// it := c.List(ctx, req)
-	// // Populate map of regions + zones for this project
-	// regions := []string{}
-	// for {
-	// 	resp, err := it.Next()
-	// 	if err == iterator.Done {
-	// 		break
-	// 	}
-	// 	if err != nil {
-	// 		return err
-	// 	}
-	// 	r := resp.GetName()
-	// 	spl := strings.Split(r, "/")
-	// 	if len(spl) < 2 {
-	// 		return fmt.Errorf("Error validating config region (%s) - GCP region (%s) is invalid\n", region, r)
-	// 	}
-	// 	sanitizedRegion := spl[len(spl)-1]
-	// 	regions = append(regions, sanitizedRegion)
-	// 	if sanitizedRegion == region {
-	// 		fmt.Printf("🌍Config-wide region %s is valid.\n", region)
-	// 		return nil
-	// 	}
-	// }
-	// return fmt.Errorf("Config-wide region %s not found. Must be one of: %v\n", region, regions)
+	req := &computepb.ListZonesRequest{
+		Project: projectID,
+	}
+	it := c.List(ctx, req)
+	// Use zones to populate a map of valid regions for this project
+	regions := map[string]bool{}
+	for {
+		resp, err := it.Next()
+		if err == iterator.Done {
+			break
+		}
+		if err != nil {
+			return err
+		}
+		r := resp.GetRegion()
+		spl := strings.Split(r, "/")
+		if len(spl) < 2 {
+			return fmt.Errorf("Error validating region (%s) - GCP region (%s) is invalid\n", region, r)
+		}
+		sanitizedRegion := spl[len(spl)-1]
+		regions[sanitizedRegion] = true
+	}
+
+	// check if Config.Region is in the map.
+	if _, ok := regions[region]; !ok {
+		return fmt.Errorf("Config-wide region %s not found. Must be one of: %v\n", region, regions)
+	}
+	return nil
 }
 
 // Validate region + zone for specific clusters.
@@ -289,7 +292,7 @@ func validateRegionAndZone(projectId string, clusterRegion string, clusterZone s
 
 		spl := strings.Split(r, "/")
 		if len(spl) < 2 {
-			fmt.Printf("Zone %s does not have a valid region - %s\n", *resp.Name, *resp.Region)
+			log.Warnf("Zone %s does not have a valid region - %s\n", *resp.Name, *resp.Region)
 		}
 		// Format region from https://www.googleapis.com/compute/v1/projects/megan-2021/regions/us-central1  --> us-central1
 		sanitizedRegion = spl[len(spl)-1]
@@ -312,8 +315,6 @@ func validateRegionAndZone(projectId string, clusterRegion string, clusterZone s
 	if zoneRegion, _ := zones[clusterZone]; zoneRegion != clusterRegion {
 		return fmt.Errorf("Zone %s must be in region %s, not region %s", clusterZone, zoneRegion, clusterRegion)
 	}
-
-	// fmt.Println("✅ Region and zone valid.")
 	return nil
 }
 
@@ -340,7 +341,6 @@ func validateMachineType(projectId string, machineType string, zone string) erro
 			return err
 		}
 		if *resp.Name == machineType {
-			// fmt.Printf("✅ Machine type %s is valid\n", machineType)
 			return nil
 		}
 		validMachineTypes = append(validMachineTypes, *resp.Name)

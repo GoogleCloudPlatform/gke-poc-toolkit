@@ -3,9 +3,10 @@ package config
 import (
 	"bytes"
 	"io/ioutil"
-	"log"
 	"os"
 	"text/template"
+
+	log "github.com/sirupsen/logrus"
 )
 
 func GenerateTfvars(conf *Config) {
@@ -103,7 +104,7 @@ func GenerateTfvars(conf *Config) {
 // f := hclwrite.NewEmptyFile()
 // tfFile, err := os.Create("terraform.tfvars")
 // if err != nil {
-// 	fmt.Println(err)
+// 	log.Error(err)
 // 	return
 // }
 // rootBody := f.Body()
