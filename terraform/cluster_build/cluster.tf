@@ -47,12 +47,12 @@ module "gke" {
 
   node_pools = local.cluster_node_pools
 
-  node_pools_oauth_scopes = {
-    all = []
-    (var.node_pool) = [
-      "https://www.googleapis.com/auth/cloud-platform",
-    ]
-  }
+  # node_pools_oauth_scopes = {
+  #   all = []
+  #   (var.node_pool) = [
+  #     "https://www.googleapis.com/auth/cloud-platform",
+  #   ]
+  # }
   node_pools_labels = {
     # all = {} default set in terraform-google-kubernetes-engine
 
