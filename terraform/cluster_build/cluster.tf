@@ -48,7 +48,6 @@ module "gke" {
   node_pools = local.cluster_node_pools
 
   node_pools_oauth_scopes = {
-    all = []
     (var.node_pool) = [
       "https://www.googleapis.com/auth/cloud-platform",
       "https://www.googleapis.com/auth/logging.write",
