@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-module "rbac_service_accounts" {
+module "service_accounts" {
   for_each   = var.k8s_users
   source     = "terraform-google-modules/service-accounts/google"
   version    = "~> 3.0"
