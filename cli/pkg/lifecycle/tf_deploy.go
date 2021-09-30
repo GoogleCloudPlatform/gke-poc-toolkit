@@ -2,10 +2,10 @@ package lifecycle
 
 import (
 	"context"
-	"fmt"
 	"io/ioutil"
-	"log"
 	"os"
+
+	log "github.com/sirupsen/logrus"
 
 	"github.com/hashicorp/terraform-exec/tfexec"
 	"github.com/hashicorp/terraform-exec/tfinstall"
@@ -29,7 +29,7 @@ func InitTF() {
 		log.Fatalf("error running NewTerraform: %s", err)
 	}
 
-	tf.SetStdout(os.Stdout)
+	tf.SetStdout(log.StandardLogger().Out)
 
 	err = tf.Init(context.Background(), tfexec.Upgrade(true))
 	if err != nil {
@@ -41,13 +41,13 @@ func InitTF() {
 		log.Fatalf("error running Show: %s", err)
 	}
 
-	fmt.Println(state.FormatVersion) // "0.1"
+	log.Println(state.FormatVersion) // "0.1"
 
 	plan, err := tf.Plan(context.Background(), tfexec.VarFile("../../cli/terraform.tfvars"))
 	if err != nil {
 		log.Fatalf("error running Plan: %s", err)
 	}
-	fmt.Println(plan)
+	log.Println(plan)
 }
 
 func ApplyTF() {

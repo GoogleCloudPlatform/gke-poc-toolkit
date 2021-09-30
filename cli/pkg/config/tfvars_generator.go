@@ -3,16 +3,16 @@ package config
 import (
 	"bytes"
 	"io/ioutil"
-	"log"
 	"os"
 	"text/template"
+
+	log "github.com/sirupsen/logrus"
 )
 
 func GenerateTfvars(conf *Config) {
 	vars := make(map[string]interface{})
 
 	// Set base config vars
-	vars["Prefix"] = conf.Prefix
 	vars["Region"] = conf.Region
 	//tfstate is handled in go deploy not terraform
 	// vars["TerraformState"] = conf.TerraformState
@@ -104,7 +104,7 @@ func GenerateTfvars(conf *Config) {
 // f := hclwrite.NewEmptyFile()
 // tfFile, err := os.Create("terraform.tfvars")
 // if err != nil {
-// 	fmt.Println(err)
+// 	log.Error(err)
 // 	return
 // }
 // rootBody := f.Body()
