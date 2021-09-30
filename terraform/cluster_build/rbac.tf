@@ -33,19 +33,19 @@ resource "local_file" "service_account_key" {
   content  = each.value.key
 }
 
-resource "kubernetes_cluster_role_binding" "auditor" {
-  for_each = var.k8s_users
-  metadata {
-    name = each.key
-  }
-  role_ref {
-    api_group = "rbac.authorization.k8s.io"
-    kind      = "ClusterRole"
-    name      = each.value
-  }
-  subject {
-    kind      = "User"
-    name      = format("%s@%s.iam.gserviceaccount.com", each.key, var.project_id)
-    api_group = "rbac.authorization.k8s.io"
-  }
-}
+# resource "kubernetes_cluster_role_binding" "auditor" {
+#   for_each = var.k8s_users
+#   metadata {
+#     name = each.key
+#   }
+#   role_ref {
+#     api_group = "rbac.authorization.k8s.io"
+#     kind      = "ClusterRole"
+#     name      = each.value
+#   }
+#   subject {
+#     kind      = "User"
+#     name      = format("%s@%s.iam.gserviceaccount.com", each.key, var.project_id)
+#     api_group = "rbac.authorization.k8s.io"
+#   }
+# }
