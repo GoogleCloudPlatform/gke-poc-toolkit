@@ -46,7 +46,7 @@ cat <<EOF > new_role.yaml
 kind: ClusterRoleBinding
 apiVersion: rbac.authorization.k8s.io/v1
 metadata:
-  name: $ROLE_NAME
+  name: $ROLE_NAME 
 subjects:
 - kind: User
   name: $ROLE_NAME@$PROJECT_ID.google.com.iam.gserviceaccount.com
