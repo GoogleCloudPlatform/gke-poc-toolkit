@@ -23,15 +23,44 @@ ROOT="$( cd "$( dirname "${BASH_SOURCE[0]}" )/.." && pwd )"
 # shellcheck source=scripts/common.sh
 source "${ROOT}/scripts/common.sh"
 
+# Collect the names and regions if the clusters created in the target project
+declare -a GKE_CLUSTERS="$(terraform output --state=terraform/cluster_build/terraform.tfstate cluster_names | cut -d'[' -f 2 | cut -d']' -f 2 | cut -d'"' -f 2)"
+
+# Define the cluster role bindings to create in each cluster - mapping = <service_account_name>:<cluster_role>
 declare -a k8s_users=( 
             rbac-demo-auditor:view
             rbac-demo-editor:edit
             )
 
-for k8s_user in "${k8s_users[@]}"
+# Outer Loop - Loop through each cluster credential and authenticate to the cluster
+for cluster in ${GKE_CLUSTERS}
 do
-    name="${k8s_user%%:*}"
-    role="${k8s_user##*:}"
+    CREDENTIALS="$(terraform output --state=terraform/cluster_build/terraform.tfstate get_credential_commands | grep $cluster | cut -d'"' -f 2 | tr -d \")"
+    $CREDENTIALS
 
-    printf "%s likes to %s.\n" "$name" "$role"
+    # Inner Loop - Create Cluster Role Bindings for demo k8s_users
+    for k8s_user in "${k8s_users[@]}"
+    do
+        ROLE_NAME="${k8s_user%%:*}"
+        ROLE_PERM="${k8s_user##*:}"
+        PROJECT_ID="$(terraform output --state=terraform/cluster_build/terraform.tfstate project_id | tr -d \")"
+
+cat <<EOF > new_role.yaml
+kind: ClusterRoleBinding
+apiVersion: rbac.authorization.k8s.io/v1
+metadata:
+  name: $ROLE_NAME
+subjects:
+- kind: User
+  name: $ROLE_NAME@$PROJECT_ID.google.com.iam.gserviceaccount.com
+roleRef:
+  kind: ClusterRole
+  name: $ROLE_PERM
+  apiGroup: rbac.authorization.k8s.io
+EOF
+
+        kubectl apply -f new_role.yaml
+    # End Inner Loop
+    done
+# End Outer Loop
 done
