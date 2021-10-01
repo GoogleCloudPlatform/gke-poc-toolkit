@@ -51,9 +51,10 @@ module "gke" {
     (var.node_pool) = [
       "https://www.googleapis.com/auth/cloud-platform",
       "https://www.googleapis.com/auth/logging.write",
-      "https://www.googleapis.com/auth/monitoring.write",
+      "https://www.googleapis.com/auth/monitoring",
     ]
   }
+
   node_pools_labels = {
     # all = {} default set in terraform-google-kubernetes-engine
 
