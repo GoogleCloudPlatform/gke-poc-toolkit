@@ -23,14 +23,15 @@ ROOT="$( cd "$( dirname "${BASH_SOURCE[0]}" )/.." && pwd )"
 # shellcheck source=scripts/common.sh
 source "${ROOT}/scripts/common.sh"
 
-declare -a k8s_users=(
-                "alw-mcisec-03"
-                "alw-mcisec-svpc-03"
-                )
+declare -a k8s_users=( 
+            rbac-demo-auditor:view
+            rbac-demo-editor:edit
+            )
 
-# Create Projects
-for project in "${projects[@]}"
+for k8s_user in "${k8s_users[@]}"
 do
-    gcloud projects create ${project} --labels=cost-center=mycostcenter -q
-    gcloud alpha billing accounts projects link ${project} --billing-account=${billing_account}
+    name="${k8s_user%%:*}"
+    role="${k8s_user##*:}"
+
+    printf "%s likes to %s.\n" "$name" "$role"
 done

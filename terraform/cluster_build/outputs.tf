@@ -14,6 +14,11 @@
  * limitations under the License.
  */
 
+output "project_id" {
+  description = "Deployment project ID"
+  value       = var.project_id
+}
+
 output "get_credential_commands" {
   description = "gcloud get-credentials command to generate kubeconfig for the private cluster"
   value       = flatten([for s in module.gke : (var.private_endpoint ? (format("gcloud container clusters get-credentials --project %s --zone %s --internal-ip %s", var.project_id, s.location, s.name)) : (format("gcloud container clusters get-credentials --project %s --zone %s %s", var.project_id, s.location, s.name)))])
