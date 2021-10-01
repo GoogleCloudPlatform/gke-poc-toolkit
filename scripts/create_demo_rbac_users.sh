@@ -20,9 +20,6 @@ set -o pipefail
 # Locate the root directory
 ROOT="$( cd "$( dirname "${BASH_SOURCE[0]}" )/.." && pwd )"
 
-# shellcheck source=scripts/common.sh
-source "${ROOT}/scripts/common.sh"
-
 # Collect the names and regions if the clusters created in the target project
 declare -a GKE_CLUSTERS="$(terraform output --state=terraform/cluster_build/terraform.tfstate cluster_names | cut -d'[' -f 2 | cut -d']' -f 2 | cut -d'"' -f 2)"
 
