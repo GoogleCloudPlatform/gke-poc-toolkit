@@ -19,7 +19,11 @@ func GenerateTfvars(conf *Config) {
 	vars["ClustersProjectId"] = conf.ClustersProjectID
 	vars["GovernanceProjectId"] = conf.GovernanceProjectID
 	vars["ConfigSync"] = conf.ConfigSync
-	vars["PrivateEndpoint"] = conf.PrivateEndpoint
+	if conf.PrivateEndpoint == true {
+		vars["PrivateEndpoint"] = false
+	} else {
+		vars["PrivateEndpoint"] = true
+	}
 	vars["DefaultNodepoolOS"] = conf.DefaultNodepoolOS
 	vars["EnableWorkloadIdentity"] = conf.EnableWorkloadIdentity
 	vars["EnableWindowsNodepool"] = conf.EnableWindowsNodepool
@@ -36,6 +40,7 @@ func GenerateTfvars(conf *Config) {
 	vars["PodCidrName"] = conf.VpcConfig.PodCIDRName
 	vars["SvcCidrName"] = conf.VpcConfig.SvcCIDRName
 	vars["AuthIp"] = conf.VpcConfig.AuthIP
+	println(conf.VpcConfig.AuthIP)
 
 	// First phase of templating tfvars (base and VPC configs)
 	tmpl, err := template.ParseFiles("templates/terraform.tfvars.tmpl")

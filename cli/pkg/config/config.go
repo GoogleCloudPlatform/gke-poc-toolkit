@@ -50,7 +50,6 @@ type ClusterConfig struct {
 	NumNodes    int    `yaml:"nodeSize"`
 	MachineType string `yaml:"machineType"`
 	ClusterType string `yaml:"clusterType"`
-	AuthIP      string `yaml:"authIP"`
 	Region      string `yaml:"region"`
 	Zone        string `yaml:"zone"`
 	SubnetName  string `yaml:"subnetName"`
