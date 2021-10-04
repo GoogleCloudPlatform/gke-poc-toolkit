@@ -93,7 +93,7 @@ EOF
             gcloud auth activate-service-account --key-file ./creds/$ROLE_NAME@$PROJECT_ID.iam.gserviceaccount.com.json
             $CREDENTIALS
             echo $CREDENTIALS
-            CAN_ACCESS_SECRET="$(HTTPS_PROXY=localhost:8888 kubectl auth can-i get secrets)"
+            CAN_ACCESS_SECRET=$(HTTPS_PROXY=localhost:8888 kubectl auth can-i get secrets)
             echo "GOT HERE"
 
             # Revoke service account auth and return to default session auth
