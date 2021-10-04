@@ -43,21 +43,26 @@ do
         ROLE_PERM="${k8s_user##*:}"
         PROJECT_ID="$(terraform output --state=terraform/cluster_build/terraform.tfstate project_id | tr -d \")"
 
-# cat <<EOF > new_role.yaml
-# kind: ClusterRoleBinding
-# apiVersion: rbac.authorization.k8s.io/v1
-# metadata:
-#   name: $ROLE_NAME
-# subjects:
-# - kind: User
-#   name: $ROLE_NAME@$PROJECT_ID.google.com.iam.gserviceaccount.com
-# roleRef:
-#   kind: ClusterRole
-#   name: $ROLE_PERM
-#   apiGroup: rbac.authorization.k8s.io
-# EOF
-
-#         kubectl apply -f new_role.yaml
+cat <<EOF > new_role.yaml
+kind: ClusterRoleBinding
+apiVersion: rbac.authorization.k8s.io/v1
+metadata:
+  name: $ROLE_NAME
+subjects:
+- kind: User
+  name: $ROLE_NAME@$PROJECT_ID.google.com.iam.gserviceaccount.com
+roleRef:
+  kind: ClusterRole
+  name: $ROLE_PERM
+  apiGroup: rbac.authorization.k8s.io
+EOF
+        # Check if using internal-ip - If yes: proxy kubectl command through proxy, if no: don't 
+        if [[ $CREDENTIALS == *"internal-ip"* ]]; then
+            HTTPS_PROXY=localhost:8888 kubectl apply -f new_role.yaml
+        else 
+            kubectl apply -f new_role.yaml
+        fi
+        
     # End Inner Loop
     done
 # End Outer Loop
