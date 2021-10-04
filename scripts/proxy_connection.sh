@@ -26,8 +26,8 @@ set -euo pipefail
 ROOT="$( cd "$( dirname "${BASH_SOURCE[0]}" )/.." && pwd )"
 
 start_proxy() {
-    echo "What cluster will you be managing: "
-    read Target_Cluster 
+    # echo "What cluster will you be managing: "
+    # read Target_Cluster 
 
 	echo "Detecting SSH Bastion Tunnel/Proxy"
 	if [[ ! "$(pgrep -f L8888:127.0.0.1:8888)" ]]; then
