@@ -91,7 +91,6 @@ EOF
 
             # Authenticate as sample RBAC user and check for access to cluster secrets
             gcloud auth activate-service-account --key-file ./creds/$ROLE_NAME@$PROJECT_ID.iam.gserviceaccount.com.json
-            $CREDENTIALS
             CAN_ACCESS_SECRET="$(HTTPS_PROXY=localhost:8888 kubectl auth can-i get secrets)"
 
             # Revoke service account auth and return to default session auth
