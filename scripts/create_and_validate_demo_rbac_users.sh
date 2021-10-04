@@ -33,8 +33,8 @@ declare -a k8s_users=(
 for cluster in ${GKE_CLUSTERS}
 do
     CREDENTIALS="$(terraform output --state=terraform/cluster_build/terraform.tfstate get_credential_commands | grep $cluster | cut -d'"' -f 2 | tr -d \")"
-    tput setaf 3; echo "Creating sample cluster role bindings for cluster: $cluster" ; tput sgr0
-    echo "Cluster credential command used to authenticate to cluster: $CREDENTIALS"
+    tput setaf 3; echo "Creating sample cluster role bindings for cluster: $cluster"
+    echo "Cluster credential command used to authenticate to cluster: $CREDENTIALS" ; tput sgr0
     $CREDENTIALS
 
     # Inner Loop - Create Cluster Role Bindings for demo k8s_users
@@ -58,9 +58,6 @@ roleRef:
   apiGroup: rbac.authorization.k8s.io
 EOF
 
-        # Validate rbac permissions work by validating access to cluster secrets
-        gcloud auth activate-service-account --key-file ./creds/$ROLE_NAME@$PROJECT_ID.iam.gserviceaccount.com.json
-
         # Check if using internal-ip - If yes: proxy kubectl command through proxy, if no: don't 
         if [[ $CREDENTIALS == *"internal-ip"* ]]; then
 
@@ -78,7 +75,7 @@ EOF
             HTTPS_PROXY=localhost:8888 kubectl apply -f new_role.yaml
 
             # Authenticate as sample RBAC user and check for access to cluster secrets
-            $CREDENTIALS
+            gcloud auth activate-service-account --key-file ./creds/$ROLE_NAME@$PROJECT_ID.iam.gserviceaccount.com.json
             CAN_ACCCESS_SECRET="$(HTTPS_PROXY=localhost:8888 kubectl auth can-i get secrets)"
 
         else 
@@ -86,7 +83,7 @@ EOF
             kubectl apply -f new_role.yaml
 
             # Authenticate as sample RBAC user and check for access to cluster secrets
-            $CREDENTIALS
+            gcloud auth activate-service-account --key-file ./creds/$ROLE_NAME@$PROJECT_ID.iam.gserviceaccount.com.json
             CAN_ACCCESS_SECRET="$(kubectl auth can-i get secrets)"
         fi
         
