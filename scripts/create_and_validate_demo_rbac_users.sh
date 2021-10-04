@@ -37,6 +37,28 @@ do
     echo "Cluster credential command used to authenticate to cluster: $CREDENTIALS" ; tput sgr0
     $CREDENTIALS
 
+    # Check if using internal-ip - If yes: proxy kubectl command through proxy, if no: don't 
+    if [[ $CREDENTIALS == *"internal-ip"* ]]; then
+
+        # Check for proxy connection - Create if not exist if internal cluster detected
+        echo "$cluster is a private cluster. Confirming SSH Bastion Tunnel/Proxy"
+        if [[ ! "$(pgrep -f L8888:127.0.0.1:8888)" ]]; then
+            echo "Did not detect a running SSH tunnel.  Opening a new one."
+            BASTION_CMD="$(terraform output --state=terraform/cluster_build/terraform.tfstate bastion_ssh_command | tr -d \")"
+            $BASTION_CMD -T -f tail -f /dev/null
+        else
+
+            # Check for proxy connection - Disable if external cluster detected
+            echo "$cluster is a public cluster. Disable SSH Bastion Tunnel/Proxy if detected"
+            if [[ ! "$(pgrep -f L8888:127.0.0.1:8888)" ]]; then
+              echo "Did not detect a running SSH tunnel. Skipping"
+            else
+              echo "Detected a running SSH tunnel, stopping tunnel"
+              TUNNEL="$(pgrep -f L8888:127.0.0.1:8888)"
+              kill $TUNNEL
+            fi
+        fi
+
     # Inner Loop - Create Cluster Role Bindings for demo k8s_users
     for k8s_user in "${k8s_users[@]}"
     do
@@ -61,24 +83,14 @@ EOF
         # Check if using internal-ip - If yes: proxy kubectl command through proxy, if no: don't 
         if [[ $CREDENTIALS == *"internal-ip"* ]]; then
 
-            # Check for proxy connection if internal IP - Create if not detected 
-            echo "Private cluster detected. Confirming SSH Bastion Tunnel/Proxy"
-            if [[ ! "$(pgrep -f L8888:127.0.0.1:8888)" ]]; then
-              echo "Did not detect a running SSH tunnel.  Opening a new one."
-              BASTION_CMD="$(terraform output --state=terraform/cluster_build/terraform.tfstate bastion_ssh_command | tr -d \")"
-              $BASTION_CMD -T -f tail -f /dev/null
-            else
-              echo "Detected a running SSH tunnel.  Skipping."
-            fi
-
             # Create the cluster role binding
             HTTPS_PROXY=localhost:8888 kubectl apply -f new_role.yaml
 
             # Authenticate as sample RBAC user and check for access to cluster secrets
             gcloud auth activate-service-account --key-file ./creds/$ROLE_NAME@$PROJECT_ID.iam.gserviceaccount.com.json
             CAN_ACCESS_SECRET="$(HTTPS_PROXY=localhost:8888 kubectl auth can-i get secrets)"
-
         else 
+
             # Create the cluster role binding
             kubectl apply -f new_role.yaml
 
