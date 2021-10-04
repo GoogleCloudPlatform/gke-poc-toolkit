@@ -33,6 +33,7 @@ declare -a k8s_users=(
 for cluster in ${GKE_CLUSTERS}
 do
     CREDENTIALS="$(terraform output --state=terraform/cluster_build/terraform.tfstate get_credential_commands | grep $cluster | cut -d'"' -f 2 | tr -d \")"
+    tput setaf 1; echo "Creating sample cluster role bindings for cluster: $cluster" ; tput sgr0
     echo $CREDENTIALS
     $CREDENTIALS
 
