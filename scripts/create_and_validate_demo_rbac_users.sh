@@ -89,8 +89,10 @@ EOF
         
         # Output secret check result      
         if [[ $CAN_ACCESS_SECRET == *"yes"* ]]; then
+          echo $CAN_ACCESS_SECRET
           tput setaf 3; echo "Service Account: $ROLE_NAME@$PROJECT_ID.iam.gserviceaccount.com can access kubernetes secrets for cluster: $cluster" ; tput sgr0
         else
+          echo $CAN_ACCESS_SECRET
           tput setaf 3; echo "Service Account: $ROLE_NAME@$PROJECT_ID.iam.gserviceaccount.com can NOT access kubernetes secrets for cluster: $cluster" ; tput sgr0
         fi
 
