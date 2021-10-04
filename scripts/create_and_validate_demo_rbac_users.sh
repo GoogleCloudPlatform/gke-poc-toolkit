@@ -37,7 +37,7 @@ do
     echo "Cluster credential command used to authenticate to cluster: $CREDENTIALS" ; tput sgr0
     $CREDENTIALS
 
-    # Check if using internal-ip - If yes: proxy kubectl command through proxy, if no: don't 
+    # Check if using internal-ip - If yes: proxy kubectl command through bastion host, if no: don't 
     if [[ $CREDENTIALS == *"internal-ip"* ]]; then
 
         # Check for proxy connection - Create if not exist if internal cluster detected
@@ -91,6 +91,7 @@ EOF
 
             # Authenticate as sample RBAC user and check for access to cluster secrets
             gcloud auth activate-service-account --key-file ./creds/$ROLE_NAME@$PROJECT_ID.iam.gserviceaccount.com.json
+            $CREDENTIALS
             CAN_ACCESS_SECRET="$(HTTPS_PROXY=localhost:8888 kubectl auth can-i get secrets)"
         else 
 
@@ -99,6 +100,7 @@ EOF
 
             # Authenticate as sample RBAC user and check for access to cluster secrets
             gcloud auth activate-service-account --key-file ./creds/$ROLE_NAME@$PROJECT_ID.iam.gserviceaccount.com.json
+            $CREDENTIALS
             CAN_ACCESS_SECRET="$(kubectl auth can-i get secrets)"
         fi
         
