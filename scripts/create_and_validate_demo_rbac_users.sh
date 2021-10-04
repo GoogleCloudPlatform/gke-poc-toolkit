@@ -47,16 +47,18 @@ do
             BASTION_CMD="$(terraform output --state=terraform/cluster_build/terraform.tfstate bastion_ssh_command | tr -d \")"
             $BASTION_CMD -T -f tail -f /dev/null
         else
+ 		        echo "Detected a running SSH tunnel.  Skipping."
+        fi
+    else
 
-            # Check for proxy connection - Disable if external cluster detected
-            echo "$cluster is a public cluster. Disable SSH Bastion Tunnel/Proxy if detected"
-            if [[ ! "$(pgrep -f L8888:127.0.0.1:8888)" ]]; then
-              echo "Did not detect a running SSH tunnel. Skipping"
-            else
-              echo "Detected a running SSH tunnel, stopping tunnel"
-              TUNNEL="$(pgrep -f L8888:127.0.0.1:8888)"
-              kill $TUNNEL
-            fi
+        # Check for proxy connection - Disable if external cluster detected
+        echo "$cluster is a public cluster. Disable SSH Bastion Tunnel/Proxy if detected"
+        if [[ ! "$(pgrep -f L8888:127.0.0.1:8888)" ]]; then
+          echo "Did not detect a running SSH tunnel. Skipping"
+        else
+          echo "Detected a running SSH tunnel, stopping tunnel"
+          TUNNEL="$(pgrep -f L8888:127.0.0.1:8888)"
+          kill $TUNNEL
         fi
       fi
 
