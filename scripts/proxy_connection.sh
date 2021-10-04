@@ -31,7 +31,7 @@ start_proxy() {
 	if [[ ! "$(pgrep -f L8888:127.0.0.1:8888)" ]]; then
 		echo "Did not detect a running SSH tunnel.  Opening a new one."
 		BASTION_CMD="$(terraform output --state=terraform/cluster_build/terraform.tfstate bastion_ssh_command | tr -d \")"
-		$BASTION_CMD -f tail -f /dev/null
+		$BASTION_CMD -tt -f tail -f /dev/null
 	
 		# CREDENTIALS="$(terraform output --state=terraform/cluster_build/terraform.tfstate get_credentials_command | tr -d \")"
 		# KUBECTL="$(terraform output --state=terraform/cluster_build/terraform.tfstate bastion_kubectl_command | tr -d \")"
