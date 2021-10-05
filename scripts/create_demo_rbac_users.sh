@@ -103,6 +103,4 @@ done
 
 if [[ "$(pgrep -f L8888:127.0.0.1:8888)" ]]; then
   tput setaf 3; echo "Proxy to bastion host will remain connected after the deployment completes" ; tput sgr0
-  TUNNEL="$(pgrep -f L8888:127.0.0.1:8888)"
-  kill $TUNNEL
 fi
