@@ -20,6 +20,9 @@ set -o pipefail
 # Locate the root directory
 ROOT="$( cd "$( dirname "${BASH_SOURCE[0]}" )/.." && pwd )"
 
+# Save current logged in admin user account
+DEFAULT_ADMIN="$(gcloud config list account --format "value(core.account))"
+
 # Collect the names and regions if the clusters created in the target project
 declare -a GKE_CLUSTERS="$(terraform output --state=terraform/cluster_build/terraform.tfstate cluster_names | cut -d'[' -f 2 | cut -d']' -f 2 | cut -d'"' -f 2)"
 
@@ -96,8 +99,8 @@ EOF
             HTTPS_PROXY=localhost:8888 kubectl auth can-i get secrets
             echo "GOT HERE"
 
-            # Revoke service account auth and return to default session auth
-            gcloud auth revoke $ROLE_NAME@$PROJECT_ID.iam.gserviceaccount.com
+            # Return to default session auth
+            gcloud auth login $DEFAULT_ADMIN
             $CREDENTIALS
         else 
 
@@ -109,8 +112,8 @@ EOF
             $CREDENTIALS
             CAN_ACCESS_SECRET="$(kubectl auth can-i get secrets)"
 
-            # Revoke service account auth and return to default session auth
-            gcloud auth revoke $ROLE_NAME@$PROJECT_ID.iam.gserviceaccount.com
+            # Return to default session auth
+            gcloud auth login $DEFAULT_ADMIN
             $CREDENTIALS
         fi
         

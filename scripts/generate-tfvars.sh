@@ -51,11 +51,11 @@ fi
 
 ## Shared VPC Example
 cat <<-EOF > "${TFVARS_FILE}"
-project_id                        = "alw-mcisec-06"
+project_id                        = "alw-mcisec-07"
 governance_project_id             = "${GOVERNANCE_PROJECT}"
 shared_vpc                        = true
 shared_vpc_name                   = "gke-tk-shared-vpc"
-shared_vpc_project_id             = "alw-svpc-mcisec-06"
+shared_vpc_project_id             = "alw-svpc-mcisec-07"
 shared_vpc_ip_range_pods_name     = "ip-range-pods"
 shared_vpc_ip_range_services_name = "ip-range-svc"
 region                            = "${REGION}"
