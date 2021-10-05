@@ -145,6 +145,8 @@ When the deployment is complete, create and validate the cluster role bindings f
 # Run the following commmand:
 ./scripts/create_and_validate_demo_rbac_users.sh
 ```
+>**NOTE:** The previous step established a proxy to the bastion host created during deployment. To proxy `kubectl` commands to private clusters, append `HTTPS_PROXY=localhost:8888`to the beginning of the command. Ex: `HTTPS_PROXY=localhost:8888 kubectl get nodes`
+
 
 Proceed to [validation steps](#additional-validation-of-the-gke-cluster-config) once installation completes. 
 
