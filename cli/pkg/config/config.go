@@ -46,11 +46,9 @@ type VpcConfig struct {
 
 type ClusterConfig struct {
 	ClusterName string `yaml:"clusterName"`
-	ProjectID   string `yaml:"projectId"`
 	NumNodes    int    `yaml:"nodeSize"`
 	MachineType string `yaml:"machineType"`
 	ClusterType string `yaml:"clusterType"`
-	AuthIP      string `yaml:"authIP"`
 	Region      string `yaml:"region"`
 	Zone        string `yaml:"zone"`
 	SubnetName  string `yaml:"subnetName"`

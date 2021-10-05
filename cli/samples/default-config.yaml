@@ -21,7 +21,6 @@ vpcConfig:
   authIP: "10.10.10.10"
 clustersConfig:   
 - clusterName: "gke-central"
-  projectId: "my-project"
   numNodes: 3 
   clusterType: "public"
   machineType: "e2-standard-4"
@@ -29,7 +28,6 @@ clustersConfig:
   zone: "us-central1-b"
   subnetName: "us-central1"
 - clusterName: "gke-east"
-  projectId: "my-project"
   numNodes: 3 
   clusterType: "public"
   machineType: "e2-standard-4"
