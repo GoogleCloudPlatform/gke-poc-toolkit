@@ -28,8 +28,8 @@ declare -a GKE_CLUSTERS="$(terraform output --state=terraform/cluster_build/terr
 
 # Define the cluster role bindings to create in each cluster - mapping = <service_account_name>:<cluster_role>
 declare -a k8s_users=( 
-            rbac-demo-editor:edit
             rbac-demo-auditor:view
+            rbac-demo-editor:edit
             )
 
 # Terminate any existing proxy connections before applying cluster role bindings
