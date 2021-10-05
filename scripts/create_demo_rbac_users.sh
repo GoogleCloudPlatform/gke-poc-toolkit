@@ -20,6 +20,13 @@ set -o pipefail
 # Locate the root directory
 ROOT="$( cd "$( dirname "${BASH_SOURCE[0]}" )/.." && pwd )"
 
+# Terminate existing proxy connection
+if [[ "$(pgrep -f L8888:127.0.0.1:8888)" ]]; then
+  echo "Proxy connection detected - Terminating before continuing with RBAC demo role creation"
+  TUNNEL="$(pgrep -f L8888:127.0.0.1:8888)"
+  kill $TUNNEL
+fi
+
 # Collect the names and regions if the clusters created in the target project
 declare -a GKE_CLUSTERS="$(terraform output --state=terraform/cluster_build/terraform.tfstate cluster_names | cut -d'[' -f 2 | cut -d']' -f 2 | cut -d'"' -f 2)"
 
@@ -33,9 +40,34 @@ declare -a k8s_users=(
 for cluster in ${GKE_CLUSTERS}
 do
     CREDENTIALS="$(terraform output --state=terraform/cluster_build/terraform.tfstate get_credential_commands | grep $cluster | cut -d'"' -f 2 | tr -d \")"
-    tput setaf 3; echo "Creating sample cluster role bindings for cluster: $cluster" ; tput sgr0
+    tput setaf 3; echo "Creating demo cluster role bindings for cluster: $cluster" ; tput sgr0
     echo $CREDENTIALS 
     $CREDENTIALS
+
+    # Check if using internal-ip - If yes: create a proxy to bastion host, if not: execute kubectl commands local 
+    if [[ $CREDENTIALS == *"internal-ip"* ]]; then
+
+        # Check for proxy connection - Create if not exist if internal cluster detected
+        echo "$cluster is a private cluster. Confirming SSH Bastion Tunnel/Proxy"
+        if [[ ! "$(pgrep -f L8888:127.0.0.1:8888)" ]]; then
+            echo "Did not detect a running SSH tunnel.  Opening a new one."
+            BASTION_CMD="$(terraform output --state=terraform/cluster_build/terraform.tfstate bastion_ssh_command | tr -d \")"
+            $BASTION_CMD -T -f tail -f /dev/null
+        else
+ 		        echo "Detected a running SSH tunnel.  Skipping."
+        fi
+    else
+
+        # Check for proxy connection - Disable if external cluster detected
+        echo "$cluster is a public cluster. Disable SSH Bastion Tunnel/Proxy if detected"
+        if [[ ! "$(pgrep -f L8888:127.0.0.1:8888)" ]]; then
+          echo "Did not detect a running SSH tunnel. Skipping"
+        else
+          echo "Detected a running SSH tunnel, stopping tunnel"
+          TUNNEL="$(pgrep -f L8888:127.0.0.1:8888)"
+          kill $TUNNEL
+        fi
+    fi
 
     # Inner Loop - Create Cluster Role Bindings for demo k8s_users
     for k8s_user in "${k8s_users[@]}"
@@ -68,3 +100,9 @@ EOF
     done
 # End Outer Loop
 done
+
+if [[ "$(pgrep -f L8888:127.0.0.1:8888)" ]]; then
+  tput setaf 3; echo "Proxy to bastion host will remain connected after the deployment completes" ; tput sgr0
+  TUNNEL="$(pgrep -f L8888:127.0.0.1:8888)"
+  kill $TUNNEL
+fi
