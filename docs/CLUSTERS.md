@@ -139,32 +139,11 @@ In the root of the cloned repository, there is a script to create the cluster:
 make create
 ```  
 
-When the deployment is complete, establish an SSH tunnel to the bastion:
+When the deployment is complete, create and validate the cluster role bindings for the two demo users `rbac-demo-auditor` and `rbac-demo-editor` in all clusters created in the deployment step:
 
 ```shell
-make start-proxy
-```
-
-When the tunnel is established, retrieve the kubernetes config for the cluster, then set the `HTTPS_PROXY` environment variable to validate you can forward kubectl commands through the tunnel and manage the GKE cluster:
-
-```shell
-# The following command lists the cluster names and locations created in the deployment phases:
-gcloud container clusters list --format="value(NAME, LOCATION)"
-
-# Specify the name and location of the cluster you would like to validate:
-GKE_NAME=<Cluster_Name>
-GKE_LOCATION=<Cluster_Location>
-
-# Retrieve the cluster credentials and validate you can forward commmands: 
-gcloud container clusters get-credentials $GKE_NAME --region $GKE_LOCATION
-
-HTTPS_PROXY=localhost:8888 kubectl get ns
-```
-
-Stopping the SSH Tunnel:
-
-```shell
-make stop-proxy
+# Run the following commmand:
+./scripts/create_and_validate_demo_rbac_users.sh
 ```
 
 Proceed to [validation steps](#additional-validation-of-the-gke-cluster-config) once installation completes. 
@@ -189,20 +168,11 @@ In the root of the cloned repository, there is a script to create the cluster:
 make create
 ```
 
-When the deployment is complete, retrieve the kubernetes config for the cluster to validate you can manage the GKE cluster:
+When the deployment is complete, create and validate the cluster role bindings for the two demo users `rbac-demo-auditor` and `rbac-demo-editor` in all clusters created in the deployment step:
 
 ```shell
-# The following command lists the cluster names and locations created in the deployment phases:
-gcloud container clusters list --format="value(NAME, LOCATION)"
-
-# Specify the name and location of the cluster you would like to validate:
-GKE_NAME=<Cluster_Name>
-GKE_LOCATION=<Cluster_Location>
-
-# Retrieve the cluster credentials and validate you can have access to the cluster: 
-gcloud container clusters get-credentials $GKE_NAME --region $GKE_LOCATION
-
-kubectl get ns
+# Run the following commmand:
+./scripts/create_and_validate_demo_rbac_users.sh
 ```
 
 Proceed to [validation steps](#additional-validation-of-the-gke-cluster-config) once installation completes. 
@@ -236,7 +206,6 @@ gcloud container clusters describe $GKE_NAME \
   --region $GKE_LOCATION \
   --format 'value(databaseEncryption)' \
   --project $PROJECT
-
 ```
 
 ### GKE Cluster with Windows Nodepool Validation (If Windows Node Pools were selected)
