@@ -93,6 +93,12 @@ The following best practices are also enforced as part of the cluster build proc
 * [Safe-Cluster GKE Module](https://registry.terraform.io/modules/terraform-google-modules/kubernetes-engine/google/latest/submodules/safer-cluster):
   * This deployment uses the Safe-Cluster GKE module which fixes a set of parameters to values suggested in the [GKE hardening guide](https://cloud.google.com/kubernetes-engine/docs/how-to/hardening-your-cluster), the CIS framework, and other best practices. Reference the above link for project configurations, cluster settings, and basic kubernetes objects that are provisioned as part of this module and permit a safer-than-default configuration.
 
+* [Audit Logging](https://cloud.google.com/logging/docs/audit/understanding-audit-logs):
+  * The scripts in this repository will create a set of log sinks for collecting the Audit Logs of the GKE clusters; one targeting a Google Cloud Storage Bucket and one targeting a Big Query data set.  These sinks can be created in either a new centralized Governance project or inside your existing GCP Project. Please reference [this link](https://cloud.google.com/logging/docs/export) for a conceptual overview of log exports and how sinks work. 
+
+* [Role-Based Access Control](https://cloud.google.com/kubernetes-engine/docs/how-to/role-based-access-control):
+  * Role-based access control (RBAC) is a method of regulating access to computer or network resources based on the roles of individual users within your organization. The scripts in this repository will create two sample Google Cloud Identities, `rbac-demo-auditor` and `rbac-demo-editor`, that have kubernetes 'view' and 'edit' ClusterRoles respectively. After creation, a simple test is provided to demonstrate the scope of permissions. These roles are intended to represent the a sample audit and administrative user. 
+
 #### Optional Settings
 The following <b>OPTIONAL</b> configurations are also available and can be enabled by setting the appropriate configuration values prior to deployment. Guidance on how to enable these features can be found in under [Optional Settings](docs/CLUSTERS.md#optional-settings) in the Cluster Build guide:
 

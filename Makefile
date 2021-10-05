@@ -9,10 +9,6 @@ help:
 	@echo	''
 	@echo '	make create        		Create Cluster and associated resources'
 	@echo	''
-	@echo '	make secure        		Create GCS + Big Query log sinks for GKE Audit'
-	@echo '	                   		Logs. Use with make start-proxy,for private' 			
-	@echo	'                   		        clusters'
-	@echo	''
 	@echo '	make start-proxy		Generates SSH Tunnel to proxy kubectl connections;'
 	@echo '	                   		use with Private Cluster'
 	@echo	''
@@ -32,10 +28,6 @@ shared-vpc:
 .PHONY: create
 create:
 	@source	scripts/create.sh cluster
-
-.PHONY: secure
-secure:
-	@source scripts/create.sh secure
 
 .PHONY: start-proxy
 start-proxy:

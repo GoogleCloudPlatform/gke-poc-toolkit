@@ -263,11 +263,11 @@ kubectl get nodes --label-columns beta.kubernetes.io/os
 
 ## Next Steps
 
-The next step is to futher harden the newly created cluster.
+The next step is to deploy a secure workload to the cluster.
 
-[GKE Hardening Instructions](SECURITY.md)
+[Deploy Secure GKE Workloads (Linux Cluster Only)](WORKLOADS.md)
 
-### Check the [FAQ](FAQ.md) if you run into issues with the build.
+#### Check the [FAQ](FAQ.md) if you run into issues with the build.
 
 ## Cleaning up
 
