@@ -32,6 +32,13 @@ declare -a k8s_users=(
             rbac-demo-auditor:view
             )
 
+# Terminate any existing proxy connections before applying cluster role bindings
+if [[ "$(pgrep -f L8888:127.0.0.1:8888)" ]]; then
+    tput setaf 3; echo "Existing proxy tunnel detected - terminating before continuing" ; tput sgr0
+    TUNNEL="$(pgrep -f L8888:127.0.0.1:8888)"
+    kill $TUNNEL
+fi
+
 # Outer Loop - Loop through each cluster credential and authenticate to the cluster
 for cluster in ${GKE_CLUSTERS}
 do
@@ -89,7 +96,6 @@ EOF
         # Check if using internal-ip - If yes: proxy kubectl command through proxy, if no: don't 
         if [[ $CREDENTIALS == *"internal-ip"* ]]; then
 
-            echo "INTERNAL IP DETECTED"
             # Create the cluster role binding
             HTTPS_PROXY=localhost:8888 kubectl apply -f new_role.yaml
 
@@ -97,11 +103,14 @@ EOF
             gcloud auth activate-service-account --key-file ./creds/$ROLE_NAME@$PROJECT_ID.iam.gserviceaccount.com.json
             $CREDENTIALS
             CAN_ACCESS_SECRET="$(HTTPS_PROXY=localhost:8888 kubectl auth can-i get secrets)"
-            echo "GOT HERE"
+            echo "GOT HERE - Before"
+            echo $CAN_ACCESS_SECRET
+            echo "GOT HERE - After"
 
             # Return to default session auth
             gcloud auth login $DEFAULT_ADMIN --brief --verbosity=none
             $CREDENTIALS
+            echo "GOT HERE - Switched back to default admin"
         else 
 
             # Create the cluster role binding
@@ -119,10 +128,10 @@ EOF
         
         # Output secret check result      
         if [[ $CAN_ACCESS_SECRET == *"yes"* ]]; then
-          echo $CAN_ACCESS_SECRET
+          echo "GOT HERE - Can access YES"
           tput setaf 3; echo "Service Account: $ROLE_NAME@$PROJECT_ID.iam.gserviceaccount.com can access kubernetes secrets for cluster: $cluster" ; tput sgr0
         else
-          echo $CAN_ACCESS_SECRET
+          echo "GOT HERE - Can access NO"
           tput setaf 3; echo "Service Account: $ROLE_NAME@$PROJECT_ID.iam.gserviceaccount.com can NOT access kubernetes secrets for cluster: $cluster" ; tput sgr0
         fi
 
@@ -130,3 +139,7 @@ EOF
     done
 # End Outer Loop
 done
+
+if [[ "$(pgrep -f L8888:127.0.0.1:8888)" ]]; then
+    tput setaf 3; echo "Private cluster detected - Proxy to bastion host will be left in place" ; tput sgr0
+fi
