@@ -86,6 +86,7 @@ EOF
         # Check if using internal-ip - If yes: proxy kubectl command through proxy, if no: don't 
         if [[ $CREDENTIALS == *"internal-ip"* ]]; then
 
+            echo "INTERNAL IP DETECTED"
             # Create the cluster role binding
             HTTPS_PROXY=localhost:8888 kubectl apply -f new_role.yaml
 
