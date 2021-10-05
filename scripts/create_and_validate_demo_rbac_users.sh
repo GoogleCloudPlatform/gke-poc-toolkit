@@ -126,9 +126,6 @@ EOF
           tput setaf 3; echo "Service Account: $ROLE_NAME@$PROJECT_ID.iam.gserviceaccount.com can NOT access kubernetes secrets for cluster: $cluster" ; tput sgr0
         fi
 
-
-
-
     # End Inner Loop
     done
 # End Outer Loop
