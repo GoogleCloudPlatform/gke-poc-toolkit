@@ -20,7 +20,7 @@ data "google_project" "project" {
 }
 
 // Random string used to create a unique key ring name
-resource "random_id" "kms" {
+resource "random_id" "deployment" {
   byte_length = 2
 }
 
@@ -34,7 +34,7 @@ locals {
   distinct_cluster_regions = toset([for cluster in var.cluster_config : "${cluster.region}"])
 
   // Presets for KMS and Key Ring
-  gke_keyring_name = format("gke-toolkit-kr-%s", random_id.kms.hex)
+  gke_keyring_name = format("gke-toolkit-kr-%s", random_id.deployment.hex)
   gke_key_name     = "gke-toolkit-kek"
 
   // Presets for Bastion Host
@@ -143,6 +143,7 @@ module "enabled_google_apis" {
 
   activate_apis = [
     "iam.googleapis.com",
+    "storage.googleapis.com",
     "compute.googleapis.com",
     "logging.googleapis.com",
     "monitoring.googleapis.com",

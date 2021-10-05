@@ -139,28 +139,14 @@ In the root of the cloned repository, there is a script to create the cluster:
 make create
 ```  
 
-Once the GKE cluster has been created, establish an SSH tunnel to the bastion:
+When the deployment is complete, create and validate the cluster role bindings for the two demo users `rbac-demo-auditor` and `rbac-demo-editor` in all clusters created in the deployment step:
 
 ```shell
-make start-proxy
+# Run the following commmand:
+./scripts/create_and_validate_demo_rbac_users.sh
 ```
+>**NOTE:** The previous step established a proxy to the bastion host created during deployment. To proxy `kubectl` commands to private clusters, append `HTTPS_PROXY=localhost:8888`to the beginning of the command. Ex: `HTTPS_PROXY=localhost:8888 kubectl get nodes`
 
-When the deployment is complete, retrieve the kubernetes config for the cluster, then set the `HTTPS_PROXY` environment variable to validate you can forward kubectl commands through the tunnel and manage the GKE cluster:
-
-```shell
-GKE_NAME=$(gcloud container clusters list --format="value(NAME)")
-GKE_LOCATION=$(gcloud container clusters list --format="value(LOCATION)")
-
-gcloud container clusters get-credentials $GKE_NAME --region $GKE_LOCATION
-
-HTTPS_PROXY=localhost:8888 kubectl get ns
-```
-
-Stopping the SSH Tunnel:
-
-```shell
-make stop-proxy
-```
 
 Proceed to [validation steps](#additional-validation-of-the-gke-cluster-config) once installation completes. 
 
@@ -184,15 +170,11 @@ In the root of the cloned repository, there is a script to create the cluster:
 make create
 ```
 
-When the deployment is complete, retrieve the kubernetes config for the cluster to validate you can manage the GKE cluster:
+When the deployment is complete, create and validate the cluster role bindings for the two demo users `rbac-demo-auditor` and `rbac-demo-editor` in all clusters created in the deployment step:
 
 ```shell
-GKE_NAME=$(gcloud container clusters list --format="value(NAME)")
-GKE_LOCATION=$(gcloud container clusters list --format="value(LOCATION)")
-
-gcloud container clusters get-credentials $GKE_NAME --region $GKE_LOCATION
-
-kubectl get ns
+# Run the following commmand:
+./scripts/create_and_validate_demo_rbac_users.sh
 ```
 
 Proceed to [validation steps](#additional-validation-of-the-gke-cluster-config) once installation completes. 
@@ -208,9 +190,14 @@ Proceed to [Next Steps](#next-steps) if you'd like to skip this step and move on
 Execute the following command to retrieve the kubernetes config for the GKE Cluster:
 
 ```shell
-GKE_NAME=$(gcloud container clusters list --format="value(NAME)")
-GKE_LOCATION=$(gcloud container clusters list --format="value(LOCATION)")
+# The following command lists the cluster names and locations created in the deployment phases:
+gcloud container clusters list --format="value(NAME, LOCATION)"
 
+# Specify the name and location of the cluster you would like to validate:
+GKE_NAME=<Cluster_Name>
+GKE_LOCATION=<Cluster_Location>
+
+# Retrieve the cluster credentials:
 gcloud container clusters get-credentials $GKE_NAME --region $GKE_LOCATION
 ```
 
@@ -221,7 +208,6 @@ gcloud container clusters describe $GKE_NAME \
   --region $GKE_LOCATION \
   --format 'value(databaseEncryption)' \
   --project $PROJECT
-
 ```
 
 ### GKE Cluster with Windows Nodepool Validation (If Windows Node Pools were selected)
@@ -229,9 +215,14 @@ gcloud container clusters describe $GKE_NAME \
 Execute the following command to retrieve the kubernetes config for the cluster:
 
 ```shell
-GKE_NAME=$(gcloud container clusters list --format="value(NAME)")
-GKE_LOCATION=$(gcloud container clusters list --format="value(LOCATION)")
+# The following command lists the cluster names and locations created in the deployment phases:
+gcloud container clusters list --format="value(NAME, LOCATION)"
 
+# Specify the name and location of the cluster you would like to validate:
+GKE_NAME=<Cluster_Name>
+GKE_LOCATION=<Cluster_Location>
+
+# Retrieve the cluster credentials:
 gcloud container clusters get-credentials $GKE_NAME --region $GKE_LOCATION
 ```
 
@@ -243,11 +234,11 @@ kubectl get nodes --label-columns beta.kubernetes.io/os
 
 ## Next Steps
 
-The next step is to futher harden the newly created cluster.
+The next step is to deploy a secure workload to the cluster.
 
-[GKE Hardening Instructions](SECURITY.md)
+[Deploy Secure GKE Workloads (Linux Cluster Only)](WORKLOADS.md)
 
-### Check the [FAQ](FAQ.md) if you run into issues with the build.
+#### Check the [FAQ](FAQ.md) if you run into issues with the build.
 
 ## Cleaning up
 
