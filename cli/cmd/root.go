@@ -28,10 +28,9 @@ var cfgFile string
 var rootCmd = &cobra.Command{
 	Use:   "gkekitctl",
 	Short: "Tool to quickly deploy some pretty dope GKE demos",
-	Example: `        gkekitctl create
-	gkekitctl delete
-	gkekitctl update
-	gkekitctl describe`,
+	Example: `        gkekitctl create clusters
+	gkectl create sharedvpc
+	gkekitctl delete`,
 
 	// Uncomment the following line if your bare application
 	// has an action associated with it:

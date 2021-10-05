@@ -11,7 +11,7 @@ import (
 	"github.com/hashicorp/terraform-exec/tfinstall"
 )
 
-func InitTF() {
+func InitTF(tfDir string) {
 	tmpDir, err := ioutil.TempDir("", "tfinstall")
 	if err != nil {
 		log.Fatalf("error creating temp dir: %s", err)
@@ -23,8 +23,8 @@ func InitTF() {
 		log.Fatalf("error locating Terraform binary: %s", err)
 	}
 
-	workingDir := "../terraform/cluster_build"
-	tf, err := tfexec.NewTerraform(workingDir, execPath)
+	// workingDir := "../terraform/cluster_build"
+	tf, err := tfexec.NewTerraform(tfDir, execPath)
 	if err != nil {
 		log.Fatalf("error running NewTerraform: %s", err)
 	}
@@ -50,7 +50,7 @@ func InitTF() {
 	log.Println(plan)
 }
 
-func ApplyTF() {
+func ApplyTF(tfDir string) {
 	tmpDir, err := ioutil.TempDir("", "tfinstall")
 	if err != nil {
 		log.Fatalf("error creating temp dir: %s", err)
@@ -62,8 +62,8 @@ func ApplyTF() {
 		log.Fatalf("error locating Terraform binary: %s", err)
 	}
 
-	workingDir := "../terraform/cluster_build"
-	tf, err := tfexec.NewTerraform(workingDir, execPath)
+	// workingDir := "../terraform/cluster_build"
+	tf, err := tfexec.NewTerraform(tfDir, execPath)
 	if err != nil {
 		log.Fatalf("error running NewTerraform: %s", err)
 	}

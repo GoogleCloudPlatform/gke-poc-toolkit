@@ -16,19 +16,27 @@ limitations under the License.
 package cmd
 
 import (
+	"gkekitctl/pkg/config"
+	"gkekitctl/pkg/lifecycle"
+
 	"github.com/spf13/cobra"
 )
 
 // createCmd represents the create command
-var createCmd = &cobra.Command{
-	Use:   "create",
-	Short: "Create GKE Demo Environment",
-	Example: ` gkekitctl create
+var createClustersCmd = &cobra.Command{
+	Use:   "clusters",
+	Short: "Create GKE Clusters",
+	Example: ` gkekitctl create clusters
 	gkekitctl --config <file.yaml>`,
 	Run: func(cmd *cobra.Command, args []string) {
+		conf := config.InitConf(cfgFile)
+		config.GenerateTfvars(conf)
+		tfDir := "../terraform/cluster_build"
+		lifecycle.InitTF(tfDir)
+		lifecycle.ApplyTF(tfDir)
 	},
 }
 
 func init() {
-	rootCmd.AddCommand(createCmd)
+	createCmd.AddCommand(createClustersCmd)
 }

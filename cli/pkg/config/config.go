@@ -14,7 +14,9 @@ import (
 	"context"
 
 	compute "cloud.google.com/go/compute/apiv1"
+	serviceusage "cloud.google.com/go/serviceusage/apiv1"
 	"google.golang.org/api/iterator"
+	serviceusagepb "google.golang.org/genproto/googleapis/api/serviceusage/v1"
 	computepb "google.golang.org/genproto/googleapis/cloud/compute/v1"
 )
 
@@ -62,6 +64,7 @@ var conf *Config
 func InitConf(cfgFile string) *Config {
 	conf := &Config{}
 	var err error
+
 	// if cfgFile is *not* set, prompts the user for a project ID, + reads / validates the default config
 	if cfgFile == "" {
 		conf, err = InitWithDefaults()
@@ -133,15 +136,17 @@ func InitWithDefaults() (*Config, error) {
 		return config, err
 	}
 
+	// Enable GCP Compute API
+	// api := "compute.googleapis.com"
+	// enableService(projectId, api)
+
 	// populate default conf with user's project ID
 	config.GovernanceProjectID = projectId
 	config.ClustersProjectID = projectId
 	config.VpcConfig.VpcProjectID = projectId
 
-	for i := range config.ClustersConfig {
-		config.ClustersConfig[i].ProjectID = projectId
-	}
-
+	serviceIds := []string{"compute.googelapis.com"}
+	enableService(projectId, serviceIds)
 	return config, nil
 }
 
@@ -346,4 +351,31 @@ func validateMachineType(projectId string, machineType string, zone string) erro
 	}
 
 	return fmt.Errorf("Machine type %s is invalid, must be one of: %v", machineType, validMachineTypes)
+}
+
+func enableService(projectId string, serviceIds []string) {
+	ctx := context.Background()
+	c, err := serviceusage.NewClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	defer c.Close()
+
+	project := "projects/" + projectId
+	println(project)
+	req := &serviceusagepb.BatchEnableServicesRequest{
+		Parent:     project,
+		ServiceIds: serviceIds,
+	}
+	op, err := c.BatchEnableServices(ctx, req)
+	if err != nil {
+		log.Fatalf("error enabling gcp service: %s", err)
+	}
+
+	resp, err := op.Wait(ctx)
+	if err != nil {
+		log.Fatalf("error enabling gcp service: %s", err)
+	}
+	// TODO: Use resp.
+	_ = resp
 }
