@@ -21,7 +21,7 @@ set -o pipefail
 ROOT="$( cd "$( dirname "${BASH_SOURCE[0]}" )/.." && pwd )"
 
 # Save current logged in admin user account
-DEFAULT_ADMIN="$(gcloud config list account --format "value(core.account))"
+DEFAULT_ADMIN="$(gcloud config list account --format "value(core.account)")"
 
 # Collect the names and regions if the clusters created in the target project
 declare -a GKE_CLUSTERS="$(terraform output --state=terraform/cluster_build/terraform.tfstate cluster_names | cut -d'[' -f 2 | cut -d']' -f 2 | cut -d'"' -f 2)"
