@@ -106,6 +106,7 @@ EOF
             gcloud auth activate-service-account --key-file ./creds/$ROLE_NAME@$PROJECT_ID.iam.gserviceaccount.com.json
             $CREDENTIALS
             CAN_ACCESS_SECRET="$(kubectl auth can-i get secrets)"
+            echo "GOT HERE"
 
             # Revoke service account auth and return to default session auth
             gcloud auth revoke $ROLE_NAME@$PROJECT_ID.iam.gserviceaccount.com
