@@ -60,7 +60,7 @@ do
           TUNNEL="$(pgrep -f L8888:127.0.0.1:8888)"
           kill $TUNNEL
         fi
-      fi
+    fi
 
     # Inner Loop - Create Cluster Role Bindings for demo k8s_users
     for k8s_user in "${k8s_users[@]}"
