@@ -100,7 +100,7 @@ EOF
             echo "GOT HERE"
 
             # Return to default session auth
-            gcloud auth login $DEFAULT_ADMIN
+            gcloud auth login $DEFAULT_ADMIN --brief --verbosity=none
             $CREDENTIALS
         else 
 
@@ -113,7 +113,7 @@ EOF
             CAN_ACCESS_SECRET="$(kubectl auth can-i get secrets)"
 
             # Return to default session auth
-            gcloud auth login $DEFAULT_ADMIN
+            gcloud auth login $DEFAULT_ADMIN --brief --verbosity=none
             $CREDENTIALS
         fi
         
