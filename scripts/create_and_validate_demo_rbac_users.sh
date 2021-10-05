@@ -35,6 +35,7 @@ declare -a k8s_users=(
 # Terminate any existing proxy connections before applying cluster role bindings
 if [[ "$(pgrep -f L8888:127.0.0.1:8888)" ]]; then
     tput setaf 3; echo "Existing proxy tunnel detected - terminating before continuing" ; tput sgr0
+    echo ""
     TUNNEL="$(pgrep -f L8888:127.0.0.1:8888)"
     kill $TUNNEL
 fi
@@ -102,11 +103,12 @@ EOF
             # Authenticate as sample RBAC user and check for access to cluster secrets
             gcloud auth activate-service-account --key-file ./creds/$ROLE_NAME@$PROJECT_ID.iam.gserviceaccount.com.json
             $CREDENTIALS
-            echo "GOT HERE - Before Before"
-            HTTPS_PROXY=localhost:8888 kubectl auth can-i get secrets
-            echo "GOT HERE - Before"
-            echo $CAN_ACCESS_SECRET
-            echo "GOT HERE - After"
+
+            if [[ "$(HTTPS_PROXY=localhost:8888 kubectl auth can-i get secrets)" == *"yes"* ]]; then
+                tput setaf 3; echo "Service Account: $ROLE_NAME@$PROJECT_ID.iam.gserviceaccount.com can access kubernetes secrets for cluster: $cluster" ; tput sgr0
+            else 
+                tput setaf 3; echo "Service Account: $ROLE_NAME@$PROJECT_ID.iam.gserviceaccount.com does NOT have access to kubernetes secrets for cluster: $cluster" ; tput sgr0            
+            fi
 
             # Return to default session auth
             gcloud auth login $DEFAULT_ADMIN --brief --verbosity=none
@@ -120,20 +122,16 @@ EOF
             # Authenticate as sample RBAC user and check for access to cluster secrets
             gcloud auth activate-service-account --key-file ./creds/$ROLE_NAME@$PROJECT_ID.iam.gserviceaccount.com.json
             $CREDENTIALS
-            CAN_ACCESS_SECRET="$(kubectl auth can-i get secrets)"
+
+            if [[ "$(kubectl auth can-i get secrets)" == *"yes"* ]]; then
+                tput setaf 3; echo "Service Account: $ROLE_NAME@$PROJECT_ID.iam.gserviceaccount.com can access kubernetes secrets for cluster: $cluster" ; tput sgr0
+            else 
+                tput setaf 3; echo "Service Account: $ROLE_NAME@$PROJECT_ID.iam.gserviceaccount.com does NOT have access to kubernetes secrets for cluster: $cluster" ; tput sgr0            
+            fi
 
             # Return to default session auth
             gcloud auth login $DEFAULT_ADMIN --brief --verbosity=none
             $CREDENTIALS
-        fi
-        
-        # Output secret check result      
-        if [[ $CAN_ACCESS_SECRET == *"yes"* ]]; then
-          echo "GOT HERE - Can access YES"
-          tput setaf 3; echo "Service Account: $ROLE_NAME@$PROJECT_ID.iam.gserviceaccount.com can access kubernetes secrets for cluster: $cluster" ; tput sgr0
-        else
-          echo "GOT HERE - Can access NO"
-          tput setaf 3; echo "Service Account: $ROLE_NAME@$PROJECT_ID.iam.gserviceaccount.com can NOT access kubernetes secrets for cluster: $cluster" ; tput sgr0
         fi
 
     # End Inner Loop
