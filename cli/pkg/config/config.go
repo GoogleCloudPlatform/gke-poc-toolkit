@@ -80,6 +80,15 @@ func InitConf(cfgFile string) *Config {
 			os.Exit(1)
 		}
 	}
+	// Enable GCP APIs
+	serviceIds := []string{"compute.googelapis.com"}
+	if conf.VpcConfig.VpcType == "standalone" {
+		enableService(conf.ClustersProjectID, serviceIds)
+	} else {
+		enableService(conf.ClustersProjectID, serviceIds)
+		enableService(conf.VpcConfig.VpcProjectID, serviceIds)
+	}
+	
 	// Validate config
 	err = ValidateConf(conf)
 	if err != nil {
@@ -136,17 +145,11 @@ func InitWithDefaults() (*Config, error) {
 		return config, err
 	}
 
-	// Enable GCP Compute API
-	// api := "compute.googleapis.com"
-	// enableService(projectId, api)
-
 	// populate default conf with user's project ID
 	config.GovernanceProjectID = projectId
 	config.ClustersProjectID = projectId
 	config.VpcConfig.VpcProjectID = projectId
 
-	serviceIds := []string{"compute.googelapis.com"}
-	enableService(projectId, serviceIds)
 	return config, nil
 }
 
