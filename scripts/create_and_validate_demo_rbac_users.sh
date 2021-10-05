@@ -113,7 +113,6 @@ EOF
             # Return to default session auth
             gcloud auth login $DEFAULT_ADMIN --brief --verbosity=none
             $CREDENTIALS
-            echo "GOT HERE - Switched back to default admin"
         else 
 
             # Create the cluster role binding
