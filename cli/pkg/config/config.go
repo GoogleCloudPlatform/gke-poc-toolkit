@@ -81,14 +81,14 @@ func InitConf(cfgFile string) *Config {
 		}
 	}
 	// Enable GCP APIs
-	serviceIds := []string{"compute.googelapis.com"}
+	serviceIds := []string{"compute.googleapis.com"}
 	if conf.VpcConfig.VpcType == "standalone" {
 		enableService(conf.ClustersProjectID, serviceIds)
 	} else {
 		enableService(conf.ClustersProjectID, serviceIds)
 		enableService(conf.VpcConfig.VpcProjectID, serviceIds)
 	}
-	
+
 	// Validate config
 	err = ValidateConf(conf)
 	if err != nil {
@@ -360,7 +360,7 @@ func enableService(projectId string, serviceIds []string) {
 	ctx := context.Background()
 	c, err := serviceusage.NewClient(ctx)
 	if err != nil {
-		// TODO: Handle error.
+		log.Fatalf("error initiating service usage client: %s", err)
 	}
 	defer c.Close()
 
@@ -372,7 +372,7 @@ func enableService(projectId string, serviceIds []string) {
 	}
 	op, err := c.BatchEnableServices(ctx, req)
 	if err != nil {
-		log.Fatalf("error enabling gcp service: %s", err)
+		log.Fatalf("error with batch enable service request: %s", err)
 	}
 
 	resp, err := op.Wait(ctx)
