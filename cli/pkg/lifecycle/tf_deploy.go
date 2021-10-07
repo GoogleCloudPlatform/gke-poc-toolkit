@@ -18,6 +18,7 @@ package lifecycle
 
 import (
 	"context"
+	"fmt"
 	"html/template"
 	"io/ioutil"
 	"os"
@@ -55,7 +56,7 @@ func InitTF(tfDir string, tfStateBucket string) {
 		if err != nil {
 			log.Fatalf("error parsing tfvars template: %s", err)
 		}
-		file, err := os.Create("backend.tf")
+		file, err := os.Create("../../terraform/clusters/backend.tf")
 		if err != nil {
 			log.Fatalf("error creating tfvars file: %s", err)
 		}
@@ -64,8 +65,20 @@ func InitTF(tfDir string, tfStateBucket string) {
 		if err != nil {
 			log.Fatalf("error executing tffavs template merge: %s", err)
 		}
+		input, err := ioutil.ReadFile("../../terraform/clusters/backend.tf")
+		if err != nil {
+			fmt.Println(err)
+			return
+		}
 
-		err = tf.Init(context.Background(), tfexec.Upgrade(true), tfexec.BackendConfig("../../cli/backend.tf"))
+		err = ioutil.WriteFile("../../terraform/shared_vpc/backend.tf", input, 0644)
+		if err != nil {
+			fmt.Println("Error creating", "../../terraform/shared_vpc/backend.tf")
+			fmt.Println(err)
+			return
+		}
+
+		err = tf.Init(context.Background(), tfexec.Upgrade(true))
 		if err != nil {
 			log.Fatalf("error running Init: %s", err)
 		}

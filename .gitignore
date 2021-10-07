@@ -77,5 +77,8 @@ gkekitctl
 # Vscode dot files
 .vscode/
 
+# Cred folder for rbac demo
+creds/
+
 # Dependency directories (remove the comment below to include it)
 # vendor/

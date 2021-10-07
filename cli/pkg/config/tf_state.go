@@ -47,11 +47,8 @@ func CreateTfStateBucket(projectId string, bucketName string) {
 	if err != nil {
 		log.Fatalf("error creating storage client: %s", err)
 	}
-	println(bucketName)
 	err = c.Bucket(bucketName).Create(ctx, projectId, nil)
 	if err != nil {
 		log.Fatalf("error creating storage bucket: %s", err)
 	}
-	// err = errors.New("Background context failed to initiate")
-	// return err
 }

@@ -1,8 +1,8 @@
 # sample-config.yaml
 terraformState: cloud  # local, cloud
 region: "us-east1" # Region for resources aside from GKE clusters
-clustersProjectId: "test1-328320"
-governanceProjectId: "test1-328320" 
+clustersProjectId: "my-project"
+governanceProjectId: "my-project" 
 configSync: true 
 privateEndpoint: false
 defaultNodepoolOS: "cos_containerd" 
@@ -12,7 +12,7 @@ enablePreemptibleNodepool: true
 vpcConfig:
   vpcName: "default"
   vpcType: "shared" # standalone, shared 
-  vpcProjectId: "test2-328320" # Required if you are using a sharedVPC
+  vpcProjectId: "my-project" # Required if you are using a sharedVPC
   podCIDRName: "mypodcidr"
   svcCIDRName: "mysvccidr"
   authIp: "10.10.10.10" # only needed if enabling private endpoints for clusters
