@@ -1,5 +1,5 @@
 /*
-Copyright © 2021 NAME HERE <EMAIL ADDRESS>
+Copyright © 2020 Google Inc.
 
 Licensed under the Apache License, Version 2.0 (the "License");
 you may not use this file except in compliance with the License.
@@ -34,8 +34,8 @@ This application is a tool to generate the needed files
 to quickly create a Cobra application.`,
 	Run: func(cmd *cobra.Command, args []string) {
 		log.Println("Starting delete...")
-		tfDir := "../terraform/cluster_build"
-		lifecycle.InitTF(tfDir)
+		// tfDir := "../terraform/cluster_build"
+		// lifecycle.InitTF(tfDir)
 		lifecycle.DestroyTF()
 	},
 }
