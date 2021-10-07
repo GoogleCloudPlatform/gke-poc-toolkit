@@ -71,9 +71,9 @@ func InitTF(tfDir string, tfStateBucket string) {
 			return
 		}
 
-		err = ioutil.WriteFile("../../terraform/shared_vpc/backend.tf", input, 0644)
+		err = ioutil.WriteFile("../terraform/shared_vpc/backend.tf", input, 0644)
 		if err != nil {
-			fmt.Println("Error creating", "../../terraform/shared_vpc/backend.tf")
+			fmt.Println("Error creating", "../terraform/shared_vpc/backend.tf")
 			fmt.Println(err)
 			return
 		}
