@@ -26,7 +26,7 @@ import (
 	"github.com/hashicorp/terraform-exec/tfinstall"
 )
 
-func DestroyTF(tfDir string, tfStateBucket string) {
+func DestroyTF(tfDir string) {
 	tmpDir, err := ioutil.TempDir("", "tfinstall")
 	if err != nil {
 		log.Fatalf("error creating temp dir: %s", err)

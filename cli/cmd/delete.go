@@ -34,9 +34,8 @@ This application is a tool to generate the needed files
 to quickly create a Cobra application.`,
 	Run: func(cmd *cobra.Command, args []string) {
 		log.Println("Starting delete...")
-		// tfDir := "../terraform/cluster_build"
-		// lifecycle.InitTF(tfDir)
-		lifecycle.DestroyTF()
+		lifecycle.DestroyTF("../terraform/cluster_build")
+		lifecycle.DestroyTF("../terraform/shared_vpc")
 	},
 }
 
