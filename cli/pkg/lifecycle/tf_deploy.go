@@ -69,8 +69,12 @@ func InitTF(tfDir string, tfStateBucket string) {
 		if err != nil {
 			log.Fatalf("error running Init: %s", err)
 		}
+	} else {
+		err = tf.Init(context.Background(), tfexec.Upgrade(true))
+		if err != nil {
+			log.Fatalf("error running Init: %s", err)
+		}
 	}
-
 	state, err := tf.Show(context.Background())
 	if err != nil {
 		log.Fatalf("error running Show: %s", err)
