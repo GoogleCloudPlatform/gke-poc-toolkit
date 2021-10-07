@@ -26,7 +26,7 @@ import (
 	"github.com/hashicorp/terraform-exec/tfinstall"
 )
 
-func DestroyTF() {
+func DestroyTF(tfDir string, tfStateBucket string) {
 	tmpDir, err := ioutil.TempDir("", "tfinstall")
 	if err != nil {
 		log.Fatalf("error creating temp dir: %s", err)
@@ -38,15 +38,14 @@ func DestroyTF() {
 		log.Fatalf("error locating Terraform binary: %s", err)
 	}
 
-	workingDir := "../terraform/cluster_build"
-	tf, err := tfexec.NewTerraform(workingDir, execPath)
+	tf, err := tfexec.NewTerraform(tfDir, execPath)
 	if err != nil {
 		log.Fatalf("error running NewTerraform: %s", err)
 	}
 
 	tf.SetStdout(os.Stdout)
 
-	err = tf.Destroy(context.Background(), tfexec.VarFile("../../cli/terraform.tfvars"))
+	err = tf.Destroy(context.Background(), tfexec.VarFile("../../cli/terraform.tfvars"), tfexec.BackendConfig("../../cli/backend.tf"))
 	if err != nil {
 		log.Fatalf("error running Destroy: %s", err)
 	}
