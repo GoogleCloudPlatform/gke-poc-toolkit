@@ -45,7 +45,7 @@ func DestroyTF(tfDir string) {
 
 	tf.SetStdout(os.Stdout)
 
-	err = tf.Destroy(context.Background(), tfexec.VarFile("../../cli/terraform.tfvars"), tfexec.BackendConfig("../../cli/backend.tf"))
+	err = tf.Destroy(context.Background(), tfexec.VarFile("../../cli/terraform.tfvars"))
 	if err != nil {
 		log.Fatalf("error running Destroy: %s", err)
 	}
