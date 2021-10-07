@@ -56,7 +56,7 @@ func InitTF(tfDir string, tfStateBucket string) {
 		if err != nil {
 			log.Fatalf("error parsing tfvars template: %s", err)
 		}
-		file, err := os.Create("../../terraform/clusters/backend.tf")
+		file, err := os.Create("../terraform/cluster_build/backend.tf")
 		if err != nil {
 			log.Fatalf("error creating tfvars file: %s", err)
 		}
@@ -65,7 +65,7 @@ func InitTF(tfDir string, tfStateBucket string) {
 		if err != nil {
 			log.Fatalf("error executing tffavs template merge: %s", err)
 		}
-		input, err := ioutil.ReadFile("../../terraform/clusters/backend.tf")
+		input, err := ioutil.ReadFile("../terraform/cluster_build/backend.tf")
 		if err != nil {
 			fmt.Println(err)
 			return
