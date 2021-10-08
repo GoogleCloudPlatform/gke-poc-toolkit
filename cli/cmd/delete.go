@@ -16,6 +16,7 @@ limitations under the License.
 package cmd
 
 import (
+	"gkekitctl/pkg/config"
 	"gkekitctl/pkg/lifecycle"
 	"log"
 
@@ -30,13 +31,13 @@ var deleteCmd = &cobra.Command{
 
 	Run: func(cmd *cobra.Command, args []string) {
 		log.Println("Starting delete...")
-		// conf := config.InitConf(cfgFile)
-		// if conf.VpcConfig.VpcType == "shared" {
-		lifecycle.DestroyTF("../terraform/cluster_build")
-		lifecycle.DestroyTF("../terraform/shared_vpc")
-		// } else {
-		// 	lifecycle.DestroyTF("../terraform/cluster_build")
-		// }
+		conf := config.InitConf(cfgFile)
+		if conf.VpcConfig.VpcType == "shared" {
+			lifecycle.DestroyTF("../terraform/cluster_build")
+			lifecycle.DestroyTF("../terraform/shared_vpc")
+		} else {
+			lifecycle.DestroyTF("../terraform/cluster_build")
+		}
 	},
 }
 
