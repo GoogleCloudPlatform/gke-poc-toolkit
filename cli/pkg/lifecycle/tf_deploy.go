@@ -18,7 +18,6 @@ package lifecycle
 
 import (
 	"context"
-	"fmt"
 	"html/template"
 	"io/ioutil"
 	"os"
@@ -29,7 +28,7 @@ import (
 	"github.com/hashicorp/terraform-exec/tfinstall"
 )
 
-func InitTF(tfDir string, tfStateBucket string) {
+func InitTF(tfDir string, tfStateBucket string, vpcType string) {
 	tmpDir, err := ioutil.TempDir("", "tfinstall")
 	if err != nil {
 		log.Fatalf("error creating temp dir: %s", err)
@@ -48,46 +47,16 @@ func InitTF(tfDir string, tfStateBucket string) {
 
 	tf.SetStdout(log.StandardLogger().Out)
 
+	backEndFile := tfDir + "/backend.tf"
 	if tfStateBucket != "local" {
-		// Generate backend file
-		vars := make(map[string]interface{})
-		vars["TfStateBucket"] = tfStateBucket
-		tmpl, err := template.ParseFiles("templates/terraform_backend.tf.tmpl")
-		if err != nil {
-			log.Fatalf("error parsing tfvars template: %s", err)
-		}
-		file, err := os.Create("../terraform/cluster_build/backend.tf")
-		if err != nil {
-			log.Fatalf("error creating tfvars file: %s", err)
-		}
-		defer file.Close()
-		err = tmpl.Execute(file, vars)
-		if err != nil {
-			log.Fatalf("error executing tffavs template merge: %s", err)
-		}
-		input, err := ioutil.ReadFile("../terraform/cluster_build/backend.tf")
-		if err != nil {
-			fmt.Println(err)
-			return
-		}
-
-		err = ioutil.WriteFile("../terraform/shared_vpc/backend.tf", input, 0644)
-		if err != nil {
-			fmt.Println("Error creating", "../terraform/shared_vpc/backend.tf")
-			fmt.Println(err)
-			return
-		}
-
-		err = tf.Init(context.Background(), tfexec.Upgrade(true))
-		if err != nil {
-			log.Fatalf("error running Init: %s", err)
-		}
-	} else {
-		err = tf.Init(context.Background(), tfexec.Upgrade(true))
-		if err != nil {
-			log.Fatalf("error running Init: %s", err)
-		}
+		createTfBackend(tfStateBucket, backEndFile)
 	}
+
+	err = tf.Init(context.Background(), tfexec.Upgrade(true))
+	if err != nil {
+		log.Fatalf("error running Init: %s", err)
+	}
+
 	state, err := tf.Show(context.Background())
 	if err != nil {
 		log.Fatalf("error running Show: %s", err)
@@ -124,5 +93,23 @@ func ApplyTF(tfDir string) {
 	err = tf.Apply(context.Background(), tfexec.VarFile("../../cli/terraform.tfvars"))
 	if err != nil {
 		log.Fatalf("error running Apply: %s", err)
+	}
+}
+
+func createTfBackend(tfStateBucket string, fileLocation string) {
+	vars := make(map[string]interface{})
+	vars["TfStateBucket"] = tfStateBucket
+	tmpl, err := template.ParseFiles("templates/terraform_backend.tf.tmpl")
+	if err != nil {
+		log.Fatalf("error parsing template: %s", err)
+	}
+	file, err := os.Create(fileLocation)
+	if err != nil {
+		log.Fatalf("error creating file: %s", err)
+	}
+	defer file.Close()
+	err = tmpl.Execute(file, vars)
+	if err != nil {
+		log.Fatalf("error executing tffavs template merge: %s", err)
 	}
 }

@@ -30,8 +30,8 @@ func CheckTfStateType(conf *Config) ([]string, error) {
 		bucketNameClusters := "tf-state-clusters" + strings.ToLower(randstr.String(6))
 		bucketNameSharedVPC := "tf-state-sharedvpc" + strings.ToLower(randstr.String(6))
 		CreateTfStateBucket(conf.ClustersProjectID, bucketNameClusters)
-		CreateTfStateBucket(conf.ClustersProjectID, bucketNameSharedVPC)
-		bucketNames := []string{bucketNameSharedVPC, bucketNameClusters}
+		CreateTfStateBucket(conf.VpcConfig.VpcProjectID, bucketNameSharedVPC)
+		bucketNames := []string{bucketNameClusters, bucketNameSharedVPC}
 		return bucketNames, nil
 	} else if conf.TerraformState == "cloud" && conf.VpcConfig.VpcType == "standalone" {
 		bucketNameClusters := "tf-state-clusters" + strings.ToLower(randstr.String(6))
