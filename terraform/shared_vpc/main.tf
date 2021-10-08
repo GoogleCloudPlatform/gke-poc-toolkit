@@ -57,7 +57,7 @@ module "enabled_shared_vpc_apis" {
   version = "~> 10.0"
 
   project_id                  = var.shared_vpc_project_id
-  disable_services_on_destroy = false
+  disable_services_on_destroy = true
 
   activate_apis = [
     "compute.googleapis.com",
