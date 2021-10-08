@@ -25,19 +25,21 @@ import (
 	"github.com/thanhpk/randstr"
 )
 
-func CheckTfStateType(conf *Config) (string, error) {
-	if conf.TerraformState == "cloud" {
-		bucketName := "tf-state-" + strings.ToLower(randstr.String(6))
-		// bucketName := "test-bucket-1849"
-		// err := CreateTfStateBucket(conf.ClustersProjectID, bucketName)
-		CreateTfStateBucket(conf.ClustersProjectID, bucketName)
-		// if err != nil {
-		// 	// log.Fatalf("error creating storage bucket for tf state: %s", err)
-		// 	return "", err
-		// }
-		return bucketName, nil
+func CheckTfStateType(conf *Config) ([]string, error) {
+	if conf.TerraformState == "cloud" && conf.VpcConfig.VpcType == "shared" {
+		bucketNameClusters := "tf-state-clusters" + strings.ToLower(randstr.String(6))
+		bucketNameSharedVPC := "tf-state-sharedvpc" + strings.ToLower(randstr.String(6))
+		CreateTfStateBucket(conf.ClustersProjectID, bucketNameClusters)
+		CreateTfStateBucket(conf.ClustersProjectID, bucketNameSharedVPC)
+		bucketNames := []string{bucketNameSharedVPC, bucketNameClusters}
+		return bucketNames, nil
+	} else if conf.TerraformState == "cloud" && conf.VpcConfig.VpcType == "standalone" {
+		bucketNameClusters := "tf-state-clusters" + strings.ToLower(randstr.String(6))
+		CreateTfStateBucket(conf.ClustersProjectID, bucketNameClusters)
+		bucketNames := []string{bucketNameClusters}
+		return bucketNames, nil
 	}
-	return "local", nil
+	return []string{"local"}, nil
 }
 
 // func CreateTfStateBucket(projectId string, bucketName string) error {

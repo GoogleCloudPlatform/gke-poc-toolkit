@@ -36,13 +36,14 @@ var createCmd = &cobra.Command{
 		if err != nil {
 			log.Fatalf("Error checking Tf State type: %s", err)
 		}
+
 		if conf.VpcConfig.VpcType == "shared" {
-			lifecycle.InitTF("../terraform/shared_vpc", tfStateBucket)
+			lifecycle.InitTF("../terraform/shared_vpc", tfStateBucket[0])
 			lifecycle.ApplyTF("../terraform/shared_vpc")
-			lifecycle.InitTF("../terraform/cluster_build", tfStateBucket)
+			lifecycle.InitTF("../terraform/cluster_build", tfStateBucket[1])
 			lifecycle.ApplyTF("../terraform/cluster_build")
 		} else {
-			lifecycle.InitTF("../terraform/cluster_build", tfStateBucket)
+			lifecycle.InitTF("../terraform/cluster_build", tfStateBucket[0])
 			lifecycle.ApplyTF("../terraform/cluster_build")
 		}
 	},
