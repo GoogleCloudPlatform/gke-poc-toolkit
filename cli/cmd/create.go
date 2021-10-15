@@ -1,5 +1,5 @@
 /*
-Copyright © 2021 NAME HERE <EMAIL ADDRESS>
+Copyright © 2020 Google Inc.
 
 Licensed under the Apache License, Version 2.0 (the "License");
 you may not use this file except in compliance with the License.
@@ -18,6 +18,7 @@ package cmd
 import (
 	"gkekitctl/pkg/config"
 	"gkekitctl/pkg/lifecycle"
+	"log"
 
 	"github.com/spf13/cobra"
 )
@@ -27,12 +28,24 @@ var createCmd = &cobra.Command{
 	Use:   "create",
 	Short: "Create GKE Demo Environment",
 	Example: ` gkekitctl create
-	gkekitctl --config <file.yaml>`,
+	gkekitctl create --config <file.yaml>`,
 	Run: func(cmd *cobra.Command, args []string) {
 		conf := config.InitConf(cfgFile)
 		config.GenerateTfvars(conf)
-		lifecycle.InitTF()
-		lifecycle.ApplyTF()
+		tfStateBucket, err := config.CheckTfStateType(conf)
+		if err != nil {
+			log.Fatalf("Error checking Tf State type: %s", err)
+		}
+
+		if conf.VpcConfig.VpcType == "shared" {
+			lifecycle.InitTF("../terraform/shared_vpc", tfStateBucket[1], conf.VpcConfig.VpcType)
+			lifecycle.ApplyTF("../terraform/shared_vpc")
+			lifecycle.InitTF("../terraform/cluster_build", tfStateBucket[0], conf.VpcConfig.VpcType)
+			lifecycle.ApplyTF("../terraform/cluster_build")
+		} else {
+			lifecycle.InitTF("../terraform/cluster_build", tfStateBucket[0], conf.VpcConfig.VpcType)
+			lifecycle.ApplyTF("../terraform/cluster_build")
+		}
 	},
 }
 

@@ -1,3 +1,19 @@
+/*
+Copyright © 2020 Google Inc.
+
+Licensed under the Apache License, Version 2.0 (the "License");
+you may not use this file except in compliance with the License.
+You may obtain a copy of the License at
+
+    http://www.apache.org/licenses/LICENSE-2.0
+
+Unless required by applicable law or agreed to in writing, software
+distributed under the License is distributed on an "AS IS" BASIS,
+WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+See the License for the specific language governing permissions and
+limitations under the License.
+*/
+
 package config
 
 import (
@@ -14,7 +30,9 @@ import (
 	"context"
 
 	compute "cloud.google.com/go/compute/apiv1"
+	serviceusage "cloud.google.com/go/serviceusage/apiv1"
 	"google.golang.org/api/iterator"
+	serviceusagepb "google.golang.org/genproto/googleapis/api/serviceusage/v1"
 	computepb "google.golang.org/genproto/googleapis/cloud/compute/v1"
 )
 
@@ -62,6 +80,7 @@ var conf *Config
 func InitConf(cfgFile string) *Config {
 	conf := &Config{}
 	var err error
+
 	// if cfgFile is *not* set, prompts the user for a project ID, + reads / validates the default config
 	if cfgFile == "" {
 		conf, err = InitWithDefaults()
@@ -77,6 +96,15 @@ func InitConf(cfgFile string) *Config {
 			os.Exit(1)
 		}
 	}
+	// Enable GCP APIs
+	serviceIds := []string{"compute.googleapis.com", "storage.googleapis.com"}
+	if conf.VpcConfig.VpcType == "standalone" {
+		enableService(conf.ClustersProjectID, serviceIds)
+	} else {
+		enableService(conf.ClustersProjectID, serviceIds)
+		enableService(conf.VpcConfig.VpcProjectID, serviceIds)
+	}
+
 	// Validate config
 	err = ValidateConf(conf)
 	if err != nil {
@@ -137,10 +165,6 @@ func InitWithDefaults() (*Config, error) {
 	config.GovernanceProjectID = projectId
 	config.ClustersProjectID = projectId
 	config.VpcConfig.VpcProjectID = projectId
-
-	for i := range config.ClustersConfig {
-		config.ClustersConfig[i].ProjectID = projectId
-	}
 
 	return config, nil
 }
@@ -346,4 +370,31 @@ func validateMachineType(projectId string, machineType string, zone string) erro
 	}
 
 	return fmt.Errorf("Machine type %s is invalid, must be one of: %v", machineType, validMachineTypes)
+}
+
+func enableService(projectId string, serviceIds []string) {
+	ctx := context.Background()
+	c, err := serviceusage.NewClient(ctx)
+	if err != nil {
+		log.Fatalf("error initiating service usage client: %s", err)
+	}
+	defer c.Close()
+
+	project := "projects/" + projectId
+	log.Printf("Enabling GCP APIs: %s", serviceIds)
+	req := &serviceusagepb.BatchEnableServicesRequest{
+		Parent:     project,
+		ServiceIds: serviceIds,
+	}
+	op, err := c.BatchEnableServices(ctx, req)
+	if err != nil {
+		log.Fatalf("error with batch enable service request: %s", err)
+	}
+
+	resp, err := op.Wait(ctx)
+	if err != nil {
+		log.Fatalf("error enabling gcp service: %s", err)
+	}
+	// TODO: Use resp.
+	_ = resp
 }

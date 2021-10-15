@@ -1,5 +1,5 @@
 /*
-Copyright © 2021 NAME HERE <EMAIL ADDRESS>
+Copyright © 2020 Google Inc.
 
 Licensed under the Apache License, Version 2.0 (the "License");
 you may not use this file except in compliance with the License.
@@ -28,10 +28,9 @@ var cfgFile string
 var rootCmd = &cobra.Command{
 	Use:   "gkekitctl",
 	Short: "Tool to quickly deploy some pretty dope GKE demos",
-	Example: `        gkekitctl create
-	gkekitctl delete
-	gkekitctl update
-	gkekitctl describe`,
+	Example: `        gkekitctl create 
+	gkectl create --config <file.yaml>
+	gkekitctl delete`,
 
 	// Uncomment the following line if your bare application
 	// has an action associated with it:
