@@ -89,9 +89,57 @@ module "service_account-iam-bindings" {
     "roles/iam.workloadIdentityUser" = [
       "serviceAccount:${module.enabled_google_apis.project_id}.svc.id.goog[cnrm-system/cnrm-controller-manager]",
     ]
-
-    # "roles/iam.serviceAccountCreator" = [
-    #   "serviceAccount:${module.enabled_google_apis.project_id}.svc.id.goog[cnrm-system/cnrm-controller-manager]",
-    # ]
   }
 }
+
+// Any post-task requiring the K8s API for the GKE cluster(s) to be up 
+// Used for: Config Connector post-install, ...
+// https://cloud.google.com/config-connector/docs/how-to/install-upgrade-uninstall#addon-configuring 
+
+module "gke-post-create" {
+  depends_on = [
+    module.gke,
+  ]
+
+  for_each = module.gke
+  // Configure kubernetes client to talk to this cluster 
+  // use a short-lived, 1-hr access token to this cluster
+  // https://registry.terraform.io/providers/hashicorp/kubernetes/latest/docs/guides/getting-started 
+  // https://registry.terraform.io/providers/hashicorp/google/latest/docs/data-sources/client_config
+  provider "kubernetes" {
+    load_config_file       = false
+    host                   = "https://${each.endpoint}"
+    token                  = data.google_client_config.default.access_token
+    cluster_ca_certificate = base64decode(each.ca_certificate)
+  }
+
+  // Create a namespace, gcp, to use for KCC-created resources.  
+  resource "kubernetes_namespace" "gcp" {
+    metadata {
+      annotations = {
+        "cnrm.cloud.google.com/project-id" = local.project_id
+      }
+
+      labels = {
+        "created-by-gke-poc-toolkit" = true
+      }
+
+      name = "gcp"
+    }
+  }
+
+  // Configure Config Connector 
+  // https://cloud.google.com/config-connector/docs/how-to/install-upgrade-uninstall#addon-configuring 
+  resource "kubernetes_manifest" "configconnector" {
+    apiVersion = "core.cnrm.cloud.google.com/v1beta1"
+    kind       = "ConfigConnector"
+    metadata = {
+      name = "configconnector.core.cnrm.cloud.google.com"
+    }
+    spec = {
+      googleServiceAccount = "gke-toolkit-kcc@${local.project_id}.iam.gserviceaccount.com"
+      mode                 = "cluster"
+    }
+  }
+}
+

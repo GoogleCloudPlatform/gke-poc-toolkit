@@ -44,6 +44,8 @@ type Config struct {
 	ClustersProjectID         string          `yaml:"clustersProjectId"`
 	GovernanceProjectID       string          `yaml:"governanceProjectId"`
 	ConfigSync                bool            `yaml:"configSync"`
+	ConfigConnector           bool            `yaml:"configConnector"`
+	PolicyController          bool            `yaml:"policyController"`
 	PrivateEndpoint           bool            `yaml:"privateEndpoint"`
 	EnableWorkloadIdentity    bool            `yaml:"enableWorkloadIdentity"`
 	EnableWindowsNodepool     bool            `yaml:"enableWindowsNodepool"`
@@ -182,6 +184,11 @@ func ValidateConf(c *Config) error {
 	}
 	if err := validateConfigRegion(c.GovernanceProjectID, c.Region); err != nil {
 		return err
+	}
+	// If Config Connector is enabled, Workload Identity must also be enabled
+	// Source: https://cloud.google.com/config-connector/docs/how-to/install-upgrade-uninstall#addon-requirements
+	if c.ConfigConnector && !c.EnableWorkloadIdentity {
+		return fmt.Errorf("configConnector=true but workloadIdentity=false. Workload Identity must be enabled to use Config Connector.")
 	}
 
 	// VPC Config vars

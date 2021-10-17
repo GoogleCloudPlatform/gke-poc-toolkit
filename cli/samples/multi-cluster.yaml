@@ -4,6 +4,8 @@ region: "us-east1" # Region for resources aside from GKE clusters
 clustersProjectId: "my-project"
 governanceProjectId: "my-project" 
 configSync: true 
+configConnector: true
+policyController: true
 privateEndpoint: false
 defaultNodepoolOS: "cos_containerd" 
 enableWorkloadIdentity: true

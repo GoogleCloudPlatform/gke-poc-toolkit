@@ -11,7 +11,9 @@ enablePreemptibleNodepool: false
 enableWindowsNodepool: false
 defaultNodepoolOS: "cos"
 privateEndpoint: true #Needs to be true to create a public endpoint. See notes in tfvar_generator for explanation.
+configConnector: true
 configSync: false 
+policyController: false
 vpcConfig:
   vpcName: "default"
   vpcType: "standalone" 
