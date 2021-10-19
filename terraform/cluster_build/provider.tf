@@ -19,12 +19,12 @@ terraform {
     google = {
       version = "~> 3.63.0"
     }
-    #   google-beta = {
-    #     version = "~> 3.49.0"
-    #   }
-      kubernetes = {
-        version = " ~> 2.5.1"
-      }
+    google-beta = {
+      version = "~> 3.88.0"
+    }
+    # kubernetes = {
+    #   version = " ~> 2.5.1"
+    # }
   }
 }
 

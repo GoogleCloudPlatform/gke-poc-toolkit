@@ -35,6 +35,8 @@ func GenerateTfvars(conf *Config) {
 	vars["ClustersProjectId"] = conf.ClustersProjectID
 	vars["GovernanceProjectId"] = conf.GovernanceProjectID
 	vars["ConfigSync"] = conf.ConfigSync
+	vars["PolicyController"] = conf.PolicyController
+	vars["ConfigConnector"] = conf.ConfigConnector
 	// This bool is used in the cluster TF code and due to the nature of TF bool conditionals (only allowing if true)
 	// needs to be reversed to make the yaml spec reflect the intention of the var.
 	if conf.PrivateEndpoint == true {
