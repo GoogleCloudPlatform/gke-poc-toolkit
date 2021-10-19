@@ -8,11 +8,11 @@
 
 ## Introduction
 
-This toolkit sets out to provide a set of infrastructre as code (IaC) which deploys GKE with a strong security posture that can be used to step through demos, stand up a POC, and deliver a codified example that can be the basis of a production implementation your own CICD pipelines.
+This toolkit sets out to provide a set of infrastructure as code (IaC) which deploys GKE with a strong security posture that can be used to step through demos, stand up a POC, and deliver a codified example that can be the basis of a production implementation your own CICD pipelines.
 
 Terraform modules found in the [Cloud Foundations Toolkit](https://github.com/GoogleCloudPlatform/cloud-foundation-toolkit/blob/master/docs/terraform.md) are used as the bases for all IaC.
 
-[Kuberenetes Config Connector](https://cloud.google.com/config-connector/docs/overview) is used to bootstap GCP resouces that are part of application demos.
+[Kubernetes Config Connector](https://cloud.google.com/config-connector/docs/overview) is used to bootstap GCP resouces that are part of application demos.
 
 ## Pre-requisites
 
