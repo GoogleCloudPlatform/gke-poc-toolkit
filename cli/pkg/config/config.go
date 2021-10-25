@@ -99,13 +99,11 @@ func InitConf(cfgFile string) *Config {
 		}
 	}
 	// Enable GCP APIs
-	serviceIds := []string{"compute.googleapis.com", "storage.googleapis.com"}
-	if conf.VpcConfig.VpcType == "standalone" {
-		enableService(conf.ClustersProjectID, serviceIds)
-	} else {
-		enableService(conf.ClustersProjectID, serviceIds)
+	serviceIds := []string{"compute.googleapis.com", "storage.googleapis.com", "anthos.googleapis.com", "sourcerepo.googleapis.com", "gkehub.googleapis.com"}
+	if conf.VpcConfig.VpcType == "shared" {
 		enableService(conf.VpcConfig.VpcProjectID, serviceIds)
 	}
+	enableService(conf.ClustersProjectID, serviceIds)
 
 	// Validate config
 	err = ValidateConf(conf)

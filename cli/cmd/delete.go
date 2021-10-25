@@ -33,11 +33,10 @@ var deleteCmd = &cobra.Command{
 		log.Println("Starting delete...")
 		conf := config.InitConf(cfgFile)
 		if conf.VpcConfig.VpcType == "shared" {
-			lifecycle.DestroyTF("../terraform/cluster_build")
 			lifecycle.DestroyTF("../terraform/shared_vpc")
-		} else {
-			lifecycle.DestroyTF("../terraform/cluster_build")
 		}
+		lifecycle.DestroyTF("../terraform/cluster_build")
+
 	},
 }
 

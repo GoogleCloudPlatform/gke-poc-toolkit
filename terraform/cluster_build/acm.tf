@@ -21,7 +21,6 @@ resource "google_sourcerepo_repository" "gke-poc-config-sync" {
 }
 
 
-
 // enable ACM project-wide
 resource "google_gke_hub_feature" "feature" {
   depends_on = [
@@ -29,7 +28,7 @@ resource "google_gke_hub_feature" "feature" {
   ]
   name     = "configmanagement"
   location = "global"
-  project  = local.project_id
+  project  = module.enabled_google_apis.project_id
   provider = google-beta
 }
 
@@ -38,29 +37,33 @@ resource "google_gke_hub_feature" "feature" {
 // https://registry.terraform.io/providers/hashicorp/google/latest/docs/resources/gke_hub_feature_membership#configmanagement 
 resource "google_gke_hub_membership" "membership" {
   provider = google-beta
-  for_each = module.gke
   depends_on = [
     module.gke,
   ]
-  membership_id = "${each.value.cluster_id}-membership"
+
+  // Iterate over every GKE cluster, and register to Hub 
+  for_each  = var.cluster_config
+  project = module.enabled_google_apis.project_id
+
+  membership_id = "projects/${module.enabled_google_apis.project_id}/locations/${each.value.region}/clusters/${each.key}-membership"
   endpoint {
     gke_cluster {
-      resource_link = "//container.googleapis.com/${each.value.cluster_id}"
+      resource_link = "//container.googleapis.com/projects/${module.enabled_google_apis.project_id}/locations/${each.value.region}/clusters/${each.key}"
     }
   }
-
-
 }
+
+// Install Config Sync and/or Policy Controller on each cluster 
 resource "google_gke_hub_feature_membership" "feature_member" {
   provider = google-beta
   depends_on = [
     module.gke,
   ]
-  for_each = module.gke
+  for_each = var.cluster_config
 
   location   = "global"
   feature    = "configmanagement"
-  membership = "${each.value.cluster_id}-membership"
+  membership = "projects/${module.enabled_google_apis.project_id}/locations/${each.value.region}/clusters/${each.key}-membership"
   configmanagement {
     version = "1.9.0"
     config_sync {
@@ -74,6 +77,5 @@ resource "google_gke_hub_feature_membership" "feature_member" {
       template_library_installed = true
     }
   }
-
 }
 

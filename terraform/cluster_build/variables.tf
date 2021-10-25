@@ -137,6 +137,18 @@ variable "config_connector" {
   default     = true
 }
 
+variable "config_sync" {
+  type        = bool
+  description = "Whether Config ync is enabled for this cluster."
+  default     = true
+}
+
+variable "policy_controller" {
+  type        = bool
+  description = "Whether Policy Controller is enabled for this cluster."
+  default     = true
+}
+
 variable "windows_nodepool" {
   type    = bool
   default = false
