@@ -18,6 +18,7 @@ package cmd
 import (
 	"gkekitctl/pkg/config"
 	"gkekitctl/pkg/lifecycle"
+	"gkekitctl/pkg/postcreate"
 	"log"
 
 	"github.com/spf13/cobra"
@@ -43,6 +44,7 @@ var createCmd = &cobra.Command{
 		}
 		lifecycle.InitTF("../terraform/cluster_build", tfStateBucket[0], conf.VpcConfig.VpcType)
 		lifecycle.ApplyTF("../terraform/cluster_build")
+		postcreate.ExecuteScripts(conf)
 	},
 }
 

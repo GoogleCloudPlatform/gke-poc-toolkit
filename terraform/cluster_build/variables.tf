@@ -139,7 +139,7 @@ variable "config_connector" {
 
 variable "config_sync" {
   type        = bool
-  description = "Whether Config ync is enabled for this cluster."
+  description = "Whether Config Sync is enabled for this cluster."
   default     = true
 }
 

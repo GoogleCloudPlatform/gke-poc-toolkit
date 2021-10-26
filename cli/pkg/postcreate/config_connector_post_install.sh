@@ -15,14 +15,18 @@
 #!/bin/bash
 set -x 
 
-# For every cluster... 
+# NOTE - this script is used for one cluster at a time. 
 
 # Get cluster credentials 
+# TODO - this will work only with zonal clusters 
+gcloud container clusters get-credentials ${CLUSTER_NAME} --project ${PROJECT_ID} --zone=${CLUSTER_ZONE}
 
-# Apply configconnector.yaml 
+# inject project ID into configconnector.yaml 
+sed -i "s/PROJECT_ID/$PROJECT_ID/g" config-connector/configconnector.yaml 
 kubectl apply -f config-connector/configconnector.yaml
 
-# Apply annotated GCP namespace 
+# inject project ID into gcp-namespace.yaml 
+sed -i "s/PROJECT_ID/$PROJECT_ID/g" config-connector/gcp-namespace.yaml 
 kubectl apply -f config-connector/gcp-namespace.yaml
 
 # Apply a test GCP resource 

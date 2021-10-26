@@ -32,8 +32,7 @@ resource "google_gke_hub_feature" "feature" {
   provider = google-beta
 }
 
-// For each cluster, register to Hub and install Config Sync + Policy Controller 
-// BETA 
+// Register each cluster to GKE Hub (Fleets API)
 // https://registry.terraform.io/providers/hashicorp/google/latest/docs/resources/gke_hub_feature_membership#configmanagement 
 resource "google_gke_hub_membership" "membership" {
   provider = google-beta
@@ -41,9 +40,8 @@ resource "google_gke_hub_membership" "membership" {
     module.gke,
   ]
 
-  // Iterate over every GKE cluster, and register to Hub 
-  for_each  = var.cluster_config
-  project = module.enabled_google_apis.project_id
+  for_each = var.cluster_config
+  project  = module.enabled_google_apis.project_id
 
   membership_id = "${each.key}-membership"
   endpoint {
@@ -53,31 +51,37 @@ resource "google_gke_hub_membership" "membership" {
   }
 }
 
-// Install Config Sync and/or Policy Controller on each cluster 
+// If they're enabled, install Config Sync and/or Policy Controller on every cluster 
+// https://registry.terraform.io/providers/hashicorp/google/latest/docs/resources/gke_hub_feature_membership#git 
 resource "google_gke_hub_feature_membership" "feature_member" {
   provider = google-beta
   depends_on = [
     module.gke,
   ]
-  for_each = var.cluster_config
+  
+  // This is a hack if-statement that turns on Config Sync only if the user has it enabled. 
+  // TODO - right now, if policy controller is enabled, then config sync must also be enabled. 
+  // source: https://dev.to/tbetous/how-to-make-conditionnal-resources-in-terraform-440n 
 
+  for_each = var.cluster_config
+  count     = "${var.config_sync == true ? 1 : 0}"
   location   = "global"
-  project = module.enabled_google_apis.project_id
+  project    = module.enabled_google_apis.project_id
   feature    = "configmanagement"
-  membership =  "${each.key}-membership"
+  membership = "${each.key}-membership"
   configmanagement {
     version = "1.9.0"
     config_sync {
       git {
-        sync_repo = google_sourcerepo_repository.gke-poc-config-sync.url
+        sync_repo   = google_sourcerepo_repository.gke-poc-config-sync.url
+        policy_dir  = "/"
+        sync_branch = "main"
+        secret_type = "none"
       }
       source_format = "unstructured"
-      policy_dir = "/"
-      sync_branch = "main"
-      secret_type="none"
     }
     policy_controller {
-      enabled                    = true
+      enabled                    = var.policy_controller
       template_library_installed = true
     }
   }
