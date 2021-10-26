@@ -57,6 +57,7 @@ resource "google_gke_hub_feature_membership" "feature_member" {
   provider = google-beta
   depends_on = [
     module.gke,
+    resource.google_gke_hub_membership.membership,
   ]
   
   // TODO - Config Sync does not have its own individual toggle. Policy Controller does. 
