@@ -59,16 +59,14 @@ resource "google_gke_hub_feature_membership" "feature_member" {
     module.gke,
   ]
   
-  // This is a hack if-statement that turns on Config Sync only if the user has it enabled. 
-  // TODO - right now, if policy controller is enabled, then config sync must also be enabled. 
-  // source: https://dev.to/tbetous/how-to-make-conditionnal-resources-in-terraform-440n 
-
+  // TODO - Config Sync does not have its own individual toggle. Policy Controller does. 
+  // So here we are installing Config Sync whether the user has it enabled for not. 
+  // Attempted to use `count` to do an if-conditional create resource, but you can't use count and for each together. 
   for_each = var.cluster_config
-  count     = "${var.config_sync == true ? 1 : 0}"
   location   = "global"
   project    = module.enabled_google_apis.project_id
   feature    = "configmanagement"
-  membership = "${each.key}-membership"
+  membership = "projects/${module.enabled_google_apis.project_id}/locations/global/memberships/${each.key}-membership"
   configmanagement {
     version = "1.9.0"
     config_sync {

@@ -31,7 +31,7 @@ func ExecuteScripts(conf *config.Config) {
 	// (This only needs to happen once, since all clusters sync to the same repo.)
 	if conf.ConfigSync {
 		envVars := map[string]string{"PROJECT_ID": conf.ClustersProjectID}
-		err := executeScriptHelper("bootstrap_config_sync_repo.sh", envVars)
+		err := executeScriptHelper("postcreate/bootstrap_config_sync_repo.sh", envVars)
 		if err != nil {
 			log.Errorf("⚠️ Bootstrap Config Sync Repo failed with error: %v", err)
 		}
@@ -41,7 +41,7 @@ func ExecuteScripts(conf *config.Config) {
 	if conf.ConfigConnector {
 		for _, cluster := range conf.ClustersConfig {
 			envVars := map[string]string{"PROJECT_ID": conf.ClustersProjectID, "CLUSTER_NAME": cluster.ClusterName, "CLUSTER_REGION": cluster.Region, "CLUSTER_ZONE": cluster.Zone}
-			err := executeScriptHelper("bootstrap_config_sync_repo.sh", envVars)
+			err := executeScriptHelper("postcreate/bootstrap_config_sync_repo.sh", envVars)
 			if err != nil {
 				log.Errorf("⚠️ Config Connector post-install failed with error: %v", err)
 			}
@@ -50,7 +50,7 @@ func ExecuteScripts(conf *config.Config) {
 }
 
 func executeScriptHelper(pathToScript string, envVars map[string]string) error {
-	cmd := exec.Command("pathToScript")
+	cmd := exec.Command(pathToScript)
 	cmd.Env = os.Environ()
 	// append custom env vars to the environment
 	for k, v := range envVars {
