@@ -82,3 +82,6 @@ creds/
 
 # Dependency directories (remove the comment below to include it)
 # vendor/
+
+# Temp config sync bootstrap dirs
+*gke-poc-toolkit-csr*/

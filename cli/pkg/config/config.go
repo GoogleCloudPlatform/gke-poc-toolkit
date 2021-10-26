@@ -99,7 +99,7 @@ func InitConf(cfgFile string) *Config {
 		}
 	}
 	// Enable GCP APIs
-	serviceIds := []string{"compute.googleapis.com", "storage.googleapis.com", "anthos.googleapis.com", "sourcerepo.googleapis.com", "gkehub.googleapis.com"}
+	serviceIds := []string{"compute.googleapis.com", "storage.googleapis.com", "anthos.googleapis.com", "sourcerepo.googleapis.com", "gkehub.googleapis.com", "anthosconfigmanagement.googleapis.com"}
 	if conf.VpcConfig.VpcType == "shared" {
 		enableService(conf.VpcConfig.VpcProjectID, serviceIds)
 	}

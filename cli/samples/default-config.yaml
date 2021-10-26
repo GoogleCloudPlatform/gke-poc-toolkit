@@ -5,12 +5,12 @@
 terraformState: local  
 clustersProjectId: "my-project"
 governanceProjectId: "my-project"
-region: "us-central1"
+region: "us-east1"
 enableWorkloadIdentity: true 
 enablePreemptibleNodepool: false 
 enableWindowsNodepool: false
 defaultNodepoolOS: "cos"
-privateEndpoint: true #Needs to be true to create a public endpoint. See notes in tfvar_generator for explanation.
+privateEndpoint: false
 configConnector: false
 configSync: false 
 policyController: false
@@ -26,6 +26,6 @@ clustersConfig:
   numNodes: 3 
   clusterType: "public"
   machineType: "e2-standard-4"
-  region: "us-central1" 
-  zone: "us-central1-b"
-  subnetName: "us-central1"
+  region: "us-east1" 
+  zone: "us-east1-b"
+  subnetName: "us-east1"

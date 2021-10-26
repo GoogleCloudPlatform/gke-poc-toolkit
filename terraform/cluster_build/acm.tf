@@ -45,7 +45,7 @@ resource "google_gke_hub_membership" "membership" {
   for_each  = var.cluster_config
   project = module.enabled_google_apis.project_id
 
-  membership_id = "projects/${module.enabled_google_apis.project_id}/locations/${each.value.region}/clusters/${each.key}-membership"
+  membership_id = "${each.key}-membership"
   endpoint {
     gke_cluster {
       resource_link = "//container.googleapis.com/projects/${module.enabled_google_apis.project_id}/locations/${each.value.region}/clusters/${each.key}"
@@ -62,8 +62,9 @@ resource "google_gke_hub_feature_membership" "feature_member" {
   for_each = var.cluster_config
 
   location   = "global"
+  project = module.enabled_google_apis.project_id
   feature    = "configmanagement"
-  membership = "projects/${module.enabled_google_apis.project_id}/locations/${each.value.region}/clusters/${each.key}-membership"
+  membership =  "${each.key}-membership"
   configmanagement {
     version = "1.9.0"
     config_sync {
@@ -71,6 +72,9 @@ resource "google_gke_hub_feature_membership" "feature_member" {
         sync_repo = google_sourcerepo_repository.gke-poc-config-sync.url
       }
       source_format = "unstructured"
+      policy_dir = "/"
+      sync_branch = "main"
+      secret_type="none"
     }
     policy_controller {
       enabled                    = true
