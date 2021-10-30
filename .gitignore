@@ -85,3 +85,6 @@ creds/
 
 # Temp config sync bootstrap dirs
 *gke-poc-toolkit-csr*/
+
+# Config sync ssh 
+cli/pkg/postcreate/.ssh*

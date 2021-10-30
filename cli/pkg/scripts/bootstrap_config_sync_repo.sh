@@ -1,6 +1,14 @@
 #!/bin/sh
 set -x 
 
+# Create gitcreds secret. This allows Config Sync to use the previously-generated 
+# SSH key to read from the user's CSR repo. 
+kubectl create secret generic git-creds \
+--namespace=config-management-system \
+--from-file=ssh=../../pkg/scripts/.ssh/id_rsa
+
+
+# Get ready to clone the repo... 
 # Create temp dir 
 NOW=`date +'%m%d%Y%H%M'`
 TEMP_DIR="gke-poc-toolkit-csr-${NOW}"
@@ -14,7 +22,7 @@ gcloud source repos clone gke-poc-config-sync --project=$PROJECT_ID
 cd gke-poc-config-sync 
 
 # Copy contents of bootstrap dir into user's CSR repo 
-cp -r ../../pkg/postcreate/config-sync-bootstrap/* .
+cp -r ../../pkg/scripts/config-sync-bootstrap/* .
 
 # Git commit, git push 
 git add .

@@ -10,7 +10,7 @@ enableWorkloadIdentity: true
 enablePreemptibleNodepool: false 
 enableWindowsNodepool: false
 defaultNodepoolOS: "cos"
-privateEndpoint: true
+privateEndpoint: false
 configConnector: true
 configSync: true 
 policyController: true

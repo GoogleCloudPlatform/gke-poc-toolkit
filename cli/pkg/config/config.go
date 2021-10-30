@@ -183,10 +183,11 @@ func ValidateConf(c *Config) error {
 	if err := validateConfigRegion(c.GovernanceProjectID, c.Region); err != nil {
 		return err
 	}
-	// If Config Connector is enabled, Workload Identity must also be enabled
+	// If any ACM component is enabled, so must Workload Identity be enabled.
 	// Source: https://cloud.google.com/config-connector/docs/how-to/install-upgrade-uninstall#addon-requirements
-	if c.ConfigConnector && !c.EnableWorkloadIdentity {
-		return fmt.Errorf("configConnector=true but workloadIdentity=false. Workload Identity must be enabled to use Config Connector.")
+	// https://cloud.google.com/anthos-config-management/docs/how-to/installing-config-sync#workload-identity-enabled
+	if !c.EnableWorkloadIdentity && (c.ConfigConnector || c.ConfigSync || c.PolicyController) {
+		return fmt.Errorf("Workload Identity must be enabled if any ACM component is enabled (Config Sync, Policy Controller, Config Connector).")
 	}
 
 	// VPC Config vars

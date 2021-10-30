@@ -14,7 +14,7 @@ See the License for the specific language governing permissions and
 limitations under the License.
 */
 
-package postcreate
+package scripts
 
 import (
 	"fmt"
@@ -25,7 +25,19 @@ import (
 	log "github.com/sirupsen/logrus"
 )
 
-func ExecuteScripts(conf *config.Config) {
+// Runs before Terraform
+func ExecutePreScripts(conf *config.Config) {
+	// log.Println("👾 Running pre-create scripts...")
+	// if conf.ConfigSync {
+	// 	err := executeScriptHelper("pkg/postcreate/config_sync_ssh.sh", map[string]string{})
+	// 	if err != nil {
+	// 		log.Errorf("⚠️ SSH setup failed with error: %v", err)
+	// 	}
+	// }
+}
+
+// Runs after Terraform
+func ExecutePostScripts(conf *config.Config) {
 	log.Println("👾 Running post-create scripts...")
 	// If user has Config Sync enabled, then bootstrap their Cloud Source sync repo.
 	// (This only needs to happen once, since all clusters sync to the same repo.)
@@ -38,15 +50,15 @@ func ExecuteScripts(conf *config.Config) {
 	}
 
 	// If user has Config Connector enabled, complete post-install steps *for every cluster.*
-	// if conf.ConfigConnector {
-	// 	for _, cluster := range conf.ClustersConfig {
-	// 		envVars := map[string]string{"PROJECT_ID": conf.ClustersProjectID, "CLUSTER_NAME": cluster.ClusterName, "CLUSTER_REGION": cluster.Region, "CLUSTER_ZONE": cluster.Zone}
-	// 		err := executeScriptHelper("pkg/postcreate/config_connector_post_install.sh", envVars)
-	// 		if err != nil {
-	// 			log.Errorf("⚠️ Config Connector post-install failed with error: %v", err)
-	// 		}
-	// 	}
-	// }
+	if conf.ConfigConnector {
+		for _, cluster := range conf.ClustersConfig {
+			envVars := map[string]string{"PROJECT_ID": conf.ClustersProjectID, "CLUSTER_NAME": cluster.ClusterName, "CLUSTER_REGION": cluster.Region, "CLUSTER_ZONE": cluster.Zone}
+			err := executeScriptHelper("pkg/postcreate/config_connector_post_install.sh", envVars)
+			if err != nil {
+				log.Errorf("⚠️ Config Connector post-install failed with error: %v", err)
+			}
+		}
+	}
 	log.Info("✅ Post-create scripts complete!")
 }
 

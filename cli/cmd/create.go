@@ -17,7 +17,9 @@ package cmd
 
 import (
 	"gkekitctl/pkg/config"
-	"gkekitctl/pkg/postcreate"
+	"gkekitctl/pkg/lifecycle"
+	"gkekitctl/pkg/scripts"
+	"log"
 
 	"github.com/spf13/cobra"
 )
@@ -31,18 +33,18 @@ var createCmd = &cobra.Command{
 	Run: func(cmd *cobra.Command, args []string) {
 		conf := config.InitConf(cfgFile)
 		config.GenerateTfvars(conf)
-		// tfStateBucket, err := config.CheckTfStateType(conf)
-		// if err != nil {
-		// 	log.Fatalf("Error checking Tf State type: %s", err)
-		// }
-
-		// if conf.VpcConfig.VpcType == "shared" {
-		// 	lifecycle.InitTF("../terraform/shared_vpc", tfStateBucket[1], conf.VpcConfig.VpcType)
-		// 	lifecycle.ApplyTF("../terraform/shared_vpc")
-		// }
-		// lifecycle.InitTF("../terraform/cluster_build", tfStateBucket[0], conf.VpcConfig.VpcType)
-		// lifecycle.ApplyTF("../terraform/cluster_build")
-		postcreate.ExecuteScripts(conf)
+		tfStateBucket, err := config.CheckTfStateType(conf)
+		if err != nil {
+			log.Fatalf("Error checking Tf State type: %s", err)
+		}
+		scripts.ExecutePreScripts(conf)
+		if conf.VpcConfig.VpcType == "shared" {
+			lifecycle.InitTF("../terraform/shared_vpc", tfStateBucket[1], conf.VpcConfig.VpcType)
+			lifecycle.ApplyTF("../terraform/shared_vpc")
+		}
+		lifecycle.InitTF("../terraform/cluster_build", tfStateBucket[0], conf.VpcConfig.VpcType)
+		lifecycle.ApplyTF("../terraform/cluster_build")
+		scripts.ExecutePostScripts(conf)
 	},
 }
 
