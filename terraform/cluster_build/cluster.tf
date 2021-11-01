@@ -31,7 +31,8 @@ module "gke" {
   network_project_id      = local.project_id
   ip_range_pods           = local.ip_range_pods
   ip_range_services       = local.ip_range_services
-  enable_private_endpoint = var.private_endpoint
+  # enable_private_endpoint = var.private_endpoint
+  enable_private_endpoint = false 
   enable_shielded_nodes   = true
   master_ipv4_cidr_block  = "172.16.${index(keys(var.cluster_config), each.key)}.16/28"
   master_authorized_networks = [{

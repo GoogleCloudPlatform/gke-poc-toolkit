@@ -29,7 +29,7 @@ import (
 func ExecutePreScripts(conf *config.Config) {
 	// log.Println("👾 Running pre-create scripts...")
 	// if conf.ConfigSync {
-	// 	err := executeScriptHelper("pkg/postcreate/config_sync_ssh.sh", map[string]string{})
+	// 	err := executeScriptHelper("pkg/scripts/config_sync_ssh.sh", map[string]string{})
 	// 	if err != nil {
 	// 		log.Errorf("⚠️ SSH setup failed with error: %v", err)
 	// 	}
@@ -39,27 +39,37 @@ func ExecutePreScripts(conf *config.Config) {
 // Runs after Terraform
 func ExecutePostScripts(conf *config.Config) {
 	log.Println("👾 Running post-create scripts...")
-	// If user has Config Sync enabled, then bootstrap their Cloud Source sync repo.
-	// (This only needs to happen once, since all clusters sync to the same repo.)
 	if conf.ConfigSync {
+		// If user has Config Sync enabled, then bootstrap their Cloud Source sync repo.
+		// (This only needs to happen once, since all clusters sync to the same repo.)
 		envVars := map[string]string{"PROJECT_ID": conf.ClustersProjectID}
-		err := executeScriptHelper("pkg/postcreate/bootstrap_config_sync_repo.sh", envVars)
+		err := executeScriptHelper("pkg/scripts/bootstrap_config_sync_repo.sh", envVars)
 		if err != nil {
 			log.Errorf("⚠️ Bootstrap Config Sync Repo failed with error: %v", err)
 		}
-	}
-
-	// If user has Config Connector enabled, complete post-install steps *for every cluster.*
-	if conf.ConfigConnector {
+		// Every cluster needs the config sync gitcreds secret
 		for _, cluster := range conf.ClustersConfig {
 			envVars := map[string]string{"PROJECT_ID": conf.ClustersProjectID, "CLUSTER_NAME": cluster.ClusterName, "CLUSTER_REGION": cluster.Region, "CLUSTER_ZONE": cluster.Zone}
-			err := executeScriptHelper("pkg/postcreate/config_connector_post_install.sh", envVars)
+
+			dir, _ := os.Getwd()
+			log.Infof("Current working dir is: %s", dir)
+			log.Infof("About to execute gitcreds... env is: %+v", envVars)
+			err := executeScriptHelper("pkg/scripts/config_sync_gitcreds.sh", envVars)
 			if err != nil {
-				log.Errorf("⚠️ Config Connector post-install failed with error: %v", err)
+				log.Errorf("⚠️ Git creds failed with err: %v", err)
 			}
 		}
 	}
-	log.Info("✅ Post-create scripts complete!")
+	// If user has Config Connector enabled, complete post-install steps *for every cluster.*
+	// if conf.ConfigConnector {
+	// 	for _, cluster := range conf.ClustersConfig {
+	// 		envVars := map[string]string{"PROJECT_ID": conf.ClustersProjectID, "CLUSTER_NAME": cluster.ClusterName, "CLUSTER_REGION": cluster.Region, "CLUSTER_ZONE": cluster.Zone}
+	// 		err := executeScriptHelper("pkg/scripts/config_connector_post_install.sh", envVars)
+	// 		if err != nil {
+	// 			log.Errorf("⚠️ Config Connector post-install failed with error: %v", err)
+	// 		}
+	// 	}
+	// }
 }
 
 func executeScriptHelper(pathToScript string, envVars map[string]string) error {
@@ -71,11 +81,10 @@ func executeScriptHelper(pathToScript string, envVars map[string]string) error {
 	}
 	// exec the script
 	stdout, err := cmd.Output()
+	log.Info(string(stdout))
 
 	if err != nil {
 		return err
 	}
-
-	log.Println(string(stdout))
 	return nil
 }

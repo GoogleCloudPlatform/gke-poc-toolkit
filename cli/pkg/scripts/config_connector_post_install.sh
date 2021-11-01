@@ -1,8 +1,9 @@
-#!/bin/sh
+#!/bin/bash
 
 set -x 
 
 # NOTE - this script is used for one cluster at a time. 
+echo "Starting config connector post-install..."
 
 # Get cluster credentials 
 # TODO - this will work only with zonal clusters 
