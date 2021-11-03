@@ -38,28 +38,28 @@ func ExecutePreScripts(conf *config.Config) {
 
 // Runs after Terraform
 func ExecutePostScripts(conf *config.Config) {
-	log.Println("👾 Running post-create scripts...")
-	if conf.ConfigSync {
-		// If user has Config Sync enabled, then bootstrap their Cloud Source sync repo.
-		// (This only needs to happen once, since all clusters sync to the same repo.)
-		envVars := map[string]string{"PROJECT_ID": conf.ClustersProjectID}
-		err := executeScriptHelper("pkg/scripts/bootstrap_config_sync_repo.sh", envVars)
-		if err != nil {
-			log.Errorf("⚠️ Bootstrap Config Sync Repo failed with error: %v", err)
-		}
-		// Every cluster needs the config sync gitcreds secret
-		for _, cluster := range conf.ClustersConfig {
-			envVars := map[string]string{"PROJECT_ID": conf.ClustersProjectID, "CLUSTER_NAME": cluster.ClusterName, "CLUSTER_REGION": cluster.Region, "CLUSTER_ZONE": cluster.Zone}
+	// log.Println("👾 Running post-create scripts...")
+	// if conf.ConfigSync {
+	// 	// If user has Config Sync enabled, then bootstrap their Cloud Source sync repo.
+	// 	// (This only needs to happen once, since all clusters sync to the same repo.)
+	// 	envVars := map[string]string{"PROJECT_ID": conf.ClustersProjectID}
+	// 	err := executeScriptHelper("pkg/scripts/bootstrap_config_sync_repo.sh", envVars)
+	// 	if err != nil {
+	// 		log.Errorf("⚠️ Bootstrap Config Sync Repo failed with error: %v", err)
+	// 	}
+	// 	// Every cluster needs the config sync gitcreds secret
+	// 	for _, cluster := range conf.ClustersConfig {
+	// 		envVars := map[string]string{"PROJECT_ID": conf.ClustersProjectID, "CLUSTER_NAME": cluster.ClusterName, "CLUSTER_REGION": cluster.Region, "CLUSTER_ZONE": cluster.Zone}
 
-			dir, _ := os.Getwd()
-			log.Infof("Current working dir is: %s", dir)
-			log.Infof("About to execute gitcreds... env is: %+v", envVars)
-			err := executeScriptHelper("pkg/scripts/config_sync_gitcreds.sh", envVars)
-			if err != nil {
-				log.Errorf("⚠️ Git creds failed with err: %v", err)
-			}
-		}
-	}
+	// 		dir, _ := os.Getwd()
+	// 		log.Infof("Current working dir is: %s", dir)
+	// 		log.Infof("About to execute gitcreds... env is: %+v", envVars)
+	// 		err := executeScriptHelper("pkg/scripts/config_sync_gitcreds.sh", envVars)
+	// 		if err != nil {
+	// 			log.Errorf("⚠️ Git creds failed with err: %v", err)
+	// 		}
+	// 	}
+	// }
 	// If user has Config Connector enabled, complete post-install steps *for every cluster.*
 	// if conf.ConfigConnector {
 	// 	for _, cluster := range conf.ClustersConfig {
