@@ -11,6 +11,9 @@ echo "☁️ Config Connector post-install for cluster: ${CLUSTER_NAME} in zone:
 
 gcloud container clusters get-credentials ${CLUSTER_NAME} --project ${PROJECT_ID} --zone=${CLUSTER_ZONE}
 
+#TODO - make start proxy in the background
+
+
 # inject project ID into configconnector.yaml 
 sed -i "s/PROJECT_ID/$PROJECT_ID/g" ../../pkg/scripts/config-connector/configconnector.yaml 
 kubectl apply -f ../../pkg/scripts/config-connector/configconnector.yaml

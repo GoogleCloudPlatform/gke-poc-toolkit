@@ -10,6 +10,8 @@ gcloud container clusters get-credentials ${CLUSTER_NAME} --project ${PROJECT_ID
 DIR=`pwd`
 echo "Current working dir is: $DIR"
 
+#TODO - make start proxy 
+
 # Create gitcreds secret. This allows Config Sync to use the previously-generated 
 # SSH key to read from the user's CSR repo. 
 echo "Creating gitcreds secret..."
