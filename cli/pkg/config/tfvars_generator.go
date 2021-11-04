@@ -44,7 +44,6 @@ func GenerateTfvars(conf *Config) {
 	} else {
 		vars["PrivateEndpoint"] = true
 	}
-	vars["PrivateEndpoint"] = false
 	vars["DefaultNodepoolOS"] = conf.DefaultNodepoolOS
 	vars["EnableWorkloadIdentity"] = conf.EnableWorkloadIdentity
 	vars["EnableWindowsNodepool"] = conf.EnableWindowsNodepool
