@@ -10,7 +10,7 @@ enableWorkloadIdentity: true
 enablePreemptibleNodepool: false 
 enableWindowsNodepool: false
 defaultNodepoolOS: "cos"
-privateEndpoint: true #Needs to be true to create a public endpoint. See notes in tfvar_generator for explanation.
+privateEndpoint: true
 configSync: false 
 vpcConfig:
   vpcName: "default"

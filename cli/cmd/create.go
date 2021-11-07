@@ -18,7 +18,8 @@ package cmd
 import (
 	"gkekitctl/pkg/config"
 	"gkekitctl/pkg/lifecycle"
-	"log"
+
+	log "github.com/sirupsen/logrus"
 
 	"github.com/spf13/cobra"
 )
@@ -40,12 +41,17 @@ var createCmd = &cobra.Command{
 		if conf.VpcConfig.VpcType == "shared" {
 			lifecycle.InitTF("../terraform/shared_vpc", tfStateBucket[1], conf.VpcConfig.VpcType)
 			lifecycle.ApplyTF("../terraform/shared_vpc")
-			lifecycle.InitTF("../terraform/cluster_build", tfStateBucket[0], conf.VpcConfig.VpcType)
-			lifecycle.ApplyTF("../terraform/cluster_build")
-		} else {
-			lifecycle.InitTF("../terraform/cluster_build", tfStateBucket[0], conf.VpcConfig.VpcType)
-			lifecycle.ApplyTF("../terraform/cluster_build")
 		}
+		lifecycle.InitTF("../terraform/cluster_build", tfStateBucket[0], conf.VpcConfig.VpcType)
+		lifecycle.ApplyTF("../terraform/cluster_build")
+
+		// if conf.ConfigSync {
+		// 	err := acm.InitConfigSync(conf)
+		// 	if err != nil {
+		// 		log.Errorf("🚨 Failed to initialize Config Sync: %s", err)
+		// 	}
+		// }
+
 	},
 }
 
