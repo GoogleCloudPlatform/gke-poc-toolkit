@@ -131,6 +131,18 @@ variable "auth_ip" {
   default = "1.2.3.4"
 }
 
+variable "config_sync" {
+  type        = bool
+  description = "Enable Config Sync on all clusters."
+  default     = true
+}
+
+variable "policy_controller" {
+  type        = bool
+  description = "Enable Policy Controller on all clusters."
+  default     = true
+}
+
 variable "config_connector" {
   type        = bool
   description = "(Beta) Whether ConfigConnector is enabled for this cluster."

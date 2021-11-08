@@ -14,18 +14,17 @@
  * limitations under the License.
  */
 
- // TODO - WRAP ALL THIS IN AN IF-STATEMENT. 
- // ONLY CREATE ALL THIS IF config_sync=true 
-
 // https://registry.terraform.io/providers/hashicorp/google/latest/docs/resources/sourcerepo_repository 
 // Create 1 centralized Cloud Source Repo, that all GKE clusters will sync to  
 resource "google_sourcerepo_repository" "gke-poc-config-sync" {
+  count          = var.config_sync ? 1 : 0
   name = "gke-poc-config-sync"
 }
 
 
 // enable ACM project-wide
 resource "google_gke_hub_feature" "feature" {
+  count          = var.config_sync ? 1 : 0
   depends_on = [
     module.gke,
   ]
@@ -38,6 +37,7 @@ resource "google_gke_hub_feature" "feature" {
 // Register each cluster to GKE Hub (Fleets API)
 // https://registry.terraform.io/providers/hashicorp/google/latest/docs/resources/gke_hub_feature_membership#configmanagement 
 resource "google_gke_hub_membership" "membership" {
+  count          = var.config_sync ? 1 : 0
   provider = google-beta
   depends_on = [
     module.gke,
@@ -58,6 +58,7 @@ resource "google_gke_hub_membership" "membership" {
   // install config sync
   // https://registry.terraform.io/providers/hashicorp/google/latest/docs/resources/gke_hub_feature_membership#git 
   resource "google_gke_hub_feature_membership" "feature_member" {
+    count          = var.config_sync ? 1 : 0
     provider = google-beta
     depends_on = [
       module.gke,
@@ -82,7 +83,7 @@ resource "google_gke_hub_membership" "membership" {
         source_format = "unstructured"
       }
       policy_controller {
-        enabled                    = false
+        enabled                    = var.policy_controller
       }
     }
   }

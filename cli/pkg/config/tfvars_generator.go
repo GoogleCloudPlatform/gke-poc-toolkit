@@ -35,6 +35,7 @@ func GenerateTfvars(conf *Config) {
 	vars["ClustersProjectId"] = conf.ClustersProjectID
 	vars["GovernanceProjectId"] = conf.GovernanceProjectID
 	vars["ConfigSync"] = conf.ConfigSync
+	vars["PolicyController"] = conf.PolicyController
 	vars["PrivateEndpoint"] = conf.PrivateEndpoint
 	vars["DefaultNodepoolOS"] = conf.DefaultNodepoolOS
 	vars["EnableWorkloadIdentity"] = conf.EnableWorkloadIdentity

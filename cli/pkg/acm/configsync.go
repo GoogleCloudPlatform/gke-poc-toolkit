@@ -85,8 +85,14 @@ func InitConfigSync(conf *config.Config) error {
 // ssh-keygen
 // Source: https://stackoverflow.com/questions/21151714/go-generate-an-ssh-public-key
 func InitSSH() error {
-	privateKeyPath := "id_rsa"
-	pubKeyPath := "id_rsa.pub"
+	privateKeyPath := ".ssh/id_rsa"
+	pubKeyPath := ".ssh/id_rsa.pub"
+
+	// make ssh dir if not exists
+	err := os.MkdirAll(".ssh", 0600)
+	if err != nil {
+		log.Warnf("Error making .ssh dir: %v", err)
+	}
 
 	// ssh keygen to local dir
 	log.Info("Generating private key")
@@ -119,14 +125,14 @@ func InitSSH() error {
 
 func PromptUser(conf *config.Config) error {
 	// read public key as string
-	bytes, err := ioutil.ReadFile("id_rsa.pub")
+	bytes, err := ioutil.ReadFile(".ssh/id_rsa.pub")
 	if err != nil {
 		return err
 	}
 	pubKey := string(bytes)
 
 	// Prompt user to register ssh public key to their Cloud Source Repositories
-	log.Info("💻 Copy the key below to the clipboard, then open this link to register the key. (You can name it whatever.) https://source.cloud.google.com/user/ssh_keys")
+	log.Info("💻 Copy the key below to the clipboard, then open this link to register: https://source.cloud.google.com/user/ssh_keys")
 	log.Info(pubKey)
 	log.Info("Once you've registered the key, press enter to continue...")
 	fmt.Scanln() // wait for Enter Key
@@ -230,7 +236,7 @@ func CreateGitCredsSecret(kubeConfig *api.Config) error {
 	ctx := context.Background()
 
 	// Get string value of private key
-	privateKey, err := ioutil.ReadFile("id_rsa")
+	privateKey, err := ioutil.ReadFile(".ssh/id_rsa")
 	if err != nil {
 		return fmt.Errorf("Failed to read id_rsa from file: %v", err)
 	}
