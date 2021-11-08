@@ -86,3 +86,7 @@ creds/
 
 # ssh 
 *id_rsa*
+
+
+# Cloud Source Repos
+*gke-poc-config-sync*

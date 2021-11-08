@@ -1,6 +1,6 @@
 terraformState: local  
-clustersProjectId: "my-project"
-governanceProjectId: "my-project"
+clustersProjectId: "gkepoc-nov8-1"
+governanceProjectId: "gkepoc-nov8-1"
 region: "us-central1"
 enableWorkloadIdentity: true 
 enablePreemptibleNodepool: false 
@@ -12,7 +12,7 @@ policyController: true
 vpcConfig:
   vpcName: "default"
   vpcType: "standalone" 
-  vpcProjectId: "my-project" 
+  vpcProjectId: "gkepoc-nov8-1" 
   podCIDRName: "default"
   svcCIDRName: "default"
   authIP: "10.10.10.10"

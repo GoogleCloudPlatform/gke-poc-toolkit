@@ -16,9 +16,8 @@ limitations under the License.
 package cmd
 
 import (
-	"gkekitctl/pkg/config"
-	// "gkekitctl/pkg/lifecycle"
 	"gkekitctl/pkg/acm"
+	"gkekitctl/pkg/config"
 
 	log "github.com/sirupsen/logrus"
 

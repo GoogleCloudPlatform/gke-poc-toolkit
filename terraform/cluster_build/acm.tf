@@ -37,7 +37,6 @@ resource "google_gke_hub_feature" "feature" {
 // Register each cluster to GKE Hub (Fleets API)
 // https://registry.terraform.io/providers/hashicorp/google/latest/docs/resources/gke_hub_feature_membership#configmanagement 
 resource "google_gke_hub_membership" "membership" {
-  count          = var.config_sync ? 1 : 0
   provider = google-beta
   depends_on = [
     module.gke,
@@ -58,7 +57,6 @@ resource "google_gke_hub_membership" "membership" {
   // install config sync
   // https://registry.terraform.io/providers/hashicorp/google/latest/docs/resources/gke_hub_feature_membership#git 
   resource "google_gke_hub_feature_membership" "feature_member" {
-    count          = var.config_sync ? 1 : 0
     provider = google-beta
     depends_on = [
       module.gke,
@@ -84,6 +82,7 @@ resource "google_gke_hub_membership" "membership" {
       }
       policy_controller {
         enabled                    = var.policy_controller
+        template_library_installed = var.policy_controller
       }
     }
   }

@@ -39,18 +39,18 @@ func InitConfigSync(conf *config.Config) error {
 	log.Info("🔄 Finishing Config Sync install...")
 
 	// Generate ssh keypair + write to local dir
-	// log.Info("🔑 Generating ssh keypair for Config Sync...")
-	// err := InitSSH()
-	// if err != nil {
-	// 	return err
-	// }
+	log.Info("🔑 Generating ssh keypair for Config Sync...")
+	err := InitSSH()
+	if err != nil {
+		return err
+	}
 
 	// // Prompt user to register ssh public key to their Cloud Source Repositories
 	// // (AND if needed, run make start proxy in another tab before kubectl attempt)
-	// err = PromptUser(conf)
-	// if err != nil {
-	// 	return err
-	// }
+	err = PromptUser(conf)
+	if err != nil {
+		return err
+	}
 
 	// Authenticate Kubernetes client-go to all clusters
 	log.Info("☸️ Generating Kubeconfig...")
@@ -85,13 +85,13 @@ func InitConfigSync(conf *config.Config) error {
 // ssh-keygen
 // Source: https://stackoverflow.com/questions/21151714/go-generate-an-ssh-public-key
 func InitSSH() error {
-	privateKeyPath := ".ssh/id_rsa"
-	pubKeyPath := ".ssh/id_rsa.pub"
+	privateKeyPath := "id_rsa"
+	pubKeyPath := "id_rsa.pub"
 
 	// make ssh dir if not exists
-	err := os.MkdirAll(".ssh", 0600)
+	err := os.MkdirAll("ssh", 0700)
 	if err != nil {
-		log.Warnf("Error making .ssh dir: %v", err)
+		log.Warnf("Error making ssh dir: %v", err)
 	}
 
 	// ssh keygen to local dir
@@ -125,7 +125,7 @@ func InitSSH() error {
 
 func PromptUser(conf *config.Config) error {
 	// read public key as string
-	bytes, err := ioutil.ReadFile(".ssh/id_rsa.pub")
+	bytes, err := ioutil.ReadFile("id_rsa.pub")
 	if err != nil {
 		return err
 	}
@@ -236,7 +236,7 @@ func CreateGitCredsSecret(kubeConfig *api.Config) error {
 	ctx := context.Background()
 
 	// Get string value of private key
-	privateKey, err := ioutil.ReadFile(".ssh/id_rsa")
+	privateKey, err := ioutil.ReadFile("id_rsa")
 	if err != nil {
 		return fmt.Errorf("Failed to read id_rsa from file: %v", err)
 	}
