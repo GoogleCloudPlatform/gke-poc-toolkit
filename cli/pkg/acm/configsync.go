@@ -36,25 +36,21 @@ import (
 //		from private key. (This is needed for Config Sync to read from Cloud Source Repos)
 // 5. Prints the gcloud clone cmd for user to clone their ConfigSync repo to push stuff to it. (DONE.)
 func InitConfigSync(conf *config.Config) error {
+	log.Info("🔄 Finishing Config Sync install...")
 
 	// Generate ssh keypair + write to local dir
-	log.Info("🔑 Generating ssh keypair for Config Sync...")
-	err := InitSSH()
-	if err != nil {
-		return err
-	}
+	// log.Info("🔑 Generating ssh keypair for Config Sync...")
+	// err := InitSSH()
+	// if err != nil {
+	// 	return err
+	// }
 
-	// Prompt user to register ssh public key to their Cloud Source Repositories
-	// (AND if needed, run make start proxy in another tab before kubectl attempt)
-	err = PromptUser(conf)
-	if err != nil {
-		return err
-	}
-
-	// Set HTTPS_PROXY env var if private endpoint is true
-	if conf.PrivateEndpoint {
-		os.Setenv("HTTPS_PROXY", "localhost:8888")
-	}
+	// // Prompt user to register ssh public key to their Cloud Source Repositories
+	// // (AND if needed, run make start proxy in another tab before kubectl attempt)
+	// err = PromptUser(conf)
+	// if err != nil {
+	// 	return err
+	// }
 
 	// Authenticate Kubernetes client-go to all clusters
 	log.Info("☸️ Generating Kubeconfig...")
@@ -62,15 +58,15 @@ func InitConfigSync(conf *config.Config) error {
 	if err != nil {
 		return err
 	}
-	log.Infof("KUBECONFIG: %+v", kc)
+	log.Infof("✔️ Kubeconfig generated: %+v", kc)
 
 	// Verify access to Kubernetes API on all clusters
-	log.Info("☸️ Verifying Kubernetes API access for all clusters...")
+	log.Info("☸️  Verifying Kubernetes API access for all clusters...")
 	err = ListNamespaces(kc, true)
 	if err != nil {
 		return err
 	}
-	// Use ssh private key as the Config Sync gitcreds secret
+	// // Use ssh private key as the Config Sync gitcreds secret
 	// https://cloud.google.com/anthos-config-management/docs/how-to/installing-config-sync#git-creds-secret
 	log.Info("🔒 Creating gitcreds secret from id_rsa...")
 	err = CreateGitCredsSecret(kc)
@@ -82,7 +78,7 @@ func InitConfigSync(conf *config.Config) error {
 
 	// Prompt user for repo clone command
 	log.Info("⭐️ To clone your Config Sync repository and push configs, run the following command:")
-	log.Infof("gcloud source repos clone gkepoc-config-sync --project=%s", conf.ClustersProjectID)
+	log.Infof("gcloud source repos clone gke-poc-config-sync --project=%s", conf.ClustersProjectID)
 	return nil
 }
 
@@ -138,6 +134,7 @@ func PromptUser(conf *config.Config) error {
 	// Prompt user to run make start proxy
 	if conf.PrivateEndpoint {
 		log.Info("⚠️ Your clusters have Private Endpoints. Please open another terminal tab and run the following command to proxy via your GCE Bastion Host.")
+		log.Infof("gcloud beta compute ssh gke-tk-bastion --tunnel-through-iap --project %s --zone %s-b -- -4 -L8888:127.0.0.1:8888", conf.ClustersProjectID, conf.Region)
 		log.Info("Once the proxy tunnel is running, press enter to continue...")
 		fmt.Scanln() // wait for Enter Key
 	}
@@ -146,6 +143,7 @@ func PromptUser(conf *config.Config) error {
 
 func GenerateKubeConfig(conf *config.Config) (*api.Config, error) {
 	projectId := conf.ClustersProjectID
+	log.Infof("Clusters Project ID is %s", projectId)
 	ctx := context.Background()
 
 	svc, err := container.NewService(ctx)
@@ -170,29 +168,30 @@ func GenerateKubeConfig(conf *config.Config) (*api.Config, error) {
 
 	for _, f := range resp.Clusters {
 		name := fmt.Sprintf("gke_%s_%s_%s", projectId, f.Zone, f.Name)
+		log.Infof("Connecting to cluster: %s,", name)
 		cert, err := base64.StdEncoding.DecodeString(f.MasterAuth.ClusterCaCertificate)
 		if err != nil {
 			return &ret, fmt.Errorf("invalid certificate cluster=%s cert=%s: %w", name, f.MasterAuth.ClusterCaCertificate, err)
-			// }
-			// example: gke_my-project_us-central1-b_cluster-1 => https://XX.XX.XX.XX
-			ret.Clusters[name] = &api.Cluster{
-				CertificateAuthorityData: cert,
-				Server:                   "https://" + f.Endpoint,
-			}
-			// Just reuse the context name as an auth name.
-			ret.Contexts[name] = &api.Context{
-				Cluster:  name,
-				AuthInfo: name,
-			}
-			// GCP specific configation; use cloud platform scope.
-			ret.AuthInfos[name] = &api.AuthInfo{
-				AuthProvider: &api.AuthProviderConfig{
-					Name: "gcp",
-					Config: map[string]string{
-						"scopes": "https://www.googleapis.com/auth/cloud-platform",
-					},
+		}
+		// example: gke_my-project_us-central1-b_cluster-1 => https://XX.XX.XX.XX
+		ret.Clusters[name] = &api.Cluster{
+			CertificateAuthorityData: cert,
+			Server:                   "https://" + f.Endpoint,
+			ProxyURL:                 "http://localhost:8888",
+		}
+		// Just reuse the context name as an auth name.
+		ret.Contexts[name] = &api.Context{
+			Cluster:  name,
+			AuthInfo: name,
+		}
+		// GCP specific configation; use cloud platform scope.
+		ret.AuthInfos[name] = &api.AuthInfo{
+			AuthProvider: &api.AuthProviderConfig{
+				Name: "gcp",
+				Config: map[string]string{
+					"scopes": "https://www.googleapis.com/auth/cloud-platform",
 				},
-			}
+			},
 		}
 	}
 	return &ret, nil
@@ -220,11 +219,7 @@ func ListNamespaces(kubeConfig *api.Config, proxy bool) error {
 			return fmt.Errorf("failed to list namespaces cluster=%s: %w", clusterName, err)
 		}
 
-		log.Printf("Namespaces found in cluster=%s", clusterName)
-
-		for _, item := range ns.Items {
-			log.Println(item.Name)
-		}
+		log.Infof("🌎 %d Namespaces found in cluster=%s", len(ns.Items), clusterName)
 	}
 
 	return nil
@@ -240,8 +235,8 @@ func CreateGitCredsSecret(kubeConfig *api.Config) error {
 		return fmt.Errorf("Failed to read id_rsa from file: %v", err)
 	}
 	privateKeyString := string(privateKey)
-	log.Infof("Private key string is the contents below:")
-	log.Info(privateKeyString)
+	// log.Infof("Private key string is the contents below:")
+	// log.Info(privateKeyString)
 
 	for clusterName := range kubeConfig.Clusters {
 		cfg, err := clientcmd.NewNonInteractiveClientConfig(*kubeConfig, clusterName, &clientcmd.ConfigOverrides{CurrentContext: clusterName}, nil).ClientConfig()
@@ -258,7 +253,7 @@ func CreateGitCredsSecret(kubeConfig *api.Config) error {
 			ObjectMeta: metav1.ObjectMeta{
 				Name: "git-creds",
 			},
-			StringData: map[string]string{"id_rsa": privateKeyString},
+			StringData: map[string]string{"ssh": privateKeyString},
 		}, metav1.CreateOptions{})
 		if err != nil {
 			if strings.Contains(err.Error(), "already exists") {

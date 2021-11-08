@@ -11,7 +11,7 @@ enablePreemptibleNodepool: false
 enableWindowsNodepool: false
 defaultNodepoolOS: "cos"
 privateEndpoint: true
-configSync: false 
+configSync: true 
 vpcConfig:
   vpcName: "default"
   vpcType: "standalone" 
