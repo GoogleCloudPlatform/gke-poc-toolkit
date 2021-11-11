@@ -52,7 +52,7 @@ func GenerateTfvars(conf *Config) {
 	vars["VpcProjectId"] = conf.VpcConfig.VpcProjectID
 	vars["PodCidrName"] = conf.VpcConfig.PodCIDRName
 	vars["SvcCidrName"] = conf.VpcConfig.SvcCIDRName
-	vars["AuthIp"] = conf.VpcConfig.AuthIP
+	vars["AuthCIDR"] = conf.VpcConfig.AuthCIDR
 
 	// First phase of templating tfvars (base and VPC configs)
 	tmpl, err := template.ParseFiles("templates/terraform.tfvars.tmpl")

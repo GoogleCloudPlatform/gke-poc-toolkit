@@ -14,44 +14,52 @@
  * limitations under the License.
  */
 
-// https://registry.terraform.io/providers/hashicorp/google/latest/docs/resources/sourcerepo_repository 
-// Create 1 centralized Cloud Source Repo, that all GKE clusters will sync to  
-resource "google_sourcerepo_repository" "gke-poc-config-sync" {
+// This file is wrapped in a module, acm, to allow for a Config Sync-wide toggle. 
+
+
+module "acm" {
+
   count          = var.config_sync ? 1 : 0
-  name = "gke-poc-config-sync"
-}
+  # source                  = "./." # don't do this it will crash your computer in an inf. loop
+
+  // https://registry.terraform.io/providers/hashicorp/google/latest/docs/resources/sourcerepo_repository 
+  // Create 1 centralized Cloud Source Repo, that all GKE clusters will sync to  
+  resource "google_sourcerepo_repository" "gke-poc-config-sync" {
+    count = var.config_sync ? 1 : 0
+    name  = "gke-poc-config-sync"
+  }
 
 
-// enable ACM project-wide
-resource "google_gke_hub_feature" "feature" {
-  count          = var.config_sync ? 1 : 0
-  depends_on = [
-    module.gke,
-  ]
-  name     = "configmanagement"
-  location = "global"
-  project  = module.enabled_google_apis.project_id
-  provider = google-beta
-}
+  // enable ACM project-wide
+  resource "google_gke_hub_feature" "feature" {
+    count = var.config_sync ? 1 : 0
+    depends_on = [
+      module.gke,
+    ]
+    name     = "configmanagement"
+    location = "global"
+    project  = module.enabled_google_apis.project_id
+    provider = google-beta
+  }
 
-// Register each cluster to GKE Hub (Fleets API)
-// https://registry.terraform.io/providers/hashicorp/google/latest/docs/resources/gke_hub_feature_membership#configmanagement 
-resource "google_gke_hub_membership" "membership" {
-  provider = google-beta
-  depends_on = [
-    module.gke,
-  ]
+  // Register each cluster to GKE Hub (Fleets API)
+  // https://registry.terraform.io/providers/hashicorp/google/latest/docs/resources/gke_hub_feature_membership#configmanagement 
+  resource "google_gke_hub_membership" "membership" {
+    provider = google-beta
+    depends_on = [
+      module.gke,
+    ]
 
-  for_each = var.cluster_config
-  project  = module.enabled_google_apis.project_id
+    for_each = var.cluster_config
+    project  = module.enabled_google_apis.project_id
 
-  membership_id = "${each.key}-membership"
-  endpoint {
-    gke_cluster {
-      resource_link = "//container.googleapis.com/projects/${module.enabled_google_apis.project_id}/locations/${each.value.region}/clusters/${each.key}"
+    membership_id = "${each.key}-membership"
+    endpoint {
+      gke_cluster {
+        resource_link = "//container.googleapis.com/projects/${module.enabled_google_apis.project_id}/locations/${each.value.region}/clusters/${each.key}"
+      }
     }
   }
-}
 
 
   // install config sync
@@ -73,10 +81,10 @@ resource "google_gke_hub_membership" "membership" {
       version = "1.9.0"
       config_sync {
         git {
-          sync_repo              = "ssh://${data.google_client_openid_userinfo.me.email}@source.developers.google.com:2022/p/${module.enabled_google_apis.project_id}/r/gke-poc-config-sync"
-          policy_dir             = "/"
-          sync_branch            = "main"
-          secret_type            = "ssh"
+          sync_repo   = "ssh://${data.google_client_openid_userinfo.me.email}@source.developers.google.com:2022/p/${module.enabled_google_apis.project_id}/r/gke-poc-config-sync"
+          policy_dir  = "/"
+          sync_branch = "main"
+          secret_type = "ssh"
         }
         source_format = "unstructured"
       }
@@ -86,3 +94,5 @@ resource "google_gke_hub_membership" "membership" {
       }
     }
   }
+
+}

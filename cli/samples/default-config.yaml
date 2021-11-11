@@ -19,7 +19,7 @@ vpcConfig:
   vpcProjectId: "my-project" 
   podCIDRName: "default"
   svcCIDRName: "default"
-  authIP: "10.10.10.10"
+  authCIDR: "0.0.0.0/0"
 clustersConfig:   
 - clusterName: "gke-central"
   numNodes: 3 

@@ -18,6 +18,7 @@ package cmd
 import (
 	"gkekitctl/pkg/acm"
 	"gkekitctl/pkg/config"
+	"gkekitctl/pkg/lifecycle"
 
 	log "github.com/sirupsen/logrus"
 
@@ -33,22 +34,23 @@ var createCmd = &cobra.Command{
 	Run: func(cmd *cobra.Command, args []string) {
 		conf := config.InitConf(cfgFile)
 		config.GenerateTfvars(conf)
-		// tfStateBucket, err := config.CheckTfStateType(conf)
-		// if err != nil {
-		// 	log.Fatalf("Error checking Tf State type: %s", err)
-		// }
+		tfStateBucket, err := config.CheckTfStateType(conf)
+		if err != nil {
+			log.Fatalf("Error checking Tf State type: %s", err)
+		}
 
-		// if conf.VpcConfig.VpcType == "shared" {
-		// 	lifecycle.InitTF("../terraform/shared_vpc", tfStateBucket[1], conf.VpcConfig.VpcType)
-		// 	lifecycle.ApplyTF("../terraform/shared_vpc")
-		// }
-		// lifecycle.InitTF("../terraform/cluster_build", tfStateBucket[0], conf.VpcConfig.VpcType)
-		// lifecycle.ApplyTF("../terraform/cluster_build")
+		if conf.VpcConfig.VpcType == "shared" {
+			lifecycle.InitTF("../terraform/shared_vpc", tfStateBucket[1], conf.VpcConfig.VpcType)
+			lifecycle.ApplyTF("../terraform/shared_vpc")
+		}
+		lifecycle.InitTF("../terraform/cluster_build", tfStateBucket[0], conf.VpcConfig.VpcType)
+		lifecycle.ApplyTF("../terraform/cluster_build")
 
+		// Init ACM (either ConfigSync or ConfigSync plus PolicyController)
 		if conf.ConfigSync {
-			err := acm.InitConfigSync(conf)
+			err := acm.InitACM(conf)
 			if err != nil {
-				log.Errorf("🚨 Failed to initialize Config Sync: %s", err)
+				log.Errorf("🚨 Failed to initialize ACM: %s", err)
 			}
 		}
 

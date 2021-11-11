@@ -35,8 +35,8 @@ import (
 // 4. Authenticates to each GKE cluster (using proxy if needed) and creates gitcreds secret
 //		from private key. (This is needed for Config Sync to read from Cloud Source Repos)
 // 5. Prints the gcloud clone cmd for user to clone their ConfigSync repo to push stuff to it. (DONE.)
-func InitConfigSync(conf *config.Config) error {
-	log.Info("🔄 Finishing Config Sync install...")
+func InitACM(conf *config.Config) error {
+	log.Info("🔄 Finishing ACM install...")
 
 	// Generate ssh keypair + write to local dir
 	log.Info("🔑 Generating ssh keypair for Config Sync...")
@@ -62,7 +62,7 @@ func InitConfigSync(conf *config.Config) error {
 
 	// Verify access to Kubernetes API on all clusters
 	log.Info("☸️  Verifying Kubernetes API access for all clusters...")
-	err = ListNamespaces(kc, true)
+	err = ListNamespaces(kc)
 	if err != nil {
 		return err
 	}
@@ -180,10 +180,14 @@ func GenerateKubeConfig(conf *config.Config) (*api.Config, error) {
 			return &ret, fmt.Errorf("invalid certificate cluster=%s cert=%s: %w", name, f.MasterAuth.ClusterCaCertificate, err)
 		}
 		// example: gke_my-project_us-central1-b_cluster-1 => https://XX.XX.XX.XX
+		proxy := ""
+		if conf.PrivateEndpoint {
+			proxy = "http://localhost:8888"
+		}
 		ret.Clusters[name] = &api.Cluster{
 			CertificateAuthorityData: cert,
 			Server:                   "https://" + f.Endpoint,
-			ProxyURL:                 "http://localhost:8888",
+			ProxyURL:                 proxy,
 		}
 		// Just reuse the context name as an auth name.
 		ret.Contexts[name] = &api.Context{
@@ -204,7 +208,7 @@ func GenerateKubeConfig(conf *config.Config) (*api.Config, error) {
 }
 
 // Verify `kubectl get` connectivity to all clusters
-func ListNamespaces(kubeConfig *api.Config, proxy bool) error {
+func ListNamespaces(kubeConfig *api.Config) error {
 	ctx := context.Background()
 
 	// Just list all the namespaces found in the project to  the API.
