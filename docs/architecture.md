@@ -6,7 +6,7 @@
 * [Optional Settings](#optional-settings)
 
 ## Introduction
-This toolkit is made up of two base components, a cli written in golang, and a set of terraform code. The cli leverages the [cobra](https://github.com/spf13/cobra) and [viper](https://github.com/spf13/viper) packages for cli command and the [terraform-exec](https://github.com/hashicorp/terraform-exec) package to run terraform commands in the go code.
+This toolkit is made up of two base components, a cli written in golang, and a set of terraform code. The cli leverages the [cobra](https://github.com/spf13/cobra) and [viper](https://github.com/spf13/viper) packages for cli command and the [terraform-exec](https://github.com/hashicorp/terraform-exec) package to run terraform commands in the go code. Wheels are not being reinvented here, all of the terraform code leverages the [terraform-google-modules](https://github.com/terraform-google-modules) opensourced and maintained by google. 
 
 ## Pre-requisites
 
