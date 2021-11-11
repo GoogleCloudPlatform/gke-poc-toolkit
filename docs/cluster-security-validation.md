@@ -2,8 +2,6 @@
 
 * [Audit Logs in Cloud Storage Validation](#audit-logs-in-cloud-storage-validation)
 * [Kubernetes + GCP RBAC Validation](#kubernetes-and-gcp-rbac-validation)
-* [Securing the cluster](#securing-the-cluster)
-* [Next steps](#next-steps)
 
 ## Audit Logs in Cloud Storage Validation
 
