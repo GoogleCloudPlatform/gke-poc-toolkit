@@ -81,4 +81,4 @@ Otherwise pass in the same config file used to create the resources:
 ```
 
 ## What's next?
-If you want to get fancy with your clusters, read up on other options in the [architecture doc](docs/architecture.md) and go bananas. There are some validation steps you can run through to prove out some of the security features. One for [cluster security features](docs/cluster-security-validation.md) and another for [workload security features](docs/workload-security-validation.md). We welcome contributions please give our [contributing doc](contributing.md) a read and join us!
+If you want to get fancy with your clusters, read up on other options in the [architecture doc](docs/architecture.md) and go bananas. There are some validation steps you can run through to prove out some of the security features. One for [cluster security features](docs/cluster-security-validation.md) and another for [workload security features](docs/workload-security-validation.md). We welcome contributions please give our [contributing doc](CONTRIBUTING.md) a read and join us!
