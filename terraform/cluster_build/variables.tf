@@ -128,7 +128,7 @@ variable "private_endpoint" {
 # Need this default to run PR build test
 variable "auth_cidr" {
   type    = string
-  default = "1.2.3.4/00"
+  default = "1.2.3.4/0"
 }
 
 variable "config_sync" {
