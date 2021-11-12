@@ -7,7 +7,7 @@
 
 ## Introduction
 
-The GKE PoC toolkit sets out to provide a set of infrastructure as code (IaC) which deploys GKE cluster with a strong security posture that can be used to step through demos, stand up a POC, and deliver a codified example that can be the basis of a production implementation in your own CICD pipelines.
+The GKE Proof of Concept (PoC) Toolkit is a demo generator for Google Kubernetes Engine (GKE). It sets out to provide a set of infrastructure as code (IaC) which deploys GKE clusters with a strong security posture that can be used to step through demos, stand up a POC, and deliver a codified example which can be the basis of a production implementation in your own CICD pipelines.
 
 ## Install
 
@@ -81,4 +81,4 @@ Otherwise pass in the same config file used to create the resources:
 ```
 
 ## What's next?
-If you want to get fancy with your clusters, read up on other options in the [architecture doc](docs/architecture.md) and go bananas. There are some validation steps you can run through to prove out some of the security features. One for [cluster security features](docs/cluster-security-validation.md) and another for [workload security features](docs/workload-security-validation.md). We welcome contributions please give our [contributing doc](CONTRIBUTING.md) a read and join us!
+If you want to get fancy with your clusters, read up on other options in the [architecture doc](docs/architecture.md) and go bananas. There are some validation steps you can run through to prove out some of the security features. One for [cluster security features](docs/cluster-security-validation.md) and another for [workload security features](docs/workload-security-validation.md). We welcome contributions. Please give our [contributing doc](CONTRIBUTING.md) a read and join us!

@@ -56,7 +56,7 @@ When using the cli defaults, `gkekitctl create`, a Private Cluster in a Standalo
 
 Private clusters allow you to isolate nodes from the public internet. Every GKE cluster has a Kubernetes API server that is managed by the control plane (master). In private clusters, the control plane's VPC network is connected to your cluster's VPC network with VPC Network Peering. Your VPC network contains the cluster nodes, and a separate Google Cloud VPC network contains your cluster's control plane. The control plane's VPC network is located in a project controlled by Google. Traffic between nodes and the control plane is routed entirely using internal IP addresses.
 
-Private clusters also restrict access to the internet by default. A NAT gateway of some form needs to be deployed should you want to enable outbound internet access from pods running in private clusters. Keep in mind this includes base container images not stored in the container registries that Google cloud maintains. In the following examples, a Google Cloud Nat Gateway is deployed alongs side the GKE clusters. 
+Private clusters also restrict access to the internet by default. A NAT gateway of some form needs to be deployed should you want to enable outbound internet access from pods running in private clusters. Keep in mind this includes base container images not stored in the container registries that Google cloud maintains. In the following examples, a Google Cloud Nat Gateway is deployed alongsside the GKE clusters. 
 
 The GKE Cluster Install step in this repository will build a GKE Private cluster with access to the control plane with the following configuration:
 
@@ -74,7 +74,7 @@ Should you want to expose the control plane with a private IP, set `privateEndpo
   * Restricts access to addresses specified in the authorized networks list
   * Authorized networks range must containe internal IP addresses
 
-The following best practices are also enforced as part of the cluster build process:
+The following security features of GKE are enabled at default and are not exposed to the user as optional:
 
 * [Shielded VMs and Secure Boot](https://cloud.google.com/kubernetes-engine/docs/how-to/shielded-gke-nodes)
   * The GKE cluster and bastion host are deployed with Shielded VMs. Doing so provides strong, verifiable node identity and integrity to increase the security of GCE instances.
@@ -87,7 +87,7 @@ The following best practices are also enforced as part of the cluster build proc
   * Workload identity is enabled on this cluster and is a way to securely provide access to Google cloud services within your Kubernetes cluster. This allows administrators to bind a Google cloud service account with the roles and/or permissions required to a Kubernetes Service account. An annotation on the service account then references the GCP service account to access the Google cloud services within your cluster.
 
 * [Application Layer Secrets](https://cloud.google.com/kubernetes-engine/docs/how-to/encrypting-secrets#overview):
-  * Application Layer Secrets are used to provide an additional layer of security for sensitive data stored in etcd. The build process creates a [Cloud KMS](https://cloud.google.com/kms/docs) which stores the Key Encrption Key (KEK) used to encrypt data at the application layer. 
+  * Application Layer Secrets are used to provide an additional layer of security for sensitive data stored in [etcd]( https://kubernetes.io/docs/concepts/overview/components/#etcd). The build process creates a [Cloud KMS](https://cloud.google.com/kms/docs) which stores the Key Encrption Key (KEK) used to encrypt data at the application layer. 
 
 * [Safe-Cluster GKE Module](https://registry.terraform.io/modules/terraform-google-modules/kubernetes-engine/google/latest/submodules/safer-cluster):
   * This deployment uses the Safe-Cluster GKE module which fixes a set of parameters to values suggested in the [GKE hardening guide](https://cloud.google.com/kubernetes-engine/docs/how-to/hardening-your-cluster), the CIS framework, and other best practices. Reference the above link for project configurations, cluster settings, and basic kubernetes objects that are provisioned as part of this module and permit a safer-than-default configuration.
