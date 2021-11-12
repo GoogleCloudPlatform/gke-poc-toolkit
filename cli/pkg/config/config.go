@@ -193,8 +193,10 @@ func ValidateConf(c *Config) error {
 	if c.VpcConfig.VpcName == "" {
 		return fmt.Errorf("VPC Name cannot be empty")
 	}
-	if err := validateAuthCIDR(c.VpcConfig.AuthCIDR); err != nil {
-		return err
+	if !c.PrivateEndpoint {
+		if err := validateAuthCIDR(c.VpcConfig.AuthCIDR); err != nil {
+			return err
+		}
 	}
 
 	// Validate each ClusterConfig

@@ -140,7 +140,7 @@ func PromptUser(conf *config.Config) error {
 	// Prompt user to run make start proxy
 	if conf.PrivateEndpoint {
 		log.Info("⚠️ Your clusters have Private Endpoints. Please open another terminal tab and run the following command to proxy via your GCE Bastion Host.")
-		log.Infof("gcloud beta compute ssh gke-tk-bastion --tunnel-through-iap --project %s --zone %s-b -- -4 -L8888:127.0.0.1:8888", conf.ClustersProjectID, conf.Region)
+		log.Infof("gcloud beta compute ssh gke-tk-bastion --tunnel-through-iap --project %s --zone %s-b -- -4 -L8888:127.0.0.1:8888", conf.ClustersProjectID, conf.ClustersConfig[0].Region)
 		log.Info("Once the proxy tunnel is running, press enter to continue...")
 		fmt.Scanln() // wait for Enter Key
 	}
