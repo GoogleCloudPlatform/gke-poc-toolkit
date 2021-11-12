@@ -31,7 +31,7 @@ This subdirectory contains code and sample config for the GKE POC Toolkit CLI. T
 | `nodeSize`    | int    | 1-100                                               | 3                                                     |
 | `machineType` | string | https://cloud.google.com/compute/docs/machine-types | `e2-standard-4`                                       |
 | `clusterType` | string | `private,public`                                    | `public`                                              |
-| `authIP`      | string |                                                     |                                                       |
+| `authCIDR`      | string |                                                     |                                                       |
 | `region`      | string | https://cloud.google.com/compute/docs/regions-zones |                                                       |
 | `zone`        | string | https://cloud.google.com/compute/docs/regions-zones |                                                       |
 | `subnetName`  | string | any non-empty string                                | `"default"`                                           |

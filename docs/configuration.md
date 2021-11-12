@@ -31,7 +31,7 @@ This subdirectory contains code and sample config for the GKE POC Toolkit CLI. T
 | `vpcProjectId`      | string | `projectId`                                                                         | (you are prompted for your GCP Project ID by the tool) |  | `podCIDRName` | string |  |  |
 | `svcCIDRName`       | string | any non-empty string                                                                | `default`                                              |
 | `podCIDRName`       | string | any non-empty string                                                                | `default`                                              |
-| `authIP`            | string | `cidr notation of IP to allow access to the GKE control plane, example: 1.2.3.4/32` | There is no default set                                |
+| `authCIDR`            | string | `cidr notation of IP to allow access to the GKE control plane, example: 1.2.3.4/32` | `0.0.0.0/0`                                |
 |                     |
 
 ### ClusterConfig
