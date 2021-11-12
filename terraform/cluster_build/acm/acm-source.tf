@@ -1,44 +1,32 @@
-/**
- * Copyright 2021 Google LLC
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- *      http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- */
+ // Vars 
+ variable "project_id" {
+}
 
-// This file is wrapped in a module, acm, to allow for a Config Sync-wide toggle. 
+variable "policy_controller" {
 
+}
 
-module "acm" {
+variable "cluster_config" {
 
-  count          = var.config_sync ? 1 : 0
-  # source                  = "./." # don't do this it will crash your computer in an inf. loop
+}
 
+variable "email" {
+
+}
+  
+  
   // https://registry.terraform.io/providers/hashicorp/google/latest/docs/resources/sourcerepo_repository 
   // Create 1 centralized Cloud Source Repo, that all GKE clusters will sync to  
   resource "google_sourcerepo_repository" "gke-poc-config-sync" {
-    count = var.config_sync ? 1 : 0
     name  = "gke-poc-config-sync"
   }
 
 
   // enable ACM project-wide
   resource "google_gke_hub_feature" "feature" {
-    count = var.config_sync ? 1 : 0
-    depends_on = [
-      module.gke,
-    ]
     name     = "configmanagement"
     location = "global"
-    project  = module.enabled_google_apis.project_id
+    project  = var.project_id
     provider = google-beta
   }
 
@@ -46,17 +34,13 @@ module "acm" {
   // https://registry.terraform.io/providers/hashicorp/google/latest/docs/resources/gke_hub_feature_membership#configmanagement 
   resource "google_gke_hub_membership" "membership" {
     provider = google-beta
-    depends_on = [
-      module.gke,
-    ]
-
     for_each = var.cluster_config
-    project  = module.enabled_google_apis.project_id
+    project  = var.project_id
 
     membership_id = "${each.key}-membership"
     endpoint {
       gke_cluster {
-        resource_link = "//container.googleapis.com/projects/${module.enabled_google_apis.project_id}/locations/${each.value.region}/clusters/${each.key}"
+        resource_link = "//container.googleapis.com/projects/${var.project_id}/locations/${each.value.region}/clusters/${each.key}"
       }
     }
   }
@@ -67,21 +51,20 @@ module "acm" {
   resource "google_gke_hub_feature_membership" "feature_member" {
     provider = google-beta
     depends_on = [
-      module.gke,
       resource.google_gke_hub_membership.membership,
     ]
 
     // https://cloud.google.com/anthos-config-management/docs/how-to/installing-config-sync#gcloud 
     for_each   = var.cluster_config
     location   = "global"
-    project    = module.enabled_google_apis.project_id
+    project    = var.project_id
     feature    = "configmanagement"
-    membership = "projects/${module.enabled_google_apis.project_id}/locations/global/memberships/${each.key}-membership"
+    membership = "projects/${var.project_id}/locations/global/memberships/${each.key}-membership"
     configmanagement {
       version = "1.9.0"
       config_sync {
         git {
-          sync_repo   = "ssh://${data.google_client_openid_userinfo.me.email}@source.developers.google.com:2022/p/${module.enabled_google_apis.project_id}/r/gke-poc-config-sync"
+          sync_repo   = "ssh://${var.email}@source.developers.google.com:2022/p/${var.project_id}/r/gke-poc-config-sync"
           policy_dir  = "/"
           sync_branch = "main"
           secret_type = "ssh"
@@ -94,5 +77,3 @@ module "acm" {
       }
     }
   }
-
-}

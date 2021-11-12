@@ -36,7 +36,13 @@ func GenerateTfvars(conf *Config) {
 	vars["GovernanceProjectId"] = conf.GovernanceProjectID
 	vars["ConfigSync"] = conf.ConfigSync
 	vars["PolicyController"] = conf.PolicyController
-	vars["PrivateEndpoint"] = conf.PrivateEndpoint
+	// This bool is used in the cluster TF code and due to the nature of TF bool conditionals (only allowing if true)
+	// needs to be reversed to make the yaml spec reflect the intention of the var.
+	if conf.PrivateEndpoint {
+		vars["PrivateEndpoint"] = false
+	} else {
+		vars["PrivateEndpoint"] = true
+	}
 	vars["DefaultNodepoolOS"] = conf.DefaultNodepoolOS
 	vars["EnableWorkloadIdentity"] = conf.EnableWorkloadIdentity
 	vars["EnableWindowsNodepool"] = conf.EnableWindowsNodepool

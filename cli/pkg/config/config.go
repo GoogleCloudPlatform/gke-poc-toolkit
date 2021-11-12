@@ -226,10 +226,10 @@ func ValidateConf(c *Config) error {
 // verifies that field is a valid CIDR of format x.x.x.x/xx
 func validateAuthCIDR(authCIDR string) error {
 	ip, ipNet, err := net.ParseCIDR(authCIDR)
-	if err == nil {
-		return fmt.Errorf("Auth IP Address: %s is an invalid IP", authCIDR)
+	if err != nil {
+		return fmt.Errorf("Auth CIDR %s is invalid: %v", authCIDR, err)
 	}
-	log.Info("🌐 Valid CIDR: IP: %s, IPNet: %s", ip, ipNet)
+	log.Infof("🌐 Valid CIDR: IP: %s, IPNet: %s", ip, ipNet)
 	return nil
 }
 
