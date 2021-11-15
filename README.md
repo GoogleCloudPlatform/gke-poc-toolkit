@@ -1,6 +1,7 @@
 # GKE PoC Toolkit
 
 * [Introduction](#introduction)
+* [What gets installed](#whatgetsinstalled)
 * [Prerequisites](#prerequisites)
 * [Install](#install)
 * [Quickstart](#quickstart)
@@ -9,6 +10,8 @@
 ## Introduction
 
 The GKE Proof of Concept (PoC) Toolkit is a demo generator for Google Kubernetes Engine (GKE). It sets out to provide a set of infrastructure as code (IaC) which deploys GKE clusters with a strong security posture that can be used to step through demos, stand up a POC, and deliver a codified example which can be the basis of a production implementation in your own CICD pipelines.
+
+## What gets installed
 
 ## Prerequisites
 

@@ -13,15 +13,7 @@
 ## Introduction
 This toolkit is made up of two base components, a cli written in golang, and a set of terraform code. The cli leverages the [cobra](https://github.com/spf13/cobra) and [viper](https://github.com/spf13/viper) packages for cli command and the [terraform-exec](https://github.com/hashicorp/terraform-exec) package to run terraform commands in the go code. Wheels are not being reinvented here, all of the terraform code leverages the [terraform-google-modules](https://github.com/terraform-google-modules) opensourced and maintained by google. 
 
-## Pre-requisites
-
-The steps described in this document require the installation of several tools and the proper configuration of authentication to allow them to access your GCP resources.
-
-#### Cloud Project
-
-You'll need access to at least one Google Cloud Project with billing enabled. See **Creating and Managing Projects** (https://cloud.google.com/resource-manager/docs/creating-managing-projects) for creating a new project. To make cleanup easier, it's recommended to create a new project.
-
-#### Required GCP APIs
+## Required GCP APIs
 
 The following APIs will be enabled in your projects:
 
@@ -37,23 +29,6 @@ The following APIs will be enabled in your projects:
 * Google Cloud Storage API
 * Binary Authorization API
 * Cloud Key Management Service API
-
-#### Tools
-
-* bash or bash compatible shell
-* [Terraform >= 0.13](https://www.terraform.io/downloads.html)
-* [Google Cloud SDK version >= 325.0.0](https://cloud.google.com/sdk/docs/downloads-versioned-archives)
-* [kubectl](https://kubernetes.io/docs/tasks/tools/)
-  >**NOTE:** [It is recommended the major/minor version at least match the current default GKE release channel](https://cloud.google.com/kubernetes-engine/docs/release-notes#current_versions) (version 1.20 at the time of this document).
-
-#### Configure Authentication
-
-The Terraform configuration will execute against your GCP environment and create various resources.  The script will use your personal account to build out these resources.  To setup the default account the script will use, run the following command to select the appropriate account:
-
-`gcloud auth login`
-
->**NOTE:** If this is your first time deploying, you should also run `gcloud init` and reinitialize your configuration. 
-
 
 ## Secure Defaults
 
