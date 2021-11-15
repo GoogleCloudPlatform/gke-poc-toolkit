@@ -57,7 +57,7 @@ The Terraform configuration will execute against your GCP environment and create
 
 ## Secure Defaults
 
-When using the cli defaults, `gkekitctl create`, a Private Cluster in a Standalone VPC with the settings below is built. A config file can be used to customize the install, the spec and examples are kept in this [folder](cli/samples). Definitions of each configuration choice in the spec are stored in the [configuration.md](configuration.md) doc. The rest of this doc goes over all the non-optional security features every cluster is bootstraped with.
+When using the cli defaults, `gkekitctl create`, a Private Cluster in a Standalone VPC with the settings below is built. A config file can be used to customize the install, the spec and examples are kept in this [folder](../cli/samples). Definitions of each configuration choice in the spec are stored in the [configuration.md](configuration.md) doc. The rest of this doc goes over all the non-optional security features every cluster is bootstraped with.
 
 Private clusters allow you to isolate nodes from the public internet. Every GKE cluster has a Kubernetes API server that is managed by the control plane (master). In private clusters, the control plane's VPC network is connected to your cluster's VPC network with VPC Network Peering. Your VPC network contains the cluster nodes, and a separate Google Cloud VPC network contains your cluster's control plane. The control plane's VPC network is located in a project controlled by Google. Traffic between nodes and the control plane is routed entirely using internal IP addresses.
 
