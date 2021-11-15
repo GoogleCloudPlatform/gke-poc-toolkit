@@ -18,23 +18,6 @@ You'll need access to at least one Google Cloud Project with billing enabled. Se
 
 If you are using a Shared VPC, you will need a separate host project for the Shared VPC. 
 
-#### Required GCP APIs
-
-The following APIs will be enabled in your projects:
-
-* Identity and Access Management API
-* Compute Engine API
-* Cloud Resource Manager API
-* Kubernetes Engine API
-* Google Container Registry API
-* Stackdriver Logging API
-* Stackdriver Monitoring API
-* BigQuery API
-* Identity Aware Proxy API
-* Google Cloud Storage API
-* Binary Authorization API
-* Cloud Key Management Service API
-
 #### Tools
 
 You'll need the following tools installed in order to deploy the toolkit. 
