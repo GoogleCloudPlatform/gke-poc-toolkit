@@ -1,9 +1,14 @@
 # GKE PoC Toolkit Architecture & Pre-requisites
 
-* [Introduction](#introduction)
-* [Pre-requisites](#pre-requisites)
-* [Secure Defaults](#secure-defaults)
-* [Optional Settings](#optional-settings)
+- [GKE PoC Toolkit Architecture & Pre-requisites](#gke-poc-toolkit-architecture--pre-requisites)
+  - [Introduction](#introduction)
+  - [Pre-requisites](#pre-requisites)
+      - [Cloud Project](#cloud-project)
+      - [Required GCP APIs](#required-gcp-apis)
+      - [Tools](#tools)
+      - [Configure Authentication](#configure-authentication)
+  - [Secure Defaults](#secure-defaults)
+  - [Optional Settings](#optional-settings)
 
 ## Introduction
 This toolkit is made up of two base components, a cli written in golang, and a set of terraform code. The cli leverages the [cobra](https://github.com/spf13/cobra) and [viper](https://github.com/spf13/viper) packages for cli command and the [terraform-exec](https://github.com/hashicorp/terraform-exec) package to run terraform commands in the go code. Wheels are not being reinvented here, all of the terraform code leverages the [terraform-google-modules](https://github.com/terraform-google-modules) opensourced and maintained by google. 
@@ -103,8 +108,8 @@ The following <b>OPTIONAL</b> configurations are also available and can be enabl
 
 * [Multiple Clusters](configuration.md#ClusterConfig) - More than one cluster can be deployed with the create command. They can be spread across any region and be customized with the cluster section in the config file.
 
-* [Anthos Config Management](configuration.md#Config) - Roadmap
-
+* [Anthos Config Management](configuration.md#Config) - Enable [Config Sync](https://cloud.google.com/anthos-config-management/docs/config-sync-overview) and/or [Policy Controller](https://cloud.google.com/anthos-config-management/docs/concepts/policy-controller) to sync configs and enforce policies across one or multiple GKE clusters. 
+ 
 * [Public Endpoint Cluster](configuration.md#Config) - The cluster can be deployed with public access to the master endpoints therefore eliminating the need for a bastion host. Doing so configures the cluster as follows:
   * Public endpoint for control plane is enabled
   * Nodes receive private IP addresses

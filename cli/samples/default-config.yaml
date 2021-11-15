@@ -10,15 +10,16 @@ enableWorkloadIdentity: true
 enablePreemptibleNodepool: false 
 enableWindowsNodepool: false
 defaultNodepoolOS: "cos"
-privateEndpoint: true #Needs to be true to create a public endpoint. See notes in tfvar_generator for explanation.
-configSync: false 
+privateEndpoint: false
+configSync: true 
+policyController: true
 vpcConfig:
   vpcName: "default"
   vpcType: "standalone" 
   vpcProjectId: "my-project" 
   podCIDRName: "default"
   svcCIDRName: "default"
-  authIP: "10.10.10.10"
+  authCIDR: "0.0.0.0/0"
 clustersConfig:   
 - clusterName: "gke-central"
   numNodes: 3 

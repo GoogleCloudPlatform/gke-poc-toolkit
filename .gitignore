@@ -82,3 +82,11 @@ creds/
 
 # Dependency directories (remove the comment below to include it)
 # vendor/
+
+
+# ssh 
+*id_rsa*
+
+
+# Cloud Source Repos
+*gke-poc-config-sync*

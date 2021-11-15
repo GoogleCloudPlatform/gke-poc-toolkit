@@ -44,6 +44,7 @@ type Config struct {
 	ClustersProjectID         string          `yaml:"clustersProjectId"`
 	GovernanceProjectID       string          `yaml:"governanceProjectId"`
 	ConfigSync                bool            `yaml:"configSync"`
+	PolicyController          bool            `yaml:"policyController"`
 	PrivateEndpoint           bool            `yaml:"privateEndpoint"`
 	EnableWorkloadIdentity    bool            `yaml:"enableWorkloadIdentity"`
 	EnableWindowsNodepool     bool            `yaml:"enableWindowsNodepool"`
@@ -59,7 +60,7 @@ type VpcConfig struct {
 	VpcProjectID string `yaml:"vpcProjectId"`
 	PodCIDRName  string `yaml:"podCIDRName"`
 	SvcCIDRName  string `yaml:"svcCIDRName"`
-	AuthIP       string `yaml:"authIP"`
+	AuthCIDR     string `yaml:"authCIDR"`
 }
 
 type ClusterConfig struct {
@@ -97,13 +98,11 @@ func InitConf(cfgFile string) *Config {
 		}
 	}
 	// Enable GCP APIs
-	serviceIds := []string{"compute.googleapis.com", "storage.googleapis.com"}
-	if conf.VpcConfig.VpcType == "standalone" {
-		enableService(conf.ClustersProjectID, serviceIds)
-	} else {
-		enableService(conf.ClustersProjectID, serviceIds)
+	serviceIds := []string{"compute.googleapis.com", "storage.googleapis.com", "anthos.googleapis.com", "sourcerepo.googleapis.com", "gkehub.googleapis.com", "anthosconfigmanagement.googleapis.com"}
+	if conf.VpcConfig.VpcType == "shared" {
 		enableService(conf.VpcConfig.VpcProjectID, serviceIds)
 	}
+	enableService(conf.ClustersProjectID, serviceIds)
 
 	// Validate config
 	err = ValidateConf(conf)
@@ -183,6 +182,9 @@ func ValidateConf(c *Config) error {
 	if err := validateConfigRegion(c.GovernanceProjectID, c.Region); err != nil {
 		return err
 	}
+	if c.PolicyController && !c.ConfigSync {
+		return fmt.Errorf("Terraform constraints require that if Policy Controller is enabled, Config Sync must also be enabled. Please set configSync to true and retry.")
+	}
 
 	// VPC Config vars
 	if c.VpcConfig.VpcType != "standalone" && c.VpcConfig.VpcType != "shared" {
@@ -191,8 +193,10 @@ func ValidateConf(c *Config) error {
 	if c.VpcConfig.VpcName == "" {
 		return fmt.Errorf("VPC Name cannot be empty")
 	}
-	if err := validateAuthIP(c.VpcConfig.AuthIP); err != nil {
-		return err
+	if !c.PrivateEndpoint {
+		if err := validateAuthCIDR(c.VpcConfig.AuthCIDR); err != nil {
+			return err
+		}
 	}
 
 	// Validate each ClusterConfig
@@ -221,11 +225,13 @@ func ValidateConf(c *Config) error {
 	return nil
 }
 
-// verifies that field is a valid IP address
-func validateAuthIP(authIp string) error {
-	if net.ParseIP(authIp) == nil {
-		return fmt.Errorf("Auth IP Address: %s is an invalid IP\n", authIp)
+// verifies that field is a valid CIDR of format x.x.x.x/xx
+func validateAuthCIDR(authCIDR string) error {
+	ip, ipNet, err := net.ParseCIDR(authCIDR)
+	if err != nil {
+		return fmt.Errorf("Auth CIDR %s is invalid: %v", authCIDR, err)
 	}
+	log.Infof("🌐 Valid CIDR: IP: %s, IPNet: %s", ip, ipNet)
 	return nil
 }
 
