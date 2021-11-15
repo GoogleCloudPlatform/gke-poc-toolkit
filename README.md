@@ -86,7 +86,7 @@ INFO[0000] Enter your Google Cloud Project ID:
 #### Multi-cluster shared VPC
 
 To create a shared VPC environment and install multiple clusters into the shared VPC pass a config file into the create command. 
-There is a sample config file saved to ./cli/samples/multi-cluster.yaml. Update the sample with your specific variables before running the create command!
+There is a sample config file saved to [./cli/samples/multi-cluster.yaml](cli//samples/multi-cluster.yaml). Update the sample with your specific variables before running the create command!
 
 ```
 ./gkekitctl create --config samples/multi-cluster.yaml
