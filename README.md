@@ -82,7 +82,11 @@ Available Commands:
 
 ### Single stand alone cluster
 
-Default behavior creates a single stand alone cluster. Make sure you have a project created and project ID handy. Run the create command and input the project ID when prompted.
+Default behavior creates a single stand alone cluster. Make sure you have a project created and project ID handy. Run the create command and input the project ID when prompted. [These](cli/samples/default-config.yaml) are the default values used for `gkekitctl create` when no additional input is provided.
+
+
+# These are the default values used for `gkekitctl create` when 
+# the user does not supply their own config.yml.
 
 ```shell
 ./gkekitctl create
