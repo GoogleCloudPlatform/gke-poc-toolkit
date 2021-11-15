@@ -2,7 +2,7 @@
 
 * [Introduction](#introduction)
 * [Prerequisites](#prerequisites)
-* [What gets installed](#what-gets-installed)
+* [What gets installed?](#what-gets-installed)
 * [Install](#install)
 * [Quickstart](#quickstart)
 * [What's next?](#what's-next)
@@ -39,6 +39,8 @@ The Terraform configuration will execute against your GCP environment and create
 ## What gets installed
 
 For more details on the default configuration and what can be customized, you can check out our architectural document [here](docs/architecture.md). 
+
+Sample inputs to modify the defaults can be found [here](cli/samples/). 
 
 ## Install
 
