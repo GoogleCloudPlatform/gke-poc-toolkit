@@ -86,6 +86,8 @@ Default behavior creates a single stand alone cluster. Make sure you have a proj
 
 ```shell
 ./gkekitctl create
+```
+```shell
 INFO[0000] ☸️ ----- GKE POC TOOLKIT ----- 🛠
 INFO[0000] Enter your Google Cloud Project ID:
 ```
