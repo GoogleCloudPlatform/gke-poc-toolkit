@@ -12,13 +12,13 @@ The GKE Proof of Concept (PoC) Toolkit is a demo generator for Google Kubernetes
 
 ## Prerequisites
 
-##### Cloud Project
+#### Cloud Project
 
 You'll need access to at least one Google Cloud Project with billing enabled. See **Creating and Managing Projects** (https://cloud.google.com/resource-manager/docs/creating-managing-projects) for creating a new project. To make cleanup easier, it's recommended to create a new project. 
 
 If you are using a Shared VPC, you will need a separate host project for the Shared VPC. 
 
-##### Tools
+#### Tools
 
 You'll need the following tools installed in order to deploy the toolkit. 
 * bash or bash compatible shell
@@ -27,7 +27,7 @@ You'll need the following tools installed in order to deploy the toolkit.
 * [kubectl](https://kubernetes.io/docs/tasks/tools/)
   >**NOTE:** [It is recommended the major/minor version at least match the current default GKE release channel](https://cloud.google.com/kubernetes-engine/docs/release-notes#current_versions) (version 1.20 at the time of this document).
 
-##### Configure Authentication
+#### Configure Authentication
 
 The Terraform configuration will execute against your GCP environment and create various resources.  The script will use your personal account to build out these resources.  To setup the default account the script will use, run the following command to select the appropriate account:
 
@@ -35,13 +35,13 @@ The Terraform configuration will execute against your GCP environment and create
 
 >**NOTE:** If this is your first time deploying, you should also run `gcloud init` and reinitialize your configuration. 
 
-##### Cloud Project
+#### Cloud Project
 
 You'll need access to at least one Google Cloud Project with billing enabled. See **Creating and Managing Projects** (https://cloud.google.com/resource-manager/docs/creating-managing-projects) for creating a new project. To make cleanup easier, it's recommended to create a new project. 
 
 If you are using a Shared VPC, you will need a separate host project for the Shared VPC. 
 
-##### Tools
+#### Tools
 
 You'll need the following tools installed in order to deploy the toolkit. 
 * bash or bash compatible shell
@@ -50,7 +50,7 @@ You'll need the following tools installed in order to deploy the toolkit.
 * [kubectl](https://kubernetes.io/docs/tasks/tools/)
   >**NOTE:** [It is recommended the major/minor version at least match the current default GKE release channel](https://cloud.google.com/kubernetes-engine/docs/release-notes#current_versions) (version 1.20 at the time of this document).
 
-##### Configure Authentication
+#### Configure Authentication
 
 The Terraform configuration will execute against your GCP environment and create various resources.  The script will use your personal account to build out these resources.  To setup the default account the script will use, run the following command to select the appropriate account:
 
@@ -106,7 +106,7 @@ INFO[0000] ☸️ ----- GKE POC TOOLKIT ----- 🛠
 INFO[0000] Enter your Google Cloud Project ID:
 ```
 
-### Multi-cluster shared VPC
+#### Multi-cluster shared VPC
 
 To create a shared VPC environment and install multiple clusters into the shared VPC pass a config file into the create command. 
 There is a sample config file saved to ./cli/samples/multi-cluster.yaml. Update the sample with your specific variables before running the create command!
