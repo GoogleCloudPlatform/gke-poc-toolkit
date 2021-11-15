@@ -1,6 +1,6 @@
-# GKE PoC Toolkit Architecture & Pre-requisites
+# GKE PoC Toolkit Architecture
 
-- [GKE PoC Toolkit Architecture & Pre-requisites](#gke-poc-toolkit-architecture--pre-requisites)
+- [GKE PoC Toolkit Architecture](#gke-poc-toolkit-architecture)
   - [Introduction](#introduction)
   - [GCP APIs](#gcp-apis)
   - [Secure Defaults](#secure-defaults)
