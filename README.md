@@ -51,7 +51,9 @@ cd cli && go build .
 Validate cli was installed properly:
 ```shell
 ./gkekitctl
+```
 
+```shell
 # Output should look like:
 Tool to quickly deploy some pretty dope GKE demos
 
