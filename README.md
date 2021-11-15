@@ -1,7 +1,7 @@
 # GKE PoC Toolkit
 
 * [Introduction](#introduction)
-* [What gets installed](#whatgetsinstalled)
+* [What gets installed](#what-gets-installed)
 * [Prerequisites](#prerequisites)
 * [Install](#install)
 * [Quickstart](#quickstart)

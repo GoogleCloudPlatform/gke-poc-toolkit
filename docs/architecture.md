@@ -2,20 +2,16 @@
 
 - [GKE PoC Toolkit Architecture & Pre-requisites](#gke-poc-toolkit-architecture--pre-requisites)
   - [Introduction](#introduction)
-  - [Pre-requisites](#pre-requisites)
-      - [Cloud Project](#cloud-project)
-      - [Required GCP APIs](#required-gcp-apis)
-      - [Tools](#tools)
-      - [Configure Authentication](#configure-authentication)
+  - [GCP APIs](#gcp-apis)
   - [Secure Defaults](#secure-defaults)
   - [Optional Settings](#optional-settings)
 
 ## Introduction
 This toolkit is made up of two base components, a cli written in golang, and a set of terraform code. The cli leverages the [cobra](https://github.com/spf13/cobra) and [viper](https://github.com/spf13/viper) packages for cli command and the [terraform-exec](https://github.com/hashicorp/terraform-exec) package to run terraform commands in the go code. Wheels are not being reinvented here, all of the terraform code leverages the [terraform-google-modules](https://github.com/terraform-google-modules) opensourced and maintained by google. 
 
-## Required GCP APIs
+## GCP APIs
 
-The following APIs will be enabled in your projects:
+The following GCP APIs will be enabled in your projects:
 
 * Identity and Access Management API
 * Compute Engine API
