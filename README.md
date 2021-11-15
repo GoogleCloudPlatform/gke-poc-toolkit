@@ -1,7 +1,7 @@
 # GKE PoC Toolkit
 
 * [Introduction](#introduction)
-* [Prerequisites](#prereqiusites)
+* [Prerequisites](#prerequisites)
 * [Install](#install)
 * [Quickstart](#quickstart)
 * [What's next?](#what's-next)
