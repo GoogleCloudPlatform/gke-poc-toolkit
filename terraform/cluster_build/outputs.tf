@@ -14,26 +14,31 @@
  * limitations under the License.
  */
 
-output "cluster_name" {
-  description = "Cluster name"
-  value       = module.gke.name
+output "project_id" {
+  description = "Deployment project ID"
+  value       = var.project_id
 }
 
-output "endpoint" {
-  sensitive   = true
-  description = "Cluster endpoint"
-  value       = module.gke.endpoint
-}
-
-output "ca_certificate" {
-  sensitive   = true
-  description = "Cluster ca certificate (base64 encoded)"
-  value       = module.gke.ca_certificate
-}
-
-output "get_credentials_command" {
+output "get_credential_commands" {
   description = "gcloud get-credentials command to generate kubeconfig for the private cluster"
-  value       = (var.private_endpoint ? (format("gcloud container clusters get-credentials --project %s --zone %s --internal-ip %s", var.project_id, module.gke.location, module.gke.name)) : (format("gcloud container clusters get-credentials --project %s --zone %s %s", var.project_id, module.gke.location, module.gke.name)))
+  value       = flatten([for s in module.gke : (var.private_endpoint ? (format("gcloud container clusters get-credentials --project %s --zone %s --internal-ip %s", var.project_id, s.location, s.name)) : (format("gcloud container clusters get-credentials --project %s --zone %s %s", var.project_id, s.location, s.name)))])
+}
+
+output "cluster_names" {
+  description = "List of GKE cluster names"
+  value       = flatten([for s in module.gke : s.name])
+}
+
+output "endpoints" {
+  sensitive   = true
+  description = "List of GKE cluster endpoints"
+  value       = flatten([for s in module.gke : s.endpoint])
+}
+
+output "ca_certificates" {
+  sensitive   = true
+  description = "List of GKE cluster ca certificates (base64 encoded)"
+  value       = flatten([for s in module.gke : s.ca_certificate])
 }
 
 output "bastion_name" {
@@ -43,7 +48,7 @@ output "bastion_name" {
 
 output "bastion_ssh_command" {
   description = "gcloud command to ssh and port forward to the bastion host command"
-  value       = (var.private_endpoint ? (format("gcloud beta compute ssh %s --tunnel-through-iap --project %s --zone %s -- -4 -L8888:127.0.0.1:8888", module.bastion[0].hostname, var.project_id, var.zone)) : "")
+  value       = (var.private_endpoint ? (format("gcloud beta compute ssh %s --tunnel-through-iap --project %s --zone %s -- -4 -L8888:127.0.0.1:8888", module.bastion[0].hostname, var.project_id, local.bastion_zone)) : "")
 }
 
 output "bastion_kubectl_command" {

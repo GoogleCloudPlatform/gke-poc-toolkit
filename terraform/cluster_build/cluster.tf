@@ -19,41 +19,42 @@ module "gke" {
     module.bastion,
     module.kms,
   ]
+  for_each                = var.cluster_config
   source                  = "terraform-google-modules/kubernetes-engine/google//modules/safer-cluster"
   version                 = "14.0.1"
   project_id              = module.enabled_google_apis.project_id
-  name                    = var.cluster_name
-  region                  = var.region
+  name                    = each.key
+  region                  = each.value.region
   config_connector        = var.config_connector
   network                 = local.network_name
-  subnetwork              = local.subnetwork_name
+  subnetwork              = each.value.subnet_name
   network_project_id      = local.project_id
   ip_range_pods           = local.ip_range_pods
   ip_range_services       = local.ip_range_services
   enable_private_endpoint = var.private_endpoint
-  # enable_shielded_nodes   = true default set in terraform-google-kubernetes-engine
-
-  //TODO Enable user to specify master CIDR
-  master_ipv4_cidr_block  = "172.16.0.16/28"
+  enable_shielded_nodes   = true
+  master_ipv4_cidr_block  = "172.16.${index(keys(var.cluster_config), each.key)}.16/28"
   master_authorized_networks = [{
-    cidr_block   = var.private_endpoint ? "${module.bastion[0].ip_address}/32" : "${var.auth_ip}/32"
+    cidr_block   = var.private_endpoint ? "${module.bastion[0].ip_address}/32" : "${var.auth_cidr}"
     display_name = var.private_endpoint ? "Bastion Host" : "Workstation Public IP"
   }]
 
   compute_engine_service_account = local.gke_service_account_email
   database_encryption = [{
     state    = "ENCRYPTED"
-    key_name = local.database-encryption-key
+    key_name = "projects/${var.governance_project_id}/locations/${each.value.region}/keyRings/${local.gke_keyring_name}-${each.value.region}/cryptoKeys/${local.gke_key_name}"
   }]
 
   node_pools = local.cluster_node_pools
 
   node_pools_oauth_scopes = {
-    all = []
     (var.node_pool) = [
       "https://www.googleapis.com/auth/cloud-platform",
+      "https://www.googleapis.com/auth/logging.write",
+      "https://www.googleapis.com/auth/monitoring",
     ]
   }
+
   node_pools_labels = {
     # all = {} default set in terraform-google-kubernetes-engine
 

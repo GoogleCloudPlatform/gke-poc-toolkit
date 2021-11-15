@@ -37,18 +37,6 @@ variable "shared_vpc_name" {
   default     = ""
 }
 
-variable "shared_vpc_subnet_name" {
-  type        = string
-  description = "The names of the Shared VPC subnet where GKE Toolkit resources will be deployed - This is optional and only valid if a Shared VPC is used"
-  default     = ""
-}
-
-variable "shared_vpc_subnet_ip" {
-  type        = string
-  description = "The cidr range of the subnet"
-  default     = "10.10.10.0/24"
-}
-
 variable "shared_vpc_ip_range_pods_name" {
   type        = string
   description = "The secondary ip range to use for pods in the shared vpc  - This is optional and only valid if a Shared VPC is used"
@@ -59,4 +47,9 @@ variable "shared_vpc_ip_range_services_name" {
   type        = string
   description = "The secondary ip range to use for services in the shared vpc  - This is optional and only valid if a Shared VPC is used"
   default     = ""
+}
+
+variable "cluster_config" {
+  description = "For each cluster, create an object that contain the required fields"
+  default     = {}
 }
