@@ -13,6 +13,10 @@ The GKE Proof of Concept (PoC) Toolkit is a demo generator for Google Kubernetes
 
 ## What gets installed
 
+This project installs a CLI interface for deploying one or more GKE clusters in a standalone or shared VPC network. All GKE clusters are deployed with a default hardened configuration. The CLI also accepts an input template for customizing your deployment. 
+
+For more details on what is deployed and what can be customized, you can check out our architectural document [here](docs/architecture.md). 
+
 ## Prerequisites
 
 #### Cloud Project
@@ -91,7 +95,7 @@ INFO[0000] Enter your Google Cloud Project ID:
 #### Multi-cluster shared VPC
 
 To create a shared VPC environment and install multiple clusters into the shared VPC pass a config file into the create command. 
-There is a sample config file saved to [./cli/samples/multi-cluster.yaml](cli//samples/multi-cluster.yaml). Update the sample with your specific variables before running the create command!
+There is a sample config file saved to [./cli/samples/multi-cluster.yaml](cli/samples/multi-cluster.yaml). Update the sample with your specific variables before running the create command!
 
 ```
 ./gkekitctl create --config samples/multi-cluster.yaml
