@@ -45,6 +45,9 @@ resource "google_logging_project_sink" "storage-sink" {
 }
 // Create Big Query Sink
 resource "google_logging_project_sink" "bigquery-sink" {
+  depends_on = [
+    google_bigquery_dataset.bigquery-dataset
+  ]
   name        = "gke-bigquery-sink"
   destination = "bigquery.googleapis.com/${google_bigquery_dataset.bigquery-dataset.id}"
   filter      = "resource.type=(k8s_cluster OR gke_cluster) AND log_id(cloudaudit.googleapis.com/activity)"
