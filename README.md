@@ -1,8 +1,8 @@
 # GKE PoC Toolkit
 
 * [Introduction](#introduction)
-* [What gets installed](#what-gets-installed)
 * [Prerequisites](#prerequisites)
+* [What gets installed](#what-gets-installed)
 * [Install](#install)
 * [Quickstart](#quickstart)
 * [What's next?](#what's-next)
@@ -10,12 +10,6 @@
 ## Introduction
 
 The GKE Proof of Concept (PoC) Toolkit is a demo generator for Google Kubernetes Engine (GKE). It sets out to provide a set of infrastructure as code (IaC) which deploys GKE clusters with a strong security posture that can be used to step through demos, stand up a POC, and deliver a codified example which can be the basis of a production implementation in your own CICD pipelines.
-
-## What gets installed
-
-This project installs a CLI interface for deploying one or more GKE clusters in a standalone or shared VPC network. All GKE clusters are deployed with a default hardened configuration. The CLI also accepts an input template for customizing your deployment. 
-
-For more details on what is deployed and what can be customized, you can check out our architectural document [here](docs/architecture.md). 
 
 ## Prerequisites
 
@@ -41,6 +35,10 @@ The Terraform configuration will execute against your GCP environment and create
 `gcloud auth login`
 
 >**NOTE:** If this is your first time deploying, you should also run `gcloud init` and reinitialize your configuration. 
+
+## What gets installed
+
+For more details on the default configuration and what can be customized, you can check out our architectural document [here](docs/architecture.md). 
 
 ## Install
 
