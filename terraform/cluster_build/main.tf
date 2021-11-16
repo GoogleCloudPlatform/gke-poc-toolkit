@@ -111,7 +111,6 @@ locals {
     initial_node_count          = var.initial_node_count
     // Intergrity Monitoring is not enabled in Windows Node pools yet.
     enable_integrity_monitoring = false
-    preemptible                 = var.preemptible_nodes ? true : false
     enable_secure_boot          = true
   }]
 

@@ -8,7 +8,7 @@ privateEndpoint: false
 defaultNodepoolOS: "cos_containerd" 
 enableWorkloadIdentity: true
 enableWindowsNodepool: false 
-enablePreemptibleNodepool: false 
+enablePreemptibleNodepool: false # Enforced on Linux Node pools only
 vpcConfig:
   vpcName: "default"
   vpcType: "shared" # standalone, shared 
