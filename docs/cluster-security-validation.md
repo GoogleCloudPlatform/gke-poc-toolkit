@@ -11,6 +11,14 @@ To view the Big Query Data Set created by this deployment in the GCP Portal UI, 
 
 ## Kubernetes and GCP RBAC Validation
 
+#### Create and validate demo RBAC users
+
+Run the [./create_and_validate_demo_rbac_users.sh](../scripts/create_and_validate_demo_rbac_users.sh) script located in the scripts directory to create a demo auditor and editor RBAC user in each cluster. Once created, the script also validates the of these accounts in each cluster. 
+
+#### Manually validate demo RBAC users
+
+To manually validate the RBAC users created against a specific cluster, follow the steps below. 
+
 Change the identity you are running gcloud under to the auditor service account and validate that change by observing the config list output.
 
 ```shell
@@ -18,6 +26,7 @@ gcloud auth activate-service-account --key-file ./creds/rbac-demo-auditor@$PROJE
 
 gcloud config list
 ```
+
 Retrieve a kubernetes config for the auditor service account and validate that you cannot get secrets.
 
 ```shell
