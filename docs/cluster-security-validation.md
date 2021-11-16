@@ -13,7 +13,7 @@ To view the Big Query Data Set created by this deployment in the GCP Portal UI, 
 
 #### Create and validate demo RBAC users
 
-Run [./scripts/create_and_validate_demo_rbac_users.sh](../scripts/create_and_validate_demo_rbac_users.sh) located in the [scripts directory](../scripts/) to create a demo auditor and editor RBAC user in each cluster. Once created, the script also validates the of these accounts in each cluster. 
+Run [./scripts/create_and_validate_demo_rbac_users.sh](../scripts/create_and_validate_demo_rbac_users.sh) from the root directory to create a demo auditor and editor RBAC user in each cluster. Once created, the script also validates the of these accounts in each cluster. 
 
 #### Manually validate demo RBAC users
 
