@@ -7,7 +7,7 @@ clustersProjectId: "my-project"
 governanceProjectId: "my-project"
 region: "us-central1"
 enableWorkloadIdentity: true 
-enablePreemptibleNodepool: false 
+enablePreemptibleNodepool: false # Enforced on Linux Node pools only
 enableWindowsNodepool: false
 defaultNodepoolOS: "cos"
 privateEndpoint: false
