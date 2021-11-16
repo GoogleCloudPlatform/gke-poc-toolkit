@@ -106,7 +106,7 @@ There is a sample config file saved to [./cli/samples/multi-cluster.yaml](cli/sa
 
 ## Cleanup
 
-If cleaning up a cluster installed with the cli defualts, simply run:
+If cleaning up a cluster installed with the cli defaults, simply run:
 
 ```shell
 ./gkekitctl delete
