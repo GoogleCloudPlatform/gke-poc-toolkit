@@ -43,10 +43,11 @@ resource "google_logging_project_sink" "storage-sink" {
   project                = var.project_id
   unique_writer_identity = true
 }
+
 // Create Big Query Sink
 resource "google_logging_project_sink" "bigquery-sink" {
   depends_on = [
-    google_bigquery_dataset.bigquery-dataset
+    resource.google_bigquery_dataset.bigquery-dataset
   ]
   name        = "gke-bigquery-sink"
   destination = "bigquery.googleapis.com/${google_bigquery_dataset.bigquery-dataset.id}"
