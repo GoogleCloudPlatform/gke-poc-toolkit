@@ -24,8 +24,8 @@ ROOT="$( cd "$( dirname "${BASH_SOURCE[0]}" )/.." && pwd )"
 DEFAULT_ADMIN="$(gcloud config list account --format "value(core.account)")"
 
 # Grab tfstate file from Google Cloud Storage account and store locally
-RANDOM_ID=${NEED_THIS}
-gsutil cp gs://tf-state-clusters${RANDOM_ID}/terraform/state/default.tfstate temp.tfstate
+BUCKET_NAME=$(cat ./terraform/cluster_build/backend.tf | grep bucket | sed 's/^.*= //' | tr -d '"')
+gsutil cp gs://${BUCKET_NAME}/terraform/state/default.tfstate temp.tfstate
 
 # Collect the names and regions if the clusters created in the target project
 declare -a GKE_CLUSTERS="$(terraform output --state=temp.tfstate cluster_names | cut -d'[' -f 2 | cut -d']' -f 2 | cut -d'"' -f 2)"
