@@ -1,0 +1,13 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: analytics-server 
+  namespace: analytics
+spec:
+  type: LoadBalancer
+  selector:
+    app: analytics-server
+  ports:
+  - port: 80
+    targetPort: 8000
+    name: http
