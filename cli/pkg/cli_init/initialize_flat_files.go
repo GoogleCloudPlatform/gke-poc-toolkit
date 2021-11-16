@@ -13,10 +13,15 @@ var templates embed.FS
 
 func InitFlatFiles(folders []string) {
 	for _, folder := range folders {
-		files := CreateFileList("pkg/cli_init/" + folder)
+		// err, files := ioutil.ReadDir(templates)
+		files, err := templates.ReadDir(folder)
+		if err != nil {
+			log.Fatalf("error reading embeded templates %s: %s", files, err)
+		}
+		// files := CreateFileList("pkg/cli_init/" + folder)
 		var buf bytes.Buffer
 		for _, file := range files {
-			b, err := templates.ReadFile(folder + "/" + file)
+			b, err := templates.ReadFile(folder + "/" + file.Name())
 			if err != nil {
 				log.Fatalf("error reading %s: %s", file, err)
 			}
@@ -24,7 +29,7 @@ func InitFlatFiles(folders []string) {
 				os.MkdirAll(folder, 0700)
 			}
 			buf.Write(b)
-			err = ioutil.WriteFile(folder+"/"+file, buf.Bytes(), 0644)
+			err = ioutil.WriteFile(folder+"/"+file.Name(), buf.Bytes(), 0644)
 			if err != nil {
 				log.Fatalf("error creating file %s: %s", file, err)
 			}
