@@ -16,31 +16,22 @@ limitations under the License.
 package cmd
 
 import (
-	"gkekitctl/pkg/config"
-	"gkekitctl/pkg/lifecycle"
-
-	log "github.com/sirupsen/logrus"
+	"gkekitctl/pkg/cli_init"
 
 	"github.com/spf13/cobra"
 )
 
-// deleteCmd represents the delete command
-var deleteCmd = &cobra.Command{
-	Use:     "delete",
-	Short:   "delete GKE Demo Environment",
-	Example: ` gkekitctl delete`,
-
+// createCmd represents the create command
+var initCmd = &cobra.Command{
+	Use:     "init",
+	Short:   "Initialize local environment for the cli",
+	Example: ` gkekitctl init`,
 	Run: func(cmd *cobra.Command, args []string) {
-		log.Println("Starting delete...")
-		conf := config.InitConf(cfgFile)
-		if conf.VpcConfig.VpcType == "shared" {
-			lifecycle.DestroyTF("shared_vpc")
-		}
-		lifecycle.DestroyTF("cluster_build")
-
+		folders := []string{"samples", "templates", "cluster_build", "shared_vpc"}
+		cli_init.InitFlatFiles(folders)
 	},
 }
 
 func init() {
-	rootCmd.AddCommand(deleteCmd)
+	rootCmd.AddCommand(initCmd)
 }

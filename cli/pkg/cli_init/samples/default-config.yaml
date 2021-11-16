@@ -1,0 +1,30 @@
+# ------ DO NOT EDIT ------------------
+# These are the default values used for `gkekitctl create` when 
+# the user does not supply their own config.yml. Note that the user 
+# *does* have to provide their GCP project ID at runtime.  
+terraformState: local  
+clustersProjectId: "my-project"
+governanceProjectId: "my-project"
+region: "us-central1"
+enableWorkloadIdentity: true 
+enablePreemptibleNodepool: false 
+enableWindowsNodepool: false
+defaultNodepoolOS: "cos"
+privateEndpoint: false
+configSync: true 
+policyController: true
+vpcConfig:
+  vpcName: "default"
+  vpcType: "standalone" 
+  vpcProjectId: "my-project" 
+  podCIDRName: "default"
+  svcCIDRName: "default"
+  authCIDR: "0.0.0.0/0"
+clustersConfig:   
+- clusterName: "gke-central"
+  numNodes: 3 
+  clusterType: "public"
+  machineType: "e2-standard-4"
+  region: "us-central1" 
+  zone: "us-central1-b"
+  subnetName: "us-central1"

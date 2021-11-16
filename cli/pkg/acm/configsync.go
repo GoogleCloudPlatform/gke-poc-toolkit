@@ -120,7 +120,6 @@ func InitSSH() error {
 		return err
 	}
 	return ioutil.WriteFile(pubKeyPath, ssh.MarshalAuthorizedKey(pub), 0655)
-	return nil
 }
 
 func PromptUser(conf *config.Config) error {

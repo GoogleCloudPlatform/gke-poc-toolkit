@@ -1,18 +1,33 @@
-/**
- * Copyright 2020 Google LLC
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- *      http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- */
+module "cluster_build" {
+  source                            = "github.com/knee-berts/gke-poc-toolkit//terraform/modules/cluster_build"
+  project_id                        = var.project_id
+  governance_project_id             = var.governance_project_id
+  region                            = var.region
+  shared_vpc                        = var.shared_vpc
+  vpc_name                          = var.vpc_name
+  ip_range_pods_name                = var.ip_range_pods_name
+  bastion_members                   = var.bastion_members
+  ip_source_ranges_ssh              = var.ip_source_ranges_ssh
+  shared_vpc_name                    = var.shared_vpc_name
+  shared_vpc_project_id             = var.shared_vpc_project_id
+  shared_vpc_ip_range_pods_name     = var.shared_vpc_ip_range_pods_name
+  shared_vpc_ip_range_services_name = var.shared_vpc_ip_range_services_name
+  node_pool                         = var.node_pool
+  initial_node_count                = var.initial_node_count
+  min_node_count                    = var.min_node_count
+  max_node_count                    = var.max_node_count
+  linux_machine_type                = var.linux_machine_type
+  windows_machine_type              = var.windows_machine_type
+  private_endpoint                  = var.private_endpoint
+  auth_cidr                         = var.auth_cidr
+  config_sync                       = var.config_sync
+  policy_controller                 = var.policy_controller
+  config_connector                  = var.config_connector
+  windows_nodepool                  = var.windows_nodepool
+  preemptible_nodes                 = var.preemptible_nodes
+  cluster_config                    = var.cluster_config
+  k8s_users                         = var.k8s_users
+}
 
 variable "project_id" {
   type        = string
