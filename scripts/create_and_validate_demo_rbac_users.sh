@@ -23,8 +23,12 @@ ROOT="$( cd "$( dirname "${BASH_SOURCE[0]}" )/.." && pwd )"
 # Save current logged in admin user account
 DEFAULT_ADMIN="$(gcloud config list account --format "value(core.account)")"
 
+# Grab tfstate file from Google Cloud Storage account and store locally
+BUCKET_NAME=$(cat ./terraform/cluster_build/backend.tf | grep bucket | sed 's/^.*= //' | tr -d '"')
+gsutil cp gs://${BUCKET_NAME}/terraform/state/default.tfstate /tmp/temp.tfstate
+
 # Collect the names and regions if the clusters created in the target project
-declare -a GKE_CLUSTERS="$(terraform output --state=terraform/cluster_build/terraform.tfstate cluster_names | cut -d'[' -f 2 | cut -d']' -f 2 | cut -d'"' -f 2)"
+declare -a GKE_CLUSTERS="$(terraform output --state=/tmp/temp.tfstate cluster_names | cut -d'[' -f 2 | cut -d']' -f 2 | cut -d'"' -f 2)"
 
 # Define the cluster role bindings to create in each cluster - mapping = <service_account_name>:<cluster_role>
 declare -a k8s_users=( 
@@ -43,7 +47,7 @@ fi
 # Outer Loop - Loop through each cluster credential and authenticate to the cluster
 for cluster in ${GKE_CLUSTERS}
 do
-    CREDENTIALS="$(terraform output --state=terraform/cluster_build/terraform.tfstate get_credential_commands | grep $cluster | cut -d'"' -f 2 | tr -d \")"
+    CREDENTIALS="$(terraform output --state=/tmp/temp.tfstate get_credential_commands | grep $cluster | cut -d'"' -f 2 | tr -d \")"
     tput setaf 3; echo "Creating sample cluster role bindings for cluster: $cluster"
     echo "Cluster credential command used to authenticate to cluster: $CREDENTIALS" ; tput sgr0
     $CREDENTIALS
@@ -55,7 +59,7 @@ do
         echo "$cluster is a private cluster. Confirming SSH Bastion Tunnel/Proxy"
         if [[ ! "$(pgrep -f L8888:127.0.0.1:8888)" ]]; then
             echo "Did not detect a running SSH tunnel.  Opening a new one."
-            BASTION_CMD="$(terraform output --state=terraform/cluster_build/terraform.tfstate bastion_ssh_command | tr -d \")"
+            BASTION_CMD="$(terraform output --state=/tmp/temp.tfstate bastion_ssh_command | tr -d \")"
             $BASTION_CMD -T -f tail -f /dev/null
         else
  		        echo "Detected a running SSH tunnel.  Skipping."
@@ -78,7 +82,7 @@ do
     do
         ROLE_NAME="${k8s_user%%:*}"
         ROLE_PERM="${k8s_user##*:}"
-        PROJECT_ID="$(terraform output --state=terraform/cluster_build/terraform.tfstate project_id | tr -d \")"
+        PROJECT_ID="$(terraform output --state=/tmp/temp.tfstate project_id | tr -d \")"
 
 cat <<EOF > new_role.yaml
 kind: ClusterRoleBinding
