@@ -105,7 +105,7 @@ EOF
             HTTPS_PROXY=localhost:8888 kubectl apply -f new_role.yaml
 
             # Authenticate as sample RBAC user and check for access to cluster secrets
-            gcloud auth activate-service-account --key-file ../creds/$ROLE_NAME@$PROJECT_ID.iam.gserviceaccount.com.json
+            gcloud auth activate-service-account --key-file ./creds/$ROLE_NAME@$PROJECT_ID.iam.gserviceaccount.com.json
             $CREDENTIALS
 
             if [[ "$(HTTPS_PROXY=localhost:8888 kubectl auth can-i get secrets)" == *"yes"* ]]; then
@@ -123,7 +123,7 @@ EOF
             kubectl apply -f new_role.yaml
 
             # Authenticate as sample RBAC user and check for access to cluster secrets
-            gcloud auth activate-service-account --key-file ../creds/$ROLE_NAME@$PROJECT_ID.iam.gserviceaccount.com.json
+            gcloud auth activate-service-account --key-file ./creds/$ROLE_NAME@$PROJECT_ID.iam.gserviceaccount.com.json
             $CREDENTIALS
 
             if [[ "$(kubectl auth can-i get secrets)" == *"yes"* ]]; then
