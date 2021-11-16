@@ -9,9 +9,12 @@ jobs:
   publish:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@main
+      - uses: actions/checkout@v2
         with:
           fetch-depth: 1
+      - uses: actions/setup-go@v2
+        with:
+          go-version: '^1.16.0'
       - name: Make all
         run: cd cli && make all
       - name: Upload release binaries
