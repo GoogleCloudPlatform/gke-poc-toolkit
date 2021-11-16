@@ -101,14 +101,14 @@ locals {
 
   // Presets for Windows Node Pool
   windows_pool = [{
-    name                        = format("windows-%s", var.node_pool)
-    min_count                   = var.min_node_count
-    max_count                   = var.max_node_count
-    disk_size_gb                = 100
-    disk_type                   = "pd-ssd"
-    image_type                  = "WINDOWS_SAC"
-    machine_type                = var.windows_machine_type
-    initial_node_count          = var.initial_node_count
+    name               = format("windows-%s", var.node_pool)
+    min_count          = var.min_node_count
+    max_count          = var.max_node_count
+    disk_size_gb       = 100
+    disk_type          = "pd-ssd"
+    image_type         = "WINDOWS_SAC"
+    machine_type       = var.windows_machine_type
+    initial_node_count = var.initial_node_count
     // Intergrity Monitoring is not enabled in Windows Node pools yet.
     enable_integrity_monitoring = false
     enable_secure_boot          = true

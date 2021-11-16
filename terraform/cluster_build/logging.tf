@@ -25,7 +25,7 @@ resource "google_storage_bucket" "log-bucket" {
 
 // Create BQ Data Set in Governance Project
 resource "google_bigquery_dataset" "bigquery-dataset" {
-  dataset_id                  = "gke_logs_dataset"
+  dataset_id = "gke_logs_dataset"
   # location                    = "US" dfeault set in terraform-google-bigquery
   default_table_expiration_ms = 3600000
   project                     = var.governance_project_id
