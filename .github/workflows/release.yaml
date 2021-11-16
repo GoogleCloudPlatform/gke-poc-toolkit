@@ -17,10 +17,12 @@ jobs:
           go-version: '^1.16.0'
       - name: Make all
         run: cd cli && make all
-      - name: Upload release binaries
-        uses: alexellis/upload-assets@0.2.2
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      - name: Create Release
+        id: create_release
+        uses: shogo82148/actions-create-release@v1
+
+      - uses: shogo82148/actions-upload-release-asset@v1
         with:
-          asset_paths: '["./bin/gkekitctl-*"]'
+          upload_url: ${{ steps.create_release.outputs.upload_url }}
+          asset_path: '["./bin/gkekitctl-*"]'
 #          asset_paths: '["./bin/gkekitctl-darwin", "./bin/gkekitctl-amd64", "./bin/gkekitctl-arm", "./bin/gkekitctl-arm64", "./bin/gkekitctl.exe"]'
