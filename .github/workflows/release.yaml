@@ -20,7 +20,7 @@ jobs:
       - name: Upload release binaries
         uses: alexellis/upload-assets@0.2.2
         env:
-          GITHUB_TOKEN: ${{ github.token }}
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
           asset_paths: '["./bin/gkekitctl-*"]'
 #          asset_paths: '["./bin/gkekitctl-darwin", "./bin/gkekitctl-amd64", "./bin/gkekitctl-arm", "./bin/gkekitctl-arm64", "./bin/gkekitctl.exe"]'
