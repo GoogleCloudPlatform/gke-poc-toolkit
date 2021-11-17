@@ -94,3 +94,6 @@ cli/cluster_build/*
 cli/samples/*
 cli/shared_vpc/*
 cli/templates/*
+
+# Ignore yaml files in root of cli
+cli/*.yaml
