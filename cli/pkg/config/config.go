@@ -52,7 +52,7 @@ type Config struct {
 	EnableWindowsNodepool     bool            `yaml:"enableWindowsNodepool"`
 	EnablePreemptibleNodepool bool            `yaml:"enablePreemptibleNodepool"`
 	DefaultNodepoolOS         string          `yaml:"defaultNodepoolOS"`
-	TfModuleRepo              string          `yaml:"tfModuleRepo"`
+	TFModuleRepo              string          `yaml:"tfModuleRepo"`
 	VpcConfig                 VpcConfig       `yaml:"vpcConfig"`
 	ClustersConfig            []ClusterConfig `yaml:"clustersConfig"`
 }
@@ -115,10 +115,13 @@ func InitConf(cfgFile string) *Config {
 	}
 
 	// Set Tf Module Repo
-	err = setTfModuleRepo(conf.TfModuleRepo)
+	err = setTfModuleRepo(conf.TFModuleRepo)
 	if err != nil {
 		log.Error(err)
 	}
+
+	// Show config to user
+	log.Info("✅ Config has been initialized successfully.")
 
 	return conf
 }
@@ -194,7 +197,7 @@ func ValidateConf(c *Config) error {
 	if c.PolicyController && !c.ConfigSync {
 		return fmt.Errorf("Terraform constraints require that if Policy Controller is enabled, Config Sync must also be enabled. Please set configSync to true and retry.")
 	}
-	if err := validateTFModuleRepo(c.TfModuleRepo); err != nil {
+	if err := validateTFModuleRepo(c.TFModuleRepo); err != nil {
 		return err
 	}
 
