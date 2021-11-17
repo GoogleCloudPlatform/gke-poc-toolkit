@@ -18,6 +18,7 @@ package cmd
 import (
 	"gkekitctl/pkg/cli_init"
 
+	log "github.com/sirupsen/logrus"
 	"github.com/spf13/cobra"
 )
 
@@ -28,11 +29,10 @@ var initCmd = &cobra.Command{
 	Example: ` gkekitctl init`,
 	Run: func(cmd *cobra.Command, args []string) {
 		folders := []string{"samples", "templates", "cluster_build", "shared_vpc"}
-		cli_init.InitFlatFiles(folders)
-		// err := cli_init.InitFlatFiles(folders)
-		// if err != nil {
-		// 	log.Errorf("🚨 Failed to initialize gkekitctl: %s", err)
-		// }
+		err := cli_init.InitFlatFiles(folders)
+		if err != nil {
+			log.Errorf("🚨 Failed to initialize gkekitctl: %s", err)
+		}
 	},
 }
 
