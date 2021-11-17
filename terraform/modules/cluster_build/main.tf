@@ -131,9 +131,6 @@ locals {
 
   // Final Node Pool options for Cluster - combines all specified nodepools
   cluster_node_pools = var.windows_nodepool ? flatten([local.windows_pool, local.linux_pool]) : flatten(local.linux_pool)
-
-  // Presets for ACM Module
-  acm_tf_module_repo = concat(var.tf_module_repo, "acm")
 }
 
 // Enable APIs needed in the gke cluster project
