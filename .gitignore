@@ -90,3 +90,7 @@ creds/
 
 # Cloud Source Repos
 *gke-poc-config-sync*
+
+
+# Analytics binary
+*analytics*

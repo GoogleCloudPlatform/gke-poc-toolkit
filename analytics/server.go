@@ -23,8 +23,9 @@ type app struct {
 	db *sql.DB
 }
 
-// Represents 1 GKE cluster created during 1 run of `gkekitctl create` by 1 user
 type Cluster struct {
+	// Represents 1 GKE cluster created during 1 run of `gkekitctl create` by 1 user
+	// type Cluster struct {
 	// SERVER GENERATES THESE. They will be empty on POST.
 	ClusterId string `json:"clusterId"`
 	CreateId  string `json:"createId"`
@@ -59,6 +60,10 @@ var a *app
 // Starts the webserver on port 8000.
 // Server has a single endpoint - POST / - which accepts a JSON object
 func main() {
+	// Sleep for 10 seconds to let Cloud SQL Proxy start up
+	// TODO - make this cleaner
+	time.Sleep(time.Second * 10)
+
 	// initialize cloud SQL client
 	var err error
 	a, err = initCloudSQL()
@@ -121,7 +126,7 @@ func (app *app) ReceiveClusterAndWriteToSQL(w http.ResponseWriter, r *http.Reque
 	c.ClusterId = clusterId.String()
 
 	// Log received cluster
-	log.Infof("Received cluster: ID: %s, timestamp: %s, OS: %s", c.ClusterId, c.Timestamp, c.OS)
+	log.Infof("Received cluster: ID: %s", c.ClusterId)
 
 	// Write to Cloud SQL
 	// TODO - make async?
@@ -129,6 +134,7 @@ func (app *app) ReceiveClusterAndWriteToSQL(w http.ResponseWriter, r *http.Reque
 		log.Error(err)
 		w.WriteHeader(http.StatusInternalServerError)
 		w.Write([]byte(err.Error()))
+		return
 	}
 
 	// Give back what the user sent + status 200
@@ -179,15 +185,30 @@ func initCloudSQL() (*app, error) {
 	}
 
 	tableCreate := `
-	CREATE TABLE TESTCLUSTER(
-		CLUSTERID TEXT 			PRIMARY KEY     NOT NULL,
-		CLUSTERMACHINETYPE      TEXT    NOT NULL,
-		ENABLECONFIGSYNC        BOOL
+	CREATE TABLE IF NOT EXISTS CLUSTERS(
+		ClusterId 						TEXT, 
+		CreateId 						TEXT, 
+		Timestamp 						TIMESTAMP,
+		OS								TEXT,
+		TerraformState 					TEXT,
+		Region 							TEXT,
+		EnableWorkloadIdentity 			BOOL, 
+		EnablePreemptibleNodepool 		BOOL, 
+		DefaultNodepoolOS 				TEXT,
+		PrivateEndpoint 				BOOL,
+		EnableConfigSync        		BOOL, 
+		EnablePolicyController 			BOOL,
+		VPCType 						TEXT,
+		ClusterIndex 					INTEGER,
+		ClusterNumNodes 				INTEGER, 
+		ClusterMachineType 				TEXT,
+		ClusterRegion 					TEXT,
+		ClusterZone 					TEXT 
 	 );`
 
 	// Create the Cluster table if it does not already exist.
 	if _, err = a.db.Exec(tableCreate); err != nil {
-		log.Warnf("Error on table create: %s", err.Error())
+		return a, fmt.Errorf("Error on table create: %s", err.Error())
 	}
 
 	return a, nil
@@ -195,16 +216,12 @@ func initCloudSQL() (*app, error) {
 
 // Helper - writes Cluster object to Cloud SQL on localhost (via proxy)
 func writeToCloudSQL(app *app, c Cluster) error {
-	sqlInsert := `
-	INSERT INTO TESTCLUSTER(c) 
-		VALUES(
-			$1, NOW(), 
-			NOW()
-		)
-	`
+	sqlInsert := "INSERT INTO CLUSTERS(ClusterId, CreateId, Timestamp, OS, TerraformState, Region, EnableWorkloadIdentity, EnablePreemptibleNodepool, DefaultNodepoolOS, PrivateEndpoint, EnableConfigSync, EnablePolicyController, VPCType, ClusterIndex, ClusterNumNodes, ClusterMachineType, ClusterRegion, ClusterZone) VALUES($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15, $16, $17, $18)"
 
-	if _, err := app.db.Exec(sqlInsert, c); err != nil {
-		return fmt.Errorf("DB.Exec: %v", err)
+	_, err := app.db.Exec(sqlInsert, c.ClusterId, c.CreateId, c.Timestamp, c.OS, c.TerraformState, c.Region, c.EnableWorkloadIdentity, c.EnablePreemptibleNodepool, c.DefaultNodepoolOS, c.PrivateEndpoint, c.EnableConfigSync, c.EnablePolicyController, c.VPCType, c.ClusterIndex, c.ClusterNumNodes, c.ClusterMachineType, c.ClusterRegion, c.ClusterZone)
+
+	if err != nil {
+		return fmt.Errorf("Error on Cloud SQL Insert: %v", err)
 	}
 
 	return nil
@@ -235,12 +252,8 @@ func initSocketConnectionPool() (*sql.DB, error) {
 		return nil, fmt.Errorf("sql.Open: %v", err)
 	}
 
-	// [START_EXCLUDE]
 	configureConnectionPool(dbPool)
-	// [END_EXCLUDE]
-
 	return dbPool, nil
-	// [END cloud_sql_postgres_databasesql_create_socket]
 }
 
 // initTCPConnectionPool initializes a TCP connection pool for a Cloud SQL
@@ -257,12 +270,6 @@ func initTCPConnectionPool() (*sql.DB, error) {
 
 	dbURI := fmt.Sprintf("host=%s user=%s password=%s port=%s database=%s", dbTCPHost, dbUser, dbPwd, dbPort, dbName)
 
-	// [START_EXCLUDE]
-	// [START cloud_sql_postgres_databasesql_sslcerts]
-	// (OPTIONAL) Configure SSL certificates
-	// For deployments that connect directly to a Cloud SQL instance without
-	// using the Cloud SQL Proxy, configuring SSL certificates will ensure the
-	// connection is encrypted. This step is entirely OPTIONAL.
 	dbRootCert := os.Getenv("DB_ROOT_CERT") // e.g., '/path/to/my/server-ca.pem'
 	if dbRootCert != "" {
 		var (
@@ -271,46 +278,25 @@ func initTCPConnectionPool() (*sql.DB, error) {
 		)
 		dbURI += fmt.Sprintf(" sslmode=require sslrootcert=%s sslcert=%s sslkey=%s", dbRootCert, dbCert, dbKey)
 	}
-	// [END cloud_sql_postgres_databasesql_sslcerts]
-	// [END_EXCLUDE]
 
-	// dbPool is the pool of database connections.
 	dbPool, err := sql.Open("pgx", dbURI)
 	if err != nil {
 		return nil, fmt.Errorf("sql.Open: %v", err)
 	}
 
-	// [START_EXCLUDE]
 	configureConnectionPool(dbPool)
-	// [END_EXCLUDE]
 
 	return dbPool, nil
-	// [END cloud_sql_postgres_databasesql_create_tcp]
 }
 
 // configureConnectionPool sets database connection pool properties.
 // For more information, see https://golang.org/pkg/database/sql
 func configureConnectionPool(dbPool *sql.DB) {
-	// [START cloud_sql_postgres_databasesql_limit]
-
-	// Set maximum number of connections in idle connection pool.
 	dbPool.SetMaxIdleConns(5)
-
-	// Set maximum number of open connections to the database.
 	dbPool.SetMaxOpenConns(7)
-
-	// [END cloud_sql_postgres_databasesql_limit]
-
-	// [START cloud_sql_postgres_databasesql_lifetime]
-
-	// Set Maximum time (in seconds) that a connection can remain open.
 	dbPool.SetConnMaxLifetime(1800 * time.Second)
-
-	// [END cloud_sql_postgres_databasesql_lifetime]
 }
 
-// mustGetEnv is a helper function for getting environment variables.
-// Displays a warning if the environment variable is not set.
 func mustGetenv(k string) string {
 	v := os.Getenv(k)
 	if v == "" {
