@@ -7,6 +7,7 @@ require (
 	cloud.google.com/go/serviceusage v1.0.0
 	cloud.google.com/go/storage v1.10.0
 	github.com/aws/aws-sdk-go v1.34.28 // indirect
+	github.com/davecgh/go-spew v1.1.1 // indirect
 	github.com/hashicorp/terraform-exec v0.14.0
 	github.com/sirupsen/logrus v1.8.1
 	github.com/spf13/cobra v1.2.1

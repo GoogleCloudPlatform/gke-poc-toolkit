@@ -204,7 +204,7 @@ module "acm" {
     module.gke,
   ]
   count             = var.config_sync ? 1 : 0
-  source            = "${var.tf_module_repo}acm"
+  source            = concat(var.tf_module_repo, "acm")
   project_id        = module.enabled_google_apis.project_id
   policy_controller = var.policy_controller
   cluster_config    = var.cluster_config

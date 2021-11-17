@@ -25,6 +25,7 @@ import (
 	"os"
 	"strings"
 
+	"github.com/davecgh/go-spew/spew"
 	log "github.com/sirupsen/logrus"
 
 	"github.com/spf13/viper"
@@ -122,7 +123,7 @@ func InitConf(cfgFile string) *Config {
 
 	// Show config to user
 	log.Info("✅ Config has been initialized successfully.")
-
+	spew.Dump(conf)
 	return conf
 }
 
