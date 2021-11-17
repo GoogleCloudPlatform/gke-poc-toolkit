@@ -4,21 +4,26 @@ import (
 	"bytes"
 	"embed"
 	"io/ioutil"
-	"log"
 	"os"
+
+	log "github.com/sirupsen/logrus"
 )
+
+// embeding flatfiles and setting them as a file system variable, embed.FS.
+// embed.FS can be treated like io.FS.
 
 //go:embed templates/* samples/* cluster_build/* shared_vpc/*
 var templates embed.FS
 
 func InitFlatFiles(folders []string) {
+	log.Info("🔄 Initializing flat files for gkekitctl...")
+
+	// Range over folders of flat files
 	for _, folder := range folders {
-		// err, files := ioutil.ReadDir(templates)
 		files, err := templates.ReadDir(folder)
 		if err != nil {
 			log.Fatalf("error reading embeded templates %s: %s", files, err)
 		}
-		// files := CreateFileList("pkg/cli_init/" + folder)
 		var buf bytes.Buffer
 		for _, file := range files {
 			b, err := templates.ReadFile(folder + "/" + file.Name())
