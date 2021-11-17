@@ -11,7 +11,6 @@ import (
 
 	"os"
 
-	"github.com/gofrs/uuid"
 	"github.com/gorilla/mux"
 	log "github.com/sirupsen/logrus"
 
@@ -108,22 +107,6 @@ func (app *app) ReceiveClusterAndWriteToSQL(w http.ResponseWriter, r *http.Reque
 		w.WriteHeader(http.StatusBadRequest)
 		w.Write([]byte(err.Error()))
 	}
-
-	// Assign UUIDs to create run and cluster
-	createId, err := uuid.NewV4()
-	if err != nil {
-		log.Error(err)
-		w.WriteHeader(http.StatusInternalServerError)
-		w.Write([]byte(err.Error()))
-	}
-	c.CreateId = createId.String()
-	clusterId, err := uuid.NewV4()
-	if err != nil {
-		log.Error(err)
-		w.WriteHeader(http.StatusInternalServerError)
-		w.Write([]byte(err.Error()))
-	}
-	c.ClusterId = clusterId.String()
 
 	// Log received cluster
 	log.Infof("Received cluster: ID: %s", c.ClusterId)
