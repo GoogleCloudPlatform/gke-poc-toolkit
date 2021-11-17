@@ -43,6 +43,7 @@ func GenerateTfvars(conf *Config) {
 	vars["EnableWorkloadIdentity"] = conf.EnableWorkloadIdentity
 	vars["EnableWindowsNodepool"] = conf.EnableWindowsNodepool
 	vars["EnablePreemptibleNodepool"] = conf.EnablePreemptibleNodepool
+	vars["TFModuleRepo"] = conf.TfModuleRepo
 
 	// Set vpc config vars
 	if conf.VpcConfig.VpcType == "standalone" {
