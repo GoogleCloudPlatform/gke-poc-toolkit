@@ -1,5 +1,5 @@
 module "shared_vpc" {
-  source                            = "github.com/knee-berts/gke-poc-toolkit//terraform/modules/shared_vpc"
+  source                            = "{{.TFModuleRepo}}shared_vpc"
   project_id                        = var.project_id
   shared_vpc_project_id             = var.shared_vpc_project_id
   region                            = var.region

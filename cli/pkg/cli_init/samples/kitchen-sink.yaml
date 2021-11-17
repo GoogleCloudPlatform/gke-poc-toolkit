@@ -5,11 +5,11 @@ clustersProjectId: "my-project"
 governanceProjectId: "my-project" 
 configSync: true 
 policyController: true
-privateEndpoint: false
+privateEndpoint: true
 defaultNodepoolOS: "cos_containerd" 
 enableWorkloadIdentity: true
-enableWindowsNodepool: false 
-enablePreemptibleNodepool: false # Enforced on Linux Node pools only
+enableWindowsNodepool: true 
+enablePreemptibleNodepool: true # Enforced on Linux Node pools only
 tfModuleRepo: "github.com/GoogleCloudPlatform/gke-poc-toolkit//terraform/modules/"
 vpcConfig:
   vpcName: "default"

@@ -1,5 +1,5 @@
 module "cluster_build" {
-  source                            = "github.com/knee-berts/gke-poc-toolkit//terraform/modules/cluster_build"
+  source                            = "{{.TFModuleRepo}}cluster_build"
   project_id                        = var.project_id
   governance_project_id             = var.governance_project_id
   region                            = var.region
@@ -8,7 +8,7 @@ module "cluster_build" {
   ip_range_pods_name                = var.ip_range_pods_name
   bastion_members                   = var.bastion_members
   ip_source_ranges_ssh              = var.ip_source_ranges_ssh
-  shared_vpc_name                    = var.shared_vpc_name
+  shared_vpc_name                   = var.shared_vpc_name
   shared_vpc_project_id             = var.shared_vpc_project_id
   shared_vpc_ip_range_pods_name     = var.shared_vpc_ip_range_pods_name
   shared_vpc_ip_range_services_name = var.shared_vpc_ip_range_services_name
