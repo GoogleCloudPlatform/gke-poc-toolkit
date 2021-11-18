@@ -82,7 +82,7 @@ module "windows_nodepool" {
   ]
   count              = var.windows_nodepool ? 1 : 0
   source             = "../windows_nodepool"
-  cluster_ids        = flatten([for s in module.gke : s.cluster_id]
+  cluster_ids        = flatten([for each_cluster in module.gke : each_cluster.cluster_id]
   name               = format("windows-%s", var.node_pool)
   min_count          = var.min_node_count
   max_count          = var.max_node_count
