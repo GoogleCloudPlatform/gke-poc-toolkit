@@ -44,6 +44,15 @@ Sample inputs to modify the defaults can be found [here](cli/samples/).
 
 ## Install
 
+Setup default project and default application credentials for gcloud:
+
+```shell
+PROJECT_ID=<project id targeted for clusters>
+gcloud config set project $PROJECT_ID
+gcloud auth login
+gcloud auth application-default login
+```
+
 Set gkekitctl cli version type and OS, then download the cli binary:
 
 ```shell
