@@ -188,8 +188,3 @@ variable "k8s_users" {
     rbac-demo-editor  = "edit"
   }
 }
-
-variable "acm_tf_module_repo" {
-  description = "Repo used "
-  default = "github.com/GoogleCloudPlatform/gke-poc-toolkit//terraform/modules/"
-}
