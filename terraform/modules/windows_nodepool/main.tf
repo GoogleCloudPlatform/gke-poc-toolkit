@@ -39,9 +39,9 @@ variable "enable_secure_boot" {
 // Add Windows Node Pool to each GKE cluster created
 // https://registry.terraform.io/providers/hashicorp/google/latest/docs/resources/container_node_pool 
 resource "google_container_node_pool" "primary" {
-  count              = flatten([for each_cluster in var.clusters : each_cluster.cluster_id]
+  for_each           = flatten([for each_cluster in var.clusters : each_cluster.cluster_id]
   name               = var.name
-  cluster            = count.index
+  cluster            = each.value
   initial_node_count = var.initial_node_count
 
   autoscaling {
