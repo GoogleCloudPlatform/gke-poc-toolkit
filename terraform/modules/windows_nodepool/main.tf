@@ -40,7 +40,7 @@ variable "enable_secure_boot" {
 // https://registry.terraform.io/providers/hashicorp/google/latest/docs/resources/container_node_pool 
 resource "google_container_cluster" "primary" {
   for_each           = var.cluster
-  name               = format("windows-%s", var.node_pool)
+  name               = var.name
   min_count          = var.min_node_count
   max_count          = var.max_node_count
   disk_size_gb       = 100
