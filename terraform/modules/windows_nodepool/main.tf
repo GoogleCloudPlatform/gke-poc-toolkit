@@ -38,7 +38,7 @@ variable "enable_secure_boot" {
 
 // Add Windows Node Pool to each GKE cluster created
 // https://registry.terraform.io/providers/hashicorp/google/latest/docs/resources/container_node_pool 
-resource "google_container_cluster" "primary" {
+resource "google_container_node_pool" "primary" {
   for_each           = var.cluster
   name               = var.name
   cluster            = each.value.cluster_id
