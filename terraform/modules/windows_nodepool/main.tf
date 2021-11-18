@@ -1,8 +1,11 @@
 // Defines vars so that we can pass them in from cluster_build/cluster.tf from the overall tfvars
-variable "clusters" {
+variable "cluster_config" {
 }
 
 variable "name" {
+}
+
+variable "project_id" {
 }
 
 variable "min_count" {
@@ -39,9 +42,9 @@ variable "enable_secure_boot" {
 // Add Windows Node Pool to each GKE cluster created
 // https://registry.terraform.io/providers/hashicorp/google/latest/docs/resources/container_node_pool 
 resource "google_container_node_pool" "primary" {
-  for_each           = flatten([for each_cluster in var.clusters : each_cluster.cluster_id]
+  for_each           = var.cluster_config
   name               = var.name
-  cluster            = each.value
+  cluster            = "projects/${var.project_id}/locations/${each.value.region}/clusters/${each.value.name}"
   initial_node_count = var.initial_node_count
 
   autoscaling {

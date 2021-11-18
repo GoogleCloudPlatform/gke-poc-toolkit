@@ -82,8 +82,9 @@ module "windows_nodepool" {
   ]
   count              = var.windows_nodepool ? 1 : 0
   source             = "../windows_nodepool"
-  clusters           = module.gke[*]
+  cluster_config     = var.cluster_config
   name               = format("windows-%s", var.node_pool)
+  project_id         = var.project_id
   min_count          = var.min_node_count
   max_count          = var.max_node_count
   disk_size_gb       = 100
