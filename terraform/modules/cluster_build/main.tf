@@ -204,7 +204,7 @@ module "acm" {
     module.gke,
   ]
   count             = var.config_sync ? 1 : 0
-  source            = "github.com/knee-berts/gke-poc-toolkit//terraform/modules/acm"
+  source            = var.acm_tf_module_repo
   project_id        = module.enabled_google_apis.project_id
   policy_controller = var.policy_controller
   cluster_config    = var.cluster_config
