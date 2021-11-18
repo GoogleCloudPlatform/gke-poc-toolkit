@@ -41,16 +41,17 @@ variable "enable_secure_boot" {
 resource "google_container_cluster" "primary" {
   for_each           = var.cluster
   name               = var.name
-  cluster            = cluster.each.cluster_id
+  cluster            = each.cluster_id
   min_count          = var.min_node_count
   max_count          = var.max_node_count
-  disk_size_gb       = 100
-  machine_type       = var.windows_machine_type
   initial_node_count = var.initial_node_count
 
   node_config {
     disk_type          = "pd-ssd"
     image_type         = "WINDOWS_SAC"
+    disk_size_gb       = 100
+    machine_type       = var.windows_machine_type
+
     # Google recommends custom service accounts that have cloud-platform scope and permissions granted via IAM Roles.
     service_account = var.service_account
     oauth_scopes = [
