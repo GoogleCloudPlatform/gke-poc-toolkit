@@ -91,6 +91,7 @@ module "windows_nodepool" {
   image_type         = "WINDOWS_SAC"
   machine_type       = var.windows_machine_type
   initial_node_count = var.initial_node_count
+  service_account    = local.gke_service_account_email
   // Intergrity Monitoring is not enabled in Windows Node pools yet.
   enable_integrity_monitoring = false
   enable_secure_boot          = true

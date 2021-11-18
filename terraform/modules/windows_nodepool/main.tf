@@ -26,6 +26,9 @@ variable "machine_type" {
 variable "initial_node_count" {
 }
 
+variable "service_account" {
+}
+
 variable "enable_integrity_monitoring" {
 }
 
@@ -51,14 +54,12 @@ resource "google_container_cluster" "primary" {
 
   node_config {
     # Google recommends custom service accounts that have cloud-platform scope and permissions granted via IAM Roles.
-    service_account = google_service_account.default.email
+    service_account = var.service_account
     oauth_scopes = [
-      "https://www.googleapis.com/auth/cloud-platform"
+      "https://www.googleapis.com/auth/cloud-platform",
+      "https://www.googleapis.com/auth/logging.write",
+      "https://www.googleapis.com/auth/monitoring",
     ]
-    guest_accelerator {
-      type  = "nvidia-tesla-k80"
-      count = 1
-    }
   }
 }
 
