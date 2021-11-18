@@ -83,10 +83,17 @@ creds/
 # Dependency directories (remove the comment below to include it)
 # vendor/
 
-
 # ssh 
 *id_rsa*
 
-
 # Cloud Source Repos
 *gke-poc-config-sync*
+
+# Ignore GKE Toolkit init files 
+cli/cluster_build/*
+cli/samples/*
+cli/shared_vpc/*
+cli/templates/*
+
+# Ignore yaml files in root of cli
+cli/*.yaml
