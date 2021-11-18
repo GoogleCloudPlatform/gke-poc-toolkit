@@ -1,5 +1,6 @@
 // Defines vars so that we can pass them in from cluster_build/cluster.tf from the overall tfvars
 variable "cluster_ids" {
+  type  = object
 }
 
 variable "name" {
