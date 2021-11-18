@@ -67,6 +67,11 @@ resource "google_container_node_pool" "windows" {
       "https://www.googleapis.com/auth/monitoring",
     ]
   }
+
+  timeouts {
+    create = "60m"
+    update = "60m"
+  }
 }
 
 
