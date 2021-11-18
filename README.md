@@ -48,6 +48,8 @@ Setup default project and default application credentials for gcloud:
 
 ```shell
 PROJECT_ID=<project id targeted for clusters>
+```
+```shell
 gcloud config set project $PROJECT_ID
 gcloud auth login
 gcloud auth application-default login
