@@ -189,7 +189,7 @@ variable "k8s_users" {
   }
 }
 
-variable "tf_module_repo" {
+variable "acm_tf_module_repo" {
   description = "Repo used "
   default = "github.com/GoogleCloudPlatform/gke-poc-toolkit//terraform/modules/"
 }
