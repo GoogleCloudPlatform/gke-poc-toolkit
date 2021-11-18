@@ -42,8 +42,8 @@ resource "google_container_cluster" "primary" {
   for_each           = var.cluster
   name               = var.name
   cluster            = each.value.cluster_id
-  min_count          = var.min_node_count
-  max_count          = var.max_node_count
+  min_node_count     = var.min_count
+  max_node_count     = var.max_count
   initial_node_count = var.initial_node_count
 
   node_config {
