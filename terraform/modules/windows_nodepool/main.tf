@@ -41,7 +41,7 @@ variable "enable_secure_boot" {
 resource "google_container_node_pool" "primary" {
   for_each           = values(var.cluster[*]).cluster_id
   name               = var.name
-  cluster            = each.value.cluster_id
+  cluster            = each.value
   initial_node_count = var.initial_node_count
 
   autoscaling {
