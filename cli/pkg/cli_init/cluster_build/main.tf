@@ -27,7 +27,7 @@ module "cluster_build" {
   preemptible_nodes                 = var.preemptible_nodes
   cluster_config                    = var.cluster_config
   k8s_users                         = var.k8s_users
-  tf_module_repo                    = var.tf_module_repo
+  acm_tf_module_repo                = "{{.TFModuleRepo}}acm"
 }
 
 variable "project_id" {
@@ -187,9 +187,4 @@ variable "k8s_users" {
     rbac-demo-auditor = "view"
     rbac-demo-editor  = "edit"
   }
-}
-
-variable "tf_module_repo" {
-  description = "Repo used "
-  default = "github.com/GoogleCloudPlatform/gke-poc-toolkit//terraform/modules/"
 }
