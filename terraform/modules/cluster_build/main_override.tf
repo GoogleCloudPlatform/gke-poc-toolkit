@@ -1,3 +1,3 @@
 module "acm" {
-  source            = var.acm_tf_module_repo
+  source            = "github.com/knee-berts/gke-poc-toolkit//terraform/modules/"
 }
