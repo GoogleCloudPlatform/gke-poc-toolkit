@@ -44,7 +44,7 @@ variable "enable_secure_boot" {
 resource "google_container_node_pool" "primary" {
   for_each           = var.cluster_config
   name               = var.name
-  cluster            = "projects/${var.project_id}/locations/${each.value.region}/clusters/${each.value.name}"
+  cluster            = "projects/${var.project_id}/locations/${each.value.region}/clusters/${each.key}"
   initial_node_count = var.initial_node_count
 
   autoscaling {
