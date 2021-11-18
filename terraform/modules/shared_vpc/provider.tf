@@ -19,21 +19,8 @@ terraform {
     google = {
       version = "~> 3.63.0"
     }
-    # google-beta = {
-    #   version = "~> 3.49.0"
-    # }
-    # kubernetes = {
-    #   version = " ~> 1.10"
-    # }
   }
 }
-
-# data "google_client_config" "default" {
-#   provider = google
-# }
-
-# data "google_client_openid_userinfo" "me" {
-# }
 
 provider "google" {
   project = var.shared_vpc_project_id

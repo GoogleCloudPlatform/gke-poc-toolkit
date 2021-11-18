@@ -3,15 +3,12 @@ variable "project_id" {
 }
 
 variable "policy_controller" {
-
 }
 
 variable "cluster_config" {
-
 }
 
 variable "email" {
-
 }
 
 

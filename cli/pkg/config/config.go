@@ -18,11 +18,14 @@ package config
 
 import (
 	"bufio"
+	"bytes"
 	"fmt"
+	"io/ioutil"
 	"net"
 	"os"
 	"strings"
 
+	"github.com/davecgh/go-spew/spew"
 	log "github.com/sirupsen/logrus"
 
 	"github.com/spf13/viper"
@@ -50,6 +53,7 @@ type Config struct {
 	EnableWindowsNodepool     bool            `yaml:"enableWindowsNodepool"`
 	EnablePreemptibleNodepool bool            `yaml:"enablePreemptibleNodepool"`
 	DefaultNodepoolOS         string          `yaml:"defaultNodepoolOS"`
+	TFModuleRepo              string          `yaml:"tfModuleRepo"`
 	VpcConfig                 VpcConfig       `yaml:"vpcConfig"`
 	ClustersConfig            []ClusterConfig `yaml:"clustersConfig"`
 }
@@ -111,6 +115,16 @@ func InitConf(cfgFile string) *Config {
 		os.Exit(1)
 	}
 
+	// Set Tf Module Repo
+	err = setTfModuleRepo(conf.TFModuleRepo)
+	if err != nil {
+		log.Error(err)
+		os.Exit(1)
+	}
+
+	// Show config to user
+	log.Info("✅ Config has been initialized successfully.")
+	spew.Dump(conf)
 	return conf
 }
 
@@ -184,6 +198,9 @@ func ValidateConf(c *Config) error {
 	}
 	if c.PolicyController && !c.ConfigSync {
 		return fmt.Errorf("Terraform constraints require that if Policy Controller is enabled, Config Sync must also be enabled. Please set configSync to true and retry.")
+	}
+	if err := validateTFModuleRepo(c.TFModuleRepo); err != nil {
+		return err
 	}
 
 	// VPC Config vars
@@ -378,6 +395,21 @@ func validateMachineType(projectId string, machineType string, zone string) erro
 	return fmt.Errorf("Machine type %s is invalid, must be one of: %v", machineType, validMachineTypes)
 }
 
+func validateTFModuleRepo(repoPath string) error {
+	validRepo := []string{"../terraform/modules/", "github.com/GoogleCloudPlatform/gke-poc-toolkit//terraform/modules/"}
+
+	for _, repo := range validRepo {
+		if repoPath == repo {
+			return nil
+		} else if strings.Contains(repoPath, "gke-poc-toolkit//terraform/modules/") {
+			return nil
+		} else {
+			log.Fatalf("Terraform module repo must be: %v, or a fork: github.com/<FORK>/gke-poc-toolkit//terraform/modules/", validRepo)
+		}
+	}
+	return nil
+}
+
 func enableService(projectId string, serviceIds []string) {
 	ctx := context.Background()
 	c, err := serviceusage.NewClient(ctx)
@@ -403,4 +435,19 @@ func enableService(projectId string, serviceIds []string) {
 	}
 	// TODO: Use resp.
 	_ = resp
+}
+
+func setTfModuleRepo(tfRepo string) error {
+	files := []string{"cluster_build/main.tf", "shared_vpc/main.tf"}
+	for _, file := range files {
+		input, err := ioutil.ReadFile(file)
+		if err != nil {
+			log.Fatalf("error reading file: %s", err)
+		}
+		output := bytes.Replace(input, []byte("{{.TFModuleRepo}}"), []byte(tfRepo), -1)
+		if err = ioutil.WriteFile(file, output, 0666); err != nil {
+			log.Fatalf("error writing file: %s", err)
+		}
+	}
+	return nil
 }

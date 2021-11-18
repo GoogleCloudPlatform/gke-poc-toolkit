@@ -4,11 +4,13 @@ region: "us-east1" # Region for resources aside from GKE clusters
 clustersProjectId: "my-project"
 governanceProjectId: "my-project" 
 configSync: true 
+policyController: true
 privateEndpoint: false
 defaultNodepoolOS: "cos_containerd" 
 enableWorkloadIdentity: true
 enableWindowsNodepool: false 
 enablePreemptibleNodepool: false # Enforced on Linux Node pools only
+tfModuleRepo: "github.com/GoogleCloudPlatform/gke-poc-toolkit//terraform/modules/"
 vpcConfig:
   vpcName: "default"
   vpcType: "shared" # standalone, shared 

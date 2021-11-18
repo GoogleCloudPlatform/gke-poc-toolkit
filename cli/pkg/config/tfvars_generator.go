@@ -43,6 +43,7 @@ func GenerateTfvars(conf *Config) {
 	vars["EnableWorkloadIdentity"] = conf.EnableWorkloadIdentity
 	vars["EnableWindowsNodepool"] = conf.EnableWindowsNodepool
 	vars["EnablePreemptibleNodepool"] = conf.EnablePreemptibleNodepool
+	vars["TFModuleRepo"] = conf.TFModuleRepo
 
 	// Set vpc config vars
 	if conf.VpcConfig.VpcType == "standalone" {
@@ -77,6 +78,8 @@ func GenerateTfvars(conf *Config) {
 		clusterVars["ClusterName"] = conf.ClustersConfig[cc].ClusterName
 		clusterVars["Region"] = conf.ClustersConfig[cc].Region
 		clusterVars["SubnetName"] = conf.ClustersConfig[cc].SubnetName
+		clusterVars["MachineType"] = conf.ClustersConfig[cc].MachineType
+		clusterVars["NodeCount"] = conf.ClustersConfig[cc].NumNodes
 		tmpl, err := template.ParseFiles("templates/cluster_config.tmpl")
 		if err != nil {
 			log.Fatalf("error parsing cluster_config template: %s", err)
