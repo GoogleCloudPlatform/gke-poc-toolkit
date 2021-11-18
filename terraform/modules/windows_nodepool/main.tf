@@ -45,12 +45,12 @@ resource "google_container_cluster" "primary" {
   min_count          = var.min_node_count
   max_count          = var.max_node_count
   disk_size_gb       = 100
-  disk_type          = "pd-ssd"
-  image_type         = "WINDOWS_SAC"
   machine_type       = var.windows_machine_type
   initial_node_count = var.initial_node_count
 
   node_config {
+    disk_type          = "pd-ssd"
+    image_type         = "WINDOWS_SAC"
     # Google recommends custom service accounts that have cloud-platform scope and permissions granted via IAM Roles.
     service_account = var.service_account
     oauth_scopes = [
