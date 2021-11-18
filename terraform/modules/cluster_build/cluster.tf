@@ -81,6 +81,7 @@ module "windows_nodepool" {
     module.gke,
   ]
   source             = "../windows_nodepool"
+  cluster_ids        = module.gke.cluster_id
   name               = format("windows-%s", var.node_pool)
   min_count          = var.min_node_count
   max_count          = var.max_node_count
