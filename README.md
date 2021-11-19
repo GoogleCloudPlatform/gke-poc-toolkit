@@ -15,7 +15,8 @@ The GKE Proof of Concept (PoC) Toolkit is a demo generator for Google Kubernetes
 
 #### Cloud Project
 
-You'll need access to at least one Google Cloud Project with billing enabled. See **Creating and Managing Projects** (https://cloud.google.com/resource-manager/docs/creating-managing-projects) for creating a new project. To make cleanup easier, it's recommended to create a new project. 
+You'll need access to at least one Google Cloud Project with billing enabled. See [Creating and Managing Projects]
+(https://cloud.google.com/resource-manager/docs/creating-managing-projects) for creating a new project. To make cleanup easier, it's recommended to create a new project. 
 
 If you are using a Shared VPC, you will need a separate host project for the Shared VPC. 
 
@@ -59,6 +60,10 @@ Set gkekitctl cli version type and OS, then download the cli binary:
 
 ```shell
 VERSION=$(curl -s https://api.github.com/repos/GoogleCloudPlatform/gke-poc-toolkit/releases/latest | grep browser_download_url | cut -d "/" -f 8 | tail -1)
+<<<<<<< HEAD
+
+=======
+>>>>>>> 849870fa9b926c3cee4aba55be0a138836dc4467
 OS="darwin" # choice of darwin or amd64 
 
 curl -sLSf -o ./gkekitctl https://github.com/GoogleCloudPlatform/gke-poc-toolkit/releases/download/${VERSION}/gkekitctl-${OS} && chmod +x ./gkekitctl

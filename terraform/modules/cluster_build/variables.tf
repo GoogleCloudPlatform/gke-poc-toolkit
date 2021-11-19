@@ -174,7 +174,7 @@ variable "k8s_users" {
 }
 
 variable "acm_tf_module_repo" {
-  type = string
+  type        = string
   description = "Repo used "
-  default = "github.com/GoogleCloudPlatform/gke-poc-toolkit//terraform/modules/acm"
+  default     = "github.com/GoogleCloudPlatform/gke-poc-toolkit//terraform/modules/acm"
 }
