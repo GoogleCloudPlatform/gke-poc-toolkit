@@ -31,8 +31,14 @@ var initCmd = &cobra.Command{
 		folders := []string{"samples", "templates", "cluster_build", "shared_vpc"}
 		err := cli_init.InitFlatFiles(folders)
 		if err != nil {
-			log.Errorf("🚨 Failed to initialize gkekitctl: %s", err)
+			log.Errorf("🚨 Failed to initialize gkekitctl: %v", err)
 		}
+		// Run opt-in analytics prompt
+		err = cli_init.OptInAnalytics()
+		if err != nil {
+			log.Warnf("Failed to initialize user analytics: %v", err)
+		}
+		log.Info("🎉 GKE PoC Toolkit has been initialized! You're ready to run gkekitctl create.")
 	},
 }
 
