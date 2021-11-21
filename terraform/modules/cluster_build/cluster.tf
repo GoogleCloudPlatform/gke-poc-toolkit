@@ -45,7 +45,7 @@ module "gke" {
     key_name = "projects/${var.governance_project_id}/locations/${each.value.region}/keyRings/${local.gke_keyring_name}-${each.value.region}/cryptoKeys/${local.gke_key_name}"
   }]
 
-  node_pools = local.cluster_node_pools
+  node_pools = local.cluster_node_pool
 
   node_pools_oauth_scopes = {
     (var.node_pool) = [
@@ -73,6 +73,29 @@ module "gke" {
       disable-legacy-endpoints = "true"
     }
   }
+}
+
+// Add optional Windows Node Pool
+module "windows_nodepool" {
+  depends_on = [
+    module.gke,
+  ]
+  count              = var.windows_nodepool ? 1 : 0
+  source             = "../windows_nodepool"
+  cluster_config     = var.cluster_config
+  name               = format("windows-%s", var.node_pool)
+  project_id         = var.project_id
+  min_count          = var.min_node_count
+  max_count          = var.max_node_count
+  disk_size_gb       = 100
+  disk_type          = "pd-ssd"
+  image_type         = "WINDOWS_SAC"
+  machine_type       = var.windows_machine_type
+  initial_node_count = var.initial_node_count
+  service_account    = local.gke_service_account_email
+  // Intergrity Monitoring is not enabled in Windows Node pools yet.
+  enable_integrity_monitoring = false
+  enable_secure_boot          = true
 }
 
 // Bind the KCC operator Kubernetes service account(KSA) to the 

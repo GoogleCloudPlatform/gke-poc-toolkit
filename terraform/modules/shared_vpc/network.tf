@@ -14,28 +14,26 @@
  * limitations under the License.
  */
 
-terraform {
-  required_providers {
-    google = {
-      version = "~> 3.63.0"
-    }
-    # google-beta = {
-    #   version = "~> 3.49.0"
-    # }
-    # kubernetes = {
-    #   version = " ~> 1.10"
-    # }
-  }
+module "shared_vpc" {
+  depends_on = [
+    module.enabled_shared_vpc_apis,
+    module.enabled_service_project_apis
+  ]
+  source  = "terraform-google-modules/network/google"
+  version = "~> 2.5"
+
+  project_id   = var.shared_vpc_project_id
+  network_name = var.shared_vpc_name
+  # routing_mode = "GLOBAL" default in terraform-google-network
+
+  subnets = local.nested_subnets
+
+  secondary_ranges = local.nested_secondary_subnets
 }
 
-# data "google_client_config" "default" {
-#   provider = google
-# }
-
-# data "google_client_openid_userinfo" "me" {
-# }
-
-provider "google" {
+resource "google_compute_shared_vpc_host_project" "host_project" {
+  depends_on = [
+    module.shared_vpc,
+  ]
   project = var.shared_vpc_project_id
-  region  = var.region
 }

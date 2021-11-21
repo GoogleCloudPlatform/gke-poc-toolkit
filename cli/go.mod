@@ -8,6 +8,7 @@ require (
 	cloud.google.com/go/storage v1.10.0
 	github.com/aws/aws-sdk-go v1.34.28 // indirect
 	github.com/gofrs/uuid v4.1.0+incompatible
+	github.com/davecgh/go-spew v1.1.1
 	github.com/hashicorp/terraform-exec v0.14.0
 	github.com/sirupsen/logrus v1.8.1
 	github.com/spf13/cobra v1.2.1

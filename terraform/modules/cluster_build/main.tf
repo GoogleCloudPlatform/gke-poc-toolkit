@@ -99,21 +99,6 @@ locals {
     ]
   }
 
-  // Presets for Windows Node Pool
-  windows_pool = [{
-    name               = format("windows-%s", var.node_pool)
-    min_count          = var.min_node_count
-    max_count          = var.max_node_count
-    disk_size_gb       = 100
-    disk_type          = "pd-ssd"
-    image_type         = "WINDOWS_SAC"
-    machine_type       = var.windows_machine_type
-    initial_node_count = var.initial_node_count
-    // Intergrity Monitoring is not enabled in Windows Node pools yet.
-    enable_integrity_monitoring = false
-    enable_secure_boot          = true
-  }]
-
   // Presets for Linux Node Pool
   linux_pool = [{
     name               = format("linux-%s", var.node_pool)
@@ -130,7 +115,7 @@ locals {
   }]
 
   // Final Node Pool options for Cluster - combines all specified nodepools
-  cluster_node_pools = var.windows_nodepool ? flatten([local.windows_pool, local.linux_pool]) : flatten(local.linux_pool)
+  cluster_node_pool = flatten(local.linux_pool)
 }
 
 // Enable APIs needed in the gke cluster project
@@ -204,7 +189,7 @@ module "acm" {
     module.gke,
   ]
   count             = var.config_sync ? 1 : 0
-  source            = "../modules/acm"
+  source            = "../acm"
   project_id        = module.enabled_google_apis.project_id
   policy_controller = var.policy_controller
   cluster_config    = var.cluster_config

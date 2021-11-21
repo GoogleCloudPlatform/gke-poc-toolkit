@@ -64,7 +64,7 @@ func InitTF(tfDir string, tfStateBucket string, vpcType string) {
 
 	log.Println(state.FormatVersion) // "0.1"
 
-	plan, err := tf.Plan(context.Background(), tfexec.VarFile("../../cli/terraform.tfvars"))
+	plan, err := tf.Plan(context.Background(), tfexec.VarFile("../terraform.tfvars"))
 	if err != nil {
 		log.Fatalf("error running Plan: %s", err)
 	}
@@ -90,7 +90,7 @@ func ApplyTF(tfDir string) {
 
 	tf.SetStdout(os.Stdout)
 
-	err = tf.Apply(context.Background(), tfexec.VarFile("../../cli/terraform.tfvars"))
+	err = tf.Apply(context.Background(), tfexec.VarFile("../terraform.tfvars"))
 	if err != nil {
 		log.Fatalf("error running Apply: %s", err)
 	}

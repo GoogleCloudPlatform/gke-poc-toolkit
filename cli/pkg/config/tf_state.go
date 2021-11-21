@@ -39,7 +39,7 @@ func CheckTfStateType(conf *Config) ([]string, error) {
 		bucketNames := []string{bucketNameClusters}
 		return bucketNames, nil
 	}
-	return []string{"local"}, nil
+	return []string{"local", "local"}, nil
 }
 
 // func CreateTfStateBucket(projectId string, bucketName string) error {
