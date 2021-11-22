@@ -1,0 +1,4 @@
+{
+    "enableConfigSync": true, 
+    "clusterMachineType": "e2-standard-4"
+}

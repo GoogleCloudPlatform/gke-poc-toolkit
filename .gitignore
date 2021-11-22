@@ -90,8 +90,6 @@ creds/
 *gke-poc-config-sync*
 
 
-# Analytics binary
-*analytics*
 # Ignore GKE Toolkit init files 
 cli/cluster_build/*
 cli/samples/*
