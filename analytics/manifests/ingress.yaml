@@ -7,7 +7,7 @@ metadata:
     kubernetes.io/ingress.global-static-ip-name: analytics3
     networking.gke.io/managed-certificates: managed-cert
     kubernetes.io/ingress.class: "gce"
-    kubernetes.io/ingress.allow-http: "false"
+    # kubernetes.io/ingress.allow-http: "false"
 spec:
   defaultBackend:
     service:

@@ -1,4 +1,6 @@
 {
+    "create_id": "12345", 
+    "cluster_id": "12345", 
     "timestamp": "2021-11-12T11:45:26.371Z",
     "os": "darwin_x64",
     "terraformState": "local",

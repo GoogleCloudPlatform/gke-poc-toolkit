@@ -73,6 +73,13 @@ func main() {
 	// Start web server
 	r := mux.NewRouter()
 
+	// Health check
+	r.HandleFunc("/_healthz", func(w http.ResponseWriter, _ *http.Request) { fmt.Fprint(w, "ok") })
+
+	// GET / ("no-op")
+	r.HandleFunc("/", func(w http.ResponseWriter, _ *http.Request) { fmt.Fprint(w, "analytics server") }).Methods(http.MethodGet)
+
+	// POST Analytics
 	r.HandleFunc("/", a.ReceiveClusterAndWriteToSQL).Methods("POST")
 	srv := &http.Server{
 		Handler:      r,

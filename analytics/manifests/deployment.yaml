@@ -19,6 +19,16 @@ spec:
         image: analytics-server
         ports:
         - containerPort: 8000
+        readinessProbe:
+          initialDelaySeconds: 10
+          httpGet:
+            path: "/_healthz"
+            port: 8000
+        livenessProbe:
+          initialDelaySeconds: 10
+          httpGet:
+            path: "/_healthz"
+            port: 8000
         env:
         - name: PORT
           value: "8000"
