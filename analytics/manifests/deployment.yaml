@@ -17,7 +17,6 @@ spec:
       containers:
       - name: analytics-server
         image: analytics-server
-# us-central1-docker.pkg.dev/gkepoctoolkit/analytics-server/analytics-server:v0.0.1 
         ports:
         - containerPort: 8000
         env:
