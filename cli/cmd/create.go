@@ -35,10 +35,9 @@ var createCmd = &cobra.Command{
 	Run: func(cmd *cobra.Command, args []string) {
 		conf := config.InitConf(cfgFile)
 
-		// TODO - MAKE THIS OPT-IN ONLY ON `INIT` command
-		err := analytics.SendMetrics(conf)
-		if err != nil {
-			log.Warnf("⚠️ Error on SendMetrics to analytics server: %v", err)
+		// Send user analytics - async
+		if conf.SendAnalytics {
+			go analytics.SendAnalytics(conf)
 		}
 
 		config.GenerateTfvars(conf)

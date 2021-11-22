@@ -42,7 +42,7 @@ type Cluster struct {
 	ClusterZone               string `json:"clusterZone"`
 }
 
-func SendMetrics(conf *config.Config) error {
+func SendAnalytics(conf *config.Config) {
 	// Generate timestamp. Format: 2006-01-02T15:04:05.000Z
 	now := time.Now()
 	timestamp := now.Format("2006-01-02T15:04:05.000Z")
@@ -52,14 +52,16 @@ func SendMetrics(conf *config.Config) error {
 	// Assign UUIDs to create run and cluster
 	createId, err := uuid.NewV4()
 	if err != nil {
-		return err
+		log.Warn(err)
+		return
 	}
 
 	for i, cluster := range conf.ClustersConfig {
 		// Cluster Id
 		clusterId, err := uuid.NewV4()
 		if err != nil {
-			return err
+			log.Warn(err)
+			return
 		}
 
 		// Create Cluster Object, omitting any user-identified data (Project IDs)
@@ -88,19 +90,21 @@ func SendMetrics(conf *config.Config) error {
 		// Encode as JSON
 		json, err := json.Marshal(sendObject)
 		if err != nil {
-			return err
+			log.Warn(err)
+			return
 		}
 		err = PostToAnalyticsServer(json)
 		if err != nil {
-			return err
+			log.Warn(err)
+			return
 		}
 	}
-	log.Info("✅  Sent cluster info to analytics server")
-	return nil
+	log.Info("✅ Sent cluster info to analytics server")
+	return
 }
 
 func PostToAnalyticsServer(json []byte) error {
-	url := "http://35.225.98.116:80"
+	url := "https://analytics.gkepoctoolkit.dev"
 	req, err := http.NewRequest("POST", url, bytes.NewBuffer(json))
 	if err != nil {
 		return err
