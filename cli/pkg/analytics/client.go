@@ -13,11 +13,6 @@ import (
 )
 
 // SendMetrics runs on gkekitctl create, after config validation and before TF apply. It gets the user's OS, scrubs their project ID data, and sends their create configuration to the metrics server.
-/*
-NOTES
-- Sending metrics is defaulted right now until the init command adds an opt-in/ configurable opt in flag
-- The metrics endpoint is hardcoded right now because there's only 1 instance of the metrics server
-*/
 
 // This is an Analytics-only object representing 1 GKE cluster created with gkekitctl.
 type Cluster struct {
