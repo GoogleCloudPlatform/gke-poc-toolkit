@@ -120,6 +120,8 @@ func GenerateTfvars(conf *Config) {
 	if _, err := f.WriteString("}\n"); err != nil {
 		log.Fatalf("error appending } to the tfvars file: %s", err)
 	}
+	log.Info("✅ TFVars generated successfully.")
+
 }
 
 // // todo - come back to the hclwrite code if we can solve for dynamically stamping out cluster configs
