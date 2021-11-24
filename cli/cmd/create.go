@@ -76,7 +76,7 @@ var createCmd = &cobra.Command{
 
 		// Init Multi-cluster Gateway
 		if conf.MultiClusterGateway {
-			err := anthos.InitMCG(conf)
+			err := anthos.InitMCG(conf, kc)
 			if err != nil {
 				log.Errorf("🚨 Failed to initialize Multi-cluster Gateway CRDs: %s", err)
 			}

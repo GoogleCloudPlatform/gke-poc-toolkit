@@ -5,11 +5,12 @@ import (
 	"encoding/base64"
 	"fmt"
 	"gkekitctl/pkg/config"
-	"io/ioutil"
 
+	"github.com/pytimer/k8sutil/apply"
 	log "github.com/sirupsen/logrus"
 	"google.golang.org/api/container/v1"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
+	"k8s.io/client-go/discovery"
 	"k8s.io/client-go/dynamic"
 	"k8s.io/client-go/kubernetes"
 	"k8s.io/client-go/rest"
@@ -113,10 +114,20 @@ type client struct {
 }
 
 // Kubectl apply using client.go
-func Apply(k8s *kubernetes.Clientset, filename string) error {
-	b, err := ioutil.ReadFile(filename)
+func Apply(config *rest.Config, clusterName string, fileName []byte) error {
+
+	dynamicClient, err := dynamic.NewForConfig(config)
 	if err != nil {
-		log.Fatal(err)
+		return fmt.Errorf("failed to setup dynamic client for cluster=%s: %w", clusterName, err)
+	}
+	discoveryClient, err := discovery.NewDiscoveryClientForConfig(config)
+	if err != nil {
+		return fmt.Errorf("failed to setup diecovery client for cluster=%s: %w", clusterName, err)
 	}
 
+	applyOptions := apply.NewApplyOptions(dynamicClient, discoveryClient)
+	if err := applyOptions.Apply(context.TODO(), fileName); err != nil {
+		return fmt.Errorf("failed to create apply gateway crd cluster=%s: %w", clusterName, err)
+	}
+	return nil
 }
