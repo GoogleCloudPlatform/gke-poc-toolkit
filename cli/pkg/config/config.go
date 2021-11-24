@@ -112,7 +112,7 @@ func InitConf(cfgFile string) *Config {
 		"anthosconfigmanagement.googleapis.com",
 		"multiclusterservicediscovery.googleapis.com",
 		"multiclusteringress.googleapis.com",
-		"trafficdirector.googleapis.com ",
+		"trafficdirector.googleapis.com",
 	}
 	sharedVPCServiceIds := []string{
 		"compute.googleapis.com",

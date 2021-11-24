@@ -10,6 +10,7 @@ defaultNodepoolOS: "cos_containerd"
 enableWorkloadIdentity: true
 enableWindowsNodepool: false 
 enablePreemptibleNodepool: false # Enforced on Linux Node pools only
+multiClusterGateway: true
 tfModuleRepo: "github.com/GoogleCloudPlatform/gke-poc-toolkit//terraform/modules/"
 vpcConfig:
   vpcName: "default"
