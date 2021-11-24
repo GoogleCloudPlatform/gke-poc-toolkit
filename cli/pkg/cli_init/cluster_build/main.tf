@@ -27,6 +27,7 @@ module "cluster_build" {
   preemptible_nodes                 = var.preemptible_nodes
   cluster_config                    = var.cluster_config
   k8s_users                         = var.k8s_users
+  multi_cluster_gateway             = var.multi_cluster_gateway
   acm_tf_module_repo                = "{{.TFModuleRepo}}acm"
 }
 
@@ -187,4 +188,10 @@ variable "k8s_users" {
     rbac-demo-auditor = "view"
     rbac-demo-editor  = "edit"
   }
+}
+
+variable "multi_cluster_gateway" {
+  type        = bool
+  description = "Enable Multi-cluster gateway on all clusters."
+  default     = true
 }

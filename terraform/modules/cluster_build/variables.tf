@@ -178,3 +178,9 @@ variable "acm_tf_module_repo" {
   description = "Repo used "
   default     = "github.com/GoogleCloudPlatform/gke-poc-toolkit//terraform/modules/acm"
 }
+
+variable "multi_cluster_gateway" {
+  type        = bool
+  description = "Enable Multi-cluster gateway on all clusters."
+  default     = true
+}

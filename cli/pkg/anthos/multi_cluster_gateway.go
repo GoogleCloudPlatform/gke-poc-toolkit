@@ -1,19 +1,31 @@
 package anthos
 
 import (
-	"gkekitctl/pkg/config"
+	"fmt"
 
-	log "github.com/sirupsen/logrus"
+	"k8s.io/client-go/kubernetes"
+	"k8s.io/client-go/tools/clientcmd"
+	"k8s.io/client-go/tools/clientcmd/api"
 )
 
-func InitMCG(conf *config.Config) error {
-	log.Info("🔄 Finishing MCG install...")
+func InitMCG(kubeConfig *api.Config) error {
+	// ctx := context.Background()
+	fileName := "crd.yaml"
+	for clusterName := range kubeConfig.Clusters {
+		cfg, err := clientcmd.NewNonInteractiveClientConfig(*kubeConfig, clusterName, &clientcmd.ConfigOverrides{CurrentContext: clusterName}, nil).ClientConfig()
+		if err != nil {
+			return fmt.Errorf("failed to create Kubernetes configuration cluster=%s: %w", clusterName, err)
+		}
 
-	// Authenticate Kubernetes client-go to all clusters
-	log.Info("☸️ Generating Kubeconfig...")
-	kc, err := GenerateKubeConfig(conf)
-	if err != nil {
-		return err
+		k8s, err := kubernetes.NewForConfig(cfg)
+		if err != nil {
+			return fmt.Errorf("failed to create Kubernetes client cluster=%s: %w", clusterName, err)
+		}
+
+		err = Apply(k8s, fileName)
+		if err != nil {
+			return fmt.Errorf("failed to create Kubernetes client cluster=%s: %w", clusterName, err)
+		}
 	}
-	log.Infof("✅ Kubeconfig generated: %+v", kc)
+	return nil
 }

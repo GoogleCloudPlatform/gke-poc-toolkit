@@ -195,3 +195,14 @@ module "acm" {
   cluster_config    = var.cluster_config
   email             = data.google_client_openid_userinfo.me.email
 }
+
+module "mcg" {
+  depends_on = [
+    module.gke,
+  ]
+  count             = var.multi_cluster_gateway ? 1 : 0
+  source            = "../mcg"
+  project_id        = module.enabled_google_apis.project_id
+  cluster_config    = var.cluster_config
+  email             = data.google_client_openid_userinfo.me.email
+}

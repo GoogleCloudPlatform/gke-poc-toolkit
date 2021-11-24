@@ -5,12 +5,15 @@ import (
 	"encoding/base64"
 	"fmt"
 	"gkekitctl/pkg/config"
-
-	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
+	"io/ioutil"
 
 	log "github.com/sirupsen/logrus"
 	"google.golang.org/api/container/v1"
+	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
+	"k8s.io/client-go/dynamic"
 	"k8s.io/client-go/kubernetes"
+	"k8s.io/client-go/rest"
+	"k8s.io/client-go/restmapper"
 	"k8s.io/client-go/tools/clientcmd"
 	"k8s.io/client-go/tools/clientcmd/api"
 )
@@ -101,4 +104,19 @@ func ListNamespaces(kubeConfig *api.Config) error {
 	}
 
 	return nil
+}
+
+type client struct {
+	c      dynamic.Interface
+	config *rest.Config
+	mapper *restmapper.DeferredDiscoveryRESTMapper
+}
+
+// Kubectl apply using client.go
+func Apply(k8s *kubernetes.Clientset, filename string) error {
+	b, err := ioutil.ReadFile(filename)
+	if err != nil {
+		log.Fatal(err)
+	}
+
 }

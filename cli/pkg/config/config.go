@@ -53,6 +53,7 @@ type Config struct {
 	EnableWindowsNodepool     bool            `yaml:"enableWindowsNodepool"`
 	EnablePreemptibleNodepool bool            `yaml:"enablePreemptibleNodepool"`
 	DefaultNodepoolOS         string          `yaml:"defaultNodepoolOS"`
+	MultiClusterGateway       bool            `yaml:"multiClusterGateway"`
 	TFModuleRepo              string          `yaml:"tfModuleRepo"`
 	VpcConfig                 VpcConfig       `yaml:"vpcConfig"`
 	ClustersConfig            []ClusterConfig `yaml:"clustersConfig"`
@@ -102,9 +103,23 @@ func InitConf(cfgFile string) *Config {
 		}
 	}
 	// Enable GCP APIs
-	serviceIds := []string{"compute.googleapis.com", "storage.googleapis.com", "anthos.googleapis.com", "sourcerepo.googleapis.com", "gkehub.googleapis.com", "anthosconfigmanagement.googleapis.com"}
+	serviceIds := []string{
+		"compute.googleapis.com",
+		"storage.googleapis.com",
+		"anthos.googleapis.com",
+		"sourcerepo.googleapis.com",
+		"gkehub.googleapis.com",
+		"anthosconfigmanagement.googleapis.com",
+		"multiclusterservicediscovery.googleapis.com",
+		"multiclusteringress.googleapis.com",
+		"trafficdirector.googleapis.com ",
+	}
+	sharedVPCServiceIds := []string{
+		"compute.googleapis.com",
+		"storage.googleapis.com",
+	}
 	if conf.VpcConfig.VpcType == "shared" {
-		enableService(conf.VpcConfig.VpcProjectID, serviceIds)
+		enableService(conf.VpcConfig.VpcProjectID, sharedVPCServiceIds)
 	}
 	enableService(conf.ClustersProjectID, serviceIds)
 
