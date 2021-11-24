@@ -15,18 +15,18 @@ resource "google_gke_hub_feature" "feature" {
 
 // Register each cluster to GKE Hub (Fleets API)
 // https://registry.terraform.io/providers/hashicorp/google/latest/docs/resources/gke_hub_feature_membership#configmanagement 
-resource "google_gke_hub_membership" "membership" {
-  provider = google-beta
-  for_each = var.cluster_config
-  project  = var.project_id
+# resource "google_gke_hub_membership" "membership" {
+#   provider = google-beta
+#   for_each = var.cluster_config
+#   project  = var.project_id
 
-  membership_id = "${each.key}-membership"
-  endpoint {
-    gke_cluster {
-      resource_link = "//container.googleapis.com/projects/${var.project_id}/locations/${each.value.region}/clusters/${each.key}"
-    }
-  }
-}
+#   membership_id = "${each.key}-membership"
+#   endpoint {
+#     gke_cluster {
+#       resource_link = "//container.googleapis.com/projects/${var.project_id}/locations/${each.value.region}/clusters/${each.key}"
+#     }
+#   }
+# }
 
 resource "google_project_iam_binding" "network-viewer-mcgsa" {
   role    = "roles/compute.networkViewer"

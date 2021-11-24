@@ -112,9 +112,5 @@ module "service_account-iam-bindings" {
     "roles/iam.workloadIdentityUser" = [
       "serviceAccount:${module.enabled_google_apis.project_id}.svc.id.goog[cnrm-system/cnrm-controller-manager]",
     ]
-
-    # "roles/iam.serviceAccountCreator" = [
-    #   "serviceAccount:${module.enabled_google_apis.project_id}.svc.id.goog[cnrm-system/cnrm-controller-manager]",
-    # ]
   }
 }
