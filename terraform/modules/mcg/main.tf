@@ -28,14 +28,11 @@ resource "google_gke_hub_membership" "membership" {
   }
 }
 
-module "service_account-iam-bindings" {
-  depends_on = [
-    resource.google_gke_hub_membership.membership,
+resource "google_project_iam_binding" "network-viewer-mcgsa" {
+  role    = "roles/compute.networkViewer"
+  project = var.project_id
+  members = [
+    "serviceAccount:${var.project_id}.svc.id.goog[gke-mcs/gke-mcs-importer]",
   ]
-  source = "terraform-google-modules/iam/google//modules/service_accounts_iam"
-
-  service_accounts = "serviceAccount:${module.enabled_google_apis.project_id}.svc.id.goog[gke-mcs/gke-mcs-importer]"
-  project          = module.enabled_google_apis.project_id
-  bindings = "roles/compute.networkViewer"
 }
 
