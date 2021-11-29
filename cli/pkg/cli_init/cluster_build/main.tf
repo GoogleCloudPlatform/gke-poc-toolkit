@@ -28,7 +28,6 @@ module "cluster_build" {
   cluster_config                    = var.cluster_config
   k8s_users                         = var.k8s_users
   multi_cluster_gateway             = var.multi_cluster_gateway
-  acm_tf_module_repo                = "{{.TFModuleRepo}}acm"
 }
 
 variable "project_id" {

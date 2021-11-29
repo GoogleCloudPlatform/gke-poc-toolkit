@@ -13,8 +13,8 @@ import (
 	"k8s.io/client-go/discovery"
 	"k8s.io/client-go/dynamic"
 	"k8s.io/client-go/kubernetes"
+	_ "k8s.io/client-go/plugin/pkg/client/auth/gcp"
 	"k8s.io/client-go/rest"
-	"k8s.io/client-go/restmapper"
 	"k8s.io/client-go/tools/clientcmd"
 	"k8s.io/client-go/tools/clientcmd/api"
 )
@@ -105,12 +105,6 @@ func ListNamespaces(kubeConfig *api.Config) error {
 	}
 
 	return nil
-}
-
-type client struct {
-	c      dynamic.Interface
-	config *rest.Config
-	mapper *restmapper.DeferredDiscoveryRESTMapper
 }
 
 // Kubectl apply using client.go
