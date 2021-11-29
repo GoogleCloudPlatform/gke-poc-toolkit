@@ -25,7 +25,6 @@ import (
 	"os"
 	"strings"
 
-	"github.com/davecgh/go-spew/spew"
 	log "github.com/sirupsen/logrus"
 
 	"github.com/spf13/viper"
@@ -44,6 +43,7 @@ import (
 type Config struct {
 	Region                    string          `yaml:"region"`
 	TerraformState            string          `yaml:"terraformState"`
+	SendAnalytics             bool            `yaml:"sendAnalytics"`
 	ClustersProjectID         string          `yaml:"clustersProjectId"`
 	GovernanceProjectID       string          `yaml:"governanceProjectId"`
 	ConfigSync                bool            `yaml:"configSync"`
@@ -122,9 +122,6 @@ func InitConf(cfgFile string) *Config {
 		os.Exit(1)
 	}
 
-	// Show config to user
-	log.Info("✅ Config has been initialized successfully.")
-	spew.Dump(conf)
 	return conf
 }
 

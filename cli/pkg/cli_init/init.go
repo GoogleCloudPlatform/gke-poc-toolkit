@@ -3,8 +3,12 @@ package cli_init
 import (
 	"bytes"
 	"embed"
+	"fmt"
 	"io/ioutil"
 	"os"
+	"strings"
+
+	"github.com/manifoldco/promptui"
 
 	log "github.com/sirupsen/logrus"
 )
@@ -43,7 +47,6 @@ func InitFlatFiles(folders []string) error {
 			buf.Reset()
 		}
 	}
-	log.Info("✅ gkekitctl initialized successfully.")
 	return nil
 }
 
@@ -63,4 +66,62 @@ func CreateFileList(dir string) []string {
 		files_out = append(files_out, file.Name())
 	}
 	return files_out
+}
+
+// Prompt user to opt into anonymous analytics
+func OptInAnalytics() error {
+	log.Info("📊 Send anonymous analytics to GKE PoC Toolkit maintainers?")
+	sendAnalytics := yesNo()
+	if !sendAnalytics {
+		return nil
+	}
+	// Write opt-in to all config files
+	files, err := ioutil.ReadDir("./samples")
+	if err != nil {
+		return err
+	}
+
+	for _, f := range files {
+		log.Infof("Processing file: %s", f.Name())
+		err := addOptInAnalyticsToConfigFile(fmt.Sprintf("samples/%s", f.Name()))
+		if err != nil {
+			return err
+		}
+	}
+	return nil
+}
+
+// Source: https://stackoverflow.com/questions/55176623/how-to-ask-yes-or-no-using-golang
+func yesNo() bool {
+	prompt := promptui.Select{
+		Label: "Select[Yes/No]",
+		Items: []string{"Yes", "No"},
+	}
+	_, result, err := prompt.Run()
+	if err != nil {
+		log.Warnf("Prompt failed %v\n", err)
+	}
+	result = strings.ToUpper(result)
+	return result == "YES"
+}
+
+func addOptInAnalyticsToConfigFile(f string) error {
+	input, err := ioutil.ReadFile(f)
+	if err != nil {
+		return err
+	}
+
+	lines := strings.Split(string(input), "\n")
+
+	for i, line := range lines {
+		if strings.Contains(line, "sendAnalytics") {
+			lines[i] = "sendAnalytics: true"
+		}
+	}
+	output := strings.Join(lines, "\n")
+	err = ioutil.WriteFile(f, []byte(output), 0644)
+	if err != nil {
+		return err
+	}
+	return nil
 }

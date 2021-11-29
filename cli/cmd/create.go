@@ -17,6 +17,7 @@ package cmd
 
 import (
 	"gkekitctl/pkg/acm"
+	"gkekitctl/pkg/analytics"
 	"gkekitctl/pkg/config"
 	"gkekitctl/pkg/lifecycle"
 
@@ -33,6 +34,12 @@ var createCmd = &cobra.Command{
 	gkekitctl create --config <file.yaml>`,
 	Run: func(cmd *cobra.Command, args []string) {
 		conf := config.InitConf(cfgFile)
+
+		// Send user analytics - async
+		if conf.SendAnalytics {
+			go analytics.SendAnalytics(conf)
+		}
+
 		config.GenerateTfvars(conf)
 		tfStateBucket, err := config.CheckTfStateType(conf)
 		if err != nil {
