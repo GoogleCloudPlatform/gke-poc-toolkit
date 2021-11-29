@@ -89,7 +89,6 @@ creds/
 # Cloud Source Repos
 *gke-poc-config-sync*
 
-
 # Ignore GKE Toolkit init files 
 cli/cluster_build/*
 cli/samples/*
