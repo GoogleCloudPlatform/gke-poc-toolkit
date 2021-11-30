@@ -5,12 +5,29 @@ variable "project_id" {
 variable "cluster_config" {
 }
 
-// enable Multi-cluster gateway project wide
-resource "google_gke_hub_feature" "feature" {
+data "google_project" "project" {
+  project_id = var.project_id
+}
+
+// enable Multi-cluster service discovery
+resource "google_gke_hub_feature" "mcs" {
   name       = "multiclusterservicediscovery"
   location   = "global"
   project    = var.project_id
   provider   = google-beta
+}
+
+// enable Multi-cluster Ingress(also gateway) project wide
+resource "google_gke_hub_feature" "mci" {
+  name = "multiclusteringress"
+  location = "global"
+  project    = var.project_id
+  spec {
+    multiclusteringress {
+      config_membership = "${var.cluster_config.key[0]}-membership"
+    }
+  }
+  provider = google-beta
 }
 
 // Register each cluster to GKE Hub (Fleets API)
@@ -28,11 +45,19 @@ resource "google_gke_hub_feature" "feature" {
 #   }
 # }
 
-resource "google_project_iam_binding" "network-viewer-mcgsa" {
+resource "google_project_iam_binding" "network-viewer-mcssa" {
   role    = "roles/compute.networkViewer"
   project = var.project_id
   members = [
     "serviceAccount:${var.project_id}.svc.id.goog[gke-mcs/gke-mcs-importer]",
+  ]
+}
+
+resource "google_project_iam_binding" "network-viewer-mcgsa" {
+  role    = "roles/container.admin"
+  project = var.project_id
+  members = [
+    "serviceAccount:service-${data.google_project.project.number}@gcp-sa-multiclusteringress.iam.gserviceaccount.com",
   ]
 }
 

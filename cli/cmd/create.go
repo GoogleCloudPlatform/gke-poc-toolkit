@@ -18,7 +18,6 @@ package cmd
 import (
 	"gkekitctl/pkg/anthos"
 	"gkekitctl/pkg/config"
-	"gkekitctl/pkg/lifecycle"
 
 	log "github.com/sirupsen/logrus"
 
@@ -34,21 +33,21 @@ var createCmd = &cobra.Command{
 	Run: func(cmd *cobra.Command, args []string) {
 		log.Info("👟 Started config validation...")
 		conf := config.InitConf(cfgFile)
-		log.Info("👟 Started generating TFVars...")
-		config.GenerateTfvars(conf)
-		log.Info("👟 Started configuring TF State...")
-		tfStateBucket, err := config.CheckTfStateType(conf)
-		if err != nil {
-			log.Errorf("🚨 Failed checking TF state type: %s", err)
-		}
+		// log.Info("👟 Started generating TFVars...")
+		// config.GenerateTfvars(conf)
+		// log.Info("👟 Started configuring TF State...")
+		// tfStateBucket, err := config.CheckTfStateType(conf)
+		// if err != nil {
+		// 	log.Errorf("🚨 Failed checking TF state type: %s", err)
+		// }
 
-		if conf.VpcConfig.VpcType == "shared" {
-			lifecycle.InitTF("shared_vpc", tfStateBucket[1], conf.VpcConfig.VpcType)
-			lifecycle.ApplyTF("shared_vpc")
-		}
-		lifecycle.InitTF("cluster_build", tfStateBucket[0], conf.VpcConfig.VpcType)
-		lifecycle.ApplyTF("cluster_build")
-		log.Info("✅ TF state configured successfully.")
+		// if conf.VpcConfig.VpcType == "shared" {
+		// 	lifecycle.InitTF("shared_vpc", tfStateBucket[1], conf.VpcConfig.VpcType)
+		// 	lifecycle.ApplyTF("shared_vpc")
+		// }
+		// lifecycle.InitTF("cluster_build", tfStateBucket[0], conf.VpcConfig.VpcType)
+		// lifecycle.ApplyTF("cluster_build")
+		// log.Info("✅ TF state configured successfully.")
 
 		// Authenticate Kubernetes client-go to all clusters
 		log.Info("☸️ Generating Kubeconfig...")
@@ -66,17 +65,17 @@ var createCmd = &cobra.Command{
 		}
 		log.Info("✅ Clusters API access check passed.")
 
-		// Init ACM (either ConfigSync or ConfigSync plus PolicyController)
-		if conf.ConfigSync {
-			err := anthos.InitACM(conf, kc)
-			if err != nil {
-				log.Errorf("🚨 Failed to initialize ACM: %s", err)
-			}
-		}
+		// // Init ACM (either ConfigSync or ConfigSync plus PolicyController)
+		// if conf.ConfigSync {
+		// 	err := anthos.InitACM(conf, kc)
+		// 	if err != nil {
+		// 		log.Errorf("🚨 Failed to initialize ACM: %s", err)
+		// 	}
+		// }
 
 		// Init Multi-cluster Gateway
 		if conf.MultiClusterGateway {
-			err := anthos.InitMCG(conf, kc)
+			err := anthos.InitMCG(kc)
 			if err != nil {
 				log.Errorf("🚨 Failed to initialize Multi-cluster Gateway CRDs: %s", err)
 			}

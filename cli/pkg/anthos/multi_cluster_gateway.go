@@ -2,15 +2,14 @@ package anthos
 
 import (
 	"fmt"
-	"gkekitctl/pkg/config"
 	"io/ioutil"
 
 	"k8s.io/client-go/tools/clientcmd"
 	"k8s.io/client-go/tools/clientcmd/api"
 )
 
-func InitMCG(conf *config.Config, kubeConfig *api.Config) error {
-	mcgConfigs, err := ioutil.ReadFile("templates/gateway_api_crd.yaml")
+func InitMCG(kubeConfig *api.Config) error {
+	mcgConfigs, err := ioutil.ReadFile("templates/gateway_api_crds.yaml")
 	if err != nil {
 		return fmt.Errorf("failed to read in gateway api crd yaml: %w", err)
 	}
