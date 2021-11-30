@@ -73,6 +73,7 @@ var createCmd = &cobra.Command{
 				log.Errorf("🚨 Failed to initialize ACM: %s", err)
 			}
 		}
+		log.Info("✅ ConfigSync setup successfully.")
 
 		// Init Multi-cluster Gateway
 		if conf.MultiClusterGateway {
@@ -81,7 +82,8 @@ var createCmd = &cobra.Command{
 				log.Errorf("🚨 Failed to initialize Multi-cluster Gateway CRDs: %s", err)
 			}
 		}
-
+		log.Info("✅ MultiCluster Gateway setup successfully.")
+		log.Info("✅ All set, pitter patter.")
 	},
 }
 

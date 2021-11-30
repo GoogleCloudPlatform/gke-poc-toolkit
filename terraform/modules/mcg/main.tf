@@ -30,6 +30,9 @@ module "enabled_google_apis" {
 // enable Multi-cluster service discovery
 resource "google_gke_hub_feature" "mcs" {
   name       = "multiclusterservicediscovery"
+  depends_on = [
+    module.enabled_google_apis,
+  ]
   location   = "global"
   project    = var.project_id
   provider   = google-beta
@@ -38,6 +41,9 @@ resource "google_gke_hub_feature" "mcs" {
 // enable Multi-cluster Ingress(also gateway) project wide
 resource "google_gke_hub_feature" "mci" {
   name = "multiclusteringress"
+  depends_on = [
+    module.enabled_google_apis,
+  ]
   location = "global"
   project    = var.project_id
   spec {
@@ -49,7 +55,7 @@ resource "google_gke_hub_feature" "mci" {
 }
 
 // Create IAM binding allowing the hub project's GKE Hub service account access to the registered member project
-resource "google_project_iam_binding" "gkehub-serviceagent" {
+resource "google_project_iam_binding" "gkehub-serviceagent" { 
   role    = "roles/gkehub.serviceAgent"
   project = var.project_id
   members = [
@@ -76,6 +82,9 @@ resource "google_project_iam_binding" "member-serviceagent" {
 }
 
 resource "google_project_iam_binding" "network-viewer-member" {
+  depends_on = [
+    resource.google_gke_hub_feature.mcs,
+  ]
   role    = "roles/compute.networkViewer"
   project = var.project_id
   members = [
