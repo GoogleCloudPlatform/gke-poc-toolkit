@@ -24,26 +24,11 @@ resource "google_gke_hub_feature" "mci" {
   project    = var.project_id
   spec {
     multiclusteringress {
-      config_membership = "${var.cluster_config.key[0]}-membership"
+      config_membership = "${var.cluster_config[0].key}-membership"
     }
   }
   provider = google-beta
 }
-
-// Register each cluster to GKE Hub (Fleets API)
-// https://registry.terraform.io/providers/hashicorp/google/latest/docs/resources/gke_hub_feature_membership#configmanagement 
-# resource "google_gke_hub_membership" "membership" {
-#   provider = google-beta
-#   for_each = var.cluster_config
-#   project  = var.project_id
-
-#   membership_id = "${each.key}-membership"
-#   endpoint {
-#     gke_cluster {
-#       resource_link = "//container.googleapis.com/projects/${var.project_id}/locations/${each.value.region}/clusters/${each.key}"
-#     }
-#   }
-# }
 
 resource "google_project_iam_binding" "network-viewer-mcssa" {
   role    = "roles/compute.networkViewer"

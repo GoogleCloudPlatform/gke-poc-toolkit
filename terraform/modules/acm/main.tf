@@ -27,28 +27,10 @@ resource "google_gke_hub_feature" "feature" {
   provider = google-beta
 }
 
-// Register each cluster to GKE Hub (Fleets API)
-// https://registry.terraform.io/providers/hashicorp/google/latest/docs/resources/gke_hub_feature_membership#configmanagement 
-resource "google_gke_hub_membership" "membership" {
-  provider = google-beta
-  for_each = var.cluster_config
-  project  = var.project_id
-
-  membership_id = "${each.key}-membership"
-  endpoint {
-    gke_cluster {
-      resource_link = "//container.googleapis.com/projects/${var.project_id}/locations/${each.value.region}/clusters/${each.key}"
-    }
-  }
-}
-
 // install config sync
 // https://registry.terraform.io/providers/hashicorp/google/latest/docs/resources/gke_hub_feature_membership#git 
 resource "google_gke_hub_feature_membership" "feature_member" {
   provider = google-beta
-  depends_on = [
-    resource.google_gke_hub_membership.membership,
-  ]
 
   // https://cloud.google.com/anthos-config-management/docs/how-to/installing-config-sync#gcloud 
   for_each   = var.cluster_config

@@ -116,6 +116,9 @@ locals {
 
   // Final Node Pool options for Cluster - combines all specified nodepools
   cluster_node_pool = flatten(local.linux_pool)
+
+  // Checks for Fleet features and used to register all custers to a Fleet should any be true
+  hub = var.multi_cluster_gateway || var.multi_cluster_gateway ? 1 : 0
 }
 
 // Enable APIs needed in the gke cluster project
@@ -184,9 +187,19 @@ module "kms" {
   ]
 }
 
-module "acm" {
+module "hub" {
   depends_on = [
     module.gke,
+  ]
+  count             = local.hub
+  source            = "../hub"
+  project_id        = module.enabled_google_apis.project_id
+  cluster_config    = var.cluster_config
+}
+
+module "acm" {
+  depends_on = [
+    module.hub,
   ]
   count             = var.config_sync ? 1 : 0
   source            = "../acm"
@@ -198,7 +211,7 @@ module "acm" {
 
 module "mcg" {
   depends_on = [
-    module.gke,
+    module.hub,
   ]
   count             = var.multi_cluster_gateway ? 1 : 0
   source            = "../mcg"
