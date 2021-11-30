@@ -4,9 +4,6 @@ variable "project_id" {
 
 variable "shared_vpc_project_id" {
 }
-
-variable "shared_vpc" {
-}
 variable "cluster_config" {
 }
 data "google_project" "project" {
