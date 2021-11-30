@@ -217,4 +217,5 @@ module "mcg" {
   source            = "../mcg"
   project_id        = module.enabled_google_apis.project_id
   cluster_config    = var.cluster_config
+  shared_vpc        = var.shared_vpc
 }
