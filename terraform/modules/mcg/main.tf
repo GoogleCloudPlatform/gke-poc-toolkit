@@ -9,10 +9,6 @@ variable "shared_vpc" {
 }
 variable "cluster_config" {
 }
-
-locals {
-    hub_project = var.shared_vpc ? var.shared_vpc_project_id : var.project_id
-}
 data "google_project" "project" {
   project_id = var.project_id
 }
@@ -69,7 +65,7 @@ resource "google_project_iam_binding" "gkehub-serviceagent" {
 }
 
 // Create IAM binding allowing the hub project's MCS service account access to the shared vpc project
-resource "google_project_iam_binding" "member-serviceagent" {
+resource "google_project_iam_binding" "host-serviceagent" {
   role    = "roles/multiclusterservicediscovery.serviceAgent"
   project = var.shared_vpc_project_id
   members = [
