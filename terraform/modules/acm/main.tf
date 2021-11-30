@@ -29,12 +29,18 @@ module "enabled_google_apis" {
 // Create 1 centralized Cloud Source Repo, that all GKE clusters will sync to  
 resource "google_sourcerepo_repository" "gke-poc-config-sync" {
   name = "gke-poc-config-sync"
+  depends_on = [
+    module.enabled_google_apis,
+  ]
 }
 
 
 // enable ACM project-wide
 resource "google_gke_hub_feature" "feature" {
   name     = "configmanagement"
+  depends_on = [
+    module.enabled_google_apis,
+  ]
   location = "global"
   project  = var.project_id
   provider = google-beta
@@ -44,7 +50,9 @@ resource "google_gke_hub_feature" "feature" {
 // https://registry.terraform.io/providers/hashicorp/google/latest/docs/resources/gke_hub_feature_membership#git 
 resource "google_gke_hub_feature_membership" "feature_member" {
   provider = google-beta
-
+  depends_on = [
+    module.enabled_google_apis,
+  ]
   // https://cloud.google.com/anthos-config-management/docs/how-to/installing-config-sync#gcloud 
   for_each   = var.cluster_config
   location   = "global"
