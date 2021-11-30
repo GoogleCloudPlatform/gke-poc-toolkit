@@ -10,10 +10,6 @@ data "google_project" "project" {
   project_id = var.project_id
 }
 
-data "google_project" "hub-project" {
-  project_id = local.hub_project
-}
-
 // Enable APIs needed in the gke clusters project
 module "enabled_google_apis" {
   source  = "terraform-google-modules/project-factory/google//modules/project_services"
