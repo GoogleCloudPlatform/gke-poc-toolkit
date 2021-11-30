@@ -106,20 +106,6 @@ func InitConf(cfgFile string) *Config {
 	serviceIds := []string{
 		"compute.googleapis.com",
 		"storage.googleapis.com",
-		"anthos.googleapis.com",
-		"sourcerepo.googleapis.com",
-		"gkehub.googleapis.com",
-		"anthosconfigmanagement.googleapis.com",
-		"multiclusterservicediscovery.googleapis.com",
-		"multiclusteringress.googleapis.com",
-		"trafficdirector.googleapis.com",
-	}
-	sharedVPCServiceIds := []string{
-		"compute.googleapis.com",
-		"storage.googleapis.com",
-	}
-	if conf.VpcConfig.VpcType == "shared" {
-		enableService(conf.VpcConfig.VpcProjectID, sharedVPCServiceIds)
 	}
 	enableService(conf.ClustersProjectID, serviceIds)
 

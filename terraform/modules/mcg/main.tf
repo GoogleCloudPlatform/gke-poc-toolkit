@@ -9,6 +9,21 @@ data "google_project" "project" {
   project_id = var.project_id
 }
 
+// Enable APIs needed in the gke cluster project
+module "enabled_google_apis" {
+  source  = "terraform-google-modules/project-factory/google//modules/project_services"
+  version = "~> 10.0"
+
+  project_id                  = var.project_id
+  disable_services_on_destroy = false
+
+  activate_apis = [
+		"multiclusterservicediscovery.googleapis.com",
+		"multiclusteringress.googleapis.com",
+		"trafficdirector.googleapis.com",
+  ]
+}
+
 // enable Multi-cluster service discovery
 resource "google_gke_hub_feature" "mcs" {
   name       = "multiclusterservicediscovery"
