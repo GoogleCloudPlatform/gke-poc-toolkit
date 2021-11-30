@@ -191,10 +191,10 @@ module "hub" {
   depends_on = [
     module.gke,
   ]
-  count             = var.multi_cluster_gateway || var.multi_cluster_gateway ? 1 : 0
-  source            = "../hub"
-  project_id        = module.enabled_google_apis.project_id
-  cluster_config    = var.cluster_config
+  count          = var.multi_cluster_gateway || var.multi_cluster_gateway ? 1 : 0
+  source         = "../hub"
+  project_id     = module.enabled_google_apis.project_id
+  cluster_config = var.cluster_config
 }
 
 module "acm" {
@@ -213,9 +213,9 @@ module "mcg" {
   depends_on = [
     module.hub,
   ]
-  count             = var.multi_cluster_gateway ? 1 : 0
-  source            = "../mcg"
-  project_id        = module.enabled_google_apis.project_id
-  cluster_config    = var.cluster_config
+  count                 = var.multi_cluster_gateway ? 1 : 0
+  source                = "../mcg"
+  project_id            = module.enabled_google_apis.project_id
+  cluster_config        = var.cluster_config
   shared_vpc_project_id = var.shared_vpc_project_id
 }

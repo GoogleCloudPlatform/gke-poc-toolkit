@@ -4,8 +4,11 @@ variable "project_id" {
 
 variable "shared_vpc_project_id" {
 }
+variable "shared_vpc" {
+}
 variable "cluster_config" {
 }
+local = var.shared_vpc ? var.shared_vpc_project_id : var.project_id
 data "google_project" "project" {
   project_id = var.project_id
 }
@@ -19,9 +22,9 @@ module "enabled_google_apis" {
   disable_services_on_destroy = false
 
   activate_apis = [
-		"multiclusterservicediscovery.googleapis.com",
-		"multiclusteringress.googleapis.com",
-		"trafficdirector.googleapis.com",
+    "multiclusterservicediscovery.googleapis.com",
+    "multiclusteringress.googleapis.com",
+    "trafficdirector.googleapis.com",
     "cloudresourcemanager.googleapis.com",
     "dns.googleapis.com",
   ]
@@ -29,13 +32,13 @@ module "enabled_google_apis" {
 
 // enable Multi-cluster service discovery
 resource "google_gke_hub_feature" "mcs" {
-  name       = "multiclusterservicediscovery"
+  name = "multiclusterservicediscovery"
   depends_on = [
     module.enabled_google_apis,
   ]
-  location   = "global"
-  project    = var.project_id
-  provider   = google-beta
+  location = "global"
+  project  = var.project_id
+  provider = google-beta
 }
 
 // enable Multi-cluster Ingress(also gateway) project wide
@@ -45,7 +48,7 @@ resource "google_gke_hub_feature" "mci" {
     module.enabled_google_apis,
   ]
   location = "global"
-  project    = var.project_id
+  project  = var.project_id
   spec {
     multiclusteringress {
       config_membership = "projects/${var.project_id}/locations/global/memberships/${keys(var.cluster_config)[0]}-membership"
@@ -55,7 +58,7 @@ resource "google_gke_hub_feature" "mci" {
 }
 
 // Create IAM binding allowing the hub project's GKE Hub service account access to the registered member project
-resource "google_project_iam_binding" "gkehub-serviceagent" { 
+resource "google_project_iam_binding" "gkehub-serviceagent" {
   role    = "roles/gkehub.serviceAgent"
   project = var.project_id
   members = [
@@ -66,7 +69,7 @@ resource "google_project_iam_binding" "gkehub-serviceagent" {
 // Create IAM binding allowing the hub project's MCS service account access to the shared vpc project
 resource "google_project_iam_binding" "host-serviceagent" {
   role    = "roles/multiclusterservicediscovery.serviceAgent"
-  project = var.shared_vpc_project_id
+  project = local.hub-project
   members = [
     "serviceAccount:service-${data.google_project.project.number}@gcp-sa-gkehub.iam.gserviceaccount.com",
   ]
@@ -106,7 +109,7 @@ resource "google_project_iam_binding" "container-admin-mcgsa" {
 // This is overkill, waiting on product to give precise role for the MCGSA in shared VPC
 resource "google_project_iam_binding" "vpc-admin-mcgsa" {
   role    = "roles/compute.networkAdmin"
-  project = var.shared_vpc_project_id
+  project = local.hub-project
   depends_on = [
     resource.google_gke_hub_feature.mci,
   ]

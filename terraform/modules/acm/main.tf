@@ -20,8 +20,8 @@ module "enabled_google_apis" {
   disable_services_on_destroy = false
 
   activate_apis = [
-		"sourcerepo.googleapis.com",
-		"anthosconfigmanagement.googleapis.com",
+    "sourcerepo.googleapis.com",
+    "anthosconfigmanagement.googleapis.com",
   ]
 }
 
@@ -37,7 +37,7 @@ resource "google_sourcerepo_repository" "gke-poc-config-sync" {
 
 // enable ACM project-wide
 resource "google_gke_hub_feature" "feature" {
-  name     = "configmanagement"
+  name = "configmanagement"
   depends_on = [
     module.enabled_google_apis,
   ]
