@@ -22,7 +22,7 @@ data "google_project" "hub-project" {
 }
 
 // Enable APIs needed in the shared vpc project
-module "enabled_google_apis" "shared-vpc"{
+module "enabled_google_apis" {
   count              = var.shared_vpc ? 1 : 0
   source  = "terraform-google-modules/project-factory/google//modules/project_services"
   version = "~> 10.0"
@@ -36,7 +36,7 @@ module "enabled_google_apis" "shared-vpc"{
 }
 
 // Enable APIs needed in the gke clusters project
-module "enabled_google_apis" "clusters"{
+module "enabled_google_apis" {
   source  = "terraform-google-modules/project-factory/google//modules/project_services"
   version = "~> 10.0"
 
