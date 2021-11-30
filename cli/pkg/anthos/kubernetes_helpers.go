@@ -123,5 +123,6 @@ func Apply(config *rest.Config, clusterName string, fileName []byte) error {
 	if err := applyOptions.Apply(context.TODO(), fileName); err != nil {
 		return fmt.Errorf("failed to create apply gateway crd cluster=%s: %w", clusterName, err)
 	}
+
 	return nil
 }
