@@ -24,7 +24,7 @@ resource "google_gke_hub_feature" "mci" {
   project    = var.project_id
   spec {
     multiclusteringress {
-      config_membership = "${keys(var.cluster_config)[0]}-membership"
+      config_membership = "projects/${var.project_id}/locations/global/memberships/${keys(var.cluster_config)[0]}-membership"
     }
   }
   provider = google-beta
