@@ -16,6 +16,7 @@ limitations under the License.
 package cmd
 
 import (
+	"gkekitctl/pkg/analytics"
 	"gkekitctl/pkg/anthos"
 	"gkekitctl/pkg/config"
 	"gkekitctl/pkg/lifecycle"
@@ -35,6 +36,12 @@ var createCmd = &cobra.Command{
 		log.Info("👟 Started config validation...")
 		conf := config.InitConf(cfgFile)
 		log.Info("👟 Started generating TFVars...")
+
+		// Send user analytics - async
+		if conf.SendAnalytics {
+			go analytics.SendAnalytics(conf)
+		}
+
 		config.GenerateTfvars(conf)
 		log.Info("👟 Started configuring TF State...")
 		tfStateBucket, err := config.CheckTfStateType(conf)
