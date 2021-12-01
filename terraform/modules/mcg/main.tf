@@ -8,7 +8,10 @@ variable "shared_vpc" {
 }
 variable "cluster_config" {
 }
-local = var.shared_vpc ? var.shared_vpc_project_id : var.project_id
+
+locals { 
+  hub_project = var.shared_vpc ? var.shared_vpc_project_id : var.project_id
+
 data "google_project" "project" {
   project_id = var.project_id
 }
@@ -109,7 +112,7 @@ resource "google_project_iam_binding" "container-admin-mcgsa" {
 // This is overkill, waiting on product to give precise role for the MCGSA in shared VPC
 resource "google_project_iam_binding" "vpc-admin-mcgsa" {
   role    = "roles/compute.networkAdmin"
-  project = local.hub-project
+  project = local.hub_project
   depends_on = [
     resource.google_gke_hub_feature.mci,
   ]
