@@ -72,7 +72,7 @@ resource "google_project_iam_binding" "gkehub-serviceagent" {
 // Create IAM binding allowing the hub project's MCS service account access to the shared vpc project
 resource "google_project_iam_binding" "host-serviceagent" {
   role    = "roles/multiclusterservicediscovery.serviceAgent"
-  project = local.hub-project
+  project = local.hub_project
   members = [
     "serviceAccount:service-${data.google_project.project.number}@gcp-sa-gkehub.iam.gserviceaccount.com",
   ]
