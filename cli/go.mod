@@ -8,8 +8,10 @@ require (
 	cloud.google.com/go/storage v1.10.0
 	github.com/aws/aws-sdk-go v1.34.28 // indirect
 	github.com/davecgh/go-spew v1.1.1
+	github.com/gofrs/uuid v4.1.0+incompatible
 	github.com/hashicorp/terraform-exec v0.14.0
 	github.com/pytimer/k8sutil v0.0.0-20211027022641-c63171c7e6e0
+	github.com/manifoldco/promptui v0.9.0
 	github.com/sirupsen/logrus v1.8.1
 	github.com/spf13/cobra v1.2.1
 	github.com/spf13/viper v1.9.0

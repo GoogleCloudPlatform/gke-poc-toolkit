@@ -15,6 +15,7 @@ configSync: true
 policyController: true
 multiClusterGateway: true
 tfModuleRepo: "github.com/GoogleCloudPlatform/gke-poc-toolkit//terraform/modules/"
+sendAnalytics: false
 vpcConfig:
   vpcName: "default"
   vpcType: "standalone" 

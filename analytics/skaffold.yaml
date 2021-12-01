@@ -1,0 +1,12 @@
+apiVersion: skaffold/v2beta18
+kind: Config
+metadata:
+  name: analytics 
+build:
+  artifacts:
+  - image: analytics-server
+    context: .
+deploy:
+  kubectl:
+    manifests:
+    - manifests/deployment.yaml
