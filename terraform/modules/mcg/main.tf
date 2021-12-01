@@ -11,7 +11,7 @@ variable "cluster_config" {
 
 locals { 
   hub_project = var.shared_vpc ? var.shared_vpc_project_id : var.project_id
-
+}
 data "google_project" "project" {
   project_id = var.project_id
 }
@@ -120,6 +120,3 @@ resource "google_project_iam_binding" "vpc-admin-mcgsa" {
     "serviceAccount:service-${data.google_project.project.number}@gcp-sa-multiclusteringress.iam.gserviceaccount.com",
   ]
 }
-
-
-
