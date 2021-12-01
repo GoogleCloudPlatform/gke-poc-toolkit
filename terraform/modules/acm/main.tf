@@ -51,7 +51,7 @@ resource "google_gke_hub_feature" "feature" {
 resource "google_gke_hub_feature_membership" "feature_member" {
   provider = google-beta
   depends_on = [
-    module.enabled_google_apis,
+    resource.google_gke_hub_feature.feature,
   ]
   // https://cloud.google.com/anthos-config-management/docs/how-to/installing-config-sync#gcloud 
   for_each   = var.cluster_config
