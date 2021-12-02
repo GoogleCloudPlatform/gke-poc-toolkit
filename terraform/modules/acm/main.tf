@@ -37,7 +37,7 @@ resource "google_sourcerepo_repository" "gke-poc-config-sync" {
 
 
 // enable ACM project-wide
-resource "google_gke_hub_feature" "feature" {
+resource "google_gke_hub_feature" "acm" {
   name = "configmanagement"
   depends_on = [
     module.enabled_google_apis,
@@ -52,7 +52,7 @@ resource "google_gke_hub_feature" "feature" {
 resource "google_gke_hub_feature_membership" "feature_member" {
   provider = google-beta
   depends_on = [
-    resource.google_gke_hub_feature.feature,
+    resource.google_gke_hub_feature.acm,
   ]
   // https://cloud.google.com/anthos-config-management/docs/how-to/installing-config-sync#gcloud 
   for_each   = var.cluster_config
