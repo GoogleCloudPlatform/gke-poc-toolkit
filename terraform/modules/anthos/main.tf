@@ -3,7 +3,7 @@ module "acm" {
     module.hub,
   ]
   count             = var.config_sync ? 1 : 0
-  source            = "../acm"
+  source            = "acm"
   project_id        = module.enabled_google_apis.project_id
   policy_controller = var.policy_controller
   cluster_config    = var.cluster_config
@@ -15,7 +15,7 @@ module "mcg" {
     module.hub,
   ]
   count                 = var.multi_cluster_gateway ? 1 : 0
-  source                = "../mcg"
+  source                = "mcg"
   project_id            = module.enabled_google_apis.project_id
   cluster_config        = var.cluster_config
   shared_vpc_project_id = var.shared_vpc_project_id
@@ -29,7 +29,7 @@ module "hub" {
     module.gke,
   ]
   count          = var.multi_cluster_gateway || var.config_sync ? 1 : 0
-  source         = "../hub"
+  source         = "hub"
   project_id     = module.enabled_google_apis.project_id
   cluster_config = var.cluster_config
 }
