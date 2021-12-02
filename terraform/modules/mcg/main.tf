@@ -135,11 +135,11 @@ resource "google_project_iam_binding" "network-viewer-member" {
 
 resource "google_project_iam_binding" "container-admin-mcgsa" {
   role    = "roles/container.admin"
-  project = local.hub_project
+  project = var.project_id
   depends_on = [
     resource.google_gke_hub_feature.mci,
   ]
   members = [
-    "serviceAccount:service-${data.google_project.hub_project.number}@gcp-sa-multiclusteringress.iam.gserviceaccount.com",
+    "serviceAccount:service-${data.google_project.project.number}@gcp-sa-multiclusteringress.iam.gserviceaccount.com",
   ]
 }
