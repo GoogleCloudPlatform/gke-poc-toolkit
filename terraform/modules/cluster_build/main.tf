@@ -219,4 +219,5 @@ module "mcg" {
   cluster_config        = var.cluster_config
   shared_vpc_project_id = var.shared_vpc_project_id
   shared_vpc            = var.shared_vpc
+  vpc_name              = var.vpc_name
 }

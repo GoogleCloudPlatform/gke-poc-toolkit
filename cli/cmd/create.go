@@ -47,6 +47,8 @@ var createCmd = &cobra.Command{
 		tfStateBucket, err := config.CheckTfStateType(conf)
 		if err != nil {
 			log.Errorf("🚨 Failed checking TF state type: %s", err)
+		} else {
+			log.Info("✅ TF state configured successfully.")
 		}
 
 		if conf.VpcConfig.VpcType == "shared" {
@@ -55,41 +57,44 @@ var createCmd = &cobra.Command{
 		}
 		lifecycle.InitTF("cluster_build", tfStateBucket[0], conf.VpcConfig.VpcType)
 		lifecycle.ApplyTF("cluster_build")
-		log.Info("✅ TF state configured successfully.")
 
 		// Authenticate Kubernetes client-go to all clusters
 		log.Info("☸️ Generating Kubeconfig...")
 		kc, err := anthos.GenerateKubeConfig(conf)
 		if err != nil {
 			log.Errorf("🚨 Failed to generate kube config: %s", err)
+		} else {
+			log.Infof("✅ Kubeconfig generated: %+v", kc)
 		}
-		log.Infof("✅ Kubeconfig generated: %+v", kc)
 
 		// Verify access to Kubernetes API on all clusters
 		log.Info("☸️  Verifying Kubernetes API access for all clusters...")
 		err = anthos.ListNamespaces(kc)
 		if err != nil {
 			log.Errorf("🚨 Failed API access check on clusters: %s", err)
+		} else {
+			log.Info("✅ Clusters API access check passed.")
 		}
-		log.Info("✅ Clusters API access check passed.")
 
 		// Init ACM (either ConfigSync or ConfigSync plus PolicyController)
 		if conf.ConfigSync {
 			err := anthos.InitACM(conf, kc)
 			if err != nil {
 				log.Errorf("🚨 Failed to initialize ACM: %s", err)
+			} else {
+				log.Info("✅ ConfigSync setup successfully.")
 			}
 		}
-		log.Info("✅ ConfigSync setup successfully.")
 
 		// Init Multi-cluster Gateway
 		if conf.MultiClusterGateway {
 			err := anthos.InitMCG(kc)
 			if err != nil {
 				log.Errorf("🚨 Failed to initialize Multi-cluster Gateway CRDs: %s", err)
+			} else {
+				log.Info("✅ MultiCluster Gateway setup successfully.")
 			}
 		}
-		log.Info("✅ MultiCluster Gateway setup successfully.")
 		log.Info("✅ All set, pitter patter.")
 	},
 }
