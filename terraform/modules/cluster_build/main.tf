@@ -220,4 +220,5 @@ module "mcg" {
   shared_vpc_project_id = var.shared_vpc_project_id
   shared_vpc            = var.shared_vpc
   vpc_name              = var.vpc_name
+  shared_vpc_name       = var.shared_vpc_name
 }

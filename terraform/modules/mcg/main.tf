@@ -10,6 +10,8 @@ variable "cluster_config" {
 }
 variable "vpc_name" {
 }
+variable "shared_vpc_name" {
+}
 
 locals { 
   hub_project = var.shared_vpc ? var.shared_vpc_project_id : var.project_id
