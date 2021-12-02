@@ -30,6 +30,7 @@ module "enabled_google_apis" {
     "trafficdirector.googleapis.com",
     "cloudresourcemanager.googleapis.com",
     "dns.googleapis.com",
+    "gkehub.googleapis.com",
   ]
 }
 

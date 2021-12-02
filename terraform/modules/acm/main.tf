@@ -22,6 +22,7 @@ module "enabled_google_apis" {
   activate_apis = [
     "sourcerepo.googleapis.com",
     "anthosconfigmanagement.googleapis.com",
+    "gkehub.googleapis.com",
   ]
 }
 
