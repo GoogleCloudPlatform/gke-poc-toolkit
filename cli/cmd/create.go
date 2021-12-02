@@ -82,7 +82,7 @@ var createCmd = &cobra.Command{
 			if err != nil {
 				log.Errorf("🚨 Failed to initialize Multi-cluster Gateway CRDs: %s", err)
 			} else {
-				log.Info("✅ MultiCluster Gateway setup successfully.")
+				log.Info("✅ MultiCluster Gateway CRDs installed successfully.")
 			}
 		}
 
