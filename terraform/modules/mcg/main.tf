@@ -133,7 +133,7 @@ resource "google_project_iam_binding" "network-viewer-member" {
 
 resource "google_project_iam_binding" "container-admin-mcgsa" {
   role    = "roles/container.admin"
-  project = var.hub_project
+  project = local.hub_project
   depends_on = [
     resource.google_gke_hub_feature.mci,
   ]
