@@ -43,7 +43,7 @@ module "enabled_google_apis" {
 module "firewall_rules" {
   source       = "terraform-google-modules/network/google//modules/firewall-rules"
   project_id   = var.shared_vpc_project_id
-  network_name = var.vpc_name
+  network_name = var.shared_vpc ? var.shared_vpc_name : var.vpc_name
 
   rules = [{
     name                    = "allow-glcb-backend-ingress"
