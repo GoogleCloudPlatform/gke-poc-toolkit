@@ -25,21 +25,26 @@ import (
 	"github.com/thanhpk/randstr"
 )
 
-func CheckTfStateType(conf *Config) ([]string, error) {
-	if conf.TerraformState == "cloud" && conf.VpcConfig.VpcType == "shared" {
-		bucketNameClusters := "tf-state-clusters" + strings.ToLower(randstr.String(6))
-		bucketNameSharedVPC := "tf-state-sharedvpc" + strings.ToLower(randstr.String(6))
+func CheckTfStateType(conf *Config) ([3]string, error) {
+	if conf.TerraformState == "cloud" {
+		bucketNames := [3]string{}
+		if conf.VpcConfig.VpcType == "shared" {
+			bucketNameSharedVPC := "tf-state-sharedvpc-" + strings.ToLower(randstr.String(6))
+			CreateTfStateBucket(conf.VpcConfig.VpcProjectID, bucketNameSharedVPC)
+			bucketNames[1] = bucketNameSharedVPC
+		}
+		if conf.ConfigSync || conf.MultiClusterGateway {
+			bucketNameAnthos := "tf-state-anthos-" + strings.ToLower(randstr.String(6))
+			CreateTfStateBucket(conf.ClustersProjectID, bucketNameAnthos)
+			bucketNames[2] = bucketNameAnthos
+		}
+		bucketNameClusters := "tf-state-clusters-" + strings.ToLower(randstr.String(6))
 		CreateTfStateBucket(conf.ClustersProjectID, bucketNameClusters)
-		CreateTfStateBucket(conf.VpcConfig.VpcProjectID, bucketNameSharedVPC)
-		bucketNames := []string{bucketNameClusters, bucketNameSharedVPC}
-		return bucketNames, nil
-	} else if conf.TerraformState == "cloud" && conf.VpcConfig.VpcType == "standalone" {
-		bucketNameClusters := "tf-state-clusters" + strings.ToLower(randstr.String(6))
-		CreateTfStateBucket(conf.ClustersProjectID, bucketNameClusters)
-		bucketNames := []string{bucketNameClusters}
+		bucketNames[0] = bucketNameClusters
+		log.Print(bucketNames)
 		return bucketNames, nil
 	}
-	return []string{"local", "local"}, nil
+	return [3]string{"local", "local", "local"}, nil
 }
 
 // func CreateTfStateBucket(projectId string, bucketName string) error {

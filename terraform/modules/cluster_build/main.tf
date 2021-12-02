@@ -187,6 +187,7 @@ module "kms" {
   ]
 }
 
+/** Save this code for when we MCG can be installed without breaking from terraform
 module "hub" {
   depends_on = [
     module.gke,
@@ -222,3 +223,4 @@ module "mcg" {
   vpc_name              = var.vpc_name
   shared_vpc_name       = var.shared_vpc_name
 }
+*/
