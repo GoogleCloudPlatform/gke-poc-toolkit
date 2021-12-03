@@ -15,23 +15,6 @@ data "google_project" "project" {
   project_id = var.project_id
 }
 
-// Enable APIs needed in the gke clusters project
-module "enabled_google_apis" {
-  source  = "terraform-google-modules/project-factory/google//modules/project_services"
-  version = "~> 10.0"
-
-  project_id                  = var.project_id
-  disable_services_on_destroy = false
-
-  activate_apis = [
-    "multiclusterservicediscovery.googleapis.com",
-    "multiclusteringress.googleapis.com",
-    "trafficdirector.googleapis.com",
-    "cloudresourcemanager.googleapis.com",
-    "dns.googleapis.com",
-  ]
-}
-
 // https://cloud.google.com/kubernetes-engine/docs/how-to/multi-cluster-ingress-setup#shared_vpc_deployment 
 module "firewall_rules" {
   source       = "terraform-google-modules/network/google//modules/firewall-rules"
@@ -62,9 +45,6 @@ module "firewall_rules" {
 // enable Multi-cluster service discovery
 resource "google_gke_hub_feature" "mcs" {
   name = "multiclusterservicediscovery"
-  depends_on = [
-    module.enabled_google_apis,
-  ]
   location = "global"
   project  = var.project_id
   provider = google-beta
@@ -73,9 +53,6 @@ resource "google_gke_hub_feature" "mcs" {
 // enable Multi-cluster Ingress(also gateway) project wide
 resource "google_gke_hub_feature" "mci" {
   name = "multiclusteringress"
-  depends_on = [
-    module.enabled_google_apis,
-  ]
   location = "global"
   project  = var.project_id
   spec {

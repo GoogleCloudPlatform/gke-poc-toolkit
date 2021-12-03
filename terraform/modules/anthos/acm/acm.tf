@@ -11,37 +11,16 @@ variable "cluster_config" {
 variable "email" {
 }
 
-// Enable APIs needed in the gke cluster project
-module "enabled_google_apis" {
-  source  = "terraform-google-modules/project-factory/google//modules/project_services"
-  version = "~> 10.0"
-
-  project_id                  = var.project_id
-  disable_services_on_destroy = false
-
-  activate_apis = [
-    "sourcerepo.googleapis.com",
-    "anthosconfigmanagement.googleapis.com",
-  ]
-}
-
 // https://registry.terraform.io/providers/hashicorp/google/latest/docs/resources/sourcerepo_repository 
 // Create 1 centralized Cloud Source Repo, that all GKE clusters will sync to  
 resource "google_sourcerepo_repository" "gke-poc-config-sync" {
   name = "gke-poc-config-sync"    
   project  = var.project_id
-  depends_on = [
-    module.enabled_google_apis,
-  ]
 }
-
 
 // enable ACM project-wide
 resource "google_gke_hub_feature" "acm" {
   name = "configmanagement"
-  depends_on = [
-    module.enabled_google_apis,
-  ]
   location = "global"
   project  = var.project_id
   provider = google-beta

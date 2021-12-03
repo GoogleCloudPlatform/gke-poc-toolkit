@@ -22,9 +22,6 @@ module "enabled_google_apis" {
 // https://registry.terraform.io/providers/hashicorp/google/latest/docs/resources/gke_hub_feature_membership#configmanagement 
 resource "google_gke_hub_membership" "membership" {
   provider = google-beta
-  depends_on = [
-    module.enabled_google_apis,
-  ]
   for_each = var.cluster_config
   project  = var.project_id
 

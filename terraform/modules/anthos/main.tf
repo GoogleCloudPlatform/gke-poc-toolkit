@@ -1,3 +1,24 @@
+
+module "enabled_google_apis" {
+  source  = "terraform-google-modules/project-factory/google//modules/project_services"
+  version = "~> 10.0"
+
+  project_id                  = var.project_id
+  disable_services_on_destroy = false
+
+  activate_apis = [
+    "sourcerepo.googleapis.com",
+    "anthosconfigmanagement.googleapis.com",
+    "anthos.googleapis.com",
+    "gkehub.googleapis.com",
+    "multiclusterservicediscovery.googleapis.com",
+    "multiclusteringress.googleapis.com",
+    "trafficdirector.googleapis.com",
+    "cloudresourcemanager.googleapis.com",
+    "dns.googleapis.com",
+  ]
+}
+
 module "acm" {
   depends_on = [
     module.hub,
@@ -28,4 +49,7 @@ module "hub" {
   source         = "./hub"
   project_id     = var.project_id
   cluster_config = var.cluster_config
+    depends_on = [
+    module.enabled_google_apis,
+  ]
 }
