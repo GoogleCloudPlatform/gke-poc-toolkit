@@ -170,12 +170,18 @@ func CreateGitCredsSecret(kubeConfig *api.Config) error {
 			return fmt.Errorf("failed to create Kubernetes client cluster=%s: %w", clusterName, err)
 		}
 
+		err = WaitForNamespace(k8s, ctx, "config-management-system", clusterName)
+		if err != nil {
+			return fmt.Errorf("config management system namespace is not ready on cluster=%s: %w", clusterName, err)
+		}
+
 		_, err = k8s.CoreV1().Secrets("config-management-system").Create(ctx, &v1.Secret{
 			ObjectMeta: metav1.ObjectMeta{
 				Name: "git-creds",
 			},
 			StringData: map[string]string{"ssh": privateKeyString},
 		}, metav1.CreateOptions{})
+
 		if err != nil {
 			if strings.Contains(err.Error(), "already exists") {
 				log.Warn("git-creds secret already exists")
