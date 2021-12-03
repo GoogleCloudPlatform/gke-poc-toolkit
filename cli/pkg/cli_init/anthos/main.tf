@@ -5,8 +5,8 @@ module "cluster_build" {
   cluster_config        = var.cluster_config
   email                 = data.google_client_openid_userinfo.me.email
   shared_vpc            = var.shared_vpc
-  shared_vpc_project_id = var.vpc_project_id
-  vpc_name          = var.vpc_name
+  vpc_project_id        = var.vpc_project_id
+  vpc_name              = var.vpc_name
 }
 
 variable "project_id" {
