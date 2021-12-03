@@ -2,24 +2,17 @@
 variable "project_id" {
 }
 
-variable "shared_vpc_project_id" {
+variable "vpc_project_id" {
 }
 variable "shared_vpc" {
 }
 variable "cluster_config" {
 }
-variable "network_name" {
+variable "vpc_name" {
 }
 
-locals { 
-  hub_project = var.shared_vpc ? var.shared_vpc_project_id : var.project_id
-}
 data "google_project" "project" {
   project_id = var.project_id
-}
-
-data "google_project" "hub_project" {
-  project_id = local.hub_project
 }
 
 // Enable APIs needed in the gke clusters project
@@ -42,8 +35,8 @@ module "enabled_google_apis" {
 // https://cloud.google.com/kubernetes-engine/docs/how-to/multi-cluster-ingress-setup#shared_vpc_deployment 
 module "firewall_rules" {
   source       = "terraform-google-modules/network/google//modules/firewall-rules"
-  project_id   = var.shared_vpc_project_id
-  network_name = var.network_name
+  project_id   = var.vpc_project_id
+  network_name = var.vpc_name
 
   rules = [{
     name                    = "allow-glcb-backend-ingress"
@@ -105,7 +98,7 @@ resource "google_project_iam_binding" "gkehub-serviceagent" {
 // Create IAM binding allowing the hub project's MCS service account access to the shared vpc project
 resource "google_project_iam_binding" "host-serviceagent" {
   role    = "roles/multiclusterservicediscovery.serviceAgent"
-  project = var.shared_vpc_project_id
+  project = var.vpc_project_id
   members = [
     "serviceAccount:service-${data.google_project.project.number}@gcp-sa-gkehub.iam.gserviceaccount.com",
   ]
