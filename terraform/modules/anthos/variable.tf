@@ -16,3 +16,7 @@ variable "shared_vpc" {
 }
 variable "vpc_name" {
 }
+variable "config_sync" {
+}
+variable "multi_cluster_gateway" {
+}
