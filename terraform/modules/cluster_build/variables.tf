@@ -66,12 +66,6 @@ variable "ip_source_ranges_ssh" {
   default     = []
 }
 
-variable "vpc_name" {
-  type        = string
-  description = "The name of the Shared VPC - This is optional and only valid if a Shared VPC is used"
-  default     = ""
-}
-
 variable "vpc_project_id" {
   type        = string
   description = "The Share VPC Project ID - This is optional and only valid if a Shared VPC is used"
