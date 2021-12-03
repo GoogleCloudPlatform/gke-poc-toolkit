@@ -16,7 +16,9 @@ limitations under the License.
 
 package main
 
-import "gkekitctl/cmd"
+import (
+	"gkekitctl/cmd"
+)
 
 func main() {
 	cmd.Execute()
