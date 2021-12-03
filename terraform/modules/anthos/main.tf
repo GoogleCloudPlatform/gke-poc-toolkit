@@ -24,9 +24,6 @@ module "mcg" {
 }
 
 module "hub" {
-  depends_on = [
-    module.gke,
-  ]
   count          = var.multi_cluster_gateway || var.config_sync ? 1 : 0
   source         = "./hub"
   project_id     = module.enabled_google_apis.project_id
