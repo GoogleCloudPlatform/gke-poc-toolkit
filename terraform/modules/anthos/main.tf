@@ -20,6 +20,7 @@ module "mcg" {
   cluster_config        = var.cluster_config
   vpc_project_id        = var.vpc_project_id
   vpc_name              = var.vpc_name
+  shared_vpc            = var.shared_vpc
 }
 
 module "hub" {
