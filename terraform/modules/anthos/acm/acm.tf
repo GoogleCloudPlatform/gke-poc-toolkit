@@ -28,7 +28,8 @@ module "enabled_google_apis" {
 // https://registry.terraform.io/providers/hashicorp/google/latest/docs/resources/sourcerepo_repository 
 // Create 1 centralized Cloud Source Repo, that all GKE clusters will sync to  
 resource "google_sourcerepo_repository" "gke-poc-config-sync" {
-  name = "gke-poc-config-sync"
+  name = "gke-poc-config-sync"    
+  project  = var.project_id
   depends_on = [
     module.enabled_google_apis,
   ]
