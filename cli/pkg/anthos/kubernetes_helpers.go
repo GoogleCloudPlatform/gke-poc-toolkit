@@ -25,6 +25,7 @@ import (
 	"github.com/pytimer/k8sutil/apply"
 	log "github.com/sirupsen/logrus"
 	"google.golang.org/api/container/v1"
+	clientgo "k8s.io/apimachinery/pkg/api/errors"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/client-go/discovery"
 	"k8s.io/client-go/dynamic"
@@ -143,23 +144,24 @@ func Apply(config *rest.Config, clusterName string, fileName []byte) error {
 	return nil
 }
 
-// watch namespace until created
+// check namespace and watch if not created
 func WaitForNamespace(k8s *kubernetes.Clientset, ctx context.Context, nameSpace string, clusterName string) error {
 	_, err := k8s.CoreV1().Namespaces().Get(ctx, "config-management-system", metav1.GetOptions{})
-	timeout := int64(60)
-	// need to check specfic error not found
-	if err != nil {
-		log.Infof("config-management-system is not ready on cluster=%s: %w", clusterName, err)
+	timeout := int64(120)
+	if clientgo.IsNotFound(err) {
+		log.Infof("%s is not ready on cluster=%s: %w", nameSpace, clusterName, err)
 		ns, err := k8s.CoreV1().Namespaces().Watch(ctx, metav1.ListOptions{
 			FieldSelector:  "metadata.name=" + nameSpace,
 			Watch:          true,
 			TimeoutSeconds: &timeout,
 		})
 		if err != nil {
-			return err
+			return fmt.Errorf("failed to watch namespace %s on cluster=%s: %w", nameSpace, clusterName, err)
 		}
-		log.Infof("This is the ns: %s", ns)
+		log.Infof("%s is ready on cluster: %s", ns, clusterName)
 
+	} else {
+		return fmt.Errorf("%s namespace on cluster=%s: %w", nameSpace, clusterName, err)
 	}
 	return nil
 }
