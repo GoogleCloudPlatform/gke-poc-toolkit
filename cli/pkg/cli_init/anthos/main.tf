@@ -7,6 +7,8 @@ module "cluster_build" {
   shared_vpc            = var.shared_vpc
   vpc_project_id        = var.vpc_project_id
   vpc_name              = var.vpc_name
+  config_sync           = var.config_sync
+  multi_cluster_gateway = var.multi_cluster_gateway
 }
 
 variable "project_id" {
@@ -22,4 +24,8 @@ variable "vpc_project_id" {
 variable "shared_vpc" {
 }
 variable "vpc_name" {
+}
+variable "config_sync" {
+}
+variable "multi_cluster_gateway" {
 }
