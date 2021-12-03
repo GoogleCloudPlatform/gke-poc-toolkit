@@ -142,3 +142,24 @@ func Apply(config *rest.Config, clusterName string, fileName []byte) error {
 
 	return nil
 }
+
+// watch namespace until created
+func WaitForNamespace(k8s *kubernetes.Clientset, ctx context.Context, nameSpace string, clusterName string) error {
+	_, err := k8s.CoreV1().Namespaces().Get(ctx, "config-management-system", metav1.GetOptions{})
+	timeout := int64(60)
+	// need to check specfic error not found
+	if err != nil {
+		log.Infof("config-management-system is not ready on cluster=%s: %w", clusterName, err)
+		ns, err := k8s.CoreV1().Namespaces().Watch(ctx, metav1.ListOptions{
+			FieldSelector:  "metadata.name=" + nameSpace,
+			Watch:          true,
+			TimeoutSeconds: &timeout,
+		})
+		if err != nil {
+			return err
+		}
+		log.Infof("This is the ns: %s", ns)
+
+	}
+	return nil
+}
