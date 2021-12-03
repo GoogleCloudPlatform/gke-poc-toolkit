@@ -14,7 +14,5 @@ variable "shared_vpc_project_id" {
 }
 variable "shared_vpc" {
 }
-variable "vpc_name" {
-}
-variable "shared_vpc_name" {
+variable "network_name" {
 }
