@@ -26,11 +26,11 @@ resource "random_id" "deployment" {
 
 locals {
   // Presets for project and network settings
-  project_id               = var.shared_vpc ? var.shared_vpc_project_id : module.enabled_google_apis.project_id
-  network_name             = var.shared_vpc ? var.shared_vpc_name : var.vpc_name
+  project_id               = var.shared_vpc ? var.vpc_project_id : module.enabled_google_apis.project_id
+  network_name             = var.vpc_name
   vpc_selflink             = format("projects/%s/global/networks/%s", local.project_id, local.network_name)
-  ip_range_pods            = var.shared_vpc ? var.shared_vpc_ip_range_pods_name : var.ip_range_pods_name
-  ip_range_services        = var.shared_vpc ? var.shared_vpc_ip_range_services_name : var.ip_range_services_name
+  ip_range_pods            = var.shared_vpc ? var.vpc_ip_range_pods_name : var.ip_range_pods_name
+  ip_range_services        = var.shared_vpc ? var.vpc_ip_range_services_name : var.ip_range_services_name
   distinct_cluster_regions = toset([for cluster in var.cluster_config : "${cluster.region}"])
 
   // Presets for KMS and Key Ring

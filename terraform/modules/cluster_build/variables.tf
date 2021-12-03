@@ -66,25 +66,25 @@ variable "ip_source_ranges_ssh" {
   default     = []
 }
 
-variable "shared_vpc_name" {
+variable "vpc_name" {
   type        = string
   description = "The name of the Shared VPC - This is optional and only valid if a Shared VPC is used"
   default     = ""
 }
 
-variable "shared_vpc_project_id" {
+variable "vpc_project_id" {
   type        = string
   description = "The Share VPC Project ID - This is optional and only valid if a Shared VPC is used"
   default     = ""
 }
 
-variable "shared_vpc_ip_range_pods_name" {
+variable "vpc_ip_range_pods_name" {
   type        = string
   description = "The secondary ip range to use for pods in the shared vpc  - This is optional and only valid if a Shared VPC is used"
   default     = ""
 }
 
-variable "shared_vpc_ip_range_services_name" {
+variable "vpc_ip_range_services_name" {
   type        = string
   description = "The secondary ip range to use for services in the shared vpc  - This is optional and only valid if a Shared VPC is used"
   default     = ""
