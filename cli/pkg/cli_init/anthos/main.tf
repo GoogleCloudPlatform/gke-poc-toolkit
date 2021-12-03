@@ -10,7 +10,8 @@ module "cluster_build" {
   config_sync           = var.config_sync
   multi_cluster_gateway = var.multi_cluster_gateway
 }
-
+data "google_client_openid_userinfo" "me" {
+}
 variable "project_id" {
 }
 

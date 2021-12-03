@@ -1,6 +1,3 @@
-data "google_client_openid_userinfo" "me" {
-}
-
 module "acm" {
   depends_on = [
     module.hub,
@@ -10,7 +7,7 @@ module "acm" {
   project_id        = var.project_id
   policy_controller = var.policy_controller
   cluster_config    = var.cluster_config
-  email             = data.google_client_openid_userinfo.me.email
+  email             = var.email
 }
 
 module "mcg" {
