@@ -10,9 +10,9 @@ variable "cluster_config" {
 
 variable "email" {
 }
-variable "shared_vpc_project_id" {
+variable "vpc_project_id" {
 }
 variable "shared_vpc" {
 }
-variable "network_name" {
+variable "vpc_name" {
 }
