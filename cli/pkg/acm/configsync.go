@@ -76,7 +76,7 @@ func InitACM(conf *config.Config) error {
 
 	log.Info("✅ Config Sync installed successfully.")
 
-	// Prompt user for repo clone command
+	// // Prompt user for repo clone command
 	log.Info("⭐️ To clone your Config Sync repository and push configs, run the following command:")
 	log.Infof("gcloud source repos clone gke-poc-config-sync --project=%s", conf.ClustersProjectID)
 	return nil
@@ -202,6 +202,11 @@ func GenerateKubeConfig(conf *config.Config) (*api.Config, error) {
 				},
 			},
 		}
+	}
+	// Source: https://gist.github.com/int128/a01b044009d407629fbde6985258d74f
+	err = clientcmd.WriteToFile(ret, "kubeconfig")
+	if err != nil {
+		return &ret, err
 	}
 	return &ret, nil
 }

@@ -97,3 +97,6 @@ cli/templates/*
 
 # Ignore yaml files in root of cli
 cli/*.yaml
+
+# Ignore users' kubeconfigs 
+*kubeconfig*
