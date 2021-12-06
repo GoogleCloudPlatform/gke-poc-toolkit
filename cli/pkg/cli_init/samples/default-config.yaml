@@ -13,6 +13,7 @@ defaultNodepoolOS: "cos"
 privateEndpoint: false
 configSync: true 
 policyController: true
+multiClusterGateway: true
 tfModuleRepo: "github.com/GoogleCloudPlatform/gke-poc-toolkit//terraform/modules/"
 sendAnalytics: false
 vpcConfig:

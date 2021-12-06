@@ -43,6 +43,7 @@ func GenerateTfvars(conf *Config) {
 	vars["EnableWorkloadIdentity"] = conf.EnableWorkloadIdentity
 	vars["EnableWindowsNodepool"] = conf.EnableWindowsNodepool
 	vars["EnablePreemptibleNodepool"] = conf.EnablePreemptibleNodepool
+	vars["MultiClusterGateway"] = conf.MultiClusterGateway
 	vars["TFModuleRepo"] = conf.TFModuleRepo
 
 	// Set vpc config vars
@@ -120,6 +121,8 @@ func GenerateTfvars(conf *Config) {
 	if _, err := f.WriteString("}\n"); err != nil {
 		log.Fatalf("error appending } to the tfvars file: %s", err)
 	}
+	log.Info("✅ TFVars generated successfully.")
+
 }
 
 // // todo - come back to the hclwrite code if we can solve for dynamically stamping out cluster configs

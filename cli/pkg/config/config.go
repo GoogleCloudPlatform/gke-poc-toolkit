@@ -53,6 +53,7 @@ type Config struct {
 	EnableWindowsNodepool     bool            `yaml:"enableWindowsNodepool"`
 	EnablePreemptibleNodepool bool            `yaml:"enablePreemptibleNodepool"`
 	DefaultNodepoolOS         string          `yaml:"defaultNodepoolOS"`
+	MultiClusterGateway       bool            `yaml:"multiClusterGateway"`
 	TFModuleRepo              string          `yaml:"tfModuleRepo"`
 	VpcConfig                 VpcConfig       `yaml:"vpcConfig"`
 	ClustersConfig            []ClusterConfig `yaml:"clustersConfig"`
@@ -102,9 +103,9 @@ func InitConf(cfgFile string) *Config {
 		}
 	}
 	// Enable GCP APIs
-	serviceIds := []string{"compute.googleapis.com", "storage.googleapis.com", "anthos.googleapis.com", "sourcerepo.googleapis.com", "gkehub.googleapis.com", "anthosconfigmanagement.googleapis.com"}
-	if conf.VpcConfig.VpcType == "shared" {
-		enableService(conf.VpcConfig.VpcProjectID, serviceIds)
+	serviceIds := []string{
+		"compute.googleapis.com",
+		"storage.googleapis.com",
 	}
 	enableService(conf.ClustersProjectID, serviceIds)
 
@@ -185,7 +186,7 @@ func ValidateConf(c *Config) error {
 
 	// Config-wide vars
 	if c.TerraformState != "local" && c.TerraformState != "cloud" {
-		return fmt.Errorf("Terraform state must be one of: local, cloud")
+		return fmt.Errorf("terraform state must be one of: local, cloud")
 	}
 	if err := validateNodeOS(c.DefaultNodepoolOS); err != nil {
 		return err
@@ -194,7 +195,7 @@ func ValidateConf(c *Config) error {
 		return err
 	}
 	if c.PolicyController && !c.ConfigSync {
-		return fmt.Errorf("Terraform constraints require that if Policy Controller is enabled, Config Sync must also be enabled. Please set configSync to true and retry.")
+		return fmt.Errorf("terraform constraints require that if Policy Controller is enabled, config Sync must also be enabled. please set configSync to true and retry.")
 	}
 	if err := validateTFModuleRepo(c.TFModuleRepo); err != nil {
 		return err
@@ -435,7 +436,7 @@ func enableService(projectId string, serviceIds []string) {
 }
 
 func setTfModuleRepo(tfRepo string) error {
-	files := []string{"cluster_build/main.tf", "shared_vpc/main.tf"}
+	files := []string{"cluster_build/main.tf", "shared_vpc/main.tf", "anthos/main.tf"}
 	for _, file := range files {
 		input, err := ioutil.ReadFile(file)
 		if err != nil {

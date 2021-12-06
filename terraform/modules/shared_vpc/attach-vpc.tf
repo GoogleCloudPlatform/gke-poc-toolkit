@@ -22,7 +22,7 @@ resource "google_compute_subnetwork_iam_binding" "subnet_networkuser" {
     module.shared_vpc
   ]
   for_each   = var.cluster_config
-  project    = var.shared_vpc_project_id
+  project    = var.vpc_project_id
   region     = each.value.region
   subnetwork = each.value.subnet_name
   role       = "roles/compute.networkUser"
@@ -37,7 +37,7 @@ resource "google_project_iam_binding" "shared_vpc_serviceagent" {
     google_compute_subnetwork_iam_binding.subnet_networkuser
   ]
   role    = "roles/container.hostServiceAgentUser"
-  project = var.shared_vpc_project_id
+  project = var.vpc_project_id
   members = [
     "serviceAccount:${local.clu_service_account}",
   ]
@@ -48,6 +48,6 @@ resource "google_compute_shared_vpc_service_project" "attach_toolkit" {
     google_compute_subnetwork_iam_binding.subnet_networkuser,
     google_project_iam_binding.shared_vpc_serviceagent,
   ]
-  host_project    = var.shared_vpc_project_id
+  host_project    = var.vpc_project_id
   service_project = var.project_id
 }

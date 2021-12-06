@@ -23,6 +23,6 @@ terraform {
 }
 
 provider "google" {
-  project = var.shared_vpc_project_id
+  project = var.vpc_project_id
   region  = var.region
 }

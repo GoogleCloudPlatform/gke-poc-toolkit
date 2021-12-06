@@ -26,11 +26,11 @@ resource "random_id" "deployment" {
 
 locals {
   // Presets for project and network settings
-  project_id               = var.shared_vpc ? var.shared_vpc_project_id : module.enabled_google_apis.project_id
-  network_name             = var.shared_vpc ? var.shared_vpc_name : var.vpc_name
+  project_id               = var.shared_vpc ? var.vpc_project_id : module.enabled_google_apis.project_id
+  network_name             = var.vpc_name
   vpc_selflink             = format("projects/%s/global/networks/%s", local.project_id, local.network_name)
-  ip_range_pods            = var.shared_vpc ? var.shared_vpc_ip_range_pods_name : var.ip_range_pods_name
-  ip_range_services        = var.shared_vpc ? var.shared_vpc_ip_range_services_name : var.ip_range_services_name
+  ip_range_pods            = var.shared_vpc ? var.vpc_ip_range_pods_name : var.ip_range_pods_name
+  ip_range_services        = var.shared_vpc ? var.vpc_ip_range_services_name : var.ip_range_services_name
   distinct_cluster_regions = toset([for cluster in var.cluster_config : "${cluster.region}"])
 
   // Presets for KMS and Key Ring
@@ -116,6 +116,9 @@ locals {
 
   // Final Node Pool options for Cluster - combines all specified nodepools
   cluster_node_pool = flatten(local.linux_pool)
+
+  // Checks for Fleet features and used to register all custers to a Fleet should any be true
+  //hub = var.multi_cluster_gateway || var.multi_cluster_gateway ? 1 : 0
 }
 
 // Enable APIs needed in the gke cluster project
@@ -184,9 +187,20 @@ module "kms" {
   ]
 }
 
-module "acm" {
+/** Save this code for when we MCG can be installed without breaking from terraform
+module "hub" {
   depends_on = [
     module.gke,
+  ]
+  count          = var.multi_cluster_gateway || var.config_sync ? 1 : 0
+  source         = "../hub"
+  project_id     = module.enabled_google_apis.project_id
+  cluster_config = var.cluster_config
+}
+
+module "acm" {
+  depends_on = [
+    module.hub,
   ]
   count             = var.config_sync ? 1 : 0
   source            = "../acm"
@@ -195,3 +209,18 @@ module "acm" {
   cluster_config    = var.cluster_config
   email             = data.google_client_openid_userinfo.me.email
 }
+
+module "mcg" {
+  depends_on = [
+    module.hub,
+  ]
+  count                 = var.multi_cluster_gateway ? 1 : 0
+  source                = "../mcg"
+  project_id            = module.enabled_google_apis.project_id
+  cluster_config        = var.cluster_config
+  shared_vpc_project_id = var.shared_vpc_project_id
+  shared_vpc            = var.shared_vpc
+  vpc_name              = var.vpc_name
+  shared_vpc_name       = var.shared_vpc_name
+}
+*/
