@@ -4,6 +4,7 @@ import (
 	"bytes"
 	"encoding/json"
 	"gkekitctl/pkg/config"
+
 	"net/http"
 	"runtime"
 	"time"
@@ -18,6 +19,8 @@ import (
 type Cluster struct {
 	ClusterId                 string `json:"clusterId"`
 	CreateId                  string `json:"createId"`
+	Version                   string `json:"version"`
+	GitCommit                 string `json:"gitCommit"`
 	Timestamp                 string `json:"timestamp"`
 	OS                        string `json:"os"`
 	TerraformState            string `json:"terraformState"`
@@ -28,6 +31,8 @@ type Cluster struct {
 	PrivateEndpoint           bool   `json:"privateEndpoint"`
 	EnableConfigSync          bool   `json:"enableConfigSync"`
 	EnablePolicyController    bool   `json:"enablePolicyController"`
+	AnthosServiceMesh         bool   `json:"anthosServiceMesh"`
+	MultiClusterGateway       bool   `json:"multiClusterGateway"`
 	VPCType                   string `json:"vpcType"`
 	ClusterIndex              int    `json:"clusterIndex"`
 	ClusterNumNodes           int    `json:"clusterNumNodes"`
@@ -37,7 +42,7 @@ type Cluster struct {
 	ClusterZone               string `json:"clusterZone"`
 }
 
-func SendAnalytics(conf *config.Config) {
+func SendAnalytics(conf *config.Config, version string, gitCommit string) {
 	// Generate timestamp. Format: 2006-01-02T15:04:05.000Z
 	now := time.Now()
 	timestamp := now.Format("2006-01-02T15:04:05.000Z")
@@ -64,6 +69,8 @@ func SendAnalytics(conf *config.Config) {
 		sendObject := Cluster{
 			ClusterId:                 clusterId.String(),
 			CreateId:                  createId.String(),
+			Version:                   version,
+			GitCommit:                 gitCommit,
 			Timestamp:                 timestamp,
 			OS:                        runtime.GOOS,
 			TerraformState:            conf.TerraformState,
@@ -74,6 +81,8 @@ func SendAnalytics(conf *config.Config) {
 			PrivateEndpoint:           conf.PrivateEndpoint,
 			EnableConfigSync:          conf.ConfigSync,
 			EnablePolicyController:    conf.PolicyController,
+			AnthosServiceMesh:         conf.AnthosServiceMesh,
+			MultiClusterGateway:       conf.MultiClusterGateway,
 			VPCType:                   conf.VpcConfig.VpcType,
 			ClusterIndex:              i,
 			ClusterNumNodes:           cluster.NumNodes,

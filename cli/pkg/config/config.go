@@ -47,6 +47,8 @@ type Config struct {
 	ClustersProjectID         string          `yaml:"clustersProjectId"`
 	GovernanceProjectID       string          `yaml:"governanceProjectId"`
 	ConfigSync                bool            `yaml:"configSync"`
+	AnthosServiceMesh         bool            `yaml:"anthosServiceMesh"`
+	MultiClusterGateway       bool            `yaml:"multiClusterGateway"`
 	PolicyController          bool            `yaml:"policyController"`
 	PrivateEndpoint           bool            `yaml:"privateEndpoint"`
 	EnableWorkloadIdentity    bool            `yaml:"enableWorkloadIdentity"`
