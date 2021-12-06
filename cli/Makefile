@@ -1,7 +1,7 @@
 Version := $(shell git describe --tags --dirty)
 # Version := "dev"
 GitCommit := $(shell git rev-parse HEAD)
-LDFLAGS := "-s -w -X main.Version=$(Version) -X main.GitCommit=$(GitCommit)"
+LDFLAGS := "-s -w -X gkekitctl/cmd.Version=$(Version) -X gkekitctl/cmd.GitCommit=$(GitCommit)"
 
 .PHONY: all
 all: gofmt dist
