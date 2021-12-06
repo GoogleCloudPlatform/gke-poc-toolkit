@@ -19,7 +19,6 @@ require (
 	golang.org/x/text v0.3.7 // indirect
 	google.golang.org/api v0.57.0
 	google.golang.org/genproto v0.0.0-20210921142501-181ce0d877f6
-	gopkg.in/yaml.v2 v2.4.0
 	k8s.io/api v0.22.3
 	k8s.io/apimachinery v0.22.3
 	k8s.io/client-go v0.22.3

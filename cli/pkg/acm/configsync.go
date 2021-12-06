@@ -45,8 +45,8 @@ func InitACM(conf *config.Config) error {
 		return err
 	}
 
-	// // Prompt user to register ssh public key to their Cloud Source Repositories
-	// // (AND if needed, run make start proxy in another tab before kubectl attempt)
+	// Prompt user to register ssh public key to their Cloud Source Repositories
+	// (AND if needed, run make start proxy in another tab before kubectl attempt)
 	err = PromptUser(conf)
 	if err != nil {
 		return err
@@ -203,7 +203,8 @@ func GenerateKubeConfig(conf *config.Config) (*api.Config, error) {
 			},
 		}
 	}
-	// Source: https://gist.github.com/int128/a01b044009d407629fbde6985258d74f
+
+	// Write kubeconfig to YAML file
 	err = clientcmd.WriteToFile(ret, "kubeconfig")
 	if err != nil {
 		return &ret, err
