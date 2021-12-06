@@ -20,7 +20,7 @@ You'll need access to at least one Google Cloud Project with billing enabled. Se
 
 If you are using a Shared VPC, you will need a separate host project for the Shared VPC. 
 
-#### Tools  
+#### Tools   
 
 You'll need the following tools installed in order to deploy the toolkit. 
 * bash or bash compatible shell
