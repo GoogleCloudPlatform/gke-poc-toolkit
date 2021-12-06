@@ -76,7 +76,7 @@ func InitACM(conf *config.Config) error {
 
 	log.Info("✅ Config Sync installed successfully.")
 
-	// // Prompt user for repo clone command
+	// Prompt user for repo clone command
 	log.Info("⭐️ To clone your Config Sync repository and push configs, run the following command:")
 	log.Infof("gcloud source repos clone gke-poc-config-sync --project=%s", conf.ClustersProjectID)
 	return nil
