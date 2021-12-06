@@ -79,14 +79,7 @@ func InitACM(conf *config.Config, kc *api.Config) error {
 	// Prompt user for repo clone command
 	log.Info("⭐️ To clone your Config Sync repository and push configs, run the following command:")
 	log.Infof("gcloud source repos clone gke-poc-config-sync --project=%s", conf.ClustersProjectID)
-
-	// Write kubeconfig to YAML file
-	err = clientcmd.WriteToFile(ret, "kubeconfig")
-	if err != nil {
-		return &ret, err
-	}
-
-	return &ret, nil
+	return nil
 }
 
 // ssh-keygen

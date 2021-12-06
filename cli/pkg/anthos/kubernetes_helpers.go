@@ -93,6 +93,12 @@ func GenerateKubeConfig(conf *config.Config) (*api.Config, error) {
 			},
 		}
 	}
+
+	// Write kubeconfig to YAML file
+	err = clientcmd.WriteToFile(ret, "kubeconfig")
+	if err != nil {
+		return &ret, err
+	}
 	return &ret, nil
 }
 
