@@ -24,10 +24,16 @@ import (
 
 var cfgFile string
 
+var (
+	Version   string
+	GitCommit string
+)
+
 // rootCmd represents the base command when called without any subcommands
 var rootCmd = &cobra.Command{
-	Use:   "gkekitctl",
-	Short: "Tool to quickly deploy some pretty dope GKE demos",
+	Use:     "gkekitctl",
+	Version: Version + " : Git Commit : " + GitCommit,
+	Short:   "Tool to quickly deploy some pretty dope GKE demos",
 	Example: `        gkekitctl create 
 	gkectl create --config <file.yaml>
 	gkekitctl delete`,
