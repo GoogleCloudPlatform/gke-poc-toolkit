@@ -37,7 +37,7 @@ var createCmd = &cobra.Command{
 
 		// Send user analytics - async
 		if conf.SendAnalytics {
-			go analytics.SendAnalytics(conf)
+			go analytics.SendAnalytics(conf, Version, GitCommit)
 		}
 
 		config.GenerateTfvars(conf)

@@ -29,6 +29,10 @@ type Cluster struct {
 	ClusterId string `json:"clusterId"`
 	CreateId  string `json:"createId"`
 
+	// What version is the user running?
+	Version   string `json:"version"`
+	GitCommit string `json:"gitCommit"`
+
 	// The rest of these fields must be populated by the client on POST.
 	//String Format: 2006-01-02T15:04:05.000Z		Test string: 2021-11-12T11:45:26.371Z
 	Timestamp string `json:"timestamp"`
@@ -42,6 +46,8 @@ type Cluster struct {
 	DefaultNodepoolOS         string `json:"defaultNodepoolOS"`
 	PrivateEndpoint           bool   `json:"privateEndpoint"`
 	EnableConfigSync          bool   `json:"enableConfigSync"`
+	AnthosServiceMesh         bool   `json:"anthosServiceMesh"`
+	MultiClusterGateway       bool   `json:"multiClusterGateway"`
 	EnablePolicyController    bool   `json:"enablePolicyController"`
 	VPCType                   string `json:"vpcType"`
 
@@ -175,9 +181,11 @@ func initCloudSQL() (*app, error) {
 	}
 
 	tableCreate := `
-	CREATE TABLE IF NOT EXISTS CLUSTERS(
+	CREATE TABLE IF NOT EXISTS CLUSTERS3(
 		ClusterId 						TEXT, 
 		CreateId 						TEXT, 
+		Version							TEXT,
+		GitCommit						TEXT,
 		Timestamp 						TIMESTAMP,
 		OS								TEXT,
 		TerraformState 					TEXT,
@@ -188,6 +196,8 @@ func initCloudSQL() (*app, error) {
 		PrivateEndpoint 				BOOL,
 		EnableConfigSync        		BOOL, 
 		EnablePolicyController 			BOOL,
+		AnthosServiceMesh				BOOL,
+		MultiClusterGateway				BOOL,
 		VPCType 						TEXT,
 		ClusterIndex 					INTEGER,
 		ClusterNumNodes 				INTEGER, 
@@ -206,9 +216,9 @@ func initCloudSQL() (*app, error) {
 
 // Helper - writes Cluster object to Cloud SQL on localhost (via proxy)
 func writeToCloudSQL(app *app, c Cluster) error {
-	sqlInsert := "INSERT INTO CLUSTERS(ClusterId, CreateId, Timestamp, OS, TerraformState, Region, EnableWorkloadIdentity, EnablePreemptibleNodepool, DefaultNodepoolOS, PrivateEndpoint, EnableConfigSync, EnablePolicyController, VPCType, ClusterIndex, ClusterNumNodes, ClusterMachineType, ClusterRegion, ClusterZone) VALUES($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15, $16, $17, $18)"
+	sqlInsert := "INSERT INTO CLUSTERS3(ClusterId, CreateId, Version, GitCommit, Timestamp, OS, TerraformState, Region, EnableWorkloadIdentity, EnablePreemptibleNodepool, DefaultNodepoolOS, PrivateEndpoint, EnableConfigSync, EnablePolicyController, AnthosServiceMesh, MultiClusterGateway, VPCType, ClusterIndex, ClusterNumNodes, ClusterMachineType, ClusterRegion, ClusterZone) VALUES($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15, $16, $17, $18, $19, $20, $21, $22)"
 
-	_, err := app.db.Exec(sqlInsert, c.ClusterId, c.CreateId, c.Timestamp, c.OS, c.TerraformState, c.Region, c.EnableWorkloadIdentity, c.EnablePreemptibleNodepool, c.DefaultNodepoolOS, c.PrivateEndpoint, c.EnableConfigSync, c.EnablePolicyController, c.VPCType, c.ClusterIndex, c.ClusterNumNodes, c.ClusterMachineType, c.ClusterRegion, c.ClusterZone)
+	_, err := app.db.Exec(sqlInsert, c.ClusterId, c.CreateId, c.Version, c.GitCommit, c.Timestamp, c.OS, c.TerraformState, c.Region, c.EnableWorkloadIdentity, c.EnablePreemptibleNodepool, c.DefaultNodepoolOS, c.PrivateEndpoint, c.EnableConfigSync, c.EnablePolicyController, c.AnthosServiceMesh, c.MultiClusterGateway, c.VPCType, c.ClusterIndex, c.ClusterNumNodes, c.ClusterMachineType, c.ClusterRegion, c.ClusterZone)
 
 	if err != nil {
 		return fmt.Errorf("Error on Cloud SQL Insert: %v", err)
