@@ -56,6 +56,12 @@ gcloud auth login
 gcloud auth application-default login
 ```
 
+Create a subdirectory to download the toolkit binaries and change to that directory:
+
+```shell
+mkdir gke-poc-toolkit && cd "$_"
+```
+
 Set gkekitctl cli version type and OS, then download the cli binary:
 
 ```shell

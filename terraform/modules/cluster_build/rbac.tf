@@ -29,6 +29,6 @@ module "rbac_service_accounts" {
 
 resource "local_file" "service_account_key" {
   for_each = module.rbac_service_accounts
-  filename = "../../creds/${each.value.email}.json"
+  filename = "../creds/${each.value.email}.json"
   content  = each.value.key
 }
