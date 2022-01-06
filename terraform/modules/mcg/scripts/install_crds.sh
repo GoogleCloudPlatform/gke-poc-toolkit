@@ -6,6 +6,7 @@ echo -e "LOCATION is ${LOCATION}"
 echo -e "GATEWAY_API_VERSION is ${GATEWAY_API_VERSION}"
 
 # Get cluster creds
+export KUBECONFIG=./kubeconfig
 gcloud container clusters get-credentials ${CLUSTER} --zone ${LOCATION} --project ${PROJECT}
 
 # Install Gateway API CRDs
