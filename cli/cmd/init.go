@@ -28,7 +28,7 @@ var initCmd = &cobra.Command{
 	Short:   "Initialize local environment for the cli",
 	Example: ` gkekitctl init`,
 	Run: func(cmd *cobra.Command, args []string) {
-		folders := []string{"samples", "templates", "cluster_build", "shared_vpc", "anthos"}
+		folders := []string{"samples", "templates", "cluster_build", "shared_vpc"}
 		err := cli_init.InitFlatFiles(folders)
 		if err != nil {
 			log.Errorf("🚨 Failed to initialize gkekitctl: %v", err)

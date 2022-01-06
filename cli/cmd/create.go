@@ -77,20 +77,20 @@ var createCmd = &cobra.Command{
 		}
 
 		// Init Multi-cluster Gateway
-		if conf.MultiClusterGateway {
-			err := anthos.InitMCG(kc)
-			if err != nil {
-				log.Errorf("🚨 Failed to initialize Multi-cluster Gateway CRDs: %s", err)
-			} else {
-				log.Info("✅ MultiCluster Gateway CRDs installed successfully.")
-			}
-		}
+		// if conf.MultiClusterGateway {
+		// 	err := anthos.InitMCG(kc)
+		// 	if err != nil {
+		// 		log.Errorf("🚨 Failed to initialize Multi-cluster Gateway CRDs: %s", err)
+		// 	} else {
+		// 		log.Info("✅ MultiCluster Gateway CRDs installed successfully.")
+		// 	}
+		// }
 
 		// Run Anthos modules if anthos features are enabled
-		if conf.ConfigSync || conf.MultiClusterGateway {
-			lifecycle.InitTF("anthos", tfStateBucket[2])
-			lifecycle.ApplyTF("anthos")
-		}
+		// if conf.ConfigSync || conf.MultiClusterGateway {
+		// 	lifecycle.InitTF("anthos", tfStateBucket[2])
+		// 	lifecycle.ApplyTF("anthos")
+		// }
 
 		// Init ACM (either ConfigSync or ConfigSync plus PolicyController)
 		if conf.ConfigSync {
