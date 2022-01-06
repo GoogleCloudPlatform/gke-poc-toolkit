@@ -236,7 +236,7 @@ func ValidateConf(c *Config) error {
 		}
 	}
 
-	log.Println("✅ Config is valid. Ready to write to tfvars.")
+	log.Println("✅ Config is valid.")
 	return nil
 }
 
@@ -436,7 +436,8 @@ func enableService(projectId string, serviceIds []string) {
 }
 
 func setTfModuleRepo(tfRepo string) error {
-	files := []string{"cluster_build/main.tf", "shared_vpc/main.tf", "anthos/main.tf"}
+	log.Println("⏱ Creating main.tf files...")
+	files := []string{"cluster_build/main.tf", "shared_vpc/main.tf"}
 	for _, file := range files {
 		input, err := ioutil.ReadFile(file)
 		if err != nil {
@@ -447,5 +448,6 @@ func setTfModuleRepo(tfRepo string) error {
 			log.Fatalf("error writing file: %s", err)
 		}
 	}
+	log.Println("✅ main.tf files created. Ready to write to tfvars.")
 	return nil
 }
