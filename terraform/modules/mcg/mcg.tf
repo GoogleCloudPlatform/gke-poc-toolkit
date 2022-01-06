@@ -58,10 +58,6 @@ resource "null_resource" "exec_gke_mesh" {
       GATEWAY_API_VERSION = var.gateway_crds_version
     }
   }
-  triggers = {
-    build_number = "${timestamp()}"
-    script_sha1  = sha1(file("${path.module}/scripts/install_crds.sh")),
-  }
 }
 
 // enable Multi-cluster service discovery

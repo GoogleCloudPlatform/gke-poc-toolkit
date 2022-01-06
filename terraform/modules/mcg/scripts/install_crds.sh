@@ -21,3 +21,5 @@ kubectl wait --for=condition=established crd customresourcedefinition.apiextensi
 kubectl wait --for=condition=established crd customresourcedefinition.apiextensions.k8s.io/tcproutes.networking.x-k8s.io --timeout=10m
 kubectl wait --for=condition=established crd customresourcedefinition.apiextensions.k8s.io/tlsroutes.networking.x-k8s.io --timeout=10m
 kubectl wait --for=condition=established crd customresourcedefinition.apiextensions.k8s.io/udproutes.networking.x-k8s.io --timeout=10m
+
+rm $KUBECONFIG
