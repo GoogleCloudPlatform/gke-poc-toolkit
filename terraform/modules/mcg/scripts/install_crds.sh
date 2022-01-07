@@ -14,12 +14,12 @@ kubectl kustomize "github.com/kubernetes-sigs/gateway-api/config/crd?ref=${GATEW
 | kubectl apply -f -
 
 # Verify CRD is established in the cluster
-kubectl wait --for=condition=established crd customresourcedefinition.apiextensions.k8s.io/backendpolicies.networking.x-k8s.io --timeout=10m
-kubectl wait --for=condition=established crd customresourcedefinition.apiextensions.k8s.io/gatewayclasses.networking.x-k8s.io --timeout=10m
-kubectl wait --for=condition=established crd customresourcedefinition.apiextensions.k8s.io/httproutes.networking.x-k8s.io --timeout=10m
-kubectl wait --for=condition=established crd customresourcedefinition.apiextensions.k8s.io/gateways.networking.x-k8s.io --timeout=10m
-kubectl wait --for=condition=established crd customresourcedefinition.apiextensions.k8s.io/tcproutes.networking.x-k8s.io --timeout=10m
-kubectl wait --for=condition=established crd customresourcedefinition.apiextensions.k8s.io/tlsroutes.networking.x-k8s.io --timeout=10m
-kubectl wait --for=condition=established crd customresourcedefinition.apiextensions.k8s.io/udproutes.networking.x-k8s.io --timeout=10m
+# kubectl wait --for=condition=established crd customresourcedefinition.apiextensions.k8s.io/backendpolicies.networking.x-k8s.io --timeout=10m
+# kubectl wait --for=condition=established crd customresourcedefinition.apiextensions.k8s.io/gatewayclasses.networking.x-k8s.io --timeout=10m
+# kubectl wait --for=condition=established crd customresourcedefinition.apiextensions.k8s.io/httproutes.networking.x-k8s.io --timeout=10m
+# kubectl wait --for=condition=established crd customresourcedefinition.apiextensions.k8s.io/gateways.networking.x-k8s.io --timeout=10m
+# kubectl wait --for=condition=established crd customresourcedefinition.apiextensions.k8s.io/tcproutes.networking.x-k8s.io --timeout=10m
+# kubectl wait --for=condition=established crd customresourcedefinition.apiextensions.k8s.io/tlsroutes.networking.x-k8s.io --timeout=10m
+# kubectl wait --for=condition=established crd customresourcedefinition.apiextensions.k8s.io/udproutes.networking.x-k8s.io --timeout=10m
 
 # rm ./kubeconfig
