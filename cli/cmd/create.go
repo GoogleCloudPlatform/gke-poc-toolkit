@@ -101,7 +101,9 @@ var createCmd = &cobra.Command{
 				log.Info("✅ ConfigSync setup successfully.")
 			}
 		}
-		log.Info("✅ All set, pitter patter.")
+		if err == nil {
+			log.Info("✅ Clusters API access check passed.")
+		}
 	},
 }
 
