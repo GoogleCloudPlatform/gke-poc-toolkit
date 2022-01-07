@@ -8,7 +8,7 @@ echo -e "GATEWAY_API_VERSION is ${GATEWAY_API_VERSION}"
 # Get cluster creds
 export WORKDIR=`pwd`
 touch ${WORKDIR}/kubeconfig && export KUBECONFIG=${WORKDIR}/kubeconfig
-gcloud container clusters get-credentials ${CLUSTER} --zone ${LOCATION} --project ${PROJECT}
+gcloud container clusters get-credentials ${CLUSTER} --region ${LOCATION} --project ${PROJECT}
 
 # Install Gateway API CRDs
 kubectl kustomize "github.com/kubernetes-sigs/gateway-api/config/crd?ref=${GATEWAY_API_VERSION}" \
