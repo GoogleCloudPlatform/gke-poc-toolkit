@@ -7,8 +7,5 @@ steps:
   - 'pipefail'
   - '-c'
   - |-
-    gcloud version;
-    kubectl version;
-    terraform version;
     pwd;
     ls; 
