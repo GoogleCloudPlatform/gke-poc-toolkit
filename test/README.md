@@ -12,13 +12,11 @@ Tests use Cloud Build. All Cloud Build pipelines run in the `gke-poc-toolkit` GC
 
 Build uses a custom image with all the prereqs (Terraform, etc.) installed on it. 
 
-Cloud Build pipeline pulls down the repo (at the latest PR commit, or commit to main). 
-TEST 1 - Compile (go build CLI)
-Creates a separate dir. Copies the newly-built CLI into it. 
-
-Spawn new project with auto hash; connect project to billing 
-gcloud login / setup for new project 
-
-Run `gkekitctl init` to pull down the samples. 
-TEST 2- Functional - `gkekitctl create` into the new project 
-Cleanup - Delete project 
+- Cloud Build pipeline pulls down the repo (at the latest PR commit, or commit to main). 
+- TEST 1 - Compile (go build CLI)
+- Creates a separate dir. Copies the newly-built CLI into it. 
+- spawn new project with auto hash; connect project to billing 
+- gcloud login / setup for new project 
+- Run `gkekitctl init` to pull down the samples. 
+- TEST 2- Functional - `gkekitctl create` into the new project 
+- Cleanup - Delete spawned project 
