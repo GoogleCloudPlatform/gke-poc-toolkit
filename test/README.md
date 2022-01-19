@@ -22,9 +22,3 @@ gcloud login / setup for new project
 Run `gkekitctl init` to pull down the samples. 
 TEST 2- Functional - `gkekitctl create` into the new project 
 Cleanup - Delete project 
-
-
-## Infrastructure 
-
-https://pantheon.corp.google.com/cloud-build/builds?project=gkepoctoolkit
-
