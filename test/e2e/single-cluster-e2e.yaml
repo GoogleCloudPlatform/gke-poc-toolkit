@@ -1,5 +1,6 @@
 steps:
 - name: 'gcr.io/gkepoctoolkit/e2etest:latest'
+  id: e2e
   entrypoint: 'bash'
   args:
   - '-eEuo'
