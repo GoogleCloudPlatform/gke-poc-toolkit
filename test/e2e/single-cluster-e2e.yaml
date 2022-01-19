@@ -12,6 +12,3 @@ steps:
     else
       echo "today is an odd day, with an even number"
     fi
-  - 'kubectl'
-  - 'gcloud'
-  - 'terraform'
