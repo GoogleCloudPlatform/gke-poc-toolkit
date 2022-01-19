@@ -7,6 +7,7 @@ steps:
   - 'pipefail'
   - '-c'
   - |-
+    echo "📦 Building gkekitctl..."
     cd cli
     go build
     mkdir -p /tmp/test 
@@ -14,4 +15,16 @@ steps:
     cd /tmp/test 
     chmod +x ./gkekitctl
     ./gkekitctl 
-
+    echo "☁️ Creating test GCP project..."
+    TEST_PROJECT_ID="toolkit-e2e-$BRANCH_NAME-`shuf -i 10000-99999 -n 1`"
+    echo $TEST_PROJECT_ID
+    gcloud projects create $TEST_PROJECT_ID --organization=$$ORG_ID --set-as-default
+    gcloud alpha billing accounts projects link $TEST_PROJECT_ID --billing-account=$$BILLING_ID
+    gcloud config set project $TEST_PROJECT_ID
+    gcloud auth login -y --brief
+availableSecrets:
+  secretManager:
+  - versionName: projects/$PROJECT_ID/secrets/ORG_ID/versions/latest
+    env: 'ORG_ID'
+  - versionName: projects/$PROJECT_ID/secrets/BILLING_ID/versions/latest
+    env: 'BILLING_ID'
