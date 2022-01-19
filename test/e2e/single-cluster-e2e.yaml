@@ -22,6 +22,7 @@ steps:
     gcloud alpha billing accounts projects link $$TEST_PROJECT_ID --billing-account=$$BILLING_ID
     gcloud config set project $$TEST_PROJECT_ID
     gcloud auth login -y --brief
+  secretEnv: ['ORG_ID', 'BILLING_ID']
 availableSecrets:
   secretManager:
   - versionName: projects/${PROJECT_ID}/secrets/org-id/versions/latest
