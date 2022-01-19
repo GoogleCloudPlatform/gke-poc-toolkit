@@ -24,7 +24,7 @@ steps:
     gcloud auth login -y --brief
 availableSecrets:
   secretManager:
-  - versionName: projects/${PROJECT_ID}/secrets/ORG_ID/versions/latest
+  - versionName: projects/${PROJECT_ID}/secrets/org-id/versions/latest
     env: 'ORG_ID'
-  - versionName: projects/${PROJECT_ID}/secrets/BILLING_ID/versions/latest
+  - versionName: projects/${PROJECT_ID}/secrets/billing-id/versions/latest
     env: 'BILLING_ID'
