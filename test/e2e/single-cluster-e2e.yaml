@@ -7,8 +7,6 @@ steps:
   - 'pipefail'
   - '-c'
   - |-
-    if (( $(date '+%-e') % 2 )); then
-      echo "today is an odd day"
-    else
-      echo "today is an odd day, with an even number"
-    fi
+    kubectl version
+    gcloud version
+    terraform version
