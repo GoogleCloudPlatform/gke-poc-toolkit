@@ -1,6 +1,6 @@
 steps:
 # TODO - add golang and terraform linting    
-- name: 'gcr.io/cloud-builders/go:1.17'
+- name: 'gcr.io/gkepoctoolkit/e2etest:latest'
   id: test-compile
   entrypoint: 'bash'
   args:
@@ -25,7 +25,7 @@ steps:
   - |-
     echo "☁️ Creating test GCP project..."
     TEST_PROJECT_ID="toolkit-e2e-$BRANCH_NAME-`shuf -i 10000-99999 -n 1`"
-    echo $$TEST_PROJECT_ID
+    echo $$TEST_PROJECT_ID > /workspace/test-project-id.txt
     gcloud projects create $$TEST_PROJECT_ID --organization=$$ORG_ID --set-as-default
     gcloud alpha billing accounts projects link $$TEST_PROJECT_ID --billing-account=$$BILLING_ID
     gcloud config set project $$TEST_PROJECT_ID
@@ -42,6 +42,17 @@ steps:
     cd /workspace/test
     ./gkekitctl init
     ./gkekitctl create
+- name: 'gcr.io/cloud-builders/gcloud:latest'
+  id: cleanup
+  entrypoint: 'bash'
+  args:
+  - '-eEuo'
+  - 'pipefail'
+  - '-c'
+  - |-
+    TEST_PROJECT_ID=`cat /workspace/test-project-id.txt`
+    echo "🧹 Deleting project: $$TEST_PROJECT_ID"
+    gcloud projects delete --quiet $$TEST_PROJECT_ID
 availableSecrets:
   secretManager:
   - versionName: projects/${PROJECT_ID}/secrets/org-id/versions/latest
