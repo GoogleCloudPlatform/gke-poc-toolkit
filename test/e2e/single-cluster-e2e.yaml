@@ -1,20 +1,20 @@
 steps:
 # TODO - add golang and terraform linting    
-- name: 'gcr.io/gkepoctoolkit/e2etest:latest'
-  id: test-compile
-  entrypoint: 'bash'
-  args:
-  - '-eEuo'
-  - 'pipefail'
-  - '-c'
-  - |-
-    echo "📦 Building gkekitctl..."
-    cd cli
-    go build
-    mkdir -p /workspace/test 
-    cp ./gkekitctl /workspace/test
-    cd /workspace/test 
-    chmod +x ./gkekitctl
+# - name: 'gcr.io/gkepoctoolkit/e2etest:latest'
+#   id: test-compile
+#   entrypoint: 'bash'
+#   args:
+#   - '-eEuo'
+#   - 'pipefail'
+#   - '-c'
+#   - |-
+#     echo "📦 Building gkekitctl..."
+#     cd cli
+#     go build
+#     mkdir -p /workspace/test 
+#     cp ./gkekitctl /workspace/test
+#     cd /workspace/test 
+#     chmod +x ./gkekitctl
 - name: 'gcr.io/cloud-builders/gcloud:latest'
   id: project-setup
   entrypoint: 'bash'
