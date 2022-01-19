@@ -1,6 +1,7 @@
 steps:
-- name: 'gcr.io/gkepoctoolkit/e2etest:latest'
-  id: e2e
+# TODO - add golang and terraform linting    
+- name: 'gcr.io/cloud-builders/go:1.17'
+  id: test-compile
   entrypoint: 'bash'
   args:
   - '-eEuo'
@@ -10,11 +11,18 @@ steps:
     echo "📦 Building gkekitctl..."
     cd cli
     go build
-    mkdir -p /tmp/test 
-    cp ./gkekitctl /tmp/test
-    cd /tmp/test 
+    mkdir -p /workspace/test 
+    cp ./gkekitctl /workspace/test
+    cd /workspace/test 
     chmod +x ./gkekitctl
-    ./gkekitctl 
+- name: 'gcr.io/cloud-builders/gcloud:latest'
+  id: project-setup
+  entrypoint: 'bash'
+  args:
+  - '-eEuo'
+  - 'pipefail'
+  - '-c'
+  - |-
     echo "☁️ Creating test GCP project..."
     TEST_PROJECT_ID="toolkit-e2e-$BRANCH_NAME-`shuf -i 10000-99999 -n 1`"
     echo $$TEST_PROJECT_ID
@@ -23,6 +31,17 @@ steps:
     gcloud config set project $$TEST_PROJECT_ID
     gcloud auth login -y --brief
   secretEnv: ['ORG_ID', 'BILLING_ID']
+- name: 'gcr.io/gkepoctoolkit/e2etest:latest'
+  id: test-functional-default-config
+  entrypoint: 'bash'
+  args:
+  - '-eEuo'
+  - 'pipefail'
+  - '-c'
+  - |-
+    cd /workspace/test
+    ./gkekitctl init
+    ./gkekitctl create
 availableSecrets:
   secretManager:
   - versionName: projects/${PROJECT_ID}/secrets/org-id/versions/latest
