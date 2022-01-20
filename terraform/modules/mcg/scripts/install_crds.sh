@@ -22,4 +22,4 @@ kubectl kustomize "github.com/kubernetes-sigs/gateway-api/config/crd?ref=${GATEW
 # kubectl wait --for=condition=established crd customresourcedefinition.apiextensions.k8s.io/tlsroutes.networking.x-k8s.io --timeout=10m
 # kubectl wait --for=condition=established crd customresourcedefinition.apiextensions.k8s.io/udproutes.networking.x-k8s.io --timeout=10m
 
-# rm ./kubeconfig
+rm ./kubeconfig
