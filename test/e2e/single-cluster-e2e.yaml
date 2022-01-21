@@ -1,4 +1,23 @@
 steps:
+- name: 'gcr.io/cloud-builders/gcloud:latest'
+  id: project-setup
+  entrypoint: 'bash'
+  args:
+  - '-eEuo'
+  - 'pipefail'
+  - '-c'
+  - |-
+    echo "☁️ Creating test GCP project..."
+    echo "REPO NAME: ${REPO_NAME}, HEAD REPO URL: ${HEAD_REPO_URL}"
+    TIMESTAMP=`date "+%m%d%y-%H%M%S"`
+    TEST_PROJECT_ID="gpt-$BRANCH_NAME-$TIMESTAMP"
+    echo $$TEST_PROJECT_ID
+    echo $$TEST_PROJECT_ID > /workspace/test-project-id.txt
+    gcloud projects create $$TEST_PROJECT_ID --organization=$$ORG_ID --folder="gkepoctoolkit-test" --set-as-default
+    gcloud alpha billing accounts projects link $$TEST_PROJECT_ID --billing-account=$$BILLING_ID
+    gcloud config set project $$TEST_PROJECT_ID
+    gcloud auth login --no-launch-browser --brief --update-adc
+  secretEnv: ['ORG_ID', 'BILLING_ID']
 # TODO - add golang and terraform linting    
 # - name: 'gcr.io/gkepoctoolkit/e2etest:latest'
 #   id: test-compile
@@ -15,44 +34,30 @@ steps:
 #     cp ./gkekitctl /workspace/test
 #     cd /workspace/test 
 #     chmod +x ./gkekitctl
-- name: 'gcr.io/cloud-builders/gcloud:latest'
-  id: project-setup
-  entrypoint: 'bash'
-  args:
-  - '-eEuo'
-  - 'pipefail'
-  - '-c'
-  - |-
-    echo "☁️ Creating test GCP project..."
-    TEST_PROJECT_ID="toolkit-e2e-$BRANCH_NAME-`shuf -i 10000-99999 -n 1`"
-    echo $$TEST_PROJECT_ID > /workspace/test-project-id.txt
-    gcloud projects create $$TEST_PROJECT_ID --organization=$$ORG_ID --set-as-default
-    gcloud alpha billing accounts projects link $$TEST_PROJECT_ID --billing-account=$$BILLING_ID
-    gcloud config set project $$TEST_PROJECT_ID
-    gcloud auth login --no-launch-browser --brief --update-adc
-  secretEnv: ['ORG_ID', 'BILLING_ID']
-- name: 'gcr.io/gkepoctoolkit/e2etest:latest'
-  id: test-functional-default-config
-  entrypoint: 'bash'
-  args:
-  - '-eEuo'
-  - 'pipefail'
-  - '-c'
-  - |-
-    cd /workspace/test
-    ./gkekitctl init
-    ./gkekitctl create
-- name: 'gcr.io/cloud-builders/gcloud:latest'
-  id: cleanup
-  entrypoint: 'bash'
-  args:
-  - '-eEuo'
-  - 'pipefail'
-  - '-c'
-  - |-
-    TEST_PROJECT_ID=`cat /workspace/test-project-id.txt`
-    echo "🧹 Deleting project: $$TEST_PROJECT_ID"
-    gcloud projects delete --quiet $$TEST_PROJECT_ID
+# - name: 'gcr.io/gkepoctoolkit/e2etest:latest'
+#   id: test-functional-default-config
+#   entrypoint: 'bash'
+#   args:
+#   - '-eEuo'
+#   - 'pipefail'
+#   - '-c'
+#   - |-
+#     cd /workspace/test
+#     ./gkekitctl init
+#     ./gkekitctl create
+# TODO after init, change the repo + branch to be the cloud build vars
+# TODO need to make sure we clean up the project no matter what. ("finally")
+# - name: 'gcr.io/cloud-builders/gcloud:latest'
+#   id: cleanup
+#   entrypoint: 'bash'
+#   args:
+#   - '-eEuo'
+#   - 'pipefail'
+#   - '-c'
+#   - |-
+#     TEST_PROJECT_ID=`cat /workspace/test-project-id.txt`
+#     echo "🧹 Deleting project: $$TEST_PROJECT_ID"
+#     gcloud projects delete --quiet $$TEST_PROJECT_ID
 availableSecrets:
   secretManager:
   - versionName: projects/${PROJECT_ID}/secrets/org-id/versions/latest
