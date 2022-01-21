@@ -46,19 +46,19 @@ module "firewall_rules" {
 }
 
 // Install gateway api crds on each cluster
-resource "null_resource" "exec_gke_mesh" {
-  for_each = var.cluster_config
-  provisioner "local-exec" {
-    interpreter = ["bash", "-exc"]
-    command     = "${path.module}/scripts/install_crds.sh"
-    environment = {
-      CLUSTER    = each.key
-      LOCATION   = each.value.region
-      PROJECT    = var.project_id
-      GATEWAY_API_VERSION = var.gateway_crds_version
-    }
-  }
-}
+# resource "null_resource" "exec_gke_mesh" {
+#   for_each = var.cluster_config
+#   provisioner "local-exec" {
+#     interpreter = ["bash", "-exc"]
+#     command     = "${path.module}/scripts/install_crds.sh"
+#     environment = {
+#       CLUSTER    = each.key
+#       LOCATION   = each.value.region
+#       PROJECT    = var.project_id
+#       GATEWAY_API_VERSION = var.gateway_crds_version
+#     }
+#   }
+# }
 
 // enable Multi-cluster service discovery
 resource "google_gke_hub_feature" "mcs" {
