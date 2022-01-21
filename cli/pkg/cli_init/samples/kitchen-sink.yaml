@@ -11,6 +11,7 @@ enableWorkloadIdentity: true
 enableWindowsNodepool: true 
 enablePreemptibleNodepool: true # Enforced on Linux Node pools only
 tfModuleRepo: "github.com/GoogleCloudPlatform/gke-poc-toolkit//terraform/modules/"
+tfModuleBranch: "main"
 sendAnalytics: false
 vpcConfig:
   vpcName: "default"
