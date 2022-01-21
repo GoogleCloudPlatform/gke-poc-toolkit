@@ -8,7 +8,7 @@ steps:
   - '-c'
   - |-
     echo "☁️ Creating test GCP project..."
-    echo "REPO NAME: ${REPO_NAME}, HEAD REPO URL: ${HEAD_REPO_URL}"
+    echo "REPO NAME: ${REPO_NAME}"
     TIMESTAMP=`date "+%m%d%y-%H%M%S"`
     TEST_PROJECT_ID="gpt-$BRANCH_NAME-$TIMESTAMP"
     echo $$TEST_PROJECT_ID
