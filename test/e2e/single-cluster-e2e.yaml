@@ -17,7 +17,7 @@ steps:
     gcloud alpha billing accounts projects link $$TEST_PROJECT_ID --billing-account=$$BILLING_ID
     gcloud config set project $$TEST_PROJECT_ID
     gcloud auth login --no-launch-browser --brief --update-adc
-  secretEnv: ['ORG_ID', 'BILLING_ID']
+  secretEnv: ['FOLDER_ID', 'BILLING_ID']
 # TODO - add golang and terraform linting    
 # - name: 'gcr.io/gkepoctoolkit/e2etest:latest'
 #   id: test-compile
