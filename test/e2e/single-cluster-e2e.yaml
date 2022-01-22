@@ -8,12 +8,13 @@ steps:
   - '-c'
   - |-
     echo "Creating test GCP project..."
+    echo `gcloud config list account --format "value(core.account)"`
     echo "REPO NAME: ${REPO_NAME}"
     TIMESTAMP=`date "+%m%d%y-%H%M%S"`
     TEST_PROJECT_ID="gpt-$BRANCH_NAME-$$TIMESTAMP"
     echo $$TEST_PROJECT_ID
     echo $$TEST_PROJECT_ID > /workspace/test-project-id.txt
-    gcloud projects create $$TEST_PROJECT_ID --folder="$$FOLDER_ID" --set-as-default
+    gcloud projects create $$TEST_PROJECT_ID --folder="$$FOLDER_ID" 
     gcloud alpha billing accounts projects link $$TEST_PROJECT_ID --billing-account=$$BILLING_ID
     gcloud config set project $$TEST_PROJECT_ID
     gcloud auth login --no-launch-browser --brief --update-adc
