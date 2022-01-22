@@ -12,7 +12,7 @@ steps:
     echo $$TEST_PROJECT_ID > /workspace/test-project-id.txt
     gcloud projects create $$TEST_PROJECT_ID --folder="$$FOLDER_ID" 
     gcloud projects add-iam-policy-binding $$TEST_PROJECT_ID --member=serviceAccount:152393131587@cloudbuild.gserviceaccount.com --role=roles/owner
-    gcloud services enable cloudbilling.googleapis.com compute.googleapis.com --project=$$TEST_PROJECT_ID
+    gcloud services enable cloudbilling.googleapis.com --project=$$TEST_PROJECT_ID
     gcloud alpha billing projects link $$TEST_PROJECT_ID --billing-account $$BILLING_ID
   secretEnv: ['FOLDER_ID', 'BILLING_ID']  
 - name: 'gcr.io/cloud-builders/gcloud:latest'
@@ -24,6 +24,7 @@ steps:
   - '-c'
   - |-
     TEST_PROJECT_ID=$(cat "/workspace/test-project-id.txt")
+    gcloud serivces enable compute.googleapis.com --project=$$TEST_PROJECT_ID
     gcloud compute instances create test-host --project=$$TEST_PROJECT_ID --zone=us-central1-a --machine-type=e2-standard-2 --network-interface=network-tier=PREMIUM,subnet=default --scopes=https://www.googleapis.com/auth/cloud-platform 
     gcloud compute firewall-rules create --project=$$TEST_PROJECT_ID --network=default default-allow-ssh --allow=tcp:22
     gcloud compute ssh test-host --project=$$TEST_PROJECT_ID --zone=us-central1-a
