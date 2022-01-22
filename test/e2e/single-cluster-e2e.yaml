@@ -23,9 +23,9 @@ steps:
   - 'pipefail'
   - '-c'
   - |-
+    TEST_PROJECT_ID=$(cat "/workspace/test-project-id.txt")
     gcloud compute instances create test-host --project=$$TEST_PROJECT_ID --zone=us-central1-a --machine-type=e2-standard-2 --network-interface=network-tier=PREMIUM,subnet=default --scopes=https://www.googleapis.com/auth/cloud-platform 
     gcloud compute firewall-rules create --project=$$TEST_PROJECT_ID --network=default default-allow-ssh --allow=tcp:22
-    TEST_PROJECT_ID=$(cat "/workspace/test-project-id.txt")
     gcloud compute ssh test-host --project=$$TEST_PROJECT_ID --zone=us-central1-a
     gcloud config list 
     gcloud compute instances list 
