@@ -16,7 +16,7 @@ steps:
     echo $$TEST_PROJECT_ID > /workspace/test-project-id.txt
     gcloud projects create $$TEST_PROJECT_ID --folder="$$FOLDER_ID" 
     echo "Project created. Granting Cloud Build project owner role on test project..."
-    gcloud projects add-iam-policy-binding $$TEST_PROJECT --member=serviceAccount:152393131587@cloudbuild.gserviceaccount.com --role=roles/owner
+    gcloud projects add-iam-policy-binding $$TEST_PROJECT_ID --member=serviceAccount:152393131587@cloudbuild.gserviceaccount.com --role=roles/owner
     echo "Enabling billing API..."
     gcloud services enable cloudbilling.googleapis.com --project=$$TEST_PROJECT_ID
     echo "Linking billing account..."
