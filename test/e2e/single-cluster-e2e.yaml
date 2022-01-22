@@ -7,7 +7,7 @@ steps:
   - 'pipefail'
   - '-c'
   - |-
-    echo "☁️ Creating test GCP project..."
+    echo "Creating test GCP project..."
     echo "REPO NAME: ${REPO_NAME}"
     TIMESTAMP=`date "+%m%d%y-%H%M%S"`
     TEST_PROJECT_ID="gpt-$BRANCH_NAME-$$TIMESTAMP"
