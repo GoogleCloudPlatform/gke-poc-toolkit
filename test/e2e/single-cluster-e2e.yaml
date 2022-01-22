@@ -10,7 +10,7 @@ steps:
     echo "☁️ Creating test GCP project..."
     echo "REPO NAME: ${REPO_NAME}"
     TIMESTAMP=`date "+%m%d%y-%H%M%S"`
-    TEST_PROJECT_ID="gpt-$BRANCH_NAME-$TIMESTAMP"
+    TEST_PROJECT_ID="gpt-$BRANCH_NAME-$$TIMESTAMP"
     echo $$TEST_PROJECT_ID
     echo $$TEST_PROJECT_ID > /workspace/test-project-id.txt
     gcloud projects create $$TEST_PROJECT_ID --organization=$$ORG_ID --folder="gkepoctoolkit-test" --set-as-default
