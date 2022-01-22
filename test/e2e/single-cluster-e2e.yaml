@@ -48,13 +48,16 @@ steps:
   - '-c'
   - |-
     cd /workspace/test
-    f="samples/default-config.yaml"
-    sed "s/tfModuleRepo.*/tfModuleRepo: $REPO_NAME/g" $$f > $$f
-    sed "s/tfModuleRepo.*/tfModuleRepo: $BRANCH_NAME/g" $$f > $$f
-    cat $$f
+    echo "Replacing tfModuleRepo ($REPO_NAME) and tfModuleBranch ($BRANCH_NAME)..."
+    CONFIG="samples/default-config.yaml"
+    sed "s/tfModuleRepo.*/tfModuleRepo: $REPO_NAME/g" $$CONFIG > $$CONFIG
+    sed "s/tfModuleRepo.*/tfModuleRepo: $BRANCH_NAME/g" $$CONFIG > $$CONFIG
+    echo "Done with sed-- config is now:"
+    cat $$CONFIG
     TEST_PROJECT_ID=$(cat "/workspace/test-project-id.txt")
     gcloud config set project $$TEST_PROJECT_ID
-    gcloud auth application-default login
+    gcloud auth login --no-launch-browser
+    gcloud auth application-default login --quiet 
     ./gkekitctl create --config samples/default-config.yaml
 availableSecrets:
   secretManager:
