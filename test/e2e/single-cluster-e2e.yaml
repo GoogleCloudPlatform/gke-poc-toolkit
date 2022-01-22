@@ -16,6 +16,7 @@ steps:
     echo $$TEST_PROJECT_ID > /workspace/test-project-id.txt
     gcloud projects create $$TEST_PROJECT_ID --folder="$$FOLDER_ID" 
     gcloud services enable cloudbilling.googleapis.com
+    echo "Billing ID: $$BILLING_ID"
     gcloud beta billing projects link $$TEST_PROJECT_ID --billing-account=$$BILLING_ID
   secretEnv: ['FOLDER_ID', 'BILLING_ID']
 # TODO - add golang and terraform linting    
