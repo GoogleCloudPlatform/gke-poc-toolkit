@@ -1,67 +1,64 @@
 steps:
 - name: 'gcr.io/cloud-builders/gcloud:latest'
-  id: project-setup
+  id: create-test-project
   entrypoint: 'bash'
   args:
   - '-eEuo'
   - 'pipefail'
   - '-c'
   - |-
-    echo "Creating test GCP project..."
-    echo `gcloud config list account --format "value(core.account)"`
-    echo "REPO NAME: ${REPO_NAME}"
     TIMESTAMP=`date "+%m%d%y-%H%M%S"`
     TEST_PROJECT_ID="gpt-$BRANCH_NAME-$$TIMESTAMP"
-    echo $$TEST_PROJECT_ID
     echo $$TEST_PROJECT_ID > /workspace/test-project-id.txt
     gcloud projects create $$TEST_PROJECT_ID --folder="$$FOLDER_ID" 
-    echo "Project created. Granting Cloud Build project owner role on test project..."
     gcloud projects add-iam-policy-binding $$TEST_PROJECT_ID --member=serviceAccount:152393131587@cloudbuild.gserviceaccount.com --role=roles/owner
-    echo "Enabling billing API..."
     gcloud services enable cloudbilling.googleapis.com --project=$$TEST_PROJECT_ID
-    echo "Linking billing account..."
     gcloud alpha billing projects link $$TEST_PROJECT_ID --billing-account $$BILLING_ID
-  secretEnv: ['FOLDER_ID', 'BILLING_ID']
-# TODO - add golang and terraform linting    
+  secretEnv: ['FOLDER_ID', 'BILLING_ID']   
+- name: 'gcr.io/gkepoctoolkit/e2etest:latest'
+  id: compile
+  entrypoint: 'bash'
+  args:
+  - '-eEuo'
+  - 'pipefail'
+  - '-c'
+  - |-
+    cd cli
+    go build
+    mkdir -p /workspace/test 
+    cp ./gkekitctl /workspace/test
+    cd /workspace/test 
+    chmod +x ./gkekitctl
+- name: 'gcr.io/gkepoctoolkit/e2etest:latest'
+  id: gkekitctl-init
+  entrypoint: 'bash'
+  args:
+  - '-eEuo'
+  - 'pipefail'
+  - '-c'
+  - |-
+    TEST_PROJECT_ID=$(cat "/workspace/test-project-id.txt")
+    echo $$TEST_PROJECT_ID
+    cd /workspace/test
+    ./gkekitctl init
+    f="samples/default-config.yaml"
+    sed "s/tfModuleRepo.*/tfModuleRepo: $REPO_NAME/g" $$f > $$f
+    sed "s/tfModuleRepo.*/tfModuleRepo: $BRANCH_NAME/g" $$f > $$f
+    cat $$f
 # - name: 'gcr.io/gkepoctoolkit/e2etest:latest'
-#   id: test-compile
+#   id: gkekitctl-create
 #   entrypoint: 'bash'
 #   args:
 #   - '-eEuo'
 #   - 'pipefail'
 #   - '-c'
 #   - |-
-#     echo "📦 Building gkekitctl..."
-#     cd cli
-#     go build
-#     mkdir -p /workspace/test 
-#     cp ./gkekitctl /workspace/test
-#     cd /workspace/test 
-#     chmod +x ./gkekitctl
-# - name: 'gcr.io/gkepoctoolkit/e2etest:latest'
-#   id: test-functional-default-config
-#   entrypoint: 'bash'
-#   args:
-#   - '-eEuo'
-#   - 'pipefail'
-#   - '-c'
-#   - |-
+#     TEST_PROJECT_ID=$(cat "/workspace/test-project-id.txt")
 #     cd /workspace/test
-#     ./gkekitctl init
-#     ./gkekitctl create
-# TODO after init, change the repo + branch to be the cloud build vars
-# TODO need to make sure we clean up the project no matter what. ("finally")
-# - name: 'gcr.io/cloud-builders/gcloud:latest'
-#   id: cleanup
-#   entrypoint: 'bash'
-#   args:
-#   - '-eEuo'
-#   - 'pipefail'
-#   - '-c'
-#   - |-
-#     TEST_PROJECT_ID=`cat /workspace/test-project-id.txt`
-#     echo "🧹 Deleting project: $$TEST_PROJECT_ID"
-#     gcloud projects delete --quiet $$TEST_PROJECT_ID
+#     gcloud config set project $$TEST_PROJECT_ID
+#     gcloud auth login --no-launch-browser
+#     gcloud auth application-default login
+#     ./gkekitctl create --config samples/default-config.yaml
 availableSecrets:
   secretManager:
   - versionName: projects/${PROJECT_ID}/secrets/folder-id/versions/latest
