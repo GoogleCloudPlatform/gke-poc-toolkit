@@ -72,17 +72,17 @@ steps:
     echo "Replacing tfModuleBranch ($$BRANCH_NAME)..."
     sed 's|.*tfModuleBranch.*|tfModuleBranch: '"$$BRANCH_NAME"'|' default-config-1.yaml > default-config-2.yaml
 
-    sed 's|.*clustersProjectId.*|clustersProjectId: '"$TEST_PROJECT_ID"'|' default-config-2.yaml > default-config-3.yaml
+    sed 's|.*clustersProjectId.*|clustersProjectId: '"$$TEST_PROJECT_ID"'|' default-config-2.yaml > default-config-3.yaml
 
-    sed 's|.*governanceProjectId.*|governanceProjectId: '"$TEST_PROJECT_ID"'|' default-config-3.yaml > default-config-4.yaml
+    sed 's|.*governanceProjectId.*|governanceProjectId: '"$$TEST_PROJECT_ID"'|' default-config-3.yaml > default-config-4.yaml
 
-    sed 's|.*vpcProjectId.*|  vpcProjectId: '"$TEST_PROJECT_ID"'|' default-config-4.yaml > default-config-5.yaml
+    sed 's|.*vpcProjectId.*|  vpcProjectId: '"$$TEST_PROJECT_ID"'|' default-config-4.yaml > default-config-5.yaml
 
     rm -r default-config-1.yaml
     rm -r default-config-2.yaml
     rm -r default-config-3.yaml
     rm -r default-config-4.yaml
-
+    echo "Final config for testing..."
     cat samples/default-config-5.yaml
 - name: 'gcr.io/gkepoctoolkit/e2etest:latest'
   id: test-gkekitctl-create
