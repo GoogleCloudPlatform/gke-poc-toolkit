@@ -167,7 +167,7 @@ func WaitForNamespace(k8s *kubernetes.Clientset, ctx context.Context, nameSpace 
 		log.Infof("%s is ready on cluster: %s", ns, clusterName)
 
 	} else if err != nil {
-		return fmt.Errorf("%s namespace on cluster=%s: %v", nameSpace, clusterName, err)
+		return fmt.Errorf("%s namespace on cluster=%s: %w", nameSpace, clusterName, err)
 	}
 	log.Infof("%s is ready on cluster: %s", ns, clusterName)
 	return nil
