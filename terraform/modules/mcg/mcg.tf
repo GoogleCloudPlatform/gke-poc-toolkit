@@ -54,7 +54,7 @@ resource "null_resource" "exec_gke_mesh" {
     environment = {
       CLUSTER    = each.key
       LOCATION   = each.value.region
-      PROJECT    = var.project_id
+      PROJECT_ID    = var.project_id
       GATEWAY_API_VERSION = var.gateway_crds_version
     }
   }
