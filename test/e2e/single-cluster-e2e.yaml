@@ -41,9 +41,9 @@ steps:
   - '-c'
   - |-
     TEST_PROJECT_ID=$(cat "/workspace/test-project-id.txt")
-    gcloud compute ssh test-host --project=$$TEST_PROJECT_ID --zone=us-central1-a
-    git clone $REPO_NAME -b $BRANCH_NAME
-    cd gkepoctoolkit/cli
+    pwd 
+    ls
+    cd cli
     go build
     mkdir -p /workspace/test 
     cp ./gkekitctl /workspace/test
