@@ -62,13 +62,11 @@ steps:
   - |-
     cd /workspace/test
     ./gkekitctl init
-    cat samples/default-config.yaml
-    echo "Replacing tfModuleRepo ($REPO_NAME) and tfModuleBranch ($BRANCH_NAME)..."
-    CONFIG="samples/default-config.yaml"
-    sed "s/tfModuleRepo.*/tfModuleRepo: $REPO_NAME/g" $$CONFIG > $$CONFIG
-    sed "s/tfModuleRepo.*/tfModuleRepo: $BRANCH_NAME/g" $$CONFIG > $$CONFIG
-    echo "Done with sed-- config is now:"
-    cat $$CONFIG
+  # echo "Replacing tfModuleRepo ($REPO_NAME) and tfModuleBranch ($BRANCH_NAME)..."
+  # sed "s/tfModuleRepo.*/tfModuleRepo: $REPO_NAME/g" samples/default-config.yaml > samples/default-config.yaml
+  # sed "s/tfModuleRepo.*/tfModuleRepo: $BRANCH_NAME/g" samples/default-config.yaml > samples/default-config.yaml
+  # echo "Done with sed-- config is now:"
+  # cat samples/default-config.yaml
 - name: 'gcr.io/gkepoctoolkit/e2etest:latest'
   id: test-gkekitctl-create
   entrypoint: 'bash'
@@ -80,6 +78,7 @@ steps:
     cd /workspace/test
     TEST_PROJECT_ID=$(cat "/workspace/test-project-id.txt")
     gcloud config set project $$TEST_PROJECT_ID
+    gcloud auth list
     ./gkekitctl create --config samples/default-config.yaml
 availableSecrets:
   secretManager:
