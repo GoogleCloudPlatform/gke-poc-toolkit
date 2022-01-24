@@ -35,6 +35,7 @@ steps:
     gcloud auth list
     gcloud services enable iam.googleapis.com
     gcloud iam service-accounts list
+    gcloud compute instances create test --project=$$TEST_PROJECT_ID --zone=us-central1-a --machine-type=e2-medium --network-interface=network-tier=PREMIUM,subnet=default 
 # - name: 'gcr.io/gkepoctoolkit/e2etest:latest'
 #   id: test-cli-compile
 #   entrypoint: 'bash'
@@ -74,7 +75,6 @@ steps:
 #     TEST_PROJECT_ID=$(cat "/workspace/test-project-id.txt")
 #     gcloud config set project $$TEST_PROJECT_ID
 #     gcloud auth list
-#     gcloud iam service-accounts list
 #     cat samples/default-config.yaml
 #     echo "Replacing tfModuleRepo ($REPO_NAME) and tfModuleBranch ($BRANCH_NAME)..."
 #     CONFIG="samples/default-config.yaml"
