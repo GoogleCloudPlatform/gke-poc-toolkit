@@ -46,19 +46,19 @@ module "firewall_rules" {
 }
 
 // Install gateway api crds on each cluster
-# resource "null_resource" "exec_gke_mesh" {
-#   for_each = var.cluster_config
-#   provisioner "local-exec" {
-#     interpreter = ["bash", "-exc"]
-#     command     = "${path.module}/scripts/install_crds.sh"
-#     environment = {
-#       CLUSTER    = each.key
-#       LOCATION   = each.value.region
-#       PROJECT    = var.project_id
-#       GATEWAY_API_VERSION = var.gateway_crds_version
-#     }
-#   }
-# }
+resource "null_resource" "exec_gke_mesh" {
+  for_each = var.cluster_config
+  provisioner "local-exec" {
+    interpreter = ["bash", "-exc"]
+    command     = "${path.module}/scripts/install_crds.sh"
+    environment = {
+      CLUSTER    = each.key
+      LOCATION   = each.value.region
+      PROJECT    = var.project_id
+      GATEWAY_API_VERSION = var.gateway_crds_version
+    }
+  }
+}
 
 // enable Multi-cluster service discovery
 resource "google_gke_hub_feature" "mcs" {
@@ -69,20 +69,20 @@ resource "google_gke_hub_feature" "mcs" {
 }
 
 // enable Multi-cluster Ingress(also gateway) project wide
-# resource "google_gke_hub_feature" "mci" {
-#   depends_on = [
-#     null_resource.exec_gke_mesh,
-#   ]
-#   name = "multiclusteringress"
-#   location = "global"
-#   project  = var.project_id
-#   spec {
-#     multiclusteringress {
-#       config_membership = "projects/${var.project_id}/locations/global/memberships/${keys(var.cluster_config)[0]}-membership"
-#     }
-#   }
-#   provider = google-beta
-# }
+resource "google_gke_hub_feature" "mci" {
+  depends_on = [
+    null_resource.exec_gke_mesh,
+  ]
+  name = "multiclusteringress"
+  location = "global"
+  project  = var.project_id
+  spec {
+    multiclusteringress {
+      config_membership = "projects/${var.project_id}/locations/global/memberships/${keys(var.cluster_config)[0]}-membership"
+    }
+  }
+  provider = google-beta
+}
 
 // Create IAM binding allowing the hub project's GKE Hub service account access to the registered member project
 resource "google_project_iam_binding" "gkehub-serviceagent" {
@@ -122,13 +122,13 @@ resource "google_project_iam_binding" "network-viewer-member" {
   ]
 }
 
-# resource "google_project_iam_binding" "container-admin-mcgsa" {
-#   role    = "roles/container.admin"
-#   project = var.project_id
-#   depends_on = [
-#     resource.google_gke_hub_feature.mci,
-#   ]
-#   members = [
-#     "serviceAccount:service-${data.google_project.project.number}@gcp-sa-multiclusteringress.iam.gserviceaccount.com",
-#   ]
-# }
+resource "google_project_iam_binding" "container-admin-mcgsa" {
+  role    = "roles/container.admin"
+  project = var.project_id
+  depends_on = [
+    resource.google_gke_hub_feature.mci,
+  ]
+  members = [
+    "serviceAccount:service-${data.google_project.project.number}@gcp-sa-multiclusteringress.iam.gserviceaccount.com",
+  ]
+}
