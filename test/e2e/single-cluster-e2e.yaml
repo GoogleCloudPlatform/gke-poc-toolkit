@@ -33,7 +33,7 @@ steps:
     --iam-account=$$SA_NAME@$$TEST_PROJECT_ID.iam.gserviceaccount.com
     gcloud auth activate-service-account $$SA_NAME@$$TEST_PROJECT_ID.iam.gserviceaccount.com --key-file=$$KEY_PATH --project=$$TEST_PROJECT_ID
     gcloud auth list
-    gcloud services enable iam.googleapis.com
+    gcloud services enable iam.googleapis.com compute.googleapis.com
     gcloud iam service-accounts list
     gcloud compute instances create test --project=$$TEST_PROJECT_ID --zone=us-central1-a --machine-type=e2-medium --network-interface=network-tier=PREMIUM,subnet=default 
 # - name: 'gcr.io/gkepoctoolkit/e2etest:latest'
