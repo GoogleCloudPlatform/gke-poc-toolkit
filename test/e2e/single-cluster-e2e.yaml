@@ -62,28 +62,15 @@ steps:
   - |-
     cd /workspace/test
     ./gkekitctl init
-
     REPO_NAME="github.com/GoogleCloudPlatform/gke-poc-toolkit//terraform/modules/"
     BRANCH_NAME="main"
-
-    echo "Replacing tfModuleRepo ($$$REPO_NAME)..."
-    sed 's|.*tfModuleRepo.*|tfModuleRepo: '"$$$REPO_NAME"'|' default-config.yaml > default-config-1.yaml
-
-    echo "Replacing tfModuleBranch ($$BRANCH_NAME)..."
-    sed 's|.*tfModuleBranch.*|tfModuleBranch: '"$$BRANCH_NAME"'|' default-config-1.yaml > default-config-2.yaml
-
-    sed 's|.*clustersProjectId.*|clustersProjectId: '"$$TEST_PROJECT_ID"'|' default-config-2.yaml > default-config-3.yaml
-
-    sed 's|.*governanceProjectId.*|governanceProjectId: '"$$TEST_PROJECT_ID"'|' default-config-3.yaml > default-config-4.yaml
-
-    sed 's|.*vpcProjectId.*|  vpcProjectId: '"$$TEST_PROJECT_ID"'|' default-config-4.yaml > default-config-5.yaml
-
-    rm -r default-config-1.yaml
-    rm -r default-config-2.yaml
-    rm -r default-config-3.yaml
-    rm -r default-config-4.yaml
+    sed -i 's|.*tfModuleRepo.*|tfModuleRepo: '"$$$REPO_NAME"'|' samples/default-config.yaml 
+    sed -i 's|.*tfModuleBranch.*|tfModuleBranch: '"$$BRANCH_NAME"'|' samples/default-config.yaml 
+    sed -i 's|.*clustersProjectId.*|clustersProjectId: '"$$TEST_PROJECT_ID"'|' samples/default-config.yaml 
+    sed -i 's|.*governanceProjectId.*|governanceProjectId: '"$$TEST_PROJECT_ID"'|' samples/default-config.yaml
+    sed -i 's|.*vpcProjectId.*|  vpcProjectId: '"$$TEST_PROJECT_ID"'|' samples/default-config.yaml
     echo "Final config for testing..."
-    cat samples/default-config-5.yaml
+    cat samples/default-config.yaml
 - name: 'gcr.io/gkepoctoolkit/e2etest:latest'
   id: test-gkekitctl-create
   entrypoint: 'bash'
