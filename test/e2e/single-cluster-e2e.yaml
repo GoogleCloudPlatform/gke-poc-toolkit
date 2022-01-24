@@ -32,53 +32,56 @@ steps:
     gcloud iam service-accounts keys create $$KEY_PATH \
     --iam-account=$$SA_NAME@$$TEST_PROJECT_ID.iam.gserviceaccount.com
     gcloud auth activate-service-account $$SA_NAME@$$TEST_PROJECT_ID.iam.gserviceaccount.com --key-file=$$KEY_PATH --project=$$TEST_PROJECT_ID
-- name: 'gcr.io/gkepoctoolkit/e2etest:latest'
-  id: test-cli-compile
-  entrypoint: 'bash'
-  args:
-  - '-eEuo'
-  - 'pipefail'
-  - '-c'
-  - |-
-    TEST_PROJECT_ID=$(cat "/workspace/test-project-id.txt")
-    pwd 
-    ls
-    cd cli
-    go build
-    mkdir -p /workspace/test 
-    cp ./gkekitctl /workspace/test
-    cd /workspace/test 
-    chmod +x ./gkekitctl
-- name: 'gcr.io/gkepoctoolkit/e2etest:latest'
-  id: test-gkekitctl-init
-  entrypoint: 'bash'
-  args:
-  - '-eEuo'
-  - 'pipefail'
-  - '-c'
-  - |-
-    cd /workspace/test
-    ./gkekitctl init
-- name: 'gcr.io/gkepoctoolkit/e2etest:latest'
-  id: test-gkekitctl-create
-  entrypoint: 'bash'
-  args:
-  - '-eEuo'
-  - 'pipefail'
-  - '-c'
-  - |-
-    cd /workspace/test
-    ls 
-    echo "Replacing tfModuleRepo ($REPO_NAME) and tfModuleBranch ($BRANCH_NAME)..."
-    CONFIG="samples/default-config.yaml"
-    sed "s/tfModuleRepo.*/tfModuleRepo: $REPO_NAME/g" $$CONFIG > $$CONFIG
-    sed "s/tfModuleRepo.*/tfModuleRepo: $BRANCH_NAME/g" $$CONFIG > $$CONFIG
-    echo "Done with sed-- config is now:"
-    cat $$CONFIG
-    TEST_PROJECT_ID=$(cat "/workspace/test-project-id.txt")
-    gcloud config set project $$TEST_PROJECT_ID
     gcloud auth list
-    ./gkekitctl create --config samples/default-config.yaml
+    gcloud iam service-accounts list
+# - name: 'gcr.io/gkepoctoolkit/e2etest:latest'
+#   id: test-cli-compile
+#   entrypoint: 'bash'
+#   args:
+#   - '-eEuo'
+#   - 'pipefail'
+#   - '-c'
+#   - |-
+#     TEST_PROJECT_ID=$(cat "/workspace/test-project-id.txt")
+#     pwd 
+#     ls
+#     cd cli
+#     go build
+#     mkdir -p /workspace/test 
+#     cp ./gkekitctl /workspace/test
+#     cd /workspace/test 
+#     chmod +x ./gkekitctl
+# - name: 'gcr.io/gkepoctoolkit/e2etest:latest'
+#   id: test-gkekitctl-init
+#   entrypoint: 'bash'
+#   args:
+#   - '-eEuo'
+#   - 'pipefail'
+#   - '-c'
+#   - |-
+#     cd /workspace/test
+#     ./gkekitctl init
+# - name: 'gcr.io/gkepoctoolkit/e2etest:latest'
+#   id: test-gkekitctl-create
+#   entrypoint: 'bash'
+#   args:
+#   - '-eEuo'
+#   - 'pipefail'
+#   - '-c'
+#   - |-
+#     cd /workspace/test
+#     TEST_PROJECT_ID=$(cat "/workspace/test-project-id.txt")
+#     gcloud config set project $$TEST_PROJECT_ID
+#     gcloud auth list
+#     gcloud iam service-accounts list
+#     cat samples/default-config.yaml
+#     echo "Replacing tfModuleRepo ($REPO_NAME) and tfModuleBranch ($BRANCH_NAME)..."
+#     CONFIG="samples/default-config.yaml"
+#     sed "s/tfModuleRepo.*/tfModuleRepo: $REPO_NAME/g" $$CONFIG > $$CONFIG
+#     sed "s/tfModuleRepo.*/tfModuleRepo: $BRANCH_NAME/g" $$CONFIG > $$CONFIG
+#     echo "Done with sed-- config is now:"
+#     cat $$CONFIG
+#     ./gkekitctl create --config samples/default-config.yaml
 availableSecrets:
   secretManager:
   - versionName: projects/${PROJECT_ID}/secrets/folder-id/versions/latest
