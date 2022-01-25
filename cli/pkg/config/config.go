@@ -54,6 +54,7 @@ type Config struct {
 	EnablePreemptibleNodepool bool            `yaml:"enablePreemptibleNodepool"`
 	DefaultNodepoolOS         string          `yaml:"defaultNodepoolOS"`
 	MultiClusterGateway       bool            `yaml:"multiClusterGateway"`
+	AnthosServiceMesh         bool            `yaml:"anthosServiceMesh"`
 	TFModuleRepo              string          `yaml:"tfModuleRepo"`
 	VpcConfig                 VpcConfig       `yaml:"vpcConfig"`
 	ClustersConfig            []ClusterConfig `yaml:"clustersConfig"`
