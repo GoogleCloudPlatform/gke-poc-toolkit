@@ -44,6 +44,7 @@ func GenerateTfvars(conf *Config) {
 	vars["EnableWindowsNodepool"] = conf.EnableWindowsNodepool
 	vars["EnablePreemptibleNodepool"] = conf.EnablePreemptibleNodepool
 	vars["MultiClusterGateway"] = conf.MultiClusterGateway
+	vars["AnthosServiceMesh"] = conf.AnthosServiceMesh
 	vars["TFModuleRepo"] = conf.TFModuleRepo
 
 	// Set vpc config vars

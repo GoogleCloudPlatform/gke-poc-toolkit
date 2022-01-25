@@ -155,19 +155,19 @@ func WaitForNamespace(k8s *kubernetes.Clientset, ctx context.Context, nameSpace 
 	ns, err := k8s.CoreV1().Namespaces().Get(ctx, "config-management-system", metav1.GetOptions{})
 	timeout := int64(120)
 	if clientgo.IsNotFound(err) {
-		log.Infof("%s is not ready on cluster=%s: %v", nameSpace, clusterName, err)
+		log.Infof("%s was not found on cluster=%s: %v", nameSpace, clusterName, err)
 		ns, err := k8s.CoreV1().Namespaces().Watch(ctx, metav1.ListOptions{
 			FieldSelector:  "metadata.name=" + nameSpace,
 			Watch:          true,
 			TimeoutSeconds: &timeout,
 		})
 		if err != nil {
-			return fmt.Errorf("failed to watch namespace %s on cluster=%s: %v", nameSpace, clusterName, err)
+			return fmt.Errorf("failed watch on namespace %s on cluster=%s: %v", nameSpace, clusterName, err)
 		}
 		log.Infof("%s is ready on cluster: %s", ns, clusterName)
 
 	} else if err != nil {
-		return fmt.Errorf("%s namespace on cluster=%s: %v", nameSpace, clusterName, err)
+		return fmt.Errorf("%s namespace on cluster=%s: %w", nameSpace, clusterName, err)
 	}
 	log.Infof("%s is ready on cluster: %s", ns, clusterName)
 	return nil

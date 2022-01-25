@@ -11,6 +11,7 @@ enableWorkloadIdentity: true
 enableWindowsNodepool: false 
 enablePreemptibleNodepool: false # Enforced on Linux Node pools only
 multiClusterGateway: true
+anthosServiceMesh: false
 tfModuleRepo: "github.com/GoogleCloudPlatform/gke-poc-toolkit//terraform/modules/"
 vpcConfig:
   vpcName: "default"
@@ -37,10 +38,10 @@ clustersConfig:  # a list of one or more clusters, each with their own config
   machineType: "e2-standard-4"
   region: "us-east1" 
   zone: "us-east1-b"
-  subnetName: "us-east1"
+  subnetName: "us-east2"
 - clusterName: "gke-ingress"
   numNodes: 3 
   machineType: "e2-standard-4"
   region: "us-east1" 
   zone: "us-east1-b"
-  subnetName: "us-east1"
+  subnetName: "us-east3"

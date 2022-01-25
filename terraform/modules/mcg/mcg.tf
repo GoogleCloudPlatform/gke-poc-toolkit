@@ -10,6 +10,9 @@ variable "cluster_config" {
 }
 variable "vpc_name" {
 }
+variable "gateway_crds_version" {
+  default = "v0.3.0"     
+}
 
 data "google_project" "project" {
   project_id = var.project_id
@@ -42,6 +45,21 @@ module "firewall_rules" {
   }]
 }
 
+// Install gateway api crds on each cluster
+resource "null_resource" "exec_gke_mesh" {
+  for_each = var.cluster_config
+  provisioner "local-exec" {
+    interpreter = ["bash", "-exc"]
+    command     = "${path.module}/scripts/install_crds.sh"
+    environment = {
+      CLUSTER    = each.key
+      LOCATION   = each.value.region
+      PROJECT_ID    = var.project_id
+      GATEWAY_API_VERSION = var.gateway_crds_version
+    }
+  }
+}
+
 // enable Multi-cluster service discovery
 resource "google_gke_hub_feature" "mcs" {
   name = "multiclusterservicediscovery"
@@ -52,6 +70,9 @@ resource "google_gke_hub_feature" "mcs" {
 
 // enable Multi-cluster Ingress(also gateway) project wide
 resource "google_gke_hub_feature" "mci" {
+  depends_on = [
+    null_resource.exec_gke_mesh,
+  ]
   name = "multiclusteringress"
   location = "global"
   project  = var.project_id

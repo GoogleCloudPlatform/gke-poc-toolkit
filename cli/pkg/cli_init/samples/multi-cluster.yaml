@@ -11,6 +11,7 @@ enableWorkloadIdentity: true
 enableWindowsNodepool: false 
 enablePreemptibleNodepool: false # Enforced on Linux Node pools only
 multiClusterGateway: true
+anthosServiceMesh: false
 tfModuleRepo: "github.com/GoogleCloudPlatform/gke-poc-toolkit//terraform/modules/"
 sendAnalytics: false
 vpcConfig:
