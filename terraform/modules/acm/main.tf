@@ -11,11 +11,40 @@ variable "cluster_config" {
 variable "email" {
 }
 
+locals {
+  acm_service_account       = "acm_service_account"
+  acm_service_account_email = "${local.acm_service_account}@${var.project_id}.iam.gserviceaccount.com"
+}
 
 // https://registry.terraform.io/providers/hashicorp/google/latest/docs/resources/sourcerepo_repository 
 // Create 1 centralized Cloud Source Repo, that all GKE clusters will sync to  
 resource "google_sourcerepo_repository" "gke-poc-config-sync" {
   name = "gke-poc-config-sync"
+}
+
+// create ACM service account 
+module "service_accounts" {
+  source        = "terraform-google-modules/service-accounts/google"
+  version       = "~> 3.0"
+  project_id    = var.project_id
+  display_name  = "ACM service account"
+  names         = local.acm_service_account
+  project_roles = "roles/source.reader"
+}
+
+module "service_account-iam-bindings" {
+  depends_on = [
+    resource.google_gke_hub_feature_membership.feature_member,
+  ]
+  source = "terraform-google-modules/iam/google//modules/service_accounts_iam"
+
+  service_accounts = [local.acm_service_account_email]
+  project          = module.enabled_google_apis.project_id
+  bindings = {
+    "roles/iam.workloadIdentityUser" = [
+      "serviceAccount:${var.project_id}.svc.id.goog[config-management-system/root-reconciler]",
+    ]
+  }
 }
 
 
@@ -63,7 +92,8 @@ resource "google_gke_hub_feature_membership" "feature_member" {
         sync_repo   = "ssh://${var.email}@source.developers.google.com:2022/p/${var.project_id}/r/gke-poc-config-sync"
         policy_dir  = "/"
         sync_branch = "main"
-        secret_type = "ssh"
+        secret_type = "gcpserviceaccount"
+        gcp_service_account_email = local.acm_service_account_email
       }
       source_format = "unstructured"
     }
