@@ -28,7 +28,7 @@ module "service_accounts" {
   version       = "~> 3.0"
   project_id    = var.project_id
   display_name  = "ACM service account"
-  names         = local.acm_service_account
+  names         = [local.acm_service_account]
   project_roles = ["${var.project_id}=>roles/source.reader"]
 }
 
@@ -39,7 +39,7 @@ module "service_account-iam-bindings" {
   source = "terraform-google-modules/iam/google//modules/service_accounts_iam"
 
   service_accounts = [local.acm_service_account_email]
-  project          = module.enabled_google_apis.project_id
+  project          = var.project_id
   bindings = {
     "roles/iam.workloadIdentityUser" = [
       "serviceAccount:${var.project_id}.svc.id.goog[config-management-system/root-reconciler]",
