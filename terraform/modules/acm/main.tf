@@ -12,7 +12,7 @@ variable "email" {
 }
 
 locals {
-  acm_service_account       = "acm_service_account"
+  acm_service_account       = "acm-service-account"
   acm_service_account_email = "${local.acm_service_account}@${var.project_id}.iam.gserviceaccount.com"
 }
 
