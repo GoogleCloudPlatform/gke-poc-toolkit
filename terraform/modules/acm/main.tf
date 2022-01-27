@@ -29,7 +29,7 @@ module "service_accounts" {
   project_id    = var.project_id
   display_name  = "ACM service account"
   names         = local.acm_service_account
-  project_roles = "roles/source.reader"
+  project_roles = ["${var.project_id}=>roles/source.reader"]
 }
 
 module "service_account-iam-bindings" {
