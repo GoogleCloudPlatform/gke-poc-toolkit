@@ -33,7 +33,6 @@ steps:
     --iam-account=$$SA_NAME@$$TEST_PROJECT_ID.iam.gserviceaccount.com
     gcloud auth activate-service-account $$SA_NAME@$$TEST_PROJECT_ID.iam.gserviceaccount.com --key-file=$$KEY_PATH --project=$$TEST_PROJECT_ID
     export GOOGLE_APPLICATION_CREDENTIALS=$$KEY_PATH
-    gcloud auth application-default set-quota-project $$TEST_PROJECT_ID
     gcloud auth application-default print-access-token
     gcloud auth list
     gcloud config set project $$TEST_PROJECT_ID
@@ -92,7 +91,6 @@ steps:
     KEY_PATH="/workspace/gcloud/e2e-test.json"
     gcloud auth activate-service-account $$SA_NAME@$$TEST_PROJECT_ID.iam.gserviceaccount.com --key-file=$$KEY_PATH --project=$$TEST_PROJECT_ID
     export GOOGLE_APPLICATION_CREDENTIALS=$$KEY_PATH
-    gcloud auth application-default set-quota-project $$TEST_PROJECT_ID
     gcloud auth application-default print-access-token
     gcloud config set project $$TEST_PROJECT_ID
     gcloud auth list
