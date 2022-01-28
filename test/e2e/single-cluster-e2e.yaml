@@ -35,6 +35,7 @@ steps:
     # gcloud auth activate-service-account $$SA_NAME@$$TEST_PROJECT_ID.iam.gserviceaccount.com --key-file=$$KEY_PATH --project=$$TEST_PROJECT_ID
     gcloud auth list
     gcloud config set project $$TEST_PROJECT_ID
+    gcloud services enable compute.googleapis.com
     gcloud compute instances list
     gcloud services enable iam.googleapis.com compute.googleapis.com
     gcloud iam service-accounts list
