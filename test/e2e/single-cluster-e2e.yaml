@@ -33,6 +33,8 @@ steps:
     --iam-account=$$SA_NAME@$$TEST_PROJECT_ID.iam.gserviceaccount.com
     export GOOGLE_APPLICATION_CREDENTIALS=$$KEY_PATH
     gcloud auth activate-service-account $$SA_NAME@$$TEST_PROJECT_ID.iam.gserviceaccount.com --key-file=$$KEY_PATH --project=$$TEST_PROJECT_ID
+    ls ~/.config/gcloud 
+    cat ~/.config/gcloud/application_default_credentials.json
     gcloud auth list
     gcloud config set project $$TEST_PROJECT_ID
     gcloud services enable compute.googleapis.com
@@ -88,7 +90,7 @@ steps:
     cd /workspace/test
     TEST_PROJECT_ID=$(cat "/workspace/test-project-id.txt")
     KEY_PATH="/workspace/gcloud/e2e-test.json"
-    gcloud auth application-default login --client-id-file=$$KEY_PATH
+    export GOOGLE_APPLICATION_CREDENTIALS=$$KEY_PATH
     gcloud config set project $$TEST_PROJECT_ID
     gcloud auth list
     ./gkekitctl create --config samples/default-config.yaml
