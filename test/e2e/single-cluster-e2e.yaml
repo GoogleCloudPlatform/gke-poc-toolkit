@@ -87,6 +87,7 @@ steps:
   - '-c'
   - |-
     cd /workspace/test
+    SA_NAME="e2e-test"
     TEST_PROJECT_ID=$(cat "/workspace/test-project-id.txt")
     KEY_PATH="/workspace/gcloud/e2e-test.json"
     gcloud auth activate-service-account $$SA_NAME@$$TEST_PROJECT_ID.iam.gserviceaccount.com --key-file=$$KEY_PATH --project=$$TEST_PROJECT_ID
