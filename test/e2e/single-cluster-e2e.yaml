@@ -31,8 +31,11 @@ steps:
     gcloud projects add-iam-policy-binding $$TEST_PROJECT_ID --member="serviceAccount:$$SA_NAME@$$TEST_PROJECT_ID.iam.gserviceaccount.com" --role="roles/owner"
     gcloud iam service-accounts keys create $$KEY_PATH \
     --iam-account=$$SA_NAME@$$TEST_PROJECT_ID.iam.gserviceaccount.com
-    gcloud auth activate-service-account $$SA_NAME@$$TEST_PROJECT_ID.iam.gserviceaccount.com --key-file=$$KEY_PATH --project=$$TEST_PROJECT_ID
+    export GOOGLE_APPLICATION_CREDENTIALS=$$KEY_PATH
+    # gcloud auth activate-service-account $$SA_NAME@$$TEST_PROJECT_ID.iam.gserviceaccount.com --key-file=$$KEY_PATH --project=$$TEST_PROJECT_ID
     gcloud auth list
+    gcloud config set project $$TEST_PROJECT_ID
+    gcloud compute instances list
     gcloud services enable iam.googleapis.com compute.googleapis.com
     gcloud iam service-accounts list
 - name: 'gcr.io/gkepoctoolkit/e2etest:latest'
