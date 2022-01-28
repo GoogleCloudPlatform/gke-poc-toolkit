@@ -96,6 +96,7 @@ steps:
     gcloud config set project $$TEST_PROJECT_ID
     gcloud auth list
     ./gkekitctl create --config samples/default-config.yaml
+timeout: "60m"
 availableSecrets:
   secretManager:
   - versionName: projects/${PROJECT_ID}/secrets/folder-id/versions/latest
