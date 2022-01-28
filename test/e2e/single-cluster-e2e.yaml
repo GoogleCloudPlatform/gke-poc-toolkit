@@ -65,6 +65,7 @@ steps:
     # TODO - REPO AND BRANCH SHOULD EVENTUALLY BE THE PR, ONCE WE TRIGGER ON A PR. 
     REPO_NAME="github.com/askmeegs/gke-poc-toolkit//terraform/modules/"
     BRANCH_NAME="e2etest"
+    TEST_PROJECT_ID=$(cat "/workspace/test-project-id.txt")
     sed -i 's|.*tfModuleRepo.*|tfModuleRepo: '"$$REPO_NAME"'|' samples/default-config.yaml 
     sed -i 's|.*tfModuleBranch.*|tfModuleBranch: '"$$BRANCH_NAME"'|' samples/default-config.yaml 
     sed -i 's|.*clustersProjectId.*|clustersProjectId: '"$$TEST_PROJECT_ID"'|' samples/default-config.yaml 
