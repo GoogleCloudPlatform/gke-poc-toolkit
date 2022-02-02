@@ -89,7 +89,7 @@ resource "google_gke_hub_feature_membership" "feature_member" {
     version = "1.9.0"
     config_sync {
       git {
-        sync_repo   = "ssh://${local.acm_service_account}@source.developers.google.com:2022/p/${var.project_id}/r/gke-poc-config-sync"
+        sync_repo   = "ssh://${local.acm_service_account}@${var.project_id}.iam.gserviceaccount.com:2022/p/${var.project_id}/r/gke-poc-config-sync"
         policy_dir  = "/"
         sync_branch = "main"
         secret_type = "gcpserviceaccount"
