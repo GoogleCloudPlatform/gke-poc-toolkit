@@ -66,8 +66,9 @@ steps:
     cd /workspace/test
     ./gkekitctl init
     # TODO - REPO AND BRANCH SHOULD EVENTUALLY BE THE PR, ONCE WE TRIGGER ON A PR. 
-    REPO_NAME="github.com/askmeegs/gke-poc-toolkit//terraform/modules/"
-    BRANCH_NAME="e2etest"
+    REPO_NAME="$_HEAD_REPO_URL//terraform/modules/"
+    BRANCH_NAME=$_HEAD_BRANCH
+    echo "🌟 REPO INFO: NAME: $$REPO_NAME, BRANCH: $$BRANCH_NAME"
     TEST_PROJECT_ID=$(cat "/workspace/test-project-id.txt")
     sed -i 's|.*tfModuleRepo.*|tfModuleRepo: '"$$REPO_NAME"'|' samples/default-config.yaml 
     sed -i 's|.*tfModuleBranch.*|tfModuleBranch: '"$$BRANCH_NAME"'|' samples/default-config.yaml 
