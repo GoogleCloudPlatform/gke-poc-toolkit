@@ -7,9 +7,16 @@ steps:
   - 'pipefail'
   - '-c'
   - |-
-    RAW_REPO_NAME="$_HEAD_REPO_URL//terraform/modules/"
-    REPO_NAME=${RAW_REPO_NAME#*//}
-    BRANCH_NAME=$_HEAD_BRANCH
+    if [ -z ${_HEAD_REPO_URL+x} ]
+    then 
+      echo "😺 _HEAD_REPO_URL is unset, this is not a PR"
+      REPO_NAME=${REPO_NAME#*//}
+    else 
+      echo "⬆️ _HEAD_REPO_URL is set ($_HEAD_REPO_URL) - this is a PR" 
+      RAW_REPO_NAME="$_HEAD_REPO_URL//terraform/modules/"
+      REPO_NAME=${RAW_REPO_NAME#*//}
+      BRANCH_NAME=$_HEAD_BRANCH
+    fi
     echo "🌟 REPO INFO: NAME: $$REPO_NAME, BRANCH: $$BRANCH_NAME"
     TIMESTAMP=`date "+%m%d%y-%H%M%S"`
     TEST_PROJECT_ID="gpt-$BRANCH_NAME-$$TIMESTAMP"
@@ -70,9 +77,16 @@ steps:
   - |-
     cd /workspace/test
     ./gkekitctl init
-    RAW_REPO_NAME="$_HEAD_REPO_URL//terraform/modules/"
-    REPO_NAME=${RAW_REPO_NAME#*//}
-    BRANCH_NAME=$_HEAD_BRANCH
+    if [ -z ${_HEAD_REPO_URL+x} ]
+    then 
+      echo "😺 _HEAD_REPO_URL is unset, this is not a PR"
+      REPO_NAME=${REPO_NAME#*//}
+    else 
+      echo "⬆️ _HEAD_REPO_URL is set ($_HEAD_REPO_URL) - this is a PR" 
+      RAW_REPO_NAME="$_HEAD_REPO_URL//terraform/modules/"
+      REPO_NAME=${RAW_REPO_NAME#*//}
+      BRANCH_NAME=$_HEAD_BRANCH
+    fi
     echo "🌟 REPO INFO: NAME: $$REPO_NAME, BRANCH: $$BRANCH_NAME"
     TEST_PROJECT_ID=$(cat "/workspace/test-project-id.txt")
     sed -i 's|.*tfModuleRepo.*|tfModuleRepo: '"$$REPO_NAME"'|' samples/default-config.yaml 
