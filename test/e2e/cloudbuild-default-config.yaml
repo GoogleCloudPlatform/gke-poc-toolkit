@@ -49,6 +49,7 @@ steps:
     gcloud auth application-default print-access-token
     gcloud auth list
     gcloud config set project $$TEST_PROJECT_ID
+    sleep 5
     gcloud services enable iam.googleapis.com compute.googleapis.com cloudresourcemanager.googleapis.com
     gcloud iam service-accounts list
 - name: 'gcr.io/gkepoctoolkit/e2etest:latest'
