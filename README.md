@@ -1,15 +1,16 @@
 # GKE PoC Toolkit
 
-* [Introduction](#introduction)
-* [Prerequisites](#prerequisites)
-* [What gets installed?](#what-gets-installed)
-* [Install](#install)
-* [Quickstart](#quickstart)
-* [What's next?](#what's-next)
+![build](https://img.shields.io/github/checks-status/GoogleCloudPlatform/gke-poc-toolkit/main) ![release](https://img.shields.io/github/v/release/googlecloudplatform/gke-poc-toolkit) ![stars](https://img.shields.io/github/stars/GoogleCloudPlatform/gke-poc-toolkit) ![license](https://img.shields.io/github/license/GoogleCloudPlatform/gke-poc-toolkit)
 
+
+![logo](assets/logo-256.png)
+
+The GKE Proof of Concept (PoC) Toolkit is a demo generator for [Google Kubernetes Engine](https://cloud.google.com/kubernetes-engine). 
+
+![demo-gif](assets/demo.gif)
 ## Introduction
 
-The GKE Proof of Concept (PoC) Toolkit is a demo generator for Google Kubernetes Engine (GKE). It sets out to provide a set of infrastructure as code (IaC) which deploys GKE clusters with a strong security posture that can be used to step through demos, stand up a POC, and deliver a codified example which can be the basis of a production implementation in your own CICD pipelines.
+The GKE PoC Toolkit sets out to provide a set of infrastructure as code (IaC) which deploys GKE clusters with a strong security posture that can be used to step through demos, stand up a POC, and deliver a codified example which can be the basis of a production implementation in your own CICD pipelines.
 
 ## Prerequisites
 

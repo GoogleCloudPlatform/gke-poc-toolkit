@@ -1,4 +1,7 @@
-# FAQ and Troubleshooting Guide
+# FAQ
+
+The GKE PoC Toolkit sets out to provide a set of infrastructure as code (IaC) which deploys GKE clusters with a strong security posture that can be used to step through demos, stand up a POC, and deliver a codified example which can be the basis of a production implementation in your own CICD pipelines.
+
 
 * All testing and proofing of these demos have been vetted on cloudshell. You don't have to use cloudshell, but we know with certaintity that tooling is correct there.
 
