@@ -5,7 +5,6 @@
 The GKE PoC Toolkit sets out to provide a set of infrastructure as code (IaC) which deploys GKE clusters with a strong security posture that can be used to step through demos, stand up a POC, and deliver a codified example that can be re-used / provide inspiration for production GKE environments. 
 
 The maintainers of this repo need to set up GKE demos often, but since every environment was a little bit different, they needed a bunch of forked scripts, gcloud commands, and Terraform in order to do that, which is hard to maintain and re-use over time. The maintainers wanted an easier, one-click way of building GKE demos, so they compiled a bunch of Terraform modules together and wrapped it in a friendly Go CLI. This tool is open source so that anyone can explore the awesomeness of GKE!  
-### Why is this a Go CLI that invokes Terraform? Why not use Terraform directly? 
 
 ### What user analytics data do you collect?
 

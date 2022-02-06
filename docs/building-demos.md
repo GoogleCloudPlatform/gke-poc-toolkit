@@ -15,7 +15,7 @@ So once `gkekitctl create` completes, set your KUBECONFIG env variable like this
 export KUBECONFIG=[PATH/TO/gke-poc-toolkit]/kubeconfig
 ```
 
-From here, you can use the [`kubectx`]() tool to easily switch back and forth between your Toolkit clusters and run commands like `kubectl get pods`. 
+From here, you can use the [`kubectx`](https://github.com/ahmetb/kubectx) tool to easily switch back and forth between your Toolkit clusters and run commands like `kubectl get pods`. 
 
 ## Deploying workloads 
 
