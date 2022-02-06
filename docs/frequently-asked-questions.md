@@ -8,7 +8,7 @@ The maintainers of this repo need to set up GKE demos often, but since every env
 
 ### What user analytics data do you collect?
 
-The maintainers of the Toolkit collect anonymous usage statistics to understand its usage and make improvements. Data collection is **opt-in only** when you run `gkekitctl init`. See the [Analytics](/docs/analytics) doc for the list of what we collect, should you opt in to anonymous analytics.
+The maintainers of the Toolkit collect anonymous usage statistics to understand its usage and make improvements. Data collection is **opt-in only** when you run `gkekitctl init`. See the [Analytics](/docs/analytics.md) doc for the list of what we collect, should you opt in to anonymous analytics.
 ### What kinds of things can I build with the Toolkit? 
 
 You can build pretty much any kind of GKE / Anthos on GCP demo you want, from minimal single-cluster demos, to best-practices GKE security architectures, to large multi-cluster Anthos Service Mesh reference demos. 
