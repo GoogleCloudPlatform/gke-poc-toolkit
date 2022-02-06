@@ -78,7 +78,7 @@ time="2022-02-04T21:58:00Z" level=info msg="🌎 5 Namespaces found in cluster=g
 
 ## Learn More
 
-- [🤔 FAQ](/docs/faq.md)  
+- [🤔 FAQ](/docs/frequently-asked-questions.md)  
 - [✏️ Configuration](/docs/configuration.md): how to customize your Toolkit environment 
 - [📦 Building Demos with the Toolkit](/docs/building-demos.md) 
 - [🗺 Architecture](/docs/architecture.md)
