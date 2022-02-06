@@ -8,138 +8,77 @@
 The GKE Proof of Concept (PoC) Toolkit is a demo generator for [Google Kubernetes Engine](https://cloud.google.com/kubernetes-engine). 
 
 ![demo-gif](assets/demo.gif)
-## Introduction
+  
+## Quickstart 
 
-The GKE PoC Toolkit sets out to provide a set of infrastructure as code (IaC) which deploys GKE clusters with a strong security posture that can be used to step through demos, stand up a POC, and deliver a codified example which can be the basis of a production implementation in your own CICD pipelines.
+1. [Create a Google Cloud Project](https://cloud.google.com/resource-manager/docs/creating-managing-projects) and connect it to an existing Billing account.
+2. Open a bash-compatible shell (eg. [Google Cloud Shell](https://cloud.google.com/shell)) and ensure you have the following tools installed: 
 
-## Prerequisites
-
-#### Cloud Project
-
-You'll need access to at least one Google Cloud Project with billing enabled. See [Creating and Managing Projects]
-(https://cloud.google.com/resource-manager/docs/creating-managing-projects) for creating a new project. To make cleanup easier, it's recommended to create a new project. 
-
-If you are using a Shared VPC, you will need a separate host project for the Shared VPC. 
-
-#### Tools
-
-You'll need the following tools installed in order to deploy the toolkit. 
-* bash or bash compatible shell
-* [Terraform >= 0.13](https://www.terraform.io/downloads.html)
 * [Google Cloud SDK version >= 325.0.0](https://cloud.google.com/sdk/docs/downloads-versioned-archives)
-* [kubectl](https://kubernetes.io/docs/tasks/tools/)
-  >**NOTE:** [It is recommended the major/minor version at least match the current default GKE release channel](https://cloud.google.com/kubernetes-engine/docs/release-notes#current_versions) (version 1.20 at the time of this document).
+* * [Terraform >= 0.13](https://www.terraform.io/downloads.html)
+* [kubectl](https://kubernetes.io/docs/tasks/tools/) ( >= v1.20)
 
-#### Configure Authentication
+3. Set your Project ID environment variable and operating system. 
 
-The Terraform configuration will execute against your GCP environment and create various resources.  The script will use your personal account to build out these resources.  To setup the default account the script will use, run the following command to select the appropriate account:
-
-`gcloud auth login`
-
->**NOTE:** If this is your first time deploying, you should also run `gcloud init` and reinitialize your configuration. 
-
-## What gets installed
-
-For more details on the default configuration and what can be customized, you can check out our architectural document [here](docs/architecture.md). 
-
-Sample inputs to modify the defaults can be found [here](cli/samples/). 
-
-## Install
-
-Setup default project and default application credentials for gcloud:
-
-```shell
-PROJECT_ID=<project id targeted for clusters>
+```bash
+export PROJECT_ID=<your-project-id>
+export OS="darwin" # choice of darwin or amd64 
 ```
-```shell
+
+4. Set up local authentication to your project. 
+
+```
 gcloud config set project $PROJECT_ID
 gcloud auth login
 gcloud auth application-default login
 ```
 
-Create a subdirectory to download the toolkit binaries and change to that directory:
+5. Download the GKE PoC Toolkit binary. 
 
 ```shell
 mkdir gke-poc-toolkit && cd "$_"
-```
-
-Set gkekitctl cli version type and OS, then download the cli binary:
-
-```shell
 VERSION=$(curl -s https://api.github.com/repos/GoogleCloudPlatform/gke-poc-toolkit/releases/latest | grep browser_download_url | cut -d "/" -f 8 | tail -1)
-
-OS="darwin" # choice of darwin or amd64 
-
 curl -sLSf -o ./gkekitctl https://github.com/GoogleCloudPlatform/gke-poc-toolkit/releases/download/${VERSION}/gkekitctl-${OS} && chmod +x ./gkekitctl
 ```
 
-Validate cli was installed properly:
-```shell
-./gkekitctl
-```
-
-```shell
-# Output should look like:
-Tool to quickly deploy some pretty dope GKE demos
-
-Usage:
-  gkekitctl [command]
-
-Examples:
-        gkekitctl create
-	gkectl create --config <file.yaml>
-	gkekitctl delete
-
-Available Commands:
-  completion  generate the autocompletion script for the specified shell
-  create      Create GKE Demo Environment
-  delete      delete GKE Demo Environment
-  help        Help about any command
-```
-
-Initialize the cli:
-```shell
+6. Initialize the cli:
+```bash 
 ./gkekitctl init
 ```
 
-
-## Quickstart
-
-### Single stand alone cluster
-
-Default behavior creates a single stand alone cluster. Make sure you have a project created and project ID handy. Run the create command and input the project ID when prompted. [These](cli/samples/default-config.yaml) are the default values used for `gkekitctl create` when no additional input is provided.
+7. Run `gkekitctl create` to run the Toolkit. By default, this command sets up a single-cluster GKE environment. ([Configuration here](cli/pkg/cli_init/samples/default-config.yaml)). Enter your project ID when prompted.
 
 ```shell
 ./gkekitctl create
 ```
 ```shell
-# Prompt should look like:
+# expected output 
 INFO[0000] ☸️ ----- GKE POC TOOLKIT ----- 🛠
 INFO[0000] Enter your Google Cloud Project ID:
 ```
 
-#### Multi-cluster shared VPC
+This command takes about **10 minutes** to run; when it completes, you will have a full GKE demo environment ready to explore and deploy applications to. 
 
-To create a shared VPC environment and install multiple clusters into the shared VPC pass a config file into the create command. 
-There is a sample config file saved to [./cli/samples/multi-cluster.yaml](cli/samples/multi-cluster.yaml). Update the sample with your specific variables before running the create command!
-
+```bash
+# Expected output on successful run 
+Apply complete! Resources: 61 added, 0 changed, 0 destroyed.
+time="2022-02-04T21:57:59Z" level=info msg="🔄 Finishing ACM install..."
+time="2022-02-04T21:57:59Z" level=info msg="☸️ Generating Kubeconfig..."
+time="2022-02-04T21:57:59Z" level=info msg="Clusters Project ID is gpt-e2etest-020422-214428"
+time="2022-02-04T21:58:00Z" level=info msg="Connecting to cluster: gke_gpt-e2etest-020422-214428_us-central1_gke-central,"
+time="2022-02-04T21:58:00Z" level=info msg="✔️ Kubeconfig generated: &{Kind:Config APIVersion:v1 Preferences:{Colors:false Extensions:map[]} Clusters:map[gke_gpt-e2etest-020422-214428_us-central1_gke-central:0xc000844900] AuthInfos:map[gke_gpt-e2etest-020422-214428_us-central1_gke-central:0xc0008a23c0] Contexts:map[gke_gpt-e2etest-020422-214428_us-central1_gke-central:0xc0012bad20] CurrentContext: Extensions:map[]}"
+time="2022-02-04T21:58:00Z" level=info msg="☸️  Verifying Kubernetes API access for all clusters..."
+time="2022-02-04T21:58:00Z" level=info msg="🌎 5 Namespaces found in cluster=gke_gpt-e2etest-020422-214428_us-central1_gke-central"
 ```
-./gkekitctl create --config samples/multi-cluster.yaml
-```
+## Clean up 
 
-## Cleanup
-
-If cleaning up a cluster installed with the cli defaults, simply run:
-
-```shell
+```bash
 ./gkekitctl delete
 ```
 
-Otherwise pass in the same config file used to create the resources:
+## Learn More
 
-```shell
-./gkekitctl delete --config ./cli/samples/multi-cluster.yaml
-```
-
-## What's next?
-If you want to get fancy with your clusters, read up on other options in the [architecture doc](docs/architecture.md) and go bananas. There are some validation steps you can run through to prove out some of the security features. One for [cluster security features](docs/cluster-security-validation.md) and another for [workload security features](docs/workload-security-validation.md). We welcome contributions. Please give our [contributing doc](CONTRIBUTING.md) a read and join us!
+- [✏️ Configuration](/docs/configuration.md): how to customize your Toolkit environment 
+- [📦 Building Demos with Toolkit](/docs/building-demos.md) 
+- [🗺 Architecture](/docs/architecture.md)
+- [🤔 FAQ](/docs/faq.md)  
