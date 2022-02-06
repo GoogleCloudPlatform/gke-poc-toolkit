@@ -15,6 +15,6 @@ You can build pretty much any kind of GKE / Anthos on GCP demo you want, from mi
 
 Check out the [Building Demos](/docs/building-demos.md) doc to learn more.
 
-### How can I contribute to this repo? 
+### How can I contribute? 
 
 We love contributions! Check out the [list of open issues](https://github.com/gke-poc-toolkit/issues) and the [contributing guide](/CONTRIBUTING.md) to get started. 
