@@ -15,9 +15,10 @@ steps:
       export CLEAN_BRANCH_NAME=$_HEAD_BRANCH
     else 
       echo "😺 THIS IS A DIRECT BRANCH COMMIT, NOT A PR, _HEAD_REPO_URL is unset"
-      printev 
+      printenv 
       echo $REPO_NAME
       echo $BRANCH_NAME
+      echo $BUILD_ID
       export CLEAN_REPO_NAME=${REPO_NAME#*//}
       export CLEAN_BRANCH_NAME=$BRANCH_NAME
     fi
