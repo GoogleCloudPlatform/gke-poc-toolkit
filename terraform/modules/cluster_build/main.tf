@@ -245,7 +245,4 @@ module "asm" {
   project_id            = var.project_id
   cluster_name          = each.key
   location              = each.value.region
-  vpc_project_id        = var.vpc_project_id
-  vpc_name              = var.vpc_name
-  shared_vpc            = var.shared_vpc
 }
