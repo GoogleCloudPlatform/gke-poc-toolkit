@@ -27,6 +27,7 @@ module "cluster_build" {
   cluster_config                    = var.cluster_config
   k8s_users                         = var.k8s_users
   multi_cluster_gateway             = var.multi_cluster_gateway
+  anthos_service_mesh               = var.anthos_service_mesh
   acm_tf_module_repo                = "{{.TFModuleRepo}}acm?ref={{.TFModuleBranch}}"
 }
 
@@ -186,5 +187,11 @@ variable "k8s_users" {
 variable "multi_cluster_gateway" {
   type        = bool
   description = "Enable Multi-cluster gateway on all clusters."
+  default     = true
+}
+
+variable "anthos_service_mesh" {
+  type        = bool
+  description = "Enable Anthos Service Mesh on all clusters."
   default     = true
 }
