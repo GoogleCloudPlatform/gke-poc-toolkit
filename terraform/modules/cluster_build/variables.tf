@@ -178,3 +178,9 @@ variable "multi_cluster_gateway" {
   description = "Enable Multi-cluster gateway on all clusters."
   default     = true
 }
+
+variable "anthos_service_mesh" {
+  type        = bool
+  description = "Enable Anthos Service Mesh on all clusters."
+  default     = true
+}

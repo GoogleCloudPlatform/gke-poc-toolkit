@@ -149,6 +149,11 @@ module "enabled_google_apis" {
     "trafficdirector.googleapis.com",
     "cloudresourcemanager.googleapis.com",
     "dns.googleapis.com",
+    "meshca.googleapis.com",
+    "meshtelemetry.googleapis.com",
+    "meshconfig.googleapis.com",
+    "iamcredentials.googleapis.com",
+    "stackdriver.googleapis.com"
   ]
 }
 
@@ -231,15 +236,16 @@ module "mcg" {
   shared_vpc            = var.shared_vpc
 }
 
-# module "asm" {
-#   depends_on = [
-#     module.hub,
-#   ]
-#   count                 = var.multi_cluster_gateway ? 1 : 0
-#   source                = "../mcg"
-#   project_id            = var.project_id
-#   cluster_config        = var.cluster_config
-#   vpc_project_id        = var.vpc_project_id
-#   vpc_name              = var.vpc_name
-#   shared_vpc            = var.shared_vpc
-# }
+module "asm" {
+  depends_on = [
+    module.hub,
+  ]
+  for_each              = var.anthos_service_mesh ? var.cluster_config : {}
+  source                = "../asm"
+  project_id            = var.project_id
+  cluster_name          = each.key
+  location              = each.value.region
+  vpc_project_id        = var.vpc_project_id
+  vpc_name              = var.vpc_name
+  shared_vpc            = var.shared_vpc
+}

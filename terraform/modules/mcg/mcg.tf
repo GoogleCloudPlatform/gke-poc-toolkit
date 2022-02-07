@@ -46,7 +46,7 @@ module "firewall_rules" {
 }
 
 // Install gateway api crds on each cluster
-resource "null_resource" "exec_gke_mesh" {
+resource "null_resource" "exec_mcg_crds" {
   for_each = var.cluster_config
   provisioner "local-exec" {
     interpreter = ["bash", "-exc"]
@@ -71,7 +71,7 @@ resource "google_gke_hub_feature" "mcs" {
 // enable Multi-cluster Ingress(also gateway) project wide
 resource "google_gke_hub_feature" "mci" {
   depends_on = [
-    null_resource.exec_gke_mesh,
+    null_resource.exec_mcg_crds,
   ]
   name = "multiclusteringress"
   location = "global"
