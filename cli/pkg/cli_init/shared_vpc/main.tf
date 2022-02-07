@@ -1,5 +1,5 @@
 module "shared_vpc" {
-  source                            = "{{.TFModuleRepo}}shared_vpc"
+  source                            = "{{.TFModuleRepo}}shared_vpc?ref={{.TFModuleBranch}}"
   project_id                        = var.project_id
   shared_vpc_project_id             = var.shared_vpc_project_id
   region                            = var.region
