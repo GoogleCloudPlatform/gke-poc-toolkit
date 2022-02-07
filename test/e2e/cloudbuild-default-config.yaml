@@ -7,6 +7,7 @@ steps:
   - 'pipefail'
   - '-c'
   - |-
+    printenv
     if [ -n "$_HEAD_REPO_URL" ]
     then 
       echo "⬆️ THIS IS A PR- _HEAD_REPO_URL is set ($_HEAD_REPO_URL)" 
