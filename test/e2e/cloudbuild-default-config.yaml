@@ -14,13 +14,13 @@ steps:
       export CLEAN_REPO_NAME=${RAW_REPO_NAME#*//}
       export CLEAN_BRANCH_NAME=$_HEAD_BRANCH
     else 
-      echo "😺 THIS IS A DIRECT BRANCH COMMIT, NOT A PR, _HEAD_REPO_URL is unset"
-      export CLEAN_REPO_NAME=${REPO_NAME#*//}
-      export CLEAN_BRANCH_NAME=$BRANCH_NAME
+      echo "😺 THIS IS A DIRECT MAIN BRANCH COMMIT, NOT A PR, _HEAD_REPO_URL is unset"
+      export CLEAN_REPO_NAME="github.com/GoogleCloudPlatform/gke-poc-toolkit//terraform/modules/"
+      export CLEAN_BRANCH_NAME="main"
     fi
     echo "🌟 REPO INFO: NAME: $$CLEAN_REPO_NAME, BRANCH: $$CLEAN_BRANCH_NAME"
     TIMESTAMP=`date "+%m%d%y-%H%M%S"`
-    TEST_PROJECT_ID="gpt-$BRANCH_NAME-$$TIMESTAMP"
+    TEST_PROJECT_ID="gpt-$$TIMESTAMP"
     echo $$TEST_PROJECT_ID > /workspace/test-project-id.txt
     gcloud projects create $$TEST_PROJECT_ID --folder="$$FOLDER_ID" 
     gcloud projects add-iam-policy-binding $$TEST_PROJECT_ID --member=serviceAccount:152393131587@cloudbuild.gserviceaccount.com --role=roles/owner
@@ -77,6 +77,7 @@ steps:
   - 'pipefail'
   - '-c'
   - |-
+    printenv
     cd /workspace/test
     ./gkekitctl init
     if [ -n "$_HEAD_REPO_URL" ]
@@ -86,9 +87,9 @@ steps:
       export CLEAN_REPO_NAME=${RAW_REPO_NAME#*//}
       export CLEAN_BRANCH_NAME=$_HEAD_BRANCH
     else 
-      echo "😺 THIS IS A DIRECT BRANCH COMMIT, NOT A PR, _HEAD_REPO_URL is unset"
-      export CLEAN_REPO_NAME=${REPO_NAME#*//}
-      export CLEAN_BRANCH_NAME=$BRANCH_NAME
+      echo "😺 THIS IS A DIRECT MAIN BRANCH COMMIT, NOT A PR, _HEAD_REPO_URL is unset"
+      export CLEAN_REPO_NAME="github.com/GoogleCloudPlatform/gke-poc-toolkit//terraform/modules/"
+      export CLEAN_BRANCH_NAME="main"
     fi
     echo "🌟 REPO INFO: NAME: $$CLEAN_REPO_NAME, BRANCH: $$CLEAN_BRANCH_NAME"
     TEST_PROJECT_ID=$(cat "/workspace/test-project-id.txt")
