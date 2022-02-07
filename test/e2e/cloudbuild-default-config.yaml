@@ -7,7 +7,6 @@ steps:
   - 'pipefail'
   - '-c'
   - |-
-    printenv
     if [ -n "$_HEAD_REPO_URL" ]
     then 
       echo "⬆️ THIS IS A PR- _HEAD_REPO_URL is set ($_HEAD_REPO_URL)" 
@@ -16,6 +15,9 @@ steps:
       export CLEAN_BRANCH_NAME=$_HEAD_BRANCH
     else 
       echo "😺 THIS IS A DIRECT BRANCH COMMIT, NOT A PR, _HEAD_REPO_URL is unset"
+      printev 
+      echo $REPO_NAME
+      echo $BRANCH_NAME
       export CLEAN_REPO_NAME=${REPO_NAME#*//}
       export CLEAN_BRANCH_NAME=$BRANCH_NAME
     fi
@@ -126,5 +128,3 @@ availableSecrets:
     env: 'FOLDER_ID'
   - versionName: projects/${PROJECT_ID}/secrets/billing-id/versions/latest
     env: 'BILLING_ID'
-options:
-    substitution_option: 'ALLOW_LOOSE'
