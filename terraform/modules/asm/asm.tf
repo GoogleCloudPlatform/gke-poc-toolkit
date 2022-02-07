@@ -15,9 +15,9 @@
  */
 
 // Defines vars so that we can pass them in from cluster_build/main.tf from the overall tfvars
-variable "cluster_config" {}
+variable "cluster_name" {}
 variable "project_id" {}
-# variable "location" {}
+variable "location" {}
 # variable "use_private_endpoint" {
 #   description = "Connect on the private GKE cluster endpoint"
 #   type        = bool
@@ -58,8 +58,8 @@ resource "null_resource" "exec_gke_mesh" {
     interpreter = ["bash", "-exc"]
     command     = "${path.module}/scripts/install_crds.sh"
     environment = {
-      CLUSTER    = each.key
-      LOCATION   = each.value.region
+      CLUSTER    = var.cluster_name
+      LOCATION   = var.location
       PROJECT_ID    = var.project_id
     }
   }
