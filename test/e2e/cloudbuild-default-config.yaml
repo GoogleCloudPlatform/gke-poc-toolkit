@@ -77,6 +77,7 @@ steps:
   - 'pipefail'
   - '-c'
   - |-
+    env
     cd /workspace/test
     ./gkekitctl init
     if [ -n "$_HEAD_REPO_URL" ]
