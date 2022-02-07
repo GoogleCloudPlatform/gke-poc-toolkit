@@ -15,9 +15,9 @@
  */
 
 // Defines vars so that we can pass them in from cluster_build/main.tf from the overall tfvars
-variable "cluster_name" {}
+variable "cluster_config" {}
 variable "project_id" {}
-variable "location" {}
+# variable "location" {}
 # variable "use_private_endpoint" {
 #   description = "Connect on the private GKE cluster endpoint"
 #   type        = bool

@@ -243,6 +243,5 @@ module "asm" {
   for_each              = var.anthos_service_mesh ? var.cluster_config : {}
   source                = "../asm"
   project_id            = var.project_id
-  cluster_name          = each.key
-  location              = each.value.region
+  cluster_config        = var.cluster_config
 }
