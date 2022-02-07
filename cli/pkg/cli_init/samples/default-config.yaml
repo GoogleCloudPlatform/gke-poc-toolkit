@@ -16,6 +16,7 @@ policyController: true
 multiClusterGateway: true
 anthosServiceMesh: false
 tfModuleRepo: "github.com/GoogleCloudPlatform/gke-poc-toolkit//terraform/modules/"
+tfModuleBranch: "main"
 sendAnalytics: false
 vpcConfig:
   vpcName: "default"

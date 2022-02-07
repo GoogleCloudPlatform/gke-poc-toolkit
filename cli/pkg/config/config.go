@@ -47,6 +47,8 @@ type Config struct {
 	ClustersProjectID         string          `yaml:"clustersProjectId"`
 	GovernanceProjectID       string          `yaml:"governanceProjectId"`
 	ConfigSync                bool            `yaml:"configSync"`
+	AnthosServiceMesh         bool            `yaml:"anthosServiceMesh"`
+	MultiClusterGateway       bool            `yaml:"multiClusterGateway"`
 	PolicyController          bool            `yaml:"policyController"`
 	PrivateEndpoint           bool            `yaml:"privateEndpoint"`
 	EnableWorkloadIdentity    bool            `yaml:"enableWorkloadIdentity"`
@@ -56,6 +58,7 @@ type Config struct {
 	MultiClusterGateway       bool            `yaml:"multiClusterGateway"`
 	AnthosServiceMesh         bool            `yaml:"anthosServiceMesh"`
 	TFModuleRepo              string          `yaml:"tfModuleRepo"`
+	TFModuleBranch            string          `yaml:"tfModuleBranch"`
 	VpcConfig                 VpcConfig       `yaml:"vpcConfig"`
 	ClustersConfig            []ClusterConfig `yaml:"clustersConfig"`
 }
@@ -117,8 +120,8 @@ func InitConf(cfgFile string) *Config {
 		os.Exit(1)
 	}
 
-	// Set Tf Module Repo
-	err = setTfModuleRepo(conf.TFModuleRepo)
+	// Set Tf Module Repo and Branch
+	err = setTfModuleRepo(conf.TFModuleRepo, conf.TFModuleBranch)
 	if err != nil {
 		log.Error(err)
 		os.Exit(1)
@@ -436,19 +439,30 @@ func enableService(projectId string, serviceIds []string) {
 	_ = resp
 }
 
-func setTfModuleRepo(tfRepo string) error {
-	log.Println("⏱ Creating main.tf files...")
+func setTfModuleRepo(tfRepo string, tfBranch string) error {
 	files := []string{"cluster_build/main.tf", "shared_vpc/main.tf"}
 	for _, file := range files {
-		input, err := ioutil.ReadFile(file)
+		err := replaceWord("{{.TFModuleRepo}}", file, tfRepo)
 		if err != nil {
-			log.Fatalf("error reading file: %s", err)
+			log.Fatalf("error updating TFModuleRepo: %s", err)
 		}
-		output := bytes.Replace(input, []byte("{{.TFModuleRepo}}"), []byte(tfRepo), -1)
-		if err = ioutil.WriteFile(file, output, 0666); err != nil {
-			log.Fatalf("error writing file: %s", err)
+		err = replaceWord("{{.TFModuleBranch}}", file, tfBranch)
+		if err != nil {
+			log.Fatalf("error updating TFModuleBranch: %s", err)
 		}
 	}
 	log.Println("✅ main.tf files created. Ready to write to tfvars.")
+	return nil
+}
+
+func replaceWord(word string, file string, tfRepo string) error {
+	input, err := ioutil.ReadFile(file)
+	if err != nil {
+		log.Fatalf("error reading file: %s", err)
+	}
+	output := bytes.Replace(input, []byte(word), []byte(tfRepo), -1)
+	if err = ioutil.WriteFile(file, output, 0666); err != nil {
+		log.Fatalf("error writing file: %s", err)
+	}
 	return nil
 }

@@ -46,6 +46,7 @@ func GenerateTfvars(conf *Config) {
 	vars["MultiClusterGateway"] = conf.MultiClusterGateway
 	vars["AnthosServiceMesh"] = conf.AnthosServiceMesh
 	vars["TFModuleRepo"] = conf.TFModuleRepo
+	vars["TFModuleBranch"] = conf.TFModuleBranch
 
 	// Set vpc config vars
 	if conf.VpcConfig.VpcType == "standalone" {

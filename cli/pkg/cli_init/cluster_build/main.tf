@@ -1,5 +1,5 @@
 module "cluster_build" {
-  source                            = "{{.TFModuleRepo}}cluster_build"
+  source                            = "{{.TFModuleRepo}}cluster_build?ref={{.TFModuleBranch}}"
   project_id                        = var.project_id
   governance_project_id             = var.governance_project_id
   region                            = var.region
@@ -27,6 +27,7 @@ module "cluster_build" {
   cluster_config                    = var.cluster_config
   k8s_users                         = var.k8s_users
   multi_cluster_gateway             = var.multi_cluster_gateway
+  acm_tf_module_repo                = "{{.TFModuleRepo}}acm?ref={{.TFModuleBranch}}"
 }
 
 variable "project_id" {
