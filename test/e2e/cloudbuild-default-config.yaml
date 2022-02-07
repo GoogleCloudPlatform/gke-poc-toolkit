@@ -124,3 +124,5 @@ availableSecrets:
     env: 'FOLDER_ID'
   - versionName: projects/${PROJECT_ID}/secrets/billing-id/versions/latest
     env: 'BILLING_ID'
+options:
+    substitution_option: 'ALLOW_LOOSE'
