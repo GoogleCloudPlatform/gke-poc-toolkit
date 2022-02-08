@@ -6,6 +6,7 @@ echo -e "CLUSTER is ${CLUSTER}"
 echo -e "LOCATION is ${LOCATION}"
 
 # Get cluster creds
+cd ${MODULE_PATH}
 touch ./tempkubeconfig && export KUBECONFIG=./tempkubeconfig
 gcloud container clusters get-credentials ${CLUSTER} --region ${LOCATION} --project ${PROJECT_ID}
 

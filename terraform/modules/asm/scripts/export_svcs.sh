@@ -9,6 +9,7 @@ echo -e "TARGET_CLUSTER is ${TARGET_CLUSTER}"
 echo -e "TARGET_LOCATION is ${TARGET_LOCATION}"
 
 # Download ASM installation package for istioctl bin
+cd ${MODULE_PATH}
 curl -LO https://storage.googleapis.com/gke-release/asm/istio-${ASM_VERSION}-linux-amd64.tar.gz
 tar xzf istio-${ASM_VERSION}-linux-amd64.tar.gz
 ISTIOCTL_CMD=$(pwd)/istio-${ASM_VERSION}/bin/istioctl

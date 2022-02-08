@@ -52,6 +52,7 @@ resource "null_resource" "exec_mcg_crds" {
     interpreter = ["bash", "-exc"]
     command     = "${path.module}/scripts/install_crds.sh"
     environment = {
+      MODULE_PATH = path.module
       CLUSTER    = each.key
       LOCATION   = each.value.region
       PROJECT_ID    = var.project_id

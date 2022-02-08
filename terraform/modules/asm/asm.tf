@@ -35,6 +35,7 @@ resource "null_resource" "exec_gke_mesh" {
     interpreter = ["bash", "-exc"]
     command     = "${path.module}/scripts/install_mesh.sh"
     environment = {
+      MODULE_PATH = path.module
       CLUSTER    = var.cluster_name
       LOCATION   = var.location
       PROJECT_ID    = var.project_id
@@ -54,6 +55,7 @@ resource "null_resource" "exec_secrets_mesh" {
     interpreter = ["bash", "-exc"]
     command     = "${path.module}/scripts/export_svcs.sh"
     environment = {
+      MODULE_PATH = path.module
       CLUSTER    = var.cluster_name
       LOCATION   = var.location
       TARGET_CLUSTER    = each.key

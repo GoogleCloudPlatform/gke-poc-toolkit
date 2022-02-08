@@ -7,6 +7,7 @@ echo -e "LOCATION is ${LOCATION}"
 echo -e "GATEWAY_API_VERSION is ${GATEWAY_API_VERSION}"
 
 # Get cluster creds
+cd ${MODULE_PATH}
 touch ./tempkubeconfig && export KUBECONFIG=./tempkubeconfig
 gcloud container clusters get-credentials ${CLUSTER} --region ${LOCATION} --project ${PROJECT_ID}
 
