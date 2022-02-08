@@ -16,7 +16,9 @@
 
 // Defines vars so that we can pass them in from cluster_build/main.tf from the overall tfvars
 variable "cluster_name" {}
-variable "cluster_config" {  }
+variable "cluster_config" {}
+variable "vpc_name" {}
+variable "vpc_project_id" {}
 variable "project_id" {}
 variable "location" {}
 variable "asm_version" {}
@@ -57,4 +59,30 @@ resource "null_resource" "exec_secrets_mesh" {
       ASM_PACKAGE = var.asm_package
     }
   }
+}
+
+module "firewall_rules" {
+  source       = "terraform-google-modules/network/google//modules/firewall-rules"
+  project_id   = var.vpc_project_id
+  network_name = var.vpc_name
+
+  rules = [{
+    name                    = "allow-all-10"
+    description             = null
+    direction               = "INGRESS"
+    priority                = null
+    ranges                  = ["10.0.0.0/8"]
+    source_tags             = null
+    source_service_accounts = null
+    target_tags             = null
+    target_service_accounts = null
+    allow = [{
+      protocol = "tcp"
+      ports    = ["0-65535"]
+    }]
+    deny = []
+    log_config = {
+      metadata = "INCLUDE_ALL_METADATA"
+    }
+  }]
 }

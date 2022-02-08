@@ -116,9 +116,6 @@ locals {
 
   // Final Node Pool options for Cluster - combines all specified nodepools
   cluster_node_pool = flatten(local.linux_pool)
-
-  // Checks for Fleet features and used to register all custers to a Fleet should any be true
-  //hub = var.multi_cluster_gateway || var.multi_cluster_gateway ? 1 : 0
 }
 
 // Enable APIs needed in the gke cluster project
@@ -233,7 +230,6 @@ module "mcg" {
   cluster_config        = var.cluster_config
   vpc_project_id        = var.vpc_project_id
   vpc_name              = var.vpc_name
-  shared_vpc            = var.shared_vpc
 }
 
 module "asm" {
@@ -246,6 +242,8 @@ module "asm" {
   cluster_config        = var.cluster_config
   cluster_name          = each.key
   location              = each.value.region
+  vpc_project_id        = var.vpc_project_id
+  vpc_name              = var.vpc_name  
   asm_version = var.asm_version
   asm_release_channel   = var.asm_release_channel
   asm_package = var.asm_package

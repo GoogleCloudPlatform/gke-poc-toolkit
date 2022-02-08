@@ -4,8 +4,6 @@ variable "project_id" {
 
 variable "vpc_project_id" {
 }
-variable "shared_vpc" {
-}
 variable "cluster_config" {
 }
 variable "vpc_name" {
