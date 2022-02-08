@@ -61,28 +61,29 @@ resource "null_resource" "exec_secrets_mesh" {
   }
 }
 
-module "firewall_rules" {
-  source       = "terraform-google-modules/network/google//modules/firewall-rules"
-  project_id   = var.vpc_project_id
-  network_name = var.vpc_name
+# Safer cluster creates the rule below - leaving just in case we decide to change the cluster module and need to implement a FW rule to allow intra-cluster traffic
+# module "firewall_rules" {
+#   source       = "terraform-google-modules/network/google//modules/firewall-rules"
+#   project_id   = var.vpc_project_id
+#   network_name = var.vpc_name
 
-  rules = [{
-    name                    = "allow-all-10"
-    description             = null
-    direction               = "INGRESS"
-    priority                = null
-    ranges                  = ["10.0.0.0/8"]
-    source_tags             = null
-    source_service_accounts = null
-    target_tags             = null
-    target_service_accounts = null
-    allow = [{
-      protocol = "tcp"
-      ports    = ["0-65535"]
-    }]
-    deny = []
-    log_config = {
-      metadata = "INCLUDE_ALL_METADATA"
-    }
-  }]
-}
+#   rules = [{
+#     name                    = "allow-all-10"
+#     description             = null
+#     direction               = "INGRESS"
+#     priority                = null
+#     ranges                  = ["10.0.0.0/8"]
+#     source_tags             = null
+#     source_service_accounts = null
+#     target_tags             = null
+#     target_service_accounts = null
+#     allow = [{
+#       protocol = "tcp"
+#       ports    = ["0-65535"]
+#     }]
+#     deny = []
+#     log_config = {
+#       metadata = "INCLUDE_ALL_METADATA"
+#     }
+#   }]
+# }
