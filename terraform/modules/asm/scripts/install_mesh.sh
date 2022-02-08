@@ -17,7 +17,8 @@ gcloud beta container hub mesh enable --project=${PROJECT_ID}
 kubectl wait --for=condition=established crd controlplanerevisions.mesh.cloud.google.com --timeout=10m
 
 # Write ASM control plane revision out to files
-echo ${ASM_RELEASE_CHANNEL} > ../manifests/asm-control-plane-revision.yaml
+echo ${ASM_RELEASE_CHANNEL} > ./manifests/asm-control-plane-revision.yaml
 
 # Install SAs, Roles, Roledbinding for ASM
-kubectl apply -f ../manifests/
+kubectl apply -f ./manifests/istio-system-ns.yaml
+kubectl apply -f ./manifests/

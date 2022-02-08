@@ -24,4 +24,4 @@ gcloud container clusters get-credentials ${CLUSTER} --region ${LOCATION} --proj
 ${ISTIOCTL_CMD} x create-remote-secret --name=${CLUSTER} > secret-kubeconfig-${CLUSTER}.yaml
 
 gcloud container clusters get-credentials ${TARGET_CLUSTER} --region ${TARGET_LOCATION} --project ${PROJECT_ID}
-kubectl apply -f secret-kubeconfig-${CLUSTER}.yaml 
+kubectl apply -f ./manifests/secret-kubeconfig-${CLUSTER}.yaml 
