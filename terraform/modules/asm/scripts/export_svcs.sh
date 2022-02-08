@@ -11,8 +11,13 @@ echo -e "TARGET_LOCATION is ${TARGET_LOCATION}"
 
 # Download ASM installation package for istioctl bin
 cd ${MODULE_PATH}
-curl -LO https://storage.googleapis.com/gke-release/asm/"${ASM_PACKAGE}"-linux-amd64.tar.gz
-tar xzf ${ASM_PACKAGE}-linux-amd64.tar.gz && rm -rf ${ASM_PACKAGE}-linux-amd64.tar.gz
+if [[ $OSTYPE == 'darwin'* ]]; then
+    export ASM_PACKAGE_OS="${ASM_PACKAGE}-asm.0-osx.tar.gz"
+else 
+    export ASM_PACKAGE_OS="${ASM_PACKAGE}-linux-amd64.tar.gz"
+fi
+curl -LO https://storage.googleapis.com/gke-release/asm/"${ASM_PACKAGE_OS}"
+tar xzf ${ASM_PACKAGE_OS} && rm -rf ${ASM_PACKAGE_OS}
 ISTIOCTL_CMD=$(pwd)/${ASM_PACKAGE}/bin/istioctl
 
 ${ISTIOCTL_CMD} version
@@ -26,3 +31,5 @@ ${ISTIOCTL_CMD} x create-remote-secret --name=${CLUSTER} > secret-kubeconfig-${C
 
 gcloud container clusters get-credentials ${TARGET_CLUSTER} --region ${TARGET_LOCATION} --project ${PROJECT_ID}
 kubectl apply -f ./manifests/secret-kubeconfig-${CLUSTER}.yaml 
+
+rm ./tempkubeconfig

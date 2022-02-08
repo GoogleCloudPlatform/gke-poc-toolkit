@@ -194,7 +194,7 @@ variable "asm_version" {
 variable "asm_package" {
   type        = string
   description = "ASM package"
-  default     = "1.12.2-asm.0+config2"
+  default     = "istio-1.12.2-asm.0"
 }
 
 variable "asm_release_channel" {
