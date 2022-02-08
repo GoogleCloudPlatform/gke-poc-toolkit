@@ -36,7 +36,6 @@ resource "null_resource" "exec_gke_mesh" {
     command     = "${path.module}/scripts/install_mesh.sh"
     environment = {
       CLUSTER    = var.cluster_name
-      CLUSTER_CONFIG = var.cluster_config
       LOCATION   = var.location
       PROJECT_ID    = var.project_id
       ASM_VERSION = var.asm_version
@@ -56,7 +55,6 @@ resource "null_resource" "exec_secrets_mesh" {
     command     = "${path.module}/scripts/export_svcs.sh"
     environment = {
       CLUSTER    = var.cluster_name
-      CLUSTER_CONFIG = var.cluster_config
       LOCATION   = var.location
       TARGET_CLUSTER    = each.key
       TARGET_LOCATION   = each.value.region
