@@ -45,7 +45,7 @@ data "google_container_cluster" "gke_cluster" {
 }
 
 data "template_file" "kubeconfig" {
-  template = file("${path.module}/templates/kubeconfig-template.yaml.tpl")
+  template = file("${path.module}/templates/kubeconf-template.yaml.tpl")
 
   vars = {
     context                = local.context
@@ -56,7 +56,7 @@ data "template_file" "kubeconfig" {
 }
 
 data "template_file" "kubeconfig-secret" {
-  template = file("${path.module}/templates/kubeconfig-secret-template.yaml.tpl")
+  template = file("${path.module}/templates/kubeconf-secret-template.yaml.tpl")
   vars = {
     cluster    = var.cluster_name
     kubeconfig = base64encode(data.template_file.kubeconfig.rendered)
