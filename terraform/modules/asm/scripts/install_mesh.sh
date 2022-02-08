@@ -19,3 +19,5 @@ kubectl wait --for=condition=established crd controlplanerevisions.mesh.cloud.go
 # Install SAs, Roles, Roledbinding for ASM
 kubectl apply -f ./manifests/istio-system-ns.yaml
 kubectl apply -f ./manifests/
+
+rm ./tempkubeconfig
