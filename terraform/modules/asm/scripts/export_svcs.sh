@@ -12,7 +12,7 @@ echo -e "TARGET_LOCATION is ${TARGET_LOCATION}"
 # Download ASM installation package for istioctl bin
 cd ${MODULE_PATH}
 if [[ $OSTYPE == 'darwin'* ]]; then
-    export ASM_PACKAGE_OS="${ASM_PACKAGE}-asm.0-osx.tar.gz"
+    export ASM_PACKAGE_OS="${ASM_PACKAGE}-osx.tar.gz"
 else 
     export ASM_PACKAGE_OS="${ASM_PACKAGE}-linux-amd64.tar.gz"
 fi
