@@ -191,6 +191,12 @@ variable "asm_version" {
   default     = "1.12"
 }
 
+variable "asm_package" {
+  type        = string
+  description = "ASM package"
+  default     = "1.12.2-asm.0+config2"
+}
+
 variable "asm_release_channel" {
   type        = string
   description = "ASM release channel"

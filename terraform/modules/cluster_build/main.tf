@@ -248,4 +248,5 @@ module "asm" {
   location              = each.value.region
   asm_version = var.asm_version
   asm_release_channel   = var.asm_release_channel
+  asm_package = var.asm_package
 }

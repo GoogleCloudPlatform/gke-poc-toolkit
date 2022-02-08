@@ -5,14 +5,15 @@ echo -e "Project is ${PROJECT_ID}"
 echo -e "CLUSTER is ${CLUSTER}"
 echo -e "LOCATION is ${LOCATION}"
 echo -e "ASM_VERSION is ${ASM_VERSION}"
+echo -e "ASM_PACKAGE is ${ASM_PACKAGE}"
 echo -e "TARGET_CLUSTER is ${TARGET_CLUSTER}"
 echo -e "TARGET_LOCATION is ${TARGET_LOCATION}"
 
 # Download ASM installation package for istioctl bin
 cd ${MODULE_PATH}
-curl -LO https://storage.googleapis.com/gke-release/asm/istio-${ASM_VERSION}-linux-amd64.tar.gz
-tar xzf istio-${ASM_VERSION}-linux-amd64.tar.gz
-ISTIOCTL_CMD=$(pwd)/istio-${ASM_VERSION}/bin/istioctl
+curl -LO https://storage.googleapis.com/gke-release/asm/"${ASM_PACKAGE}"-linux-amd64.tar.gz
+tar xzf ${ASM_PACKAGE}-linux-amd64.tar.gz && rm -rf ${ASM_PACKAGE}-linux-amd64.tar.gz
+ISTIOCTL_CMD=$(pwd)/${ASM_PACKAGE}/bin/istioctl
 
 ${ISTIOCTL_CMD} version
 

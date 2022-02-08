@@ -21,6 +21,7 @@ variable "project_id" {}
 variable "location" {}
 variable "asm_version" {}
 variable "asm_release_channel" {}
+variable "asm_package" {}
 
 // Install asm crds on each cluster
 resource "null_resource" "exec_gke_mesh" {
@@ -53,7 +54,7 @@ resource "null_resource" "exec_secrets_mesh" {
       TARGET_LOCATION   = each.value.region
       PROJECT_ID    = var.project_id
       ASM_VERSION = var.asm_version
-      ASM_RELEASE_CHANNEL = data.template_file.asm-control-plane-revision.rendered
+      ASM_PACKAGE = var.asm_package
     }
   }
 }
