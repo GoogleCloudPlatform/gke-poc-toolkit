@@ -31,5 +31,3 @@ ${ISTIOCTL_CMD} x create-remote-secret --name=${CLUSTER} > ./manifests/secret-ku
 
 gcloud container clusters get-credentials ${TARGET_CLUSTER} --region ${TARGET_LOCATION} --project ${PROJECT_ID}
 kubectl apply -f ./manifests/secret-kubeconfig-${CLUSTER}.yaml 
-
-rm ./tempkubeconfig
