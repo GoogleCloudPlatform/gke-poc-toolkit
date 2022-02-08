@@ -184,3 +184,8 @@ variable "anthos_service_mesh" {
   description = "Enable Anthos Service Mesh on all clusters."
   default     = true
 }
+variable "asm_release_channel" {
+  type        = string
+  description = "ASM release channel"
+  default     = "regular"
+}

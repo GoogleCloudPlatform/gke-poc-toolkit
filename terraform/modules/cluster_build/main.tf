@@ -245,4 +245,5 @@ module "asm" {
   project_id            = var.project_id
   cluster_name          = each.key
   location              = each.value.region
+  asm_release_channel   = var.asm_release_channel
 }

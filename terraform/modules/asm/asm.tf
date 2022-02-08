@@ -18,6 +18,7 @@
 variable "cluster_name" {}
 variable "project_id" {}
 variable "location" {}
+variable "asm_release_channel" {}
 variable "use_private_endpoint" {
   description = "Connect on the private GKE cluster endpoint"
   type        = bool
@@ -62,6 +63,13 @@ data "template_file" "kubeconfig-secret" {
   }
 }
 
+data "template_file" "asm-control-plane-revision" {
+  template = file("${path.module}/templates/asm-control-plane-revision.yaml.tpl")
+  vars = {
+    asm_release_channel    = var.asm_release_channel
+  }
+}
+
 // Install asm crds on each cluster
 resource "null_resource" "exec_gke_mesh" {
 #   for_each = var.cluster_config
@@ -72,6 +80,8 @@ resource "null_resource" "exec_gke_mesh" {
       CLUSTER    = var.cluster_name
       LOCATION   = var.location
       PROJECT_ID    = var.project_id
+      KSA_SECRET = data.template_file.kubeconfig-secret.rendered
+      ASM_RELEASE_CHANNEL = data.template_file.asm-control-plane-revision.rendered
     }
   }
 }
