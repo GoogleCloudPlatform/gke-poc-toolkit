@@ -22,13 +22,6 @@ variable "location" {}
 variable "asm_version" {}
 variable "asm_release_channel" {}
 
-data "template_file" "asm-control-plane-revision" {
-  template = file("${path.module}/templates/asm-control-plane-revision.yaml.tpl")
-  vars = {
-    asm_release_channel    = var.asm_release_channel
-  }
-}
-
 // Install asm crds on each cluster
 resource "null_resource" "exec_gke_mesh" {
   provisioner "local-exec" {
@@ -39,8 +32,6 @@ resource "null_resource" "exec_gke_mesh" {
       CLUSTER    = var.cluster_name
       LOCATION   = var.location
       PROJECT_ID    = var.project_id
-      ASM_VERSION = var.asm_version
-      ASM_RELEASE_CHANNEL = data.template_file.asm-control-plane-revision.rendered
     }
   }
 }

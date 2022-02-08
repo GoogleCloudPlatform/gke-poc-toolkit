@@ -188,11 +188,11 @@ variable "anthos_service_mesh" {
 variable "asm_version" {
   type        = string
   description = "ASM version"
-  default     = "1.11"
+  default     = "1.12"
 }
 
 variable "asm_release_channel" {
   type        = string
   description = "ASM release channel"
-  default     = "1.12"
+  default     = "regular"
 }

@@ -5,4 +5,4 @@ metadata:
   namespace: istio-system
 spec:
   type: managed_service
-  channel: ${asm_release_channel}
+  channel: regular
