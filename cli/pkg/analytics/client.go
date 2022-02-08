@@ -41,7 +41,6 @@ type Cluster struct {
 	OS                        string `json:"os"`
 	TerraformState            string `json:"terraformState"`
 	Region                    string `json:"region"`
-	EnableWorkloadIdentity    bool   `json:"enableWorkloadIdentity"`
 	EnablePreemptibleNodepool bool   `json:"enablePreemptibleNodepool"`
 	DefaultNodepoolOS         string `json:"defaultNodepoolOS"`
 	PrivateEndpoint           bool   `json:"privateEndpoint"`
@@ -51,7 +50,6 @@ type Cluster struct {
 	MultiClusterGateway       bool   `json:"multiClusterGateway"`
 	VPCType                   string `json:"vpcType"`
 	ClusterIndex              int    `json:"clusterIndex"`
-	ClusterNumNodes           int    `json:"clusterNumNodes"`
 	ClusterType               string `json:"clusterType"`
 	ClusterMachineType        string `json:"clusterMachineType"`
 	ClusterRegion             string `json:"clusterRegion"`
@@ -91,7 +89,6 @@ func SendAnalytics(conf *config.Config, version string, gitCommit string) {
 			OS:                        runtime.GOOS,
 			TerraformState:            conf.TerraformState,
 			Region:                    conf.Region,
-			EnableWorkloadIdentity:    conf.EnableWorkloadIdentity,
 			EnablePreemptibleNodepool: conf.EnablePreemptibleNodepool,
 			DefaultNodepoolOS:         conf.DefaultNodepoolOS,
 			PrivateEndpoint:           conf.PrivateEndpoint,
@@ -101,7 +98,6 @@ func SendAnalytics(conf *config.Config, version string, gitCommit string) {
 			MultiClusterGateway:       conf.MultiClusterGateway,
 			VPCType:                   conf.VpcConfig.VpcType,
 			ClusterIndex:              i,
-			ClusterNumNodes:           cluster.NumNodes,
 			ClusterType:               cluster.ClusterType,
 			ClusterMachineType:        cluster.MachineType,
 			ClusterRegion:             cluster.Region,

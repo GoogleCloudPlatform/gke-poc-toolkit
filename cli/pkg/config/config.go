@@ -51,7 +51,10 @@ type Config struct {
 	MultiClusterGateway       bool            `yaml:"multiClusterGateway"`
 	PolicyController          bool            `yaml:"policyController"`
 	PrivateEndpoint           bool            `yaml:"privateEndpoint"`
-	EnableWorkloadIdentity    bool            `yaml:"enableWorkloadIdentity"`
+	ReleaseChannel            string          `yaml:"releaseChannel"`
+	InitialNodeCount          int             `yaml:"initialNodeCount"`
+	MinNodeCount              int             `yaml:"minNodeCount`
+	MaxNodeCount              int             `yaml:"maxNodeCount`
 	EnableWindowsNodepool     bool            `yaml:"enableWindowsNodepool"`
 	EnablePreemptibleNodepool bool            `yaml:"enablePreemptibleNodepool"`
 	DefaultNodepoolOS         string          `yaml:"defaultNodepoolOS"`
@@ -72,7 +75,6 @@ type VpcConfig struct {
 
 type ClusterConfig struct {
 	ClusterName string `yaml:"clusterName"`
-	NumNodes    int    `yaml:"nodeSize"`
 	MachineType string `yaml:"machineType"`
 	ClusterType string `yaml:"clusterType"`
 	Region      string `yaml:"region"`
@@ -202,6 +204,9 @@ func ValidateConf(c *Config) error {
 	if err := validateTFModuleRepo(c.TFModuleRepo); err != nil {
 		return err
 	}
+	if c.MinNodeCount < 1 || c.MaxNodeCount > 100 {
+		return fmt.Errorf("NumNodes must be a number between 1-100")
+	}
 
 	// VPC Config vars
 	if c.VpcConfig.VpcType != "standalone" && c.VpcConfig.VpcType != "shared" {
@@ -220,9 +225,6 @@ func ValidateConf(c *Config) error {
 	for i, cc := range c.ClustersConfig {
 		// TODO - what is cluster type? why is line 125 here?
 		if cc.ClusterType != "managed" && cc.ClusterType != "on-prem" {
-			if cc.NumNodes < 1 || cc.NumNodes > 100 {
-				return fmt.Errorf("ClustersConfig[%d]: NumNodes must be a number between 1-100", i)
-			}
 			if cc.SubnetName == "" {
 				return fmt.Errorf("ClustersConfig[%d] SubnetName cannot be empty", i)
 			}

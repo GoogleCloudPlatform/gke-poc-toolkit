@@ -84,6 +84,11 @@ variable "vpc_ip_range_services_name" {
   default     = ""
 }
 
+variable "release_channel" {
+  type = string
+  default = "regular"
+}
+
 variable "node_pool" {
   type    = string
   default = "gke-toolkit-pool"
@@ -91,12 +96,12 @@ variable "node_pool" {
 
 variable "initial_node_count" {
   type    = number
-  default = 1
+  default = 3
 }
 
 variable "min_node_count" {
   type    = number
-  default = 1
+  default = 3
 }
 
 variable "max_node_count" {
