@@ -102,6 +102,7 @@ locals {
   // Presets for Linux Node Pool
   linux_pool = [{
     name               = format("linux-%s", var.node_pool)
+    initial_node_count = var.initial_node_count
     min_count          = var.min_node_count
     max_count          = var.max_node_count
     auto_upgrade       = true

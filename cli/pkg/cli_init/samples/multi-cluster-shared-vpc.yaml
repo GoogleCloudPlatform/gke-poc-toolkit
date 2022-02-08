@@ -1,0 +1,35 @@
+# sample-config.yaml
+terraformState: cloud  # local, cloud
+clustersProjectId: "my-project"
+governanceProjectId: "my-project" 
+region: "us-east1" # Region for resources aside from GKE clusters
+enableWindowsNodepool: false 
+enablePreemptibleNodepool: false # Enforced on Linux Node pools only
+privateEndpoint: false
+releaseChannel: regular
+initialNodeCount: 3
+maxNodeCount: 10
+minNodeCount: 3
+configSync: true 
+policyController: true
+multiClusterGateway: true
+anthosServiceMesh: false
+tfModuleRepo: "github.com/GoogleCloudPlatform/gke-poc-toolkit//terraform/modules/"
+tfModuleBranch: "main"
+sendAnalytics: false
+vpcConfig:
+  vpcName: "default"
+  vpcType: "shared" # standalone, shared 
+  vpcProjectId: "my-host-project" # Required if you are using a sharedVPC
+  podCIDRName: "mypodcidr"
+  svcCIDRName: "mysvccidr"
+  authCIDR: "0.0.0.0/0" # only needed if enabling private endpoints for clusters
+clustersConfig:  # a list of one or more clusters, each with their own config 
+- clusterName: "gke-central"
+  machineType: "e2-standard-4"
+  region: "us-central1" 
+  subnetName: "us-central1"
+- clusterName: "gke-east"
+  machineType: "e2-standard-4"
+  region: "us-east1" 
+  subnetName: "us-east1"
