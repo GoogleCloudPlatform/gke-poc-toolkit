@@ -32,7 +32,7 @@ gcloud container clusters get-credentials ${CLUSTER} --region ${LOCATION} --proj
 
 # Create kubeconfig secret for the current cluster and install it in istio-system of the rest of the mesh clusters
 echo -e "Creating kubeconfig secret from cluster ${CLUSTER} and installing it on cluster ${TARGET_CLUSTER}"
-${ISTIOCTL_CMD} x create-remote-secret --name=${CLUSTER} > ./manifests/secret-kubeconfig-${CLUSTER}.yaml
+${ISTIOCTL_CMD} x create-remote-secret --context=gke_${PROJECT_ID}_${LOCATION}_${CLUSTER} --name=${CLUSTER} > ./manifests/secret-kubeconfig-${CLUSTER}.yaml
 
 gcloud container clusters get-credentials ${TARGET_CLUSTER} --region ${TARGET_LOCATION} --project ${PROJECT_ID}
 kubectl apply -f ./manifests/secret-kubeconfig-${CLUSTER}.yaml 
