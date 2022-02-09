@@ -27,7 +27,7 @@ ${ISTIOCTL_CMD} version
 
 # Get cluster creds
 echo -e "Setting up kubeconfig at ${MODULE_PATH}/asmkubeconfig"
-touch ./asmkubeconfig && export KUBECONFIG=./asmkubeconfig
+touch ./asmkubeconfig && KUBECONFIG=./asmkubeconfig
 gcloud container clusters get-credentials ${CLUSTER} --region ${LOCATION} --project ${PROJECT_ID}
 
 # Create kubeconfig secret for the current cluster and install it in istio-system of the rest of the mesh clusters
