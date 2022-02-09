@@ -14,14 +14,14 @@
  * limitations under the License.
  */
 
-terraform {
-  required_providers {
-    google = {
-      source = "hashicorp/google"
-      version = "4.10.0"
-    }
-  }
-}
+# terraform {
+#   required_providers {
+#     google = {
+#       source = "hashicorp/google"
+#       version = "4.10.0"
+#     }
+#   }
+# }
 
 provider "google" {
   project = var.vpc_project_id
