@@ -14,18 +14,13 @@
  * limitations under the License.
  */
 
-terraform {
-  required_providers {
-    google-beta = {
-      source  = "hashicorp/google-beta"
-      version = ">= 4.3.0, < 5.0"
-    }
-    google = {
-      source  = "hashicorp/google"
-      version = ">= 4.0.0, < 5.0"
-    }
-  }
-}
+# terraform {
+#   required_providers {
+#     google = {
+#       version = "~> 3.63.0"
+#     }
+#   }
+# }
 
 data "google_client_openid_userinfo" "me" {
 }
