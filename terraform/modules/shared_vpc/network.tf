@@ -20,7 +20,7 @@ module "shared_vpc" {
     module.enabled_service_project_apis
   ]
   source  = "terraform-google-modules/network/google"
-  version = "~> 2.5"
+  version = "~> 4.1"
 
   project_id   = var.vpc_project_id
   network_name = var.vpc_name

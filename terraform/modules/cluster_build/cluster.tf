@@ -22,7 +22,7 @@ module "gke" {
   for_each                = var.cluster_config
   initial_node_count	    = each.value.initial_node_count
   source                  = "terraform-google-modules/kubernetes-engine/google//modules/safer-cluster"
-  version                 = "19.0.0"
+  version                 = "~>19.0.0"
   project_id              = module.enabled_google_apis.project_id
   name                    = each.key
   region                  = each.value.region
