@@ -15,12 +15,13 @@ gcloud container clusters get-credentials ${CLUSTER} --region ${LOCATION} --proj
 echo -e "Enabling ASM Mesh on the GKE HUB"
 gcloud beta container hub mesh enable --project=${PROJECT_ID}
 
-for i in {1..600}; 
+for i in {1..600}; do
     if [[ `gcloud beta container hub mesh describe --project=${PROJECT_ID} --format="value(membershipStates[].state.code)"` == "OK;OK" ]]; then
         break
     else
         echo "Waiting on hub to install ASM in clusters for $i seconds."
     fi
+done
 
 # Verify CRD is established in the cluster
 echo -e "Verifying Control Plane Revisions CRD is present on ${CLUSTER}"
