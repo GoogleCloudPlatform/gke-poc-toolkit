@@ -23,7 +23,7 @@ ISTIOCTL_CMD=$(pwd)/${ASM_PACKAGE}/bin/istioctl
 ${ISTIOCTL_CMD} version
 
 # Get cluster creds
-touch ./tempkubeconfig && export KUBECONFIG=./tempkubeconfig
+touch ./asmkubeconfig && export KUBECONFIG=./asmkubeconfig
 gcloud container clusters get-credentials ${CLUSTER} --region ${LOCATION} --project ${PROJECT_ID}
 
 # Create kubeconfig secret for the current cluster and install it in istio-system of the rest of the mesh clusters
@@ -31,3 +31,5 @@ ${ISTIOCTL_CMD} x create-remote-secret --name=${CLUSTER} > ./manifests/secret-ku
 
 gcloud container clusters get-credentials ${TARGET_CLUSTER} --region ${TARGET_LOCATION} --project ${PROJECT_ID}
 kubectl apply -f ./manifests/secret-kubeconfig-${CLUSTER}.yaml 
+
+rm ./asmkubeconfig

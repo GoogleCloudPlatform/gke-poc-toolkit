@@ -8,7 +8,7 @@ echo -e "GATEWAY_API_VERSION is ${GATEWAY_API_VERSION}"
 
 # Get cluster creds
 cd ${MODULE_PATH}
-touch ./tempkubeconfig && export KUBECONFIG=./tempkubeconfig
+touch ./mcgkubeconfig && export KUBECONFIG=./mcgkubeconfig
 gcloud container clusters get-credentials ${CLUSTER} --region ${LOCATION} --project ${PROJECT_ID}
 
 # Install Gateway API CRDs
@@ -23,3 +23,5 @@ kubectl wait --for=condition=established customresourcedefinition.apiextensions.
 kubectl wait --for=condition=established customresourcedefinition.apiextensions.k8s.io/tcproutes.networking.x-k8s.io --timeout=10m
 kubectl wait --for=condition=established customresourcedefinition.apiextensions.k8s.io/tlsroutes.networking.x-k8s.io --timeout=10m
 kubectl wait --for=condition=established customresourcedefinition.apiextensions.k8s.io/udproutes.networking.x-k8s.io --timeout=10m
+
+rm ./mcgkubeconfig
