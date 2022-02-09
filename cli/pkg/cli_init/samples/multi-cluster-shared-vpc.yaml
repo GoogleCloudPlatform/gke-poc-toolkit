@@ -7,6 +7,7 @@ enableWindowsNodepool: false
 enablePreemptibleNodepool: false # Enforced on Linux Node pools only
 privateEndpoint: false
 releaseChannel: regular
+defaultNodepoolOS: cos
 initialNodeCount: 3
 maxNodeCount: 10
 minNodeCount: 3

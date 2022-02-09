@@ -192,9 +192,9 @@ func ValidateConf(c *Config) error {
 	if c.TerraformState != "local" && c.TerraformState != "cloud" {
 		return fmt.Errorf("terraform state must be one of: local, cloud")
 	}
-	if err := validateNodeOS(c.DefaultNodepoolOS); err != nil {
-		return err
-	}
+	// if err := validateNodeOS(c.DefaultNodepoolOS); err != nil {
+	// 	return err
+	// }
 	if err := validateConfigRegion(c.GovernanceProjectID, c.Region); err != nil {
 		return err
 	}
@@ -234,9 +234,9 @@ func ValidateConf(c *Config) error {
 			if err := validateMachineType(c.ClustersProjectID, cc.MachineType, cc.Zone); err != nil {
 				return fmt.Errorf("ClustersConfig[%d]: %s", i, err)
 			}
-			if err := validateNodeOS(c.DefaultNodepoolOS); err != nil {
-				return fmt.Errorf("ClustersConfig[%d]: %s", i, err)
-			}
+			// if err := validateNodeOS(c.DefaultNodepoolOS); err != nil {
+			// 	return fmt.Errorf("ClustersConfig[%d]: %s", i, err)
+			// }
 		}
 	}
 

@@ -12,6 +12,7 @@ privateEndpoint: false
 configSync: true 
 policyController: true
 releaseChannel: regular
+defaultNodepoolOS: cos
 initialNodeCount: 3
 maxNodeCount: 10
 minNodeCount: 3
