@@ -30,5 +30,6 @@ vpcConfig:
 clustersConfig:   
 - clusterName: "gke-central"
   machineType: "e2-standard-4"
-  region: "us-central1" 
+  region: "us-central1"
+  zone: "us-central1-a"  
   subnetName: "us-central1"
