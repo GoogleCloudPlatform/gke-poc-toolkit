@@ -25,7 +25,7 @@ module "gke" {
   project_id              = module.enabled_google_apis.project_id
   name                    = each.key
   region                  = each.value.region
-  release_channel         = each.value.release_channel
+  release_channel         = var.release_channel
   config_connector        = var.config_connector
   network                 = local.network_name
   subnetwork              = each.value.subnet_name
