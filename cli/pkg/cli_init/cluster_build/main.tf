@@ -12,6 +12,7 @@ module "cluster_build" {
   vpc_ip_range_pods_name            = var.vpc_ip_range_pods_name
   vpc_ip_range_services_name        = var.vpc_ip_range_services_name
   node_pool                         = var.node_pool
+  release_channel                   = var.release_channel
   initial_node_count                = var.initial_node_count
   min_node_count                    = var.min_node_count
   max_node_count                    = var.max_node_count
@@ -104,6 +105,11 @@ variable "vpc_ip_range_services_name" {
 variable "node_pool" {
   type    = string
   default = "gke-toolkit-pool"
+}
+
+variable "release_channel" {
+  type = string
+  default = "regular"
 }
 
 variable "initial_node_count" {
