@@ -11,6 +11,9 @@ echo -e "TARGET_LOCATION is ${TARGET_LOCATION}"
 
 # Download ASM installation package for istioctl bin
 cd ${MODULE_PATH}
+
+echo -e "Setting up istioctl for $OSTYPE"
+
 if [[ $OSTYPE == 'darwin'* ]]; then
     export ASM_PACKAGE_OS="${ASM_PACKAGE}-osx.tar.gz"
 else 
@@ -23,10 +26,12 @@ ISTIOCTL_CMD=$(pwd)/${ASM_PACKAGE}/bin/istioctl
 ${ISTIOCTL_CMD} version
 
 # Get cluster creds
+echo -e "Setting up kubeconfig at ${MODULE_PATH}/asmkubeconfig"
 touch ./asmkubeconfig && export KUBECONFIG=./asmkubeconfig
 gcloud container clusters get-credentials ${CLUSTER} --region ${LOCATION} --project ${PROJECT_ID}
 
 # Create kubeconfig secret for the current cluster and install it in istio-system of the rest of the mesh clusters
+echo -e "Creating kubeconfig secret from cluster ${CLUSTER} and installing it on cluster ${TARGET_CLUSTER}"
 ${ISTIOCTL_CMD} x create-remote-secret --name=${CLUSTER} > ./manifests/secret-kubeconfig-${CLUSTER}.yaml
 
 gcloud container clusters get-credentials ${TARGET_CLUSTER} --region ${TARGET_LOCATION} --project ${PROJECT_ID}

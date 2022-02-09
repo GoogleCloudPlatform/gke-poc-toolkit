@@ -16,7 +16,7 @@ echo -e "Enabling ASM Mesh on the GKE HUB"
 gcloud beta container hub mesh enable --project=${PROJECT_ID}
 
 # Verify CRD is established in the cluster
-echo -e "Verifying Control Plane Revisions CRD ios present on ${CLUSTER}"
+echo -e "Verifying Control Plane Revisions CRD is present on ${CLUSTER}"
 kubectl wait --for=condition=established crd controlplanerevisions.mesh.cloud.google.com --timeout=10m
 
 # Install SAs, Roles, Roledbinding for ASM
