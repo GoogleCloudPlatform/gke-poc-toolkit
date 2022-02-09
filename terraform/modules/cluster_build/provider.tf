@@ -14,13 +14,13 @@
  * limitations under the License.
  */
 
-# terraform {
-#   required_providers {
-#     google = {
-#       version = "~> 3.63.0"
-#     }
-#   }
-# }
+terraform {
+  required_providers {
+    google = {
+      version = "~> 3.63.0"
+    }
+  }
+}
 
 data "google_client_openid_userinfo" "me" {
 }
