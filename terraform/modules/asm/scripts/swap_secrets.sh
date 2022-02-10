@@ -9,14 +9,7 @@ echo -e "ASM_PACKAGE is ${ASM_PACKAGE}"
 echo -e "TARGET_CLUSTER is ${TARGET_CLUSTER}"
 echo -e "TARGET_LOCATION is ${TARGET_LOCATION}"
 
-# Download ASM installation package for istioctl bin
-if [[ ${OSTYPE} == 'darwin'* ]]; then
-    export ASM_PACKAGE_OS="${ASM_PACKAGE}-osx.tar.gz"
-else 
-    export ASM_PACKAGE_OS="${ASM_PACKAGE}-linux-amd64.tar.gz"
-fi
-curl -LO https://storage.googleapis.com/gke-release/asm/"${ASM_PACKAGE_OS}"
-tar xzf ${ASM_PACKAGE_OS} && rm -rf ${ASM_PACKAGE_OS}
+# Setup Istio
 ISTIOCTL_CMD=./${ASM_PACKAGE}/bin/istioctl
 
 # Setup kubeconfig
