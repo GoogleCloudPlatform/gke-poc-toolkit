@@ -6,8 +6,9 @@ echo -e "CLUSTER is ${CLUSTER}"
 echo -e "LOCATION is ${LOCATION}"
 
 # Setup kubeconfig
-echo -e "Setting up kubeconfig at ${PWD}/tempkubeconfig"
-export KUBECONFIG=./tempkubeconfig
+export WORKDIR=`pwd`
+echo -e "Setting up kubeconfig at ${WORKDIR}/tempkubeconfig"
+export KUBECONFIG=${WORKDIR}/tempkubeconfig
 
 # Enable ASM Mesh which installs ASM CRDs
 echo -e "Enabling ASM Mesh on the GKE HUB"
@@ -40,5 +41,5 @@ kubectl wait --for=condition=established crd controlplanerevisions.mesh.cloud.go
     --kubeconfig ${KUBECONFIG} --context=gke_${PROJECT_ID}_${LOCATION}_${CLUSTER}
 
 # Install SAs, Roles, Roledbinding for ASM
-kubectl apply -f ./manifests/istio-system-ns.yaml --kubeconfig ${KUBECONFIG} --context=gke_${PROJECT_ID}_${LOCATION}_${CLUSTER}
-kubectl apply -f ./manifests/ --kubeconfig ${KUBECONFIG} --context=gke_${PROJECT_ID}_${LOCATION}_${CLUSTER}
+kubectl apply -f ${WORKDIR}/manifests/istio-system-ns.yaml --kubeconfig ${KUBECONFIG} --context=gke_${PROJECT_ID}_${LOCATION}_${CLUSTER}
+kubectl apply -f ${WORKDIR}/manifests/ --kubeconfig ${KUBECONFIG} --context=gke_${PROJECT_ID}_${LOCATION}_${CLUSTER}
