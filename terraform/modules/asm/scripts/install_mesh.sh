@@ -27,11 +27,12 @@ else
 fi
 
 for i in {1..600}; do
-    if [[ `gcloud beta container hub mesh describe --project=${PROJECT_ID} --format="value(membershipStates[].state.code)"` == ${STATE_CODE} ]]; then
+    STATUS=`gcloud beta container hub mesh describe --project=${PROJECT_ID} --format="value(membershipStates[].state.code)"`
+    if [[ ${STATUS} == ${STATE_CODE} ]]; then
         echo -e "Hub mesh membership stats all OK"
         break
     else
-        echo -e "Waiting on hub to install ASM in clusters for $i seconds."
+        echo -e "Waiting on hub to install ASM in clusters for $i seconds. Current status:${STATUS}. Expected status ${STATE_CODE}"
     fi
 done
 
