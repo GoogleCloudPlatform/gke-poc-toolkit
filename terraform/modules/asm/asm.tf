@@ -25,8 +25,25 @@ variable "asm_version" {}
 variable "asm_release_channel" {}
 variable "asm_package" {}
 
+// Create Kubeconfig
+resource "null_resource" "create_kubeconfig" {
+  provisioner "local-exec" {
+    interpreter = ["bash", "-exc"]
+    command     = "${path.module}/scripts/create_kubeconfig.sh"
+    environment = {
+      MODULE_PATH = path.module
+      CLUSTER    = var.cluster_name
+      LOCATION   = var.location
+      PROJECT_ID    = var.project_id
+    }
+  }
+}
+
 // Install asm crds on each cluster
-resource "null_resource" "exec_gke_mesh" {
+resource "null_resource" "install_mesh" {
+  depends_on = [
+    null_resource.create_kubeconfig,
+  ]
   provisioner "local-exec" {
     interpreter = ["bash", "-exc"]
     command     = "${path.module}/scripts/install_mesh.sh"
@@ -40,14 +57,14 @@ resource "null_resource" "exec_gke_mesh" {
 }
 
 // Install asm crds on each cluster
-resource "null_resource" "exec_secrets_mesh" {
+resource "null_resource" "swap_secrets" {
   depends_on = [
-    null_resource.exec_gke_mesh,
+    null_resource.install_mesh,
   ]
   for_each = var.cluster_config
   provisioner "local-exec" {
     interpreter = ["bash", "-exc"]
-    command     = "${path.module}/scripts/export_svcs.sh"
+    command     = "${path.module}/scripts/swap_secrets.sh"
     environment = {
       MODULE_PATH = path.module
       CLUSTER    = var.cluster_name
