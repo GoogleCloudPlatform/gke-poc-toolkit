@@ -10,7 +10,9 @@ echo -e "TARGET_CLUSTER is ${TARGET_CLUSTER}"
 echo -e "TARGET_LOCATION is ${TARGET_LOCATION}"
 
 # Download ASM installation package for istioctl bin
+echo -e "Starting dir: ${PWD}"
 cd ${MODULE_PATH}
+echo -e "After Module Path: ${PWD}"
 
 echo -e "Setting up istioctl for $OSTYPE"
 
@@ -23,12 +25,11 @@ curl -LO https://storage.googleapis.com/gke-release/asm/"${ASM_PACKAGE_OS}"
 tar xzf ${ASM_PACKAGE_OS} && rm -rf ${ASM_PACKAGE_OS}
 ISTIOCTL_CMD=$(pwd)/${ASM_PACKAGE}/bin/istioctl
 
-${ISTIOCTL_CMD} version
-
 # Setup kubeconfig
 echo -e "Setting up kubeconfig at ${MODULE_PATH}/tempkubeconfig"
-cd ${MODULE_PATH}
-export KUBECONFIG=./tempkubeconfig
+export KUBECONFIG=$(pwd)/tempkubeconfig
+
+echo -e "KUBECONFIG set to: ${KUBECONFIG}"
 
 # Create kubeconfig secret for the current cluster and install it in istio-system of the rest of the mesh clusters
 if [[ ${CLUSTER} == ${TARGET_CLUSTER}]]; then

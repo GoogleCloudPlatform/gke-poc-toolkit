@@ -8,13 +8,14 @@ echo -e "LOCATION is ${LOCATION}"
 # Setup kubeconfig
 echo -e "Setting up kubeconfig at ${MODULE_PATH}/tempkubeconfig"
 cd ${MODULE_PATH}
-export KUBECONFIG=./tempkubeconfig
+export KUBECONFIG=$(pwd)/tempkubeconfig
 
 # Enable ASM Mesh which installs ASM CRDs
 echo -e "Enabling ASM Mesh on the GKE HUB"
 gcloud beta container hub mesh enable --project=${PROJECT_ID}
 
 NUM_MEMBERS=`gcloud beta container hub memberships list --project=${PROJECT_ID} --format="value(name)" | wc -l | awk '{print $1}'`
+echo -e "NUM_MEMBERS: ${NUM_MEMBERS}"
 STATE_CODE="OK"
 for i in {1..$NUM_MEMBERS}; do
     if [[ $i -eq 1 ]]; then
@@ -23,12 +24,14 @@ for i in {1..$NUM_MEMBERS}; do
         STATE_CODE="${STATE_CODE};OK"
     fi
 done 
+echo -e "STATE_CODE: ${STATECODE}"
 
 for i in {1..600}; do
     if [[ `gcloud beta container hub mesh describe --project=${PROJECT_ID} --format="value(membershipStates[].state.code)"` == ${STATE_CODE} ]]; then
+        echo -e "Hub mesh membership stats all OK"
         break
     else
-        echo "Waiting on hub to install ASM in clusters for $i seconds."
+        echo -e "Waiting on hub to install ASM in clusters for $i seconds."
     fi
 done
 

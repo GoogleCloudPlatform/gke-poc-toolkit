@@ -8,8 +8,8 @@ echo -e "LOCATION is ${LOCATION}"
 # Create kubeconfig and get cluster creds
 echo -e "Adding cluster ${CLUSTER} to kubeconfig located at ${MODULE_PATH}/tempkubeconfig"
 cd ${MODULE_PATH}
-if [[ ! -e ./tempkubeconfig ]]; then
-    touch ./tempkubeconfig
+if [[ ! -e $(pwd)/tempkubeconfig ]]; then
+    touch $(pwd)/tempkubeconfig
 fi
-export KUBECONFIG=./tempkubeconfig
+export KUBECONFIG=$(pwd)/tempkubeconfig
 gcloud container clusters get-credentials ${CLUSTER} --region ${LOCATION} --project ${PROJECT_ID}
