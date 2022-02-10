@@ -223,7 +223,7 @@ module "acm" {
 
 module "mcg" {
   depends_on = [
-    module.hub,
+    module.acm,
   ]
   count                 = var.multi_cluster_gateway ? 1 : 0
   source                = "../mcg"
@@ -235,7 +235,7 @@ module "mcg" {
 
 module "asm" {
   depends_on = [
-    module.hub,
+    module.mcg,
   ]
   for_each              = var.anthos_service_mesh ? var.cluster_config : {}
   source                = "../asm"
