@@ -7,8 +7,7 @@ echo -e "LOCATION is ${LOCATION}"
 echo -e "GATEWAY_API_VERSION is ${GATEWAY_API_VERSION}"
 
 # Get cluster creds
-echo -e "Setting up kubeconfig at ${MODULE_PATH}/mcgkubeconfig"
-cd ${MODULE_PATH}
+echo -e "Setting up kubeconfig at ./mcgkubeconfig"
 touch ./mcgkubeconfig && export KUBECONFIG=./mcgkubeconfig
 gcloud container clusters get-credentials ${CLUSTER} --region ${LOCATION} --project ${PROJECT_ID}
 

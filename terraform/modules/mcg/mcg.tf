@@ -48,9 +48,9 @@ resource "null_resource" "exec_mcg_crds" {
   for_each = var.cluster_config
   provisioner "local-exec" {
     interpreter = ["bash", "-exc"]
-    command     = "${path.module}/scripts/install_crds.sh"
+    command     = "scripts/install_crds.sh"
+    working_dir = path.module    
     environment = {
-      MODULE_PATH = path.module
       CLUSTER    = each.key
       LOCATION   = each.value.region
       PROJECT_ID    = var.project_id

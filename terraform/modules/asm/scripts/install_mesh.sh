@@ -40,5 +40,5 @@ kubectl wait --for=condition=established crd controlplanerevisions.mesh.cloud.go
     --kubeconfig ${KUBECONFIG} --context=gke_${PROJECT_ID}_${LOCATION}_${CLUSTER}
 
 # Install SAs, Roles, Roledbinding for ASM
-kubectl apply -f ./manifests/istio-system-ns.yaml
-kubectl apply -f ./manifests/
+kubectl apply -f ./manifests/istio-system-ns.yaml --kubeconfig ${KUBECONFIG} --context=gke_${PROJECT_ID}_${LOCATION}_${CLUSTER}
+kubectl apply -f ./manifests/ --kubeconfig ${KUBECONFIG} --context=gke_${PROJECT_ID}_${LOCATION}_${CLUSTER}
