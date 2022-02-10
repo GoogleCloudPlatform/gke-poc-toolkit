@@ -1,6 +1,6 @@
 # GKE PoC Toolkit
 
-![build](https://img.shields.io/github/checks-status/GoogleCloudPlatform/gke-poc-toolkit/main) ![release](https://img.shields.io/github/v/release/googlecloudplatform/gke-poc-toolkit) ![stars](https://img.shields.io/github/stars/GoogleCloudPlatform/gke-poc-toolkit) ![license](https://img.shields.io/github/license/GoogleCloudPlatform/gke-poc-toolkit)
+![release](https://img.shields.io/github/v/release/googlecloudplatform/gke-poc-toolkit) ![stars](https://img.shields.io/github/stars/GoogleCloudPlatform/gke-poc-toolkit) ![license](https://img.shields.io/github/license/GoogleCloudPlatform/gke-poc-toolkit)
 
 
 ![logo](assets/logo-256.png)
@@ -11,21 +11,21 @@ The GKE Proof of Concept (PoC) Toolkit is a demo generator for [Google Kubernete
   
 ## Quickstart 
 
-1. [Create a Google Cloud Project](https://cloud.google.com/resource-manager/docs/creating-managing-projects) and connect it to an existing Billing account.
-2. Open a bash-compatible shell (eg. [Google Cloud Shell](https://cloud.google.com/shell)) and ensure you have the following tools installed: 
+1. **[Create a Google Cloud Project](https://cloud.google.com/resource-manager/docs/creating-managing-projects)** and connect it to an existing Billing account.
+2. **Open a bash-compatible shell** (eg. [Google Cloud Shell](https://cloud.google.com/shell)) and ensure you have the following tools installed: 
 
 * [Google Cloud SDK version >= 325.0.0](https://cloud.google.com/sdk/docs/downloads-versioned-archives)
 * * [Terraform >= 0.13](https://www.terraform.io/downloads.html)
 * [kubectl](https://kubernetes.io/docs/tasks/tools/) ( >= v1.20)
 
-3. Set your Project ID environment variable and operating system. 
+3. **Set your Project ID environment variable and operating system.** 
 
 ```bash
 export PROJECT_ID=<your-project-id>
 export OS="darwin" # choice of darwin or amd64 
 ```
 
-4. Set up local authentication to your project. 
+4. **Set up local authentication to your project.**
 
 ```
 gcloud config set project $PROJECT_ID
@@ -33,7 +33,7 @@ gcloud auth login
 gcloud auth application-default login
 ```
 
-5. Download the GKE PoC Toolkit binary. 
+5. **Download the GKE PoC Toolkit binary.** 
 
 ```shell
 mkdir gke-poc-toolkit && cd "$_"
@@ -41,12 +41,12 @@ VERSION=$(curl -s https://api.github.com/repos/GoogleCloudPlatform/gke-poc-toolk
 curl -sLSf -o ./gkekitctl https://github.com/GoogleCloudPlatform/gke-poc-toolkit/releases/download/${VERSION}/gkekitctl-${OS} && chmod +x ./gkekitctl
 ```
 
-6. Initialize the cli:
+6. **Initialize the cli:**
 ```bash 
 ./gkekitctl init
 ```
 
-7. Run `gkekitctl create` to run the Toolkit. By default, this command sets up a single-cluster GKE environment. ([Configuration here](cli/pkg/cli_init/samples/default-config.yaml)). Enter your project ID when prompted.
+7. **Run `gkekitctl create` to run the Toolkit.** By default, this command sets up a single-cluster GKE environment. ([Configuration here](cli/pkg/cli_init/samples/default-config.yaml)). Enter your project ID when prompted.
 
 ```shell
 ./gkekitctl create
