@@ -15,7 +15,7 @@ export KUBECONFIG=${WORKDIR}/tempkubeconfig
 gcloud container clusters get-credentials ${CLUSTER} --region ${LOCATION} --project ${PROJECT_ID}
 
 # Download ASM installation package for istioctl bin
-if [[ ! -e ./${ASM_PACKAGE}/bin/istioctl ]]; then
+if [[ ! -e ./${ASM_PACKAGE_OS}/bin/istioctl ]]; then
     if [[ ${OSTYPE} == 'darwin'* ]]; then
         export ASM_PACKAGE_OS="${ASM_PACKAGE}-osx.tar.gz"
     else 
