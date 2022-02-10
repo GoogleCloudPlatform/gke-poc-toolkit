@@ -31,5 +31,5 @@ if [[ ${CLUSTER} == ${TARGET_CLUSTER} ]]; then
 else
     echo -e "Creating kubeconfig secret from cluster ${CLUSTER} and installing it on cluster ${TARGET_CLUSTER}"
     ${ISTIOCTL_CMD} x create-remote-secret --kubeconfig ${KUBECONFIG} --context=gke_${PROJECT_ID}_${LOCATION}_${CLUSTER} --name=${CLUSTER} > ./manifests/secret-kubeconfig-${CLUSTER}.yaml
-    kubectl apply -f ./manifests/secret-kubeconfig-${CLUSTER}.yaml --config=${KUBECONFIG} --context=gke_${PROJECT_ID}_${TARGET_LOCATION}_${TARGET_CLUSTER}
+    kubectl apply -f ./manifests/secret-kubeconfig-${CLUSTER}.yaml --kubeconfig=${KUBECONFIG} --context=gke_${PROJECT_ID}_${TARGET_LOCATION}_${TARGET_CLUSTER}
 fi
