@@ -26,10 +26,10 @@ variable "asm_release_channel" {}
 variable "asm_package" {}
 
 // Create Kubeconfig
-resource "null_resource" "create_kubeconfig" {
+resource "null_resource" "create_kube_config" {
   provisioner "local-exec" {
     interpreter = ["bash", "-exc"]
-    command     = "${path.module}/scripts/create_kubeconfig.sh"
+    command     = "${path.module}/scripts/create_kube_config.sh"
     environment = {
       MODULE_PATH = path.module
       CLUSTER    = var.cluster_name
@@ -42,7 +42,7 @@ resource "null_resource" "create_kubeconfig" {
 // Install asm crds on each cluster
 resource "null_resource" "install_mesh" {
   depends_on = [
-    null_resource.create_kubeconfig,
+    null_resource.create_kube_config,
   ]
   provisioner "local-exec" {
     interpreter = ["bash", "-exc"]
