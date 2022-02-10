@@ -25,13 +25,17 @@ variable "asm_version" {}
 variable "asm_release_channel" {}
 variable "asm_package" {}
 
+locals {
+  cluster_count = length(var.cluster_config)
+}
+
 // Create Kubeconfig
 resource "null_resource" "create_kube_config" {
   provisioner "local-exec" {
     interpreter = ["bash", "-exc"]
-    command     = "${path.module}/scripts/create_kube_config.sh"
+    command     = "scripts/create_kube_config.sh"
+    working_dir = path.module
     environment = {
-      MODULE_PATH = path.module
       CLUSTER    = var.cluster_name
       LOCATION   = var.location
       PROJECT_ID    = var.project_id
@@ -46,9 +50,9 @@ resource "null_resource" "install_mesh" {
   ]
   provisioner "local-exec" {
     interpreter = ["bash", "-exc"]
-    command     = "${path.module}/scripts/install_mesh.sh"
+    command     = "scripts/install_mesh.sh"
+    working_dir = path.module
     environment = {
-      MODULE_PATH = path.module
       CLUSTER    = var.cluster_name
       LOCATION   = var.location
       PROJECT_ID    = var.project_id
@@ -61,12 +65,12 @@ resource "null_resource" "swap_secrets" {
   depends_on = [
     null_resource.install_mesh,
   ]
-  for_each = var.cluster_config
+  for_each = local.cluster_count != 1 ? var.cluster_config : {}
   provisioner "local-exec" {
     interpreter = ["bash", "-exc"]
-    command     = "${path.module}/scripts/swap_secrets.sh"
+    command     = "scripts/swap_secrets.sh"
+    working_dir = path.module
     environment = {
-      MODULE_PATH = path.module
       CLUSTER    = var.cluster_name
       LOCATION   = var.location
       TARGET_CLUSTER    = each.key

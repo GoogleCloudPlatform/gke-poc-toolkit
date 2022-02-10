@@ -10,12 +10,6 @@ echo -e "TARGET_CLUSTER is ${TARGET_CLUSTER}"
 echo -e "TARGET_LOCATION is ${TARGET_LOCATION}"
 
 # Download ASM installation package for istioctl bin
-echo -e "Starting dir: ${PWD}"
-cd ${MODULE_PATH}
-echo -e "After Module Path: ${PWD}"
-
-echo -e "Setting up istioctl for $OSTYPE"
-
 if [[ ${OSTYPE} == 'darwin'* ]]; then
     export ASM_PACKAGE_OS="${ASM_PACKAGE}-osx.tar.gz"
 else 
@@ -23,11 +17,11 @@ else
 fi
 curl -LO https://storage.googleapis.com/gke-release/asm/"${ASM_PACKAGE_OS}"
 tar xzf ${ASM_PACKAGE_OS} && rm -rf ${ASM_PACKAGE_OS}
-ISTIOCTL_CMD=$(pwd)/${ASM_PACKAGE}/bin/istioctl
+ISTIOCTL_CMD=./${ASM_PACKAGE}/bin/istioctl
 
 # Setup kubeconfig
 echo -e "Setting up kubeconfig at ${MODULE_PATH}/tempkubeconfig"
-export KUBECONFIG=$(pwd)/tempkubeconfig
+export KUBECONFIG=./tempkubeconfig
 
 echo -e "KUBECONFIG set to: ${KUBECONFIG}"
 
