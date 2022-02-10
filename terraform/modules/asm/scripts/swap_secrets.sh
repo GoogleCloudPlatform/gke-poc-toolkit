@@ -26,7 +26,7 @@ export KUBECONFIG=./tempkubeconfig
 echo -e "KUBECONFIG set to: ${KUBECONFIG}"
 
 # Create kubeconfig secret for the current cluster and install it in istio-system of the rest of the mesh clusters
-if [[ ${CLUSTER} == ${TARGET_CLUSTER}]]; then
+if [[ ${CLUSTER} == ${TARGET_CLUSTER} ]]; then
     break
 else
     echo -e "Creating kubeconfig secret from cluster ${CLUSTER} and installing it on cluster ${TARGET_CLUSTER}"
