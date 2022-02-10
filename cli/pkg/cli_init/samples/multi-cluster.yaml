@@ -1,4 +1,4 @@
-# sample-config.yaml
+# multi-cluster.yaml
 terraformState: cloud  # local, cloud
 region: "us-east1" # Region for resources aside from GKE clusters
 clustersProjectId: "my-project"
