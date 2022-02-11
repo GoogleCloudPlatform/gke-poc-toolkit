@@ -25,5 +25,5 @@ else
 fi
 if [[ ! -e ${ASM_PACKAGE_OS}/bin/istioctl ]]; then
     curl -LO https://storage.googleapis.com/gke-release/asm/"${ASM_PACKAGE_OS}"
-    tar xzf ${ASM_PACKAGE_OS} && rm -rf ./${ASM_PACKAGE_OS}
+    tar xzf ${ASM_PACKAGE_OS}
 fi
