@@ -241,8 +241,6 @@ module "asm" {
   source                = "../asm"
   project_id            = var.project_id
   cluster_config        = var.cluster_config
-  cluster_name          = each.key
-  location              = each.value.region
   vpc_project_id        = var.vpc_project_id
   vpc_name              = var.vpc_name  
   asm_version = var.asm_version
