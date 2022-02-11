@@ -26,7 +26,7 @@ else
     echo -e "STATE_CODE: ${STATE_CODE}"
 fi
 
-for i in {1..600}; do
+for i in {1..900}; do
     STATUS=`gcloud beta container hub mesh describe --project=${PROJECT_ID} --format="value(membershipStates[].state.code)"`
     if [[ ${STATUS} == ${STATE_CODE} ]]; then
         echo -e "Hub mesh membership stats all OK"

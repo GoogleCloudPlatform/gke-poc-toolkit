@@ -9,9 +9,9 @@ echo -e "ASM_PACKAGE is ${ASM_PACKAGE}"
 # Create kubeconfig and get cluster creds
 export WORKDIR=`pwd`
 echo -e "Adding cluster ${CLUSTER} to kubeconfig located at ${WORKDIR}/tempkubeconfig"
-if [[ ! -e ${WORKDIR}/tempkubeconfig ]]; then
+if [[ ! -e ./tempkubeconfig ]]; then
     echo -e "Creating tempkubeconfig."
-    touch ${WORKDIR}/tempkubeconfig
+    touch ./tempkubeconfig
 fi
 echo -e "tempkubeconfig already exists."
 export KUBECONFIG=${WORKDIR}/tempkubeconfig
