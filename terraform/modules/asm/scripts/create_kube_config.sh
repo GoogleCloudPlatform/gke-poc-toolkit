@@ -25,5 +25,5 @@ if [[ ! -e ${ASM_PACKAGE}/bin/istioctl ]]; then
         export ASM_PACKAGE_OS="${ASM_PACKAGE}-linux-amd64.tar.gz"
     fi
     curl -LO https://storage.googleapis.com/gke-release/asm/"${ASM_PACKAGE_OS}"
-    tar xzf ${ASM_PACKAGE}
+    tar xzf ${ASM_PACKAGE_OS}
 fi
