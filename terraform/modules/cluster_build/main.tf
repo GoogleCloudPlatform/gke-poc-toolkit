@@ -237,7 +237,7 @@ module "asm" {
   depends_on = [
     module.mcg,
   ]
-  for_each              = var.anthos_service_mesh ? 1 : 0
+  count                 = var.anthos_service_mesh ? 1 : 0
   source                = "../asm"
   project_id            = var.project_id
   cluster_config        = var.cluster_config
