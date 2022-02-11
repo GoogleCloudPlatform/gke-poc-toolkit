@@ -15,12 +15,10 @@
  */
 
 // Defines vars so that we can pass them in from cluster_build/main.tf from the overall tfvars
-variable "cluster_name" {}
 variable "cluster_config" {}
 variable "vpc_name" {}
 variable "vpc_project_id" {}
 variable "project_id" {}
-variable "location" {}
 variable "asm_version" {}
 variable "asm_release_channel" {}
 variable "asm_package" {}
