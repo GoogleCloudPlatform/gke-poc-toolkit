@@ -73,9 +73,9 @@ resource "null_resource" "swap_secrets" {
     command     = "scripts/swap_secrets.sh"
     working_dir = path.module
     environment = {
-      CLUSTER    = var.cluster_name
-      LOCATION   = var.location
-      PROJECT_ID    = var.project_id
+      CLUSTER     = var.cluster_name
+      LOCATION    = var.location
+      PROJECT_ID  = var.project_id
       ASM_VERSION = var.asm_version
       ASM_PACKAGE = var.asm_package
     }
