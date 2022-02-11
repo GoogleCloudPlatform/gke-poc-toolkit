@@ -23,7 +23,7 @@ if [[ ${OSTYPE} == 'darwin'* ]]; then
 else 
     export ASM_PACKAGE_OS="${ASM_PACKAGE}-linux-amd64.tar.gz"
 fi
-if [[ ! -e ./${ASM_PACKAGE_OS}/bin/istioctl ]]; then
+if [[ ! -e ${ASM_PACKAGE_OS}/bin/istioctl ]]; then
     curl -LO https://storage.googleapis.com/gke-release/asm/"${ASM_PACKAGE_OS}"
-    tar xzf ./${ASM_PACKAGE_OS} && rm -rf ./${ASM_PACKAGE_OS}
+    tar xzf ${ASM_PACKAGE_OS} && rm -rf ./${ASM_PACKAGE_OS}
 fi
