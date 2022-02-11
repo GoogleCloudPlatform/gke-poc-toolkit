@@ -20,7 +20,7 @@ echo -e "KUBECONFIG set to: ${KUBECONFIG}"
 TARGET_CLUSTERS=`gcloud container clusters list --project ${PROJECT_ID} --format="value(name)"`
 for i in ${TARGET_CLUSTERS}; do
     if [[ $i != ${CLUSTER} ]]; then
-        TARGET_CONTEXT=`kubectl config view -o jsonpath='{.clusters[?("${i}")].name}'`
+        TARGET_CONTEXT=`kubectl config get-contexts | grep ${i} | awk '{print $2}'`
         echo -e "Creating kubeconfig secret from cluster ${CLUSTER} and installing it on cluster ${i}"
         ${ISTIOCTL_CMD} x create-remote-secret --kubeconfig ${KUBECONFIG} --context=gke_${PROJECT_ID}_${LOCATION}_${CLUSTER} --name=${CLUSTER} > ./manifests/secret-kubeconfig-${CLUSTER}.yaml
         kubectl apply -f ./manifests/secret-kubeconfig-${CLUSTER}.yaml --kubeconfig=${KUBECONFIG} --context=${TARGET_CONTEXT}
