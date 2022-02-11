@@ -29,13 +29,14 @@ locals {
 
 // Create Kubeconfig
 resource "null_resource" "create_kube_config" {
+  for_each = var.cluster_config
   provisioner "local-exec" {
     interpreter = ["bash", "-exc"]
     command     = "scripts/create_kube_config.sh"
     working_dir = path.module
     environment = {
-      CLUSTER    = var.cluster_name
-      LOCATION   = var.location
+      CLUSTER    = each.key
+      LOCATION   = each.value.region
       PROJECT_ID    = var.project_id
       ASM_VERSION = var.asm_version
       ASM_PACKAGE = var.asm_package
@@ -45,6 +46,7 @@ resource "null_resource" "create_kube_config" {
 
 // Install asm crds on each cluster
 resource "null_resource" "install_mesh" {
+  for_each = var.cluster_config
   depends_on = [
     null_resource.create_kube_config,
   ]
@@ -53,8 +55,8 @@ resource "null_resource" "install_mesh" {
     command     = "scripts/install_mesh.sh"
     working_dir = path.module
     environment = {
-      CLUSTER    = var.cluster_name
-      LOCATION   = var.location
+      CLUSTER    = each.key
+      LOCATION   = each.value.region
       PROJECT_ID    = var.project_id
     }
   }
@@ -73,8 +75,6 @@ resource "null_resource" "swap_secrets" {
     environment = {
       CLUSTER    = var.cluster_name
       LOCATION   = var.location
-      TARGET_CLUSTER    = each.key
-      TARGET_LOCATION   = each.value.region
       PROJECT_ID    = var.project_id
       ASM_VERSION = var.asm_version
       ASM_PACKAGE = var.asm_package
