@@ -17,12 +17,12 @@ export KUBECONFIG=${WORKDIR}/tempkubeconfig
 echo -e "KUBECONFIG set to: ${KUBECONFIG}"
 
 # Create kubeconfig secret for the current cluster and install it in istio-system of the rest of the mesh clusters
-TARGET_CLUSTERS=`gcloud container clusters list --project ${PROJECT_ID} --format="value(name)"`
-for i in ${TARGET_CLUSTERS}; do
-    if [[ $i != ${CLUSTER} ]]; then
+${ISTIOCTL_CMD} x create-remote-secret --kubeconfig ${KUBECONFIG} --context=gke_${PROJECT_ID}_${LOCATION}_${CLUSTER} --name=${CLUSTER} > ./manifests/secret-kubeconfig-${CLUSTER}.yaml
+
+for i in `gcloud container clusters list --project ${PROJECT_ID} --format="value(name)"`; do
+    if [[ "$i" != "${CLUSTER}" ]]; then
         TARGET_CONTEXT=`kubectl config get-contexts | grep ${i} | awk '{print $2}'`
         echo -e "Creating kubeconfig secret from cluster ${CLUSTER} and installing it on cluster ${i}"
-        ${ISTIOCTL_CMD} x create-remote-secret --kubeconfig ${KUBECONFIG} --context=gke_${PROJECT_ID}_${LOCATION}_${CLUSTER} --name=${CLUSTER} > ./manifests/secret-kubeconfig-${CLUSTER}.yaml
         kubectl apply -f ./manifests/secret-kubeconfig-${CLUSTER}.yaml --kubeconfig=${KUBECONFIG} --context=${TARGET_CONTEXT}
     else
         echo -e "Skipping as the current cluster, ${CLUSTER}, is the same as the target cluster, ${i}"
