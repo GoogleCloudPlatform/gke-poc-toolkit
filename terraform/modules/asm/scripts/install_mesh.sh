@@ -43,10 +43,6 @@ kubectl wait --for=condition=established crd controlplanerevisions.mesh.cloud.go
 
 # Install SAs, Roles, Roledbinding for ASM
 kubectl apply -f ./manifests/istio-system-ns.yaml --kubeconfig ${KUBECONFIG} --context=gke_${PROJECT_ID}_${LOCATION}_${CLUSTER}
-kubectl wait --for=condition=established namespace istio-system --timeout=10m --kubeconfig ${KUBECONFIG} --context=gke_${PROJECT_ID}_${LOCATION}_${CLUSTER}
 kubectl apply -f ./manifests/ --kubeconfig ${KUBECONFIG} --context=gke_${PROJECT_ID}_${LOCATION}_${CLUSTER}
 
-kubectl wait --for=condition=established serviceaccount -n istio-system istio-reader-sa --timeout=10m --kubeconfig ${KUBECONFIG} --context=gke_${PROJECT_ID}_${LOCATION}_${CLUSTER}
-kubectl wait --for=condition=established clusterrolebinding istio-reader-sa-clusterrolebinding --timeout=10m --kubeconfig ${KUBECONFIG} --context=gke_${PROJECT_ID}_${LOCATION}_${CLUSTER}
-kubectl wait --for=condition=established clusterrole istio-reader-sa-clusterrole --timeout=10m --kubeconfig ${KUBECONFIG} --context=gke_${PROJECT_ID}_${LOCATION}_${CLUSTER}
-kubectl wait --for=condition=established controlplanerevision -n istio-system asm-managed --timeout=10m --kubeconfig ${KUBECONFIG} --context=gke_${PROJECT_ID}_${LOCATION}_${CLUSTER}
+kubectl wait --for=condition=ProvisioningFinished controlplanerevision -n istio-system asm-managed --timeout=10m 
