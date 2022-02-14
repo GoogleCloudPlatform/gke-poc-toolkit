@@ -17,7 +17,7 @@
 module "vpc" {
   count   = var.shared_vpc ? 0 : 1
   source  = "terraform-google-modules/network/google"
-  version = "~> 2.5"
+  version = "~> 4.1.0"
 
   project_id   = module.enabled_google_apis.project_id
   network_name = var.vpc_name
@@ -55,7 +55,7 @@ module "bastion" {
   ]
   count          = var.private_endpoint ? 1 : 0
   source         = "terraform-google-modules/bastion-host/google"
-  version        = "~> 3.2"
+  version        = "~> 4.1.0"
   network        = local.vpc_selflink
   subnet         = local.bastion_subnet_selflink
   project        = module.enabled_google_apis.project_id

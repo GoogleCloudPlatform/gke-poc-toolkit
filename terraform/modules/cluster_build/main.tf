@@ -172,7 +172,7 @@ module "enabled_governance_apis" {
 module "service_accounts" {
   for_each      = local.service_accounts
   source        = "terraform-google-modules/service-accounts/google"
-  version       = "~> 4.1"
+  version       = "~> 4.1.0"
   project_id    = module.enabled_google_apis.project_id
   display_name  = "${each.key} service account"
   names         = [each.key]
@@ -187,7 +187,7 @@ module "kms" {
   ]
   for_each        = local.distinct_cluster_regions
   source          = "terraform-google-modules/kms/google"
-  version         = "~> 2.0"
+  version         = "~> 2.1.0"
   project_id      = var.governance_project_id
   location        = each.key
   keyring         = "${local.gke_keyring_name}-${each.key}"
