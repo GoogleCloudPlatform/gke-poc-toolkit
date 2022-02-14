@@ -106,7 +106,7 @@ locals {
     min_count          = var.min_node_count
     max_count          = var.max_node_count
     auto_upgrade       = true
-    node_metadata      = "GKE_METADATA_SERVER"
+    node_metadata      = "GKE_METADATA"
     machine_type       = var.linux_machine_type
     disk_type          = "pd-ssd"
     disk_size_gb       = 30
