@@ -54,7 +54,7 @@ locals {
 
 module "enabled_shared_vpc_apis" {
   source  = "terraform-google-modules/project-factory/google//modules/project_services"
-  version = "~> 11.3"
+  version = "~> 11.3.1"
 
   project_id                  = var.vpc_project_id
   disable_services_on_destroy = true
@@ -68,7 +68,7 @@ module "enabled_shared_vpc_apis" {
 
 module "enabled_service_project_apis" {
   source  = "terraform-google-modules/project-factory/google//modules/project_services"
-  version = "~> 11.3"
+  version = "~> 11.3.1"
 
   project_id                  = var.project_id
   disable_services_on_destroy = false

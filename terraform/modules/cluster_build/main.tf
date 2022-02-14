@@ -122,7 +122,7 @@ locals {
 // Enable APIs needed in the gke cluster project
 module "enabled_google_apis" {
   source  = "terraform-google-modules/project-factory/google//modules/project_services"
-  version = "~> 10.0"
+  version = "~> 11.3.1"
 
   project_id                  = var.project_id
   disable_services_on_destroy = false
@@ -158,7 +158,7 @@ module "enabled_google_apis" {
 // Enable APIs needed in the governance project
 module "enabled_governance_apis" {
   source  = "terraform-google-modules/project-factory/google//modules/project_services"
-  version = "~> 10.0"
+  version = "~> 11.3.1"
 
   project_id                  = var.governance_project_id
   disable_services_on_destroy = false
