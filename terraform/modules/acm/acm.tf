@@ -51,7 +51,6 @@ resource "google_gke_hub_feature" "acm" {
 // https://registry.terraform.io/providers/hashicorp/google/latest/docs/resources/gke_hub_feature_membership#git 
 resource "google_gke_hub_feature_membership" "feature_member" {
   provider = google-beta
-  version  = "~> 4.10.0"
   depends_on = [
     resource.google_gke_hub_feature.acm,
   ]
