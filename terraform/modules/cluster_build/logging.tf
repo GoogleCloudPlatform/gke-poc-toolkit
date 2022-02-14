@@ -21,6 +21,7 @@ resource "google_storage_bucket" "log-bucket" {
   force_destroy               = true
   project                     = var.governance_project_id
   uniform_bucket_level_access = true
+  location                    = var.region
 }
 
 // Create BQ Data Set in Governance Project
