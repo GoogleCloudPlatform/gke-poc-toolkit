@@ -172,7 +172,7 @@ module "enabled_governance_apis" {
 module "service_accounts" {
   for_each      = local.service_accounts
   source        = "terraform-google-modules/service-accounts/google"
-  version       = "~> 3.0"
+  version       = "~> 4.1"
   project_id    = module.enabled_google_apis.project_id
   display_name  = "${each.key} service account"
   names         = [each.key]
