@@ -43,8 +43,23 @@ module "firewall_rules" {
   }]
 }
 
+// Create Kubeconfig
+resource "null_resource" "create_kube_config" {
+  provisioner "local-exec" {
+    interpreter = ["bash", "-exc"]
+    command     = "scripts/create_kube_config.sh"
+    working_dir = path.module
+    environment = {
+      PROJECT_ID    = var.project_id
+    }
+  }
+}
+
 // Install gateway api crds on each cluster
 resource "null_resource" "exec_mcg_crds" {
+  depends_on = [
+    null_resource.create_kube_config,
+  ]
   for_each = var.cluster_config
   provisioner "local-exec" {
     interpreter = ["bash", "-exc"]
