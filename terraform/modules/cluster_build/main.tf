@@ -243,7 +243,5 @@ module "asm" {
   cluster_config        = var.cluster_config
   vpc_project_id        = var.vpc_project_id
   vpc_name              = var.vpc_name  
-  asm_version = var.asm_version
-  asm_release_channel   = var.asm_release_channel
   asm_package = var.asm_package
 }

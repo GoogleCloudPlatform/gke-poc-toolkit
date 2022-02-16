@@ -9,21 +9,54 @@ echo -e "ASM_PACKAGE is ${ASM_PACKAGE}"
 # Create kubeconfig and get cluster creds
 export WORKDIR=`pwd`
 echo -e "Adding cluster ${CLUSTER} to kubeconfig located at ${WORKDIR}/tempkubeconfig"
-if [[ ! -e ./tempkubeconfig ]]; then
-    echo -e "Creating tempkubeconfig."
-    touch ./tempkubeconfig
-fi
-echo -e "tempkubeconfig already exists."
+echo -e "Creating tempkubeconfig."
+touch ./tempkubeconfig
 export KUBECONFIG=${WORKDIR}/tempkubeconfig
-gcloud container clusters get-credentials ${CLUSTER} --region ${LOCATION} --project ${PROJECT_ID}
 
-# Download ASM installation package for istioctl bin
-if [[ ! -e ${ASM_PACKAGE}/bin/istioctl ]]; then
-    if [[ ${OSTYPE} == 'darwin'* ]]; then
-        export ASM_PACKAGE_OS="${ASM_PACKAGE}-osx.tar.gz"
-    else 
-        export ASM_PACKAGE_OS="${ASM_PACKAGE}-linux-amd64.tar.gz"
-    fi
-    curl -LO https://storage.googleapis.com/gke-release/asm/"${ASM_PACKAGE_OS}"
-    tar xzf ${ASM_PACKAGE_OS}
+declare -t cluster_names=()
+for i in `gcloud container clusters list --project ${PROJECT_ID} --format="value(name)"`; do
+    cluster_names+=("$i")
+done
+
+declare -t cluster_locations=()
+for i in `gcloud container clusters list --project ${PROJECT_ID} --format="value(location)"`; do
+    cluster_locations+=("$i")
+done
+
+declare -A names_location
+for ((i=0; $i<${#cluster_names[@]}; i++))
+do
+    names_location+=( ["${cluster_names[i]}"]="${cluster_locations[i]}" )
+done
+
+for value in "${!names_location[@]}"; do
+    gcloud container get-credentials $CLUSTER_NAME --region ${NAMES_LOCATIONS[$CLUSTER_NAME]} --project ${PROJECT_ID}
+done
+
+curl -LO https://storage.googleapis.com/gke-release/asm/"${ASM_PACKAGE}-linux-amd64.tar.gz"
+tar xzf ${ASM_PACKAGE_OS}
+
+NUM_CONTEXTS=`kubectl config view -o jsonpath='{.users[*].name}' | wc -w`
+NUM_CLUSTERS=`gcloud container clusters list --project ${PROJECT_ID} --format="value(name)" | wc -l`
+if [[ ${NUM_CONTEXTS} != ${NUM_CLUSTERS} ]]; then
+    echo -e "There was an error getting credentials for all the gketoolkit clusters"
+    exit 1
+else
+    echo -e "Kubeconfig is setup with all gketoolkit clusters credentials"
 fi
+## zsh version
+
+# typeset -A names_location=()
+# names_location=(${(@)cluster_names:^cluster_locations})
+# names_location[${cluster_names[i]}]=${cluster_locations[i]}
+
+# for name location in ${(kv)names_location}; do
+#     gcloud container clusters get-credentials ${name} --region ${location} --project ${PROJECT_ID}
+# done
+
+
+# if [[ ${OSTYPE} == 'darwin'* ]]; then
+#     export ASM_PACKAGE_OS="${ASM_PACKAGE}-osx.tar.gz"
+# else 
+#     export ASM_PACKAGE_OS="${ASM_PACKAGE}-linux-amd64.tar.gz"
+# fi

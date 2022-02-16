@@ -19,8 +19,6 @@ variable "cluster_config" {}
 variable "vpc_name" {}
 variable "vpc_project_id" {}
 variable "project_id" {}
-variable "asm_version" {}
-variable "asm_release_channel" {}
 variable "asm_package" {}
 
 locals {
@@ -38,7 +36,6 @@ resource "null_resource" "create_kube_config" {
       CLUSTER    = each.key
       LOCATION   = each.value.region
       PROJECT_ID    = var.project_id
-      ASM_VERSION = var.asm_version
       ASM_PACKAGE = var.asm_package
     }
   }
@@ -58,29 +55,30 @@ resource "null_resource" "install_mesh" {
       CLUSTER    = each.key
       LOCATION   = each.value.region
       PROJECT_ID    = var.project_id
-    }
-  }
-}
-
-// Install asm crds on each cluster
-resource "null_resource" "swap_secrets" {
-  depends_on = [
-    null_resource.install_mesh,
-  ]
-  for_each = local.cluster_count != 1 ? var.cluster_config : {}
-  provisioner "local-exec" {
-    interpreter = ["bash", "-exc"]
-    command     = "scripts/swap_secrets.sh"
-    working_dir = path.module
-    environment = {
-      CLUSTER     = each.key
-      LOCATION    = each.value.region
-      PROJECT_ID  = var.project_id
-      ASM_VERSION = var.asm_version
       ASM_PACKAGE = var.asm_package
     }
   }
 }
+
+# // Install asm crds on each cluster
+# resource "null_resource" "swap_secrets" {
+#   depends_on = [
+#     null_resource.install_mesh,
+#   ]
+#   for_each = local.cluster_count != 1 ? var.cluster_config : {}
+#   provisioner "local-exec" {
+#     interpreter = ["bash", "-exc"]
+#     command     = "scripts/swap_secrets.sh"
+#     working_dir = path.module
+#     environment = {
+#       CLUSTER     = each.key
+#       LOCATION    = each.value.region
+#       PROJECT_ID  = var.project_id
+#       ASM_VERSION = var.asm_version
+#       ASM_PACKAGE = var.asm_package
+#     }
+#   }
+# }
 
 # Safer cluster creates the rule below - leaving just in case we decide to change the cluster module and need to implement a FW rule to allow intra-cluster traffic
 # module "firewall_rules" {
