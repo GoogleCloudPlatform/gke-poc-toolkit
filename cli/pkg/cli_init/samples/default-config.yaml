@@ -17,7 +17,7 @@ initialNodeCount: 3
 maxNodeCount: 10
 minNodeCount: 3
 multiClusterGateway: true
-anthosServiceMesh: false
+anthosServiceMesh: true
 tfModuleRepo: "github.com/GoogleCloudPlatform/gke-poc-toolkit//terraform/modules/"
 tfModuleBranch: "main"
 sendAnalytics: false

@@ -13,8 +13,8 @@ maxNodeCount: 10
 minNodeCount: 3
 configSync: true 
 policyController: true
-multiClusterGateway: false
-anthosServiceMesh: false
+multiClusterGateway: true
+anthosServiceMesh: true
 tfModuleRepo: "github.com/GoogleCloudPlatform/gke-poc-toolkit//terraform/modules/"
 tfModuleBranch: "main"
 sendAnalytics: false

@@ -20,7 +20,7 @@ tfModuleBranch: "main"
 sendAnalytics: false
 vpcConfig:
   vpcName: "default"
-  vpcType: "shared" # standalone, shared 
+  vpcType: "standalone" # standalone, shared 
   vpcProjectId: "my-host-project" # Required if you are using a sharedVPC
   podCIDRName: "mypodcidr"
   svcCIDRName: "mysvccidr"
