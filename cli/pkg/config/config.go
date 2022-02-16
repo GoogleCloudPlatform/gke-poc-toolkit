@@ -215,6 +215,12 @@ func ValidateConf(c *Config) error {
 	if c.VpcConfig.VpcName == "" {
 		return fmt.Errorf("VPC Name cannot be empty")
 	}
+	err := validateVPC(c.VpcConfig.VpcName, c.VpcConfig.VpcProjectID)
+	if err != nil {
+		return err
+	}
+	log.Printf("🌐 VPC name %s is valid + does not yet exist in VPC project %s\n", c.VpcConfig.VpcName, c.VpcConfig.VpcProjectID)
+
 	if !c.PrivateEndpoint {
 		if err := validateAuthCIDR(c.VpcConfig.AuthCIDR); err != nil {
 			return err
@@ -410,6 +416,30 @@ func validateTFModuleRepo(repoPath string) error {
 		}
 	}
 	return nil
+}
+
+// if shared VPC, checks if VPC name already exists in the VPC project
+// https://cloud.google.com/go/docs/reference/cloud.google.com/go/latest/compute/apiv1#cloud_google_com_go_compute_apiv1_NetworksClient_Get
+// https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/compute/v1#GetNetworkRequest.
+func validateVPC(vpcName string, vpcProject string) error {
+	ctx := context.Background()
+	c, err := compute.NewNetworksRESTClient(ctx)
+	if err != nil {
+		return err
+	}
+	defer c.Close()
+
+	req := &computepb.GetNetworkRequest{
+		Network: vpcName,
+		Project: vpcProject,
+	}
+	_, err = c.Get(ctx, req)
+	// 404 = Good
+	if err != nil && strings.Contains(err.Error(), "not found") {
+		log.Infof("VPC %s was not found in project %s", vpcName, vpcProject)
+		return nil
+	}
+	return fmt.Errorf("VPC %s already exists in project %s", vpcName, vpcProject)
 }
 
 func enableService(projectId string, serviceIds []string) {
