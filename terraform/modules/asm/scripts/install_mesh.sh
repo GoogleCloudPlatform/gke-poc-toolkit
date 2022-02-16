@@ -46,7 +46,7 @@ kubectl wait --for=condition=established crd controlplanerevisions.mesh.cloud.go
 kubectl apply -f ./manifests/istio-system-ns.yaml --kubeconfig ${KUBECONFIG} --context=gke_${PROJECT_ID}_${LOCATION}_${CLUSTER}
 kubectl apply -f ./manifests/ --kubeconfig ${KUBECONFIG} --context=gke_${PROJECT_ID}_${LOCATION}_${CLUSTER}
 
-kubectl wait --for=condition=ProvisioningFinished controlplanerevision -n istio-system asm-managed --timeout=10m --kubeconfig ${KUBECONFIG} --context=gke_${PROJECT_ID}_${LOCATION}_${CLUSTER}
+kubectl wait --for=condition=ProvisioningFinished controlplanerevision -n istio-system asm-managed --timeout=15m --kubeconfig ${KUBECONFIG} --context=gke_${PROJECT_ID}_${LOCATION}_${CLUSTER}
 
 # Create kubeconfig secret for the current cluster and install it in istio-system of the rest of the mesh clusters
 ISTIOCTL_CMD=./${ASM_PACKAGE}/bin/istioctl
@@ -54,6 +54,7 @@ ${ISTIOCTL_CMD} x create-remote-secret --kubeconfig ${KUBECONFIG} --context=gke_
 
 for i in `gcloud container clusters list --project ${PROJECT_ID} --format="value(name)"`; do
     if [[ "$i" != "${CLUSTER}" ]]; then
+        echo $i
         TARGET_CONTEXT=`kubectl config get-contexts | grep ${i} | awk '{print $2}'`
         echo -e "Creating kubeconfig secret from cluster ${CLUSTER} and installing it on cluster ${i}"
         kubectl apply -f ./manifests/secret-kubeconfig-${CLUSTER}.yaml --kubeconfig=${KUBECONFIG} --context=${TARGET_CONTEXT}
