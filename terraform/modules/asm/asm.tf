@@ -27,14 +27,11 @@ locals {
 
 // Create Kubeconfig
 resource "null_resource" "create_kube_config" {
-  for_each = var.cluster_config
   provisioner "local-exec" {
     interpreter = ["bash", "-exc"]
     command     = "scripts/create_kube_config.sh"
     working_dir = path.module
     environment = {
-      CLUSTER    = each.key
-      LOCATION   = each.value.region
       PROJECT_ID    = var.project_id
       ASM_PACKAGE = var.asm_package
     }
