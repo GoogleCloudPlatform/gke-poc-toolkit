@@ -211,7 +211,7 @@ module "hub" {
 
 module "acm" {
   depends_on = [
-    module.hub,
+    module.asm,
   ]
   count             = var.config_sync ? 1 : 0
   source            = "../acm"
@@ -223,7 +223,7 @@ module "acm" {
 
 module "mcg" {
   depends_on = [
-    module.acm,
+    module.hub,
   ]
   count                 = var.multi_cluster_gateway ? 1 : 0
   source                = "../mcg"
