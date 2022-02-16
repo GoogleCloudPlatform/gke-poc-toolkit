@@ -215,11 +215,11 @@ func ValidateConf(c *Config) error {
 	if c.VpcConfig.VpcName == "" {
 		return fmt.Errorf("VPC Name cannot be empty")
 	}
-	err := validateVPC(c.VpcConfig.VpcName, c.VpcConfig.VpcProjectID)
-	if err != nil {
-		return err
-	}
-	log.Printf("🌐 VPC name %s is valid + does not yet exist in VPC project %s\n", c.VpcConfig.VpcName, c.VpcConfig.VpcProjectID)
+	// err := validateVPC(c.VpcConfig.VpcName, c.VpcConfig.VpcProjectID)
+	// if err != nil {
+	// 	return err
+	// }
+	// log.Printf("🌐 VPC name %s is valid + does not yet exist in VPC project %s\n", c.VpcConfig.VpcName, c.VpcConfig.VpcProjectID)
 
 	if !c.PrivateEndpoint {
 		if err := validateAuthCIDR(c.VpcConfig.AuthCIDR); err != nil {

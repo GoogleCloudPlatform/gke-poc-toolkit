@@ -45,6 +45,9 @@ module "firewall_rules" {
 
 // Create Kubeconfig
 resource "null_resource" "create_kube_config" {
+  depends_on = [
+    null_resource.create_kube_config,
+  ]
   provisioner "local-exec" {
     interpreter = ["bash", "-exc"]
     command     = "scripts/create_kube_config.sh"
@@ -58,7 +61,7 @@ resource "null_resource" "create_kube_config" {
 // Install gateway api crds on each cluster
 resource "null_resource" "exec_mcg_crds" {
   depends_on = [
-    null_resource.create_kube_config,
+    resource.google_gke_hub_feature.mcs,
   ]
   for_each = var.cluster_config
   provisioner "local-exec" {
