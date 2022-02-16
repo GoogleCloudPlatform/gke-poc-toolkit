@@ -1,4 +1,5 @@
 #!/usr/bin/env bash
+set -e
 
 # Verify variables
 echo -e "Project is ${PROJECT_ID}"

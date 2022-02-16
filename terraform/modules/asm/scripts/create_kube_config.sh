@@ -1,12 +1,18 @@
 #!/usr/bin/env bash
+set -e
 
 # Verify variables
 echo -e "Project is ${PROJECT_ID}"
 echo -e "ASM_PACKAGE is ${ASM_PACKAGE}"
 
 # Download istioctl
-curl -LO https://storage.googleapis.com/gke-release/asm/"${ASM_PACKAGE}-linux-amd64.tar.gz"
-tar xzf ${ASM_PACKAGE}-linux-amd64.tar.gz
+if [[ ${OSTYPE} == 'darwin'* ]]; then
+    export ASM_PACKAGE_OS="${ASM_PACKAGE}-osx.tar.gz"
+else 
+    export ASM_PACKAGE_OS="${ASM_PACKAGE}-linux-amd64.tar.gz"
+fi
+curl -LO https://storage.googleapis.com/gke-release/asm/"${ASM_PACKAGE_OS}"
+tar xzf ${ASM_PACKAGE_OS}
 ISTIOCTL_CMD=./${ASM_PACKAGE}/bin/istioctl
 ${ISTIOCTL_CMD}
 
@@ -57,8 +63,8 @@ fi
 # done
 
 
-# if [[ ${OSTYPE} == 'darwin'* ]]; then
-#     export ASM_PACKAGE_OS="${ASM_PACKAGE}-osx.tar.gz"
-# else 
-#     export ASM_PACKAGE_OS="${ASM_PACKAGE}-linux-amd64.tar.gz"
-# fi
+if [[ ${OSTYPE} == 'darwin'* ]]; then
+    export ASM_PACKAGE_OS="${ASM_PACKAGE}-osx.tar.gz"
+else 
+    export ASM_PACKAGE_OS="${ASM_PACKAGE}-linux-amd64.tar.gz"
+fi
