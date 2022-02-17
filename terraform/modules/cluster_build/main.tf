@@ -148,11 +148,14 @@ module "enabled_google_apis" {
     "trafficdirector.googleapis.com",
     "cloudresourcemanager.googleapis.com",
     "dns.googleapis.com",
+<<<<<<< HEAD
     "meshca.googleapis.com",
     "meshtelemetry.googleapis.com",
     "meshconfig.googleapis.com",
     "iamcredentials.googleapis.com",
     "stackdriver.googleapis.com"
+=======
+>>>>>>> b1208623cd1ce89141ba72683af535cc646335b0
   ]
 }
 
@@ -232,6 +235,7 @@ module "mcg" {
   cluster_config        = var.cluster_config
   vpc_project_id        = var.vpc_project_id
   vpc_name              = var.vpc_name
+<<<<<<< HEAD
 }
 
 module "asm" {
@@ -246,3 +250,20 @@ module "asm" {
   vpc_name              = var.vpc_name  
   asm_package = var.asm_package
 }
+=======
+  shared_vpc            = var.shared_vpc
+}
+
+# module "asm" {
+#   depends_on = [
+#     module.hub,
+#   ]
+#   count                 = var.multi_cluster_gateway ? 1 : 0
+#   source                = "../mcg"
+#   project_id            = var.project_id
+#   cluster_config        = var.cluster_config
+#   vpc_project_id        = var.vpc_project_id
+#   vpc_name              = var.vpc_name
+#   shared_vpc            = var.shared_vpc
+# }
+>>>>>>> b1208623cd1ce89141ba72683af535cc646335b0

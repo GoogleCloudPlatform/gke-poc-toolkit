@@ -14,7 +14,11 @@ minNodeCount: 1
 configSync: true 
 policyController: true
 multiClusterGateway: true
+<<<<<<< HEAD:cli/pkg/cli_init/samples/multi-cluster-networking-acm-shared-vpc.yaml
 anthosServiceMesh: true
+=======
+anthosServiceMesh: false
+>>>>>>> b1208623cd1ce89141ba72683af535cc646335b0:cli/pkg/cli_init/samples/multi-cluster.yaml
 tfModuleRepo: "github.com/GoogleCloudPlatform/gke-poc-toolkit//terraform/modules/"
 tfModuleBranch: "main"
 sendAnalytics: false

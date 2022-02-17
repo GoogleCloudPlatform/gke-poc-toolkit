@@ -58,6 +58,11 @@ type Config struct {
 	EnableWindowsNodepool     bool            `yaml:"enableWindowsNodepool"`
 	EnablePreemptibleNodepool bool            `yaml:"enablePreemptibleNodepool"`
 	DefaultNodepoolOS         string          `yaml:"defaultNodepoolOS"`
+<<<<<<< HEAD
+=======
+	MultiClusterGateway       bool            `yaml:"multiClusterGateway"`
+	AnthosServiceMesh         bool            `yaml:"anthosServiceMesh"`
+>>>>>>> b1208623cd1ce89141ba72683af535cc646335b0
 	TFModuleRepo              string          `yaml:"tfModuleRepo"`
 	TFModuleBranch            string          `yaml:"tfModuleBranch"`
 	VpcConfig                 VpcConfig       `yaml:"vpcConfig"`
@@ -469,7 +474,12 @@ func enableService(projectId string, serviceIds []string) {
 	_ = resp
 }
 
+<<<<<<< HEAD
 func setTfModuleRepo(tfRepo string, tfBranch string) error {
+=======
+func setTfModuleRepo(tfRepo string) error {
+	log.Println("⏱ Creating main.tf files...")
+>>>>>>> b1208623cd1ce89141ba72683af535cc646335b0
 	files := []string{"cluster_build/main.tf", "shared_vpc/main.tf"}
 	for _, file := range files {
 		err := replaceWord("{{.TFModuleRepo}}", file, tfRepo)
@@ -482,6 +492,7 @@ func setTfModuleRepo(tfRepo string, tfBranch string) error {
 		}
 	}
 	log.Println("✅ main.tf files created. Ready to write to tfvars.")
+<<<<<<< HEAD
 	return nil
 }
 
@@ -494,5 +505,7 @@ func replaceWord(word string, file string, tfRepo string) error {
 	if err = ioutil.WriteFile(file, output, 0666); err != nil {
 		log.Fatalf("error writing file: %s", err)
 	}
+=======
+>>>>>>> b1208623cd1ce89141ba72683af535cc646335b0
 	return nil
 }

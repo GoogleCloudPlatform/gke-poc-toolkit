@@ -5,6 +5,7 @@ governanceProjectId: "my-project"
 region: "us-east1" # Region for resources aside from GKE clusters
 enableWindowsNodepool: false 
 enablePreemptibleNodepool: false # Enforced on Linux Node pools only
+<<<<<<< HEAD:cli/pkg/cli_init/samples/multi-cluster-acm-shared-vpc.yaml
 privateEndpoint: false
 releaseChannel: REGULAR
 defaultNodepoolOS: cos
@@ -14,6 +15,9 @@ minNodeCount: 1
 configSync: true 
 policyController: true
 multiClusterGateway: false
+=======
+multiClusterGateway: true
+>>>>>>> b1208623cd1ce89141ba72683af535cc646335b0:cli/pkg/cli_init/samples/multi-cluster-networking.yaml
 anthosServiceMesh: false
 tfModuleRepo: "github.com/GoogleCloudPlatform/gke-poc-toolkit//terraform/modules/"
 tfModuleBranch: "main"
@@ -33,6 +37,24 @@ clustersConfig:  # a list of one or more clusters, each with their own config
   subnetName: "us-central1"
 - clusterName: "gke-east"
   machineType: "e2-standard-4"
+<<<<<<< HEAD:cli/pkg/cli_init/samples/multi-cluster-acm-shared-vpc.yaml
   region: "us-east1"
   zone: "us-east1-b" 
   subnetName: "us-east1"
+=======
+  region: "us-east1" 
+  zone: "us-east1-b"
+  subnetName: "us-east1"
+- clusterName: "gke-east-2"
+  numNodes: 3 
+  machineType: "e2-standard-4"
+  region: "us-east1" 
+  zone: "us-east1-b"
+  subnetName: "us-east2"
+- clusterName: "gke-ingress"
+  numNodes: 3 
+  machineType: "e2-standard-4"
+  region: "us-east1" 
+  zone: "us-east1-b"
+  subnetName: "us-east3"
+>>>>>>> b1208623cd1ce89141ba72683af535cc646335b0:cli/pkg/cli_init/samples/multi-cluster-networking.yaml
