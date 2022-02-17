@@ -12,9 +12,6 @@ else
 fi
 curl -LO https://storage.googleapis.com/gke-release/asm/"${ASM_PACKAGE_OS}"
 tar xzf ${ASM_PACKAGE_OS}
-ISTIOCTL_CMD=./${ASM_PACKAGE}/bin/istioctl
-${ISTIOCTL_CMD}
-
 
 # Create kubeconfig and get cluster creds
 export WORKDIR=`pwd`
