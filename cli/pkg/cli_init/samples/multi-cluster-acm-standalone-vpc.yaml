@@ -6,7 +6,7 @@ region: "us-east1" # Region for resources aside from GKE clusters
 enableWindowsNodepool: false 
 enablePreemptibleNodepool: false # Enforced on Linux Node pools only
 privateEndpoint: false
-releaseChannel: RAPID
+releaseChannel: REGULAR
 defaultNodepoolOS: cos
 initialNodeCount: 3
 maxNodeCount: 10
