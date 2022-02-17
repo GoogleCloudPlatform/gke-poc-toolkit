@@ -61,7 +61,7 @@ module "gke" {
     # all = {} default set in terraform-google-kubernetes-engine
 
     default-node-pool = {
-      default-node-pool = true
+      default-node-pool = false
     }
   }
 
