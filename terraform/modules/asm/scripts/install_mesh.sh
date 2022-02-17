@@ -39,7 +39,7 @@ done
 
 # Verify CRD is established in the cluster
 echo -e "Verifying Control Plane Revisions CRD is present on ${CLUSTER}"
-kubectl wait --for=condition=established crd controlplanerevisions.mesh.cloud.google.com --timeout=10m \
+kubectl wait --for=condition=established crd controlplanerevisions.mesh.cloud.google.com --timeout=20m \
     --kubeconfig ${KUBECONFIG} --context=gke_${PROJECT_ID}_${LOCATION}_${CLUSTER}
 
 # Install SAs, Roles, Roledbinding for ASM
