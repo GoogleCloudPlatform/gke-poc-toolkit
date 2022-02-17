@@ -1,7 +1,7 @@
 apiVersion: rbac.authorization.k8s.io/v1
 kind: ClusterRole
 metadata:
-  name: istio-reader-sa-clusterrole
+  name: istio-reader-service-account-clusterrole
   labels:
     app: istio-reader
     release: istio
