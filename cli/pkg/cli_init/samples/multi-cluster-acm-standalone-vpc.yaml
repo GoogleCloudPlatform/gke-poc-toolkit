@@ -11,8 +11,8 @@ defaultNodepoolOS: cos
 initialNodeCount: 3
 maxNodeCount: 10
 minNodeCount: 3
-configSync: false 
-policyController: false
+configSync: true 
+policyController: true
 multiClusterGateway: false
 anthosServiceMesh: false
 tfModuleRepo: "github.com/GoogleCloudPlatform/gke-poc-toolkit//terraform/modules/"

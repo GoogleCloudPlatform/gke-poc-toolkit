@@ -21,6 +21,9 @@ module "enabled_google_apis" {
 // Register each cluster to GKE Hub (Fleets API)
 // https://registry.terraform.io/providers/hashicorp/google/latest/docs/resources/gke_hub_feature_membership#configmanagement 
 resource "google_gke_hub_membership" "membership" {
+  depends_on = [
+    module.enabled_google_apis,
+  ]  
   provider = google-beta
   for_each = var.cluster_config
   project  = var.project_id
