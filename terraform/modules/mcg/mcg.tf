@@ -43,7 +43,6 @@ module "firewall_rules" {
   }]
 }
 
-<<<<<<< HEAD
 // Create Kubeconfig
 resource "null_resource" "create_kube_config" {
   depends_on = [
@@ -69,14 +68,6 @@ resource "null_resource" "exec_mcg_crds" {
     interpreter = ["bash", "-exc"]
     command     = "scripts/install_crds.sh"
     working_dir = path.module    
-=======
-// Install gateway api crds on each cluster
-resource "null_resource" "exec_gke_mesh" {
-  for_each = var.cluster_config
-  provisioner "local-exec" {
-    interpreter = ["bash", "-exc"]
-    command     = "${path.module}/scripts/install_crds.sh"
->>>>>>> b1208623cd1ce89141ba72683af535cc646335b0
     environment = {
       CLUSTER    = each.key
       LOCATION   = each.value.region
@@ -97,11 +88,7 @@ resource "google_gke_hub_feature" "mcs" {
 // enable Multi-cluster Ingress(also gateway) project wide
 resource "google_gke_hub_feature" "mci" {
   depends_on = [
-<<<<<<< HEAD
     null_resource.exec_mcg_crds,
-=======
-    null_resource.exec_gke_mesh,
->>>>>>> b1208623cd1ce89141ba72683af535cc646335b0
   ]
   name = "multiclusteringress"
   location = "global"

@@ -7,7 +7,6 @@ echo -e "LOCATION is ${LOCATION}"
 echo -e "GATEWAY_API_VERSION is ${GATEWAY_API_VERSION}"
 
 # Get cluster creds
-<<<<<<< HEAD
 export WORKDIR=`pwd`
 export KUBECONFIG=${WORKDIR}/tempkubeconfig
 
@@ -26,20 +25,3 @@ kubectl wait --for=condition=established customresourcedefinition.apiextensions.
 kubectl wait --for=condition=established customresourcedefinition.apiextensions.k8s.io/tlsroutes.networking.x-k8s.io --timeout=10m --kubeconfig ${KUBECONFIG} --context=gke_${PROJECT_ID}_${LOCATION}_${CLUSTER}
 kubectl wait --for=condition=established customresourcedefinition.apiextensions.k8s.io/udproutes.networking.x-k8s.io --timeout=10m --kubeconfig ${KUBECONFIG} --context=gke_${PROJECT_ID}_${LOCATION}_${CLUSTER}
 
-=======
-touch ./tempkubeconfig && export KUBECONFIG=./tempkubeconfig
-gcloud container clusters get-credentials ${CLUSTER} --region ${LOCATION} --project ${PROJECT_ID}
-
-# Install Gateway API CRDs
-kubectl kustomize "github.com/kubernetes-sigs/gateway-api/config/crd?ref=${GATEWAY_API_VERSION}" \
-| kubectl apply -f -
-
-# Verify CRD is established in the cluster
-kubectl wait --for=condition=established customresourcedefinition.apiextensions.k8s.io/backendpolicies.networking.x-k8s.io --timeout=10m
-kubectl wait --for=condition=established customresourcedefinition.apiextensions.k8s.io/gatewayclasses.networking.x-k8s.io --timeout=10m
-kubectl wait --for=condition=established customresourcedefinition.apiextensions.k8s.io/httproutes.networking.x-k8s.io --timeout=10m
-kubectl wait --for=condition=established customresourcedefinition.apiextensions.k8s.io/gateways.networking.x-k8s.io --timeout=10m
-kubectl wait --for=condition=established customresourcedefinition.apiextensions.k8s.io/tcproutes.networking.x-k8s.io --timeout=10m
-kubectl wait --for=condition=established customresourcedefinition.apiextensions.k8s.io/tlsroutes.networking.x-k8s.io --timeout=10m
-kubectl wait --for=condition=established customresourcedefinition.apiextensions.k8s.io/udproutes.networking.x-k8s.io --timeout=10m
->>>>>>> b1208623cd1ce89141ba72683af535cc646335b0
