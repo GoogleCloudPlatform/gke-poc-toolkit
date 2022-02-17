@@ -8,9 +8,9 @@ enablePreemptibleNodepool: false # Enforced on Linux Node pools only
 privateEndpoint: false
 releaseChannel: REGULAR
 defaultNodepoolOS: cos
-initialNodeCount: 3
+initialNodeCount: 1
 maxNodeCount: 10
-minNodeCount: 3
+minNodeCount: 1
 configSync: false
 policyController: false
 multiClusterGateway: false
