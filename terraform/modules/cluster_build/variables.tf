@@ -84,6 +84,11 @@ variable "vpc_ip_range_services_name" {
   default     = ""
 }
 
+variable "release_channel" {
+  type = string
+  default = "regular"
+}
+
 variable "node_pool" {
   type    = string
   default = "gke-toolkit-pool"
@@ -91,12 +96,12 @@ variable "node_pool" {
 
 variable "initial_node_count" {
   type    = number
-  default = 1
+  default = 3
 }
 
 variable "min_node_count" {
   type    = number
-  default = 1
+  default = 3
 }
 
 variable "max_node_count" {
@@ -177,4 +182,28 @@ variable "multi_cluster_gateway" {
   type        = bool
   description = "Enable Multi-cluster gateway on all clusters."
   default     = true
+}
+
+variable "anthos_service_mesh" {
+  type        = bool
+  description = "Enable Anthos Service Mesh on all clusters."
+  default     = true
+}
+
+variable "asm_version" {
+  type        = string
+  description = "ASM version"
+  default     = "1.12"
+}
+
+variable "asm_package" {
+  type        = string
+  description = "ASM package"
+  default     = "istio-1.12.2-asm.0"
+}
+
+variable "asm_release_channel" {
+  type        = string
+  description = "ASM release channel"
+  default     = "regular"
 }

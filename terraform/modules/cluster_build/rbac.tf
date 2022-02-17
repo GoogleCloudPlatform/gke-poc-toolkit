@@ -17,7 +17,7 @@
 module "rbac_service_accounts" {
   for_each   = var.k8s_users
   source     = "terraform-google-modules/service-accounts/google"
-  version    = "~> 3.0"
+  version    = "~> 4.1.0"
   project_id = var.project_id
   names      = [each.key]
   project_roles = [
@@ -29,6 +29,6 @@ module "rbac_service_accounts" {
 
 resource "local_file" "service_account_key" {
   for_each = module.rbac_service_accounts
-  filename = "../../creds/${each.value.email}.json"
+  filename = "../creds/${each.value.email}.json"
   content  = each.value.key
 }

@@ -47,15 +47,19 @@ type Config struct {
 	ClustersProjectID         string          `yaml:"clustersProjectId"`
 	GovernanceProjectID       string          `yaml:"governanceProjectId"`
 	ConfigSync                bool            `yaml:"configSync"`
+	AnthosServiceMesh         bool            `yaml:"anthosServiceMesh"`
+	MultiClusterGateway       bool            `yaml:"multiClusterGateway"`
 	PolicyController          bool            `yaml:"policyController"`
 	PrivateEndpoint           bool            `yaml:"privateEndpoint"`
-	EnableWorkloadIdentity    bool            `yaml:"enableWorkloadIdentity"`
+	ReleaseChannel            string          `yaml:"releaseChannel"`
+	InitialNodeCount          int             `yaml:"initialNodeCount"`
+	MinNodeCount              int             `yaml:"minNodeCount`
+	MaxNodeCount              int             `yaml:"maxNodeCount`
 	EnableWindowsNodepool     bool            `yaml:"enableWindowsNodepool"`
 	EnablePreemptibleNodepool bool            `yaml:"enablePreemptibleNodepool"`
 	DefaultNodepoolOS         string          `yaml:"defaultNodepoolOS"`
-	MultiClusterGateway       bool            `yaml:"multiClusterGateway"`
-	AnthosServiceMesh         bool            `yaml:"anthosServiceMesh"`
 	TFModuleRepo              string          `yaml:"tfModuleRepo"`
+	TFModuleBranch            string          `yaml:"tfModuleBranch"`
 	VpcConfig                 VpcConfig       `yaml:"vpcConfig"`
 	ClustersConfig            []ClusterConfig `yaml:"clustersConfig"`
 }
@@ -71,7 +75,6 @@ type VpcConfig struct {
 
 type ClusterConfig struct {
 	ClusterName string `yaml:"clusterName"`
-	NumNodes    int    `yaml:"nodeSize"`
 	MachineType string `yaml:"machineType"`
 	ClusterType string `yaml:"clusterType"`
 	Region      string `yaml:"region"`
@@ -117,8 +120,8 @@ func InitConf(cfgFile string) *Config {
 		os.Exit(1)
 	}
 
-	// Set Tf Module Repo
-	err = setTfModuleRepo(conf.TFModuleRepo)
+	// Set Tf Module Repo and Branch
+	err = setTfModuleRepo(conf.TFModuleRepo, conf.TFModuleBranch)
 	if err != nil {
 		log.Error(err)
 		os.Exit(1)
@@ -189,9 +192,9 @@ func ValidateConf(c *Config) error {
 	if c.TerraformState != "local" && c.TerraformState != "cloud" {
 		return fmt.Errorf("terraform state must be one of: local, cloud")
 	}
-	if err := validateNodeOS(c.DefaultNodepoolOS); err != nil {
-		return err
-	}
+	// if err := validateNodeOS(c.DefaultNodepoolOS); err != nil {
+	// 	return err
+	// }
 	if err := validateConfigRegion(c.GovernanceProjectID, c.Region); err != nil {
 		return err
 	}
@@ -201,6 +204,9 @@ func ValidateConf(c *Config) error {
 	if err := validateTFModuleRepo(c.TFModuleRepo); err != nil {
 		return err
 	}
+	if c.MinNodeCount < 1 || c.MaxNodeCount > 100 {
+		return fmt.Errorf("NumNodes must be a number between 1-100")
+	}
 
 	// VPC Config vars
 	if c.VpcConfig.VpcType != "standalone" && c.VpcConfig.VpcType != "shared" {
@@ -209,6 +215,12 @@ func ValidateConf(c *Config) error {
 	if c.VpcConfig.VpcName == "" {
 		return fmt.Errorf("VPC Name cannot be empty")
 	}
+	// err := validateVPC(c.VpcConfig.VpcName, c.VpcConfig.VpcProjectID)
+	// if err != nil {
+	// 	return err
+	// }
+	// log.Printf("🌐 VPC name %s is valid + does not yet exist in VPC project %s\n", c.VpcConfig.VpcName, c.VpcConfig.VpcProjectID)
+
 	if !c.PrivateEndpoint {
 		if err := validateAuthCIDR(c.VpcConfig.AuthCIDR); err != nil {
 			return err
@@ -219,9 +231,6 @@ func ValidateConf(c *Config) error {
 	for i, cc := range c.ClustersConfig {
 		// TODO - what is cluster type? why is line 125 here?
 		if cc.ClusterType != "managed" && cc.ClusterType != "on-prem" {
-			if cc.NumNodes < 1 || cc.NumNodes > 100 {
-				return fmt.Errorf("ClustersConfig[%d]: NumNodes must be a number between 1-100", i)
-			}
 			if cc.SubnetName == "" {
 				return fmt.Errorf("ClustersConfig[%d] SubnetName cannot be empty", i)
 			}
@@ -231,9 +240,9 @@ func ValidateConf(c *Config) error {
 			if err := validateMachineType(c.ClustersProjectID, cc.MachineType, cc.Zone); err != nil {
 				return fmt.Errorf("ClustersConfig[%d]: %s", i, err)
 			}
-			if err := validateNodeOS(c.DefaultNodepoolOS); err != nil {
-				return fmt.Errorf("ClustersConfig[%d]: %s", i, err)
-			}
+			// if err := validateNodeOS(c.DefaultNodepoolOS); err != nil {
+			// 	return fmt.Errorf("ClustersConfig[%d]: %s", i, err)
+			// }
 		}
 	}
 
@@ -409,6 +418,30 @@ func validateTFModuleRepo(repoPath string) error {
 	return nil
 }
 
+// if shared VPC, checks if VPC name already exists in the VPC project
+// https://cloud.google.com/go/docs/reference/cloud.google.com/go/latest/compute/apiv1#cloud_google_com_go_compute_apiv1_NetworksClient_Get
+// https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/compute/v1#GetNetworkRequest.
+func validateVPC(vpcName string, vpcProject string) error {
+	ctx := context.Background()
+	c, err := compute.NewNetworksRESTClient(ctx)
+	if err != nil {
+		return err
+	}
+	defer c.Close()
+
+	req := &computepb.GetNetworkRequest{
+		Network: vpcName,
+		Project: vpcProject,
+	}
+	_, err = c.Get(ctx, req)
+	// 404 = Good
+	if err != nil && strings.Contains(err.Error(), "not found") {
+		log.Infof("VPC %s was not found in project %s", vpcName, vpcProject)
+		return nil
+	}
+	return fmt.Errorf("VPC %s already exists in project %s", vpcName, vpcProject)
+}
+
 func enableService(projectId string, serviceIds []string) {
 	ctx := context.Background()
 	c, err := serviceusage.NewClient(ctx)
@@ -436,19 +469,30 @@ func enableService(projectId string, serviceIds []string) {
 	_ = resp
 }
 
-func setTfModuleRepo(tfRepo string) error {
-	log.Println("⏱ Creating main.tf files...")
+func setTfModuleRepo(tfRepo string, tfBranch string) error {
 	files := []string{"cluster_build/main.tf", "shared_vpc/main.tf"}
 	for _, file := range files {
-		input, err := ioutil.ReadFile(file)
+		err := replaceWord("{{.TFModuleRepo}}", file, tfRepo)
 		if err != nil {
-			log.Fatalf("error reading file: %s", err)
+			log.Fatalf("error updating TFModuleRepo: %s", err)
 		}
-		output := bytes.Replace(input, []byte("{{.TFModuleRepo}}"), []byte(tfRepo), -1)
-		if err = ioutil.WriteFile(file, output, 0666); err != nil {
-			log.Fatalf("error writing file: %s", err)
+		err = replaceWord("{{.TFModuleBranch}}", file, tfBranch)
+		if err != nil {
+			log.Fatalf("error updating TFModuleBranch: %s", err)
 		}
 	}
 	log.Println("✅ main.tf files created. Ready to write to tfvars.")
+	return nil
+}
+
+func replaceWord(word string, file string, tfRepo string) error {
+	input, err := ioutil.ReadFile(file)
+	if err != nil {
+		log.Fatalf("error reading file: %s", err)
+	}
+	output := bytes.Replace(input, []byte(word), []byte(tfRepo), -1)
+	if err = ioutil.WriteFile(file, output, 0666); err != nil {
+		log.Fatalf("error writing file: %s", err)
+	}
 	return nil
 }

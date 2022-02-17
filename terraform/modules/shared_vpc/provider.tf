@@ -17,7 +17,13 @@
 terraform {
   required_providers {
     google = {
-      version = "~> 3.63.0"
+      version = ">= 3.53.0, < 5.0.0"
+    }
+    google-beta = {
+      version = ">= 4.3.0, < 5.0.0"
+    }
+    kubernetes = {
+      version = "~> 2.0"
     }
   }
 }

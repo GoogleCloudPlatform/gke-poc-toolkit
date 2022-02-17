@@ -1,5 +1,5 @@
 module "cluster_build" {
-  source                            = "{{.TFModuleRepo}}cluster_build"
+  source                            = "{{.TFModuleRepo}}cluster_build?ref={{.TFModuleBranch}}"
   project_id                        = var.project_id
   governance_project_id             = var.governance_project_id
   region                            = var.region
@@ -12,6 +12,7 @@ module "cluster_build" {
   vpc_ip_range_pods_name            = var.vpc_ip_range_pods_name
   vpc_ip_range_services_name        = var.vpc_ip_range_services_name
   node_pool                         = var.node_pool
+  release_channel                   = var.release_channel
   initial_node_count                = var.initial_node_count
   min_node_count                    = var.min_node_count
   max_node_count                    = var.max_node_count
@@ -27,6 +28,8 @@ module "cluster_build" {
   cluster_config                    = var.cluster_config
   k8s_users                         = var.k8s_users
   multi_cluster_gateway             = var.multi_cluster_gateway
+  anthos_service_mesh               = var.anthos_service_mesh
+  acm_tf_module_repo                = "{{.TFModuleRepo}}acm?ref={{.TFModuleBranch}}"
 }
 
 variable "project_id" {
@@ -102,6 +105,11 @@ variable "vpc_ip_range_services_name" {
 variable "node_pool" {
   type    = string
   default = "gke-toolkit-pool"
+}
+
+variable "release_channel" {
+  type = string
+  default = "regular"
 }
 
 variable "initial_node_count" {
@@ -185,5 +193,11 @@ variable "k8s_users" {
 variable "multi_cluster_gateway" {
   type        = bool
   description = "Enable Multi-cluster gateway on all clusters."
+  default     = true
+}
+
+variable "anthos_service_mesh" {
+  type        = bool
+  description = "Enable Anthos Service Mesh on all clusters."
   default     = true
 }

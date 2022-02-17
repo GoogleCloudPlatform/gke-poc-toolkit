@@ -51,34 +51,20 @@ import (
 // 5. Prints the gcloud clone cmd for user to clone their ConfigSync repo to push stuff to it. (DONE.)
 func InitACM(conf *config.Config, kc *api.Config) error {
 	log.Info("🔄 Finishing ACM install...")
-
-	// Generate ssh keypair + write to local dir
-	log.Info("🔑 Generating ssh keypair for Config Sync...")
-	err := InitSSH()
+	// Authenticate Kubernetes client-go to all clusters
+	log.Info("☸️ Generating Kubeconfig...")
+	kc, err := GenerateKubeConfig(conf)
 	if err != nil {
 		return err
 	}
+	log.Infof("✔️ Kubeconfig generated: %+v", kc)
 
-	// Prompt user to register ssh public key to their Cloud Source Repositories
-	// (AND if needed, run make start proxy in another tab before kubectl attempt)
-	err = PromptUser(conf)
+	// Verify access to Kubernetes API on all clusters
+	log.Info("☸️  Verifying Kubernetes API access for all clusters...")
+	err = ListNamespaces(kc)
 	if err != nil {
 		return err
 	}
-
-	// Use ssh private key as the Config Sync gitcreds secret
-	// https://cloud.google.com/anthos-config-management/docs/how-to/installing-config-sync#git-creds-secret
-	log.Info("🔒 Creating gitcreds secret from id_rsa...")
-	err = CreateGitCredsSecret(kc)
-	if err != nil {
-		return err
-	}
-
-	log.Info("✅ Config Sync installed successfully.")
-
-	// Prompt user for repo clone command
-	log.Info("⭐️ To clone your Config Sync repository and push configs, run the following command:")
-	log.Infof("gcloud source repos clone gke-poc-config-sync --project=%s", conf.ClustersProjectID)
 	return nil
 }
 
