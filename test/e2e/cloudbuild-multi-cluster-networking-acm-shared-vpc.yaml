@@ -23,7 +23,7 @@ steps:
     TEST_PROJECT_ID="gpt-$$TIMESTAMP"
     VPC_TEST_PROJECT_ID="gpt-vpc-$$TIMESTAMP"
     echo $$TEST_PROJECT_ID > /workspace/test-project-id.txt
-    echo $$VPC_TEST_PROJECT_ID > /workspace/vpc-test-project-id.txt
+    echo $$VPC_TEST_PROJECT_ID > /workspace/vpc_test-project-id.txt
     gcloud projects create $$TEST_PROJECT_ID --folder="$$FOLDER_ID" 
     gcloud projects create $$VPC_TEST_PROJECT_ID --folder="$$FOLDER_ID" 
     gcloud projects add-iam-policy-binding $$TEST_PROJECT_ID --member=serviceAccount:152393131587@cloudbuild.gserviceaccount.com --role=roles/owner
@@ -45,6 +45,7 @@ steps:
     SA_NAME="e2e-test"
     KEY_PATH="/workspace/gcloud/e2e-test.json"
     TEST_PROJECT_ID=$(cat "/workspace/test-project-id.txt")
+    VPC_TEST_PROJECT_ID=$(cat "/workspace/vpc_test-project-id.txt")
     gcloud config set project $$TEST_PROJECT_ID
     gcloud iam service-accounts create $$SA_NAME --project=$$TEST_PROJECT_ID
     gcloud projects add-iam-policy-binding $$TEST_PROJECT_ID --member="serviceAccount:$$SA_NAME@$$TEST_PROJECT_ID.iam.gserviceaccount.com" --role="roles/owner"

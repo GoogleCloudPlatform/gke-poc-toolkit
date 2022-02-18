@@ -22,7 +22,7 @@ tfModuleRepo: "github.com/GoogleCloudPlatform/gke-poc-toolkit//terraform/modules
 tfModuleBranch: "main"
 sendAnalytics: false
 vpcConfig:
-  vpcName: "default"
+  vpcName: "gke-poc-toolkit"
   vpcType: "standalone" 
   vpcProjectId: "my-project" 
   podCIDRName: "default"
