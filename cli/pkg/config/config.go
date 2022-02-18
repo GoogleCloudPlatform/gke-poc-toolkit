@@ -496,3 +496,15 @@ func replaceWord(word string, file string, tfRepo string) error {
 	}
 	return nil
 }
+
+func replaceWord(word string, file string, tfRepo string) error {
+	input, err := ioutil.ReadFile(file)
+	if err != nil {
+		log.Fatalf("error reading file: %s", err)
+	}
+	output := bytes.Replace(input, []byte(word), []byte(tfRepo), -1)
+	if err = ioutil.WriteFile(file, output, 0666); err != nil {
+		log.Fatalf("error writing file: %s", err)
+	}
+	return nil
+}

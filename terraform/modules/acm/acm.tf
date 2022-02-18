@@ -39,6 +39,32 @@ resource "google_sourcerepo_repository" "gke-poc-config-sync" {
   project  = var.project_id
 }
 
+// create ACM service account 
+module "service_accounts" {
+  source        = "terraform-google-modules/service-accounts/google"
+  version       = "~> 3.0"
+  project_id    = var.project_id
+  display_name  = "ACM service account"
+  names         = [local.acm_service_account]
+  project_roles = ["${var.project_id}=>roles/source.reader"]
+}
+
+module "service_account-iam-bindings" {
+  depends_on = [
+    resource.google_gke_hub_feature_membership.feature_member,
+  ]
+  source = "terraform-google-modules/iam/google//modules/service_accounts_iam"
+
+  service_accounts = [local.acm_service_account_email]
+  project          = var.project_id
+  bindings = {
+    "roles/iam.workloadIdentityUser" = [
+      "serviceAccount:${var.project_id}.svc.id.goog[config-management-system/root-reconciler]",
+    ]
+  }
+}
+
+
 // enable ACM project-wide
 resource "google_gke_hub_feature" "acm" {
   name = "configmanagement"

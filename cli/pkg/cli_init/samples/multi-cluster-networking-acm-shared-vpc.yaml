@@ -1,4 +1,4 @@
-# sample-config.yaml
+# multi-cluster.yaml
 terraformState: cloud  # local, cloud
 clustersProjectId: "my-project"
 governanceProjectId: "my-project" 
