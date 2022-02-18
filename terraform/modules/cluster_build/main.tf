@@ -139,18 +139,8 @@ module "enabled_google_apis" {
     "binaryauthorization.googleapis.com",
     "stackdriver.googleapis.com",
     "iap.googleapis.com",
-    "sourcerepo.googleapis.com",
-    "anthosconfigmanagement.googleapis.com",
-    "anthos.googleapis.com",
-    "gkehub.googleapis.com",
-    "multiclusterservicediscovery.googleapis.com",
-    "multiclusteringress.googleapis.com",
-    "trafficdirector.googleapis.com",
     "cloudresourcemanager.googleapis.com",
     "dns.googleapis.com",
-    "meshca.googleapis.com",
-    "meshtelemetry.googleapis.com",
-    "meshconfig.googleapis.com",
     "iamcredentials.googleapis.com",
     "stackdriver.googleapis.com"
   ]
@@ -212,7 +202,7 @@ module "hub" {
 
 module "acm" {
   depends_on = [
-    module.asm,
+    module.hub,
   ]
   count             = var.config_sync ? 1 : 0
   source            = "../acm"
@@ -236,7 +226,7 @@ module "mcg" {
 
 module "asm" {
   depends_on = [
-    module.mcg,
+    module.hub,
   ]
   count                 = var.anthos_service_mesh ? 1 : 0
   source                = "../asm"

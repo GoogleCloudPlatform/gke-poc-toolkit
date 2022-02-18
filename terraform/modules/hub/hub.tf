@@ -15,6 +15,16 @@ module "enabled_google_apis" {
   activate_apis = [
     "anthos.googleapis.com",
     "gkehub.googleapis.com",
+    "sourcerepo.googleapis.com",
+    "anthosconfigmanagement.googleapis.com",
+    "anthos.googleapis.com",
+    "gkehub.googleapis.com",
+    "multiclusterservicediscovery.googleapis.com",
+    "multiclusteringress.googleapis.com",
+    "trafficdirector.googleapis.com",
+    "meshca.googleapis.com",
+    "meshtelemetry.googleapis.com",
+    "meshconfig.googleapis.com",
   ]
 }
 
