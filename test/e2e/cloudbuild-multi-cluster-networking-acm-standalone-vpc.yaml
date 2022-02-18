@@ -1,0 +1,127 @@
+steps:
+- name: 'gcr.io/cloud-builders/gcloud:latest'
+  id: create-test-project
+  entrypoint: 'bash'
+  args:
+  - '-eEuo'
+  - 'pipefail'
+  - '-c'
+  - |-
+    if [ -n "$_HEAD_REPO_URL" ]
+    then 
+      echo "⬆️ THIS IS A PR- _HEAD_REPO_URL is set ($_HEAD_REPO_URL)" 
+      RAW_REPO_NAME="$_HEAD_REPO_URL//terraform/modules/"
+      export CLEAN_REPO_NAME=${RAW_REPO_NAME#*//}
+      export CLEAN_BRANCH_NAME=$_HEAD_BRANCH
+    else 
+      echo "😺 THIS IS A DIRECT MAIN BRANCH COMMIT, NOT A PR, _HEAD_REPO_URL is unset"
+      export CLEAN_REPO_NAME="github.com/GoogleCloudPlatform/gke-poc-toolkit//terraform/modules/"
+      export CLEAN_BRANCH_NAME="main"
+    fi
+    echo "🌟 REPO INFO: NAME: $$CLEAN_REPO_NAME, BRANCH: $$CLEAN_BRANCH_NAME"
+    TIMESTAMP=`date "+%m%d%y-%H%M%S"`
+    TEST_PROJECT_ID="gpt-$$TIMESTAMP"
+    echo $$TEST_PROJECT_ID > /workspace/test-project-id.txt
+    gcloud projects create $$TEST_PROJECT_ID --folder="$$FOLDER_ID" 
+    gcloud projects add-iam-policy-binding $$TEST_PROJECT_ID --member=serviceAccount:152393131587@cloudbuild.gserviceaccount.com --role=roles/owner
+    sleep 10
+    gcloud services enable cloudbilling.googleapis.com --project=$$TEST_PROJECT_ID
+    gcloud alpha billing projects link $$TEST_PROJECT_ID --billing-account $$BILLING_ID
+  secretEnv: ['FOLDER_ID', 'BILLING_ID']  
+- name: 'gcr.io/cloud-builders/gcloud:latest'
+  id: setup-gcloud-auth
+  entrypoint: 'bash'
+  args:
+  - '-eEuo'
+  - 'pipefail'
+  - '-c'
+  - |-
+    SA_NAME="e2e-test"
+    KEY_PATH="/workspace/gcloud/e2e-test.json"
+    TEST_PROJECT_ID=$(cat "/workspace/test-project-id.txt")
+    gcloud config set project $$TEST_PROJECT_ID
+    gcloud iam service-accounts create $$SA_NAME --project=$$TEST_PROJECT_ID
+    gcloud projects add-iam-policy-binding $$TEST_PROJECT_ID --member="serviceAccount:$$SA_NAME@$$TEST_PROJECT_ID.iam.gserviceaccount.com" --role="roles/owner"
+    gcloud iam service-accounts keys create $$KEY_PATH \
+    --iam-account=$$SA_NAME@$$TEST_PROJECT_ID.iam.gserviceaccount.com
+    gcloud auth activate-service-account $$SA_NAME@$$TEST_PROJECT_ID.iam.gserviceaccount.com --key-file=$$KEY_PATH --project=$$TEST_PROJECT_ID
+    export GOOGLE_APPLICATION_CREDENTIALS=$$KEY_PATH
+    gcloud auth application-default print-access-token
+    gcloud auth list
+    gcloud config set project $$TEST_PROJECT_ID
+    sleep 5
+    gcloud services enable iam.googleapis.com compute.googleapis.com cloudresourcemanager.googleapis.com
+    gcloud iam service-accounts list
+- name: 'gcr.io/gkepoctoolkit/e2etest:latest'
+  id: test-cli-compile
+  entrypoint: 'bash'
+  args:
+  - '-eEuo'
+  - 'pipefail'
+  - '-c'
+  - |-
+    TEST_PROJECT_ID=$(cat "/workspace/test-project-id.txt")
+    pwd 
+    ls
+    cd cli
+    go build
+    mkdir -p /workspace/test 
+    cp ./gkekitctl /workspace/test
+    cd /workspace/test 
+    chmod +x ./gkekitctl
+- name: 'gcr.io/gkepoctoolkit/e2etest:latest'
+  id: test-gkekitctl-init
+  entrypoint: 'bash'
+  args:
+  - '-eEuo'
+  - 'pipefail'
+  - '-c'
+  - |-
+    printenv
+    cd /workspace/test
+    ./gkekitctl init
+    if [ -n "$_HEAD_REPO_URL" ]
+    then 
+      echo "⬆️ THIS IS A PR- _HEAD_REPO_URL is set ($_HEAD_REPO_URL)" 
+      RAW_REPO_NAME="$_HEAD_REPO_URL//terraform/modules/"
+      export CLEAN_REPO_NAME=${RAW_REPO_NAME#*//}
+      export CLEAN_BRANCH_NAME=$_HEAD_BRANCH
+    else 
+      echo "😺 THIS IS A DIRECT MAIN BRANCH COMMIT, NOT A PR, _HEAD_REPO_URL is unset"
+      export CLEAN_REPO_NAME="github.com/GoogleCloudPlatform/gke-poc-toolkit//terraform/modules/"
+      export CLEAN_BRANCH_NAME="main"
+    fi
+    echo "🌟 REPO INFO: NAME: $$CLEAN_REPO_NAME, BRANCH: $$CLEAN_BRANCH_NAME"
+    TEST_PROJECT_ID=$(cat "/workspace/test-project-id.txt")
+    sed -i 's|.*tfModuleRepo.*|tfModuleRepo: '"$$CLEAN_REPO_NAME"'|' samples/multi-cluster-networking-acm-standalone-vpc.yaml 
+    sed -i 's|.*tfModuleBranch.*|tfModuleBranch: '"$$CLEAN_BRANCH_NAME"'|' samples/multi-cluster-networking-acm-standalone-vpc.yaml 
+    sed -i 's|.*clustersProjectId.*|clustersProjectId: '"$$TEST_PROJECT_ID"'|' samples/multi-cluster-networking-acm-standalone-vpc.yaml 
+    sed -i 's|.*governanceProjectId.*|governanceProjectId: '"$$TEST_PROJECT_ID"'|' samples/multi-cluster-networking-acm-standalone-vpc.yaml
+    sed -i 's|.*vpcProjectId.*|  vpcProjectId: '"$$TEST_PROJECT_ID"'|' samples/multi-cluster-networking-acm-standalone-vpc.yaml
+    echo "Final config for testing..."
+    cat samples/multi-cluster-networking-acm-standalone-vpc.yaml
+- name: 'gcr.io/gkepoctoolkit/e2etest:latest'
+  id: test-gkekitctl-create
+  entrypoint: 'bash'
+  args:
+  - '-eEuo'
+  - 'pipefail'
+  - '-c'
+  - |-
+    cd /workspace/test
+    SA_NAME="e2e-test"
+    TEST_PROJECT_ID=$(cat "/workspace/test-project-id.txt")
+    KEY_PATH="/workspace/gcloud/e2e-test.json"
+    gcloud auth activate-service-account $$SA_NAME@$$TEST_PROJECT_ID.iam.gserviceaccount.com --key-file=$$KEY_PATH --project=$$TEST_PROJECT_ID
+    export GOOGLE_APPLICATION_CREDENTIALS=$$KEY_PATH
+    gcloud auth application-default print-access-token
+    gcloud config set project $$TEST_PROJECT_ID
+    gcloud auth list
+    ./gkekitctl create --config samples/multi-cluster-networking-acm-standalone-vpc.yaml
+timeout: "60m"
+availableSecrets:
+  secretManager:
+  - versionName: projects/${PROJECT_ID}/secrets/folder-id/versions/latest
+    env: 'FOLDER_ID'
+  - versionName: projects/${PROJECT_ID}/secrets/billing-id/versions/latest
+    env: 'BILLING_ID'
