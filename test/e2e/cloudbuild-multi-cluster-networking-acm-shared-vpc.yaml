@@ -49,6 +49,7 @@ steps:
     gcloud config set project $$TEST_PROJECT_ID
     gcloud iam service-accounts create $$SA_NAME --project=$$TEST_PROJECT_ID
     gcloud projects add-iam-policy-binding $$TEST_PROJECT_ID --member="serviceAccount:$$SA_NAME@$$TEST_PROJECT_ID.iam.gserviceaccount.com" --role="roles/owner"
+    gcloud projects add-iam-policy-binding $$VPC_TEST_PROJECT_ID --member="serviceAccount:$$SA_NAME@$$TEST_PROJECT_ID.iam.gserviceaccount.com" --role="roles/owner"
     gcloud iam service-accounts keys create $$KEY_PATH \
     --iam-account=$$SA_NAME@$$TEST_PROJECT_ID.iam.gserviceaccount.com
     gcloud auth activate-service-account $$SA_NAME@$$TEST_PROJECT_ID.iam.gserviceaccount.com --key-file=$$KEY_PATH --project=$$TEST_PROJECT_ID

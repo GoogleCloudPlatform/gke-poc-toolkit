@@ -25,6 +25,7 @@ module "enabled_google_apis" {
     "meshca.googleapis.com",
     "meshtelemetry.googleapis.com",
     "meshconfig.googleapis.com",
+    "multiclustermetering.googleapis.com",
   ]
 }
 
