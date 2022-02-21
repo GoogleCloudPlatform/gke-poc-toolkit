@@ -9,13 +9,13 @@ region: "us-central1"
 enablePreemptibleNodepool: false # Enforced on Linux Node pools only
 enableWindowsNodepool: false
 privateEndpoint: false
-configSync: true 
-policyController: true
 releaseChannel: REGULAR
 defaultNodepoolOS: cos
 initialNodeCount: 1
 maxNodeCount: 10
 minNodeCount: 1
+configSync: true 
+policyController: true
 multiClusterGateway: false
 anthosServiceMesh: false
 tfModuleRepo: "github.com/GoogleCloudPlatform/gke-poc-toolkit//terraform/modules/"
