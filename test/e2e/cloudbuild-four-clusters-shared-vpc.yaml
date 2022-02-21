@@ -105,6 +105,7 @@ steps:
   - '-c'
   - |-
     cd /workspace/test
+    TEST_PROJECT_ID=$(cat "/workspace/test-project-id.txt")
     gcloud config set project $$TEST_PROJECT_ID
     gcloud auth list
     ./gkekitctl create --config samples/four-clusters-shared-vpc.yaml
