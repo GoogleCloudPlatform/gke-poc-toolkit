@@ -60,6 +60,7 @@ steps:
     sleep 5
     gcloud services enable iam.googleapis.com compute.googleapis.com cloudresourcemanager.googleapis.com
     gcloud iam service-accounts list
+  secretEnv: ['FOLDER_ID']
 - name: 'gcr.io/gkepoctoolkit/e2etest:latest'
   id: test-cli-compile
   entrypoint: 'bash'
