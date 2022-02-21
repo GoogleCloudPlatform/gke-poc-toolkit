@@ -20,7 +20,7 @@ steps:
     fi
     echo "🌟 REPO INFO: NAME: $$CLEAN_REPO_NAME, BRANCH: $$CLEAN_BRANCH_NAME"
     TIMESTAMP=`date "+%m%d%y-%H%M%S"`
-    TEST_PROJECT_ID="gpt1-$$TIMESTAMP"
+    TEST_PROJECT_ID="gpt4-$$TIMESTAMP"
     echo $$TEST_PROJECT_ID > /workspace/test-project-id.txt
     gcloud projects create $$TEST_PROJECT_ID --folder="$$FOLDER_ID" 
     gcloud projects add-iam-policy-binding $$TEST_PROJECT_ID --member=serviceAccount:152393131587@cloudbuild.gserviceaccount.com --role=roles/owner
@@ -28,30 +28,6 @@ steps:
     gcloud services enable cloudbilling.googleapis.com --project=$$TEST_PROJECT_ID
     gcloud alpha billing projects link $$TEST_PROJECT_ID --billing-account $$BILLING_ID
   secretEnv: ['FOLDER_ID', 'BILLING_ID']  
-- name: 'gcr.io/cloud-builders/gcloud:latest'
-  id: setup-gcloud-auth
-  entrypoint: 'bash'
-  args:
-  - '-eEuo'
-  - 'pipefail'
-  - '-c'
-  - |-
-    SA_NAME="e2e-test"
-    KEY_PATH="/workspace/gcloud/e2e-test.json"
-    TEST_PROJECT_ID=$(cat "/workspace/test-project-id.txt")
-    gcloud config set project $$TEST_PROJECT_ID
-    gcloud iam service-accounts create $$SA_NAME --project=$$TEST_PROJECT_ID
-    gcloud projects add-iam-policy-binding $$TEST_PROJECT_ID --member="serviceAccount:$$SA_NAME@$$TEST_PROJECT_ID.iam.gserviceaccount.com" --role="roles/owner"
-    gcloud iam service-accounts keys create $$KEY_PATH --iam-account=$$SA_NAME@$$TEST_PROJECT_ID.iam.gserviceaccount.com
-    gcloud auth activate-service-account $$SA_NAME@$$TEST_PROJECT_ID.iam.gserviceaccount.com --key-file=$$KEY_PATH --project=$$TEST_PROJECT_ID
-    export GOOGLE_APPLICATION_CREDENTIALS=$$KEY_PATH
-    gcloud auth application-default print-access-token
-    gcloud auth list
-    gcloud config set project $$TEST_PROJECT_ID
-    sleep 5
-    gcloud services enable iam.googleapis.com compute.googleapis.com cloudresourcemanager.googleapis.com
-    gcloud iam service-accounts list
-  secretEnv: ['FOLDER_ID']
 - name: 'gcr.io/gkepoctoolkit/e2etest:latest'
   id: test-cli-compile
   entrypoint: 'bash'
@@ -109,12 +85,7 @@ steps:
   - '-c'
   - |-
     cd /workspace/test
-    SA_NAME="e2e-test"
     TEST_PROJECT_ID=$(cat "/workspace/test-project-id.txt")
-    KEY_PATH="/workspace/gcloud/e2e-test.json"
-    gcloud auth activate-service-account $$SA_NAME@$$TEST_PROJECT_ID.iam.gserviceaccount.com --key-file=$$KEY_PATH --project=$$TEST_PROJECT_ID
-    export GOOGLE_APPLICATION_CREDENTIALS=$$KEY_PATH
-    gcloud auth application-default print-access-token
     gcloud config set project $$TEST_PROJECT_ID
     gcloud auth list
     ./gkekitctl create --config samples/four-clusters-standalone-vpc.yaml
