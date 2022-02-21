@@ -50,8 +50,8 @@ steps:
     gcloud iam service-accounts create $$SA_NAME --project=$$TEST_PROJECT_ID
     gcloud projects add-iam-policy-binding $$TEST_PROJECT_ID --member="serviceAccount:$$SA_NAME@$$TEST_PROJECT_ID.iam.gserviceaccount.com" --role="roles/owner"
     gcloud projects add-iam-policy-binding $$VPC_TEST_PROJECT_ID --member="serviceAccount:$$SA_NAME@$$TEST_PROJECT_ID.iam.gserviceaccount.com" --role="roles/owner"
-    gcloud iam service-accounts keys create $$KEY_PATH \
-    --iam-account=$$SA_NAME@$$TEST_PROJECT_ID.iam.gserviceaccount.com
+    gcloud beta resource-manager folders add-iam-policy-binding $$FOLDER_ID --member="user:$$SA_NAME@$$TEST_PROJECT_ID.iam.gserviceaccount.com" --role="roles/compute.xpnAdmin"        
+    gcloud iam service-accounts keys create $$KEY_PATH --iam-account=$$SA_NAME@$$TEST_PROJECT_ID.iam.gserviceaccount.com
     gcloud auth activate-service-account $$SA_NAME@$$TEST_PROJECT_ID.iam.gserviceaccount.com --key-file=$$KEY_PATH --project=$$TEST_PROJECT_ID
     export GOOGLE_APPLICATION_CREDENTIALS=$$KEY_PATH
     gcloud auth application-default print-access-token
