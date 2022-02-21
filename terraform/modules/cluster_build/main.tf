@@ -118,17 +118,9 @@ locals {
 
   // Final Node Pool options for Cluster - combines all specified nodepools
   cluster_node_pool = flatten(local.linux_pool)
-}
 
-// Enable APIs needed in the gke cluster project
-module "enabled_google_apis" {
-  source  = "terraform-google-modules/project-factory/google//modules/project_services"
-  version = "~> 11.3.1"
-
-  project_id                  = var.project_id
-  disable_services_on_destroy = false
-
-  activate_apis = [
+  // APIs to enable
+  base_apis = [
     "iam.googleapis.com",
     "storage.googleapis.com",
     "compute.googleapis.com",
@@ -142,8 +134,50 @@ module "enabled_google_apis" {
     "cloudresourcemanager.googleapis.com",
     "dns.googleapis.com",
     "iamcredentials.googleapis.com",
-    "stackdriver.googleapis.com"
+    "stackdriver.googleapis.com",
   ]
+
+  anthos_apis = [
+    "iam.googleapis.com",
+    "storage.googleapis.com",
+    "compute.googleapis.com",
+    "logging.googleapis.com",
+    "monitoring.googleapis.com",
+    "containerregistry.googleapis.com",
+    "container.googleapis.com",
+    "binaryauthorization.googleapis.com",
+    "stackdriver.googleapis.com",
+    "iap.googleapis.com",
+    "cloudresourcemanager.googleapis.com",
+    "dns.googleapis.com",
+    "iamcredentials.googleapis.com",
+    "stackdriver.googleapis.com",
+    "anthos.googleapis.com",
+    "gkehub.googleapis.com",
+    "sourcerepo.googleapis.com",
+    "anthosconfigmanagement.googleapis.com",
+    "anthos.googleapis.com",
+    "gkehub.googleapis.com",
+    "multiclusterservicediscovery.googleapis.com",
+    "multiclusteringress.googleapis.com",
+    "trafficdirector.googleapis.com",
+    "meshca.googleapis.com",
+    "meshtelemetry.googleapis.com",
+    "meshconfig.googleapis.com",
+    "multiclustermetering.googleapis.com",
+  ]
+
+  api_list = var.anthos_service_mesh && var.anthos_service_mesh && var.anthos_service_mesh ? local.anthos_apis : local.base_apis
+}
+
+// Enable APIs needed in the gke cluster project
+module "enabled_google_apis" {
+  source  = "terraform-google-modules/project-factory/google//modules/project_services"
+  version = "~> 11.3.1"
+  project_id                  = var.project_id
+  disable_services_on_destroy = false
+
+  activate_apis = local.api_list
 }
 
 // Enable APIs needed in the governance project

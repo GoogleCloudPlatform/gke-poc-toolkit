@@ -4,37 +4,9 @@ variable "project_id" {
 variable "cluster_config" {
 }
 
-// Enable APIs needed in the gke cluster project
-module "enabled_google_apis" {
-  source  = "terraform-google-modules/project-factory/google//modules/project_services"
-  version = "~> 11.3.1"
-
-  project_id                  = var.project_id
-  disable_services_on_destroy = false
-
-  activate_apis = [
-    "anthos.googleapis.com",
-    "gkehub.googleapis.com",
-    "sourcerepo.googleapis.com",
-    "anthosconfigmanagement.googleapis.com",
-    "anthos.googleapis.com",
-    "gkehub.googleapis.com",
-    "multiclusterservicediscovery.googleapis.com",
-    "multiclusteringress.googleapis.com",
-    "trafficdirector.googleapis.com",
-    "meshca.googleapis.com",
-    "meshtelemetry.googleapis.com",
-    "meshconfig.googleapis.com",
-    "multiclustermetering.googleapis.com",
-  ]
-}
-
 // Register each cluster to GKE Hub (Fleets API)
 // https://registry.terraform.io/providers/hashicorp/google/latest/docs/resources/gke_hub_feature_membership#configmanagement 
 resource "google_gke_hub_membership" "membership" {
-  depends_on = [
-    module.enabled_google_apis,
-  ]  
   provider = google-beta
   for_each = var.cluster_config
   project  = var.project_id
