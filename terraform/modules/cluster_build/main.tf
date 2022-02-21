@@ -171,8 +171,8 @@ locals {
   api_list = var.anthos_service_mesh && var.multi_cluster_gateway && var.config_connector ? local.anthos_apis : local.base_apis
 
   // These locals are using do construct anthos component depends on rules based on which features are enabled
-  acm_depends_on = var.anthos_service_mesh ? "module.asm" : (var.multi_cluster_gateway ? "module.mcg," : "module.hub,")
-  asm_depends_on = var.multi_cluster_gateway ? "module.mcg," : "module.hub,"
+  acm_depends_on = var.anthos_service_mesh ? module.asm : (var.multi_cluster_gateway ? module.mcg : module.hub)
+  asm_depends_on = var.multi_cluster_gateway ? module.mcg : module.hub
 
 }
 
