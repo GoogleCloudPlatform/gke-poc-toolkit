@@ -28,7 +28,7 @@ steps:
     gcloud projects create $$VPC_TEST_PROJECT_ID --folder="$$FOLDER_ID" 
     gcloud projects add-iam-policy-binding $$TEST_PROJECT_ID --member=serviceAccount:152393131587@cloudbuild.gserviceaccount.com --role=roles/owner
     gcloud projects add-iam-policy-binding $$VPC_TEST_PROJECT_ID --member=serviceAccount:152393131587@cloudbuild.gserviceaccount.com --role=roles/owner
-    sleep 10
+    sleep 20
     gcloud services enable cloudbilling.googleapis.com --project=$$TEST_PROJECT_ID
     gcloud services enable cloudbilling.googleapis.com --project=$$VPC_TEST_PROJECT_ID
     gcloud alpha billing projects link $$TEST_PROJECT_ID --billing-account $$BILLING_ID
@@ -51,6 +51,7 @@ steps:
     gcloud projects add-iam-policy-binding $$TEST_PROJECT_ID --member="serviceAccount:$$SA_NAME@$$TEST_PROJECT_ID.iam.gserviceaccount.com" --role="roles/owner"
     gcloud projects add-iam-policy-binding $$VPC_TEST_PROJECT_ID --member="serviceAccount:$$SA_NAME@$$TEST_PROJECT_ID.iam.gserviceaccount.com" --role="roles/owner"
     gcloud beta resource-manager folders add-iam-policy-binding $$FOLDER_ID --member="serviceAccount:$$SA_NAME@$$TEST_PROJECT_ID.iam.gserviceaccount.com" --role="roles/compute.xpnAdmin"    
+    sleep 10
     gcloud iam service-accounts keys create $$KEY_PATH --iam-account=$$SA_NAME@$$TEST_PROJECT_ID.iam.gserviceaccount.com
     gcloud auth activate-service-account $$SA_NAME@$$TEST_PROJECT_ID.iam.gserviceaccount.com --key-file=$$KEY_PATH --project=$$TEST_PROJECT_ID
     export GOOGLE_APPLICATION_CREDENTIALS=$$KEY_PATH
