@@ -202,6 +202,10 @@ module "enabled_governance_apis" {
 // Create the service accounts for GKE and KCC from a map declared in locals.
 module "service_accounts" {
   for_each      = local.service_accounts
+  depends_on = [
+    module.enabled_google_apis,
+    module.enabled_governance_apis,
+  ]
   source        = "terraform-google-modules/service-accounts/google"
   version       = "~> 4.1.0"
   project_id    = module.enabled_google_apis.project_id
