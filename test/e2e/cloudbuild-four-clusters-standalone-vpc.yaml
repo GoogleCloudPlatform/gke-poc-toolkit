@@ -48,23 +48,23 @@ steps:
     sleep 10
     gcloud services enable iam.googleapis.com compute.googleapis.com cloudresourcemanager.googleapis.com
     gcloud iam service-accounts list 
-# - name: 'gcr.io/gkepoctoolkit/e2etest:latest'
-#   id: test-cli-compile
-#   entrypoint: 'bash'
-#   args:
-#   - '-eEuo'
-#   - 'pipefail'
-#   - '-c'
-#   - |-
-#     TEST_PROJECT_ID=$(cat "/workspace/test-project-id.txt")
-#     pwd 
-#     ls
-#     cd cli
-#     go build
-#     mkdir -p /workspace/test 
-#     cp ./gkekitctl /workspace/test
-#     cd /workspace/test 
-#     chmod +x ./gkekitctl
+- name: 'gcr.io/gkepoctoolkit/e2etest:latest'
+  id: test-cli-compile
+  entrypoint: 'bash'
+  args:
+  - '-eEuo'
+  - 'pipefail'
+  - '-c'
+  - |-
+    TEST_PROJECT_ID=$(cat "/workspace/test-project-id.txt")
+    pwd 
+    ls
+    cd cli
+    go build
+    mkdir -p /workspace/test 
+    cp ./gkekitctl /workspace/test
+    cd /workspace/test 
+    chmod +x ./gkekitctl
 - name: 'gcr.io/gkepoctoolkit/e2etest:latest'
   id: test-gkekitctl-init
   entrypoint: 'bash'
