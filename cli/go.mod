@@ -10,6 +10,7 @@ require (
 	github.com/gofrs/uuid v4.1.0+incompatible
 	github.com/hashicorp/terraform-exec v0.15.0
 	github.com/manifoldco/promptui v0.9.0
+	github.com/pytimer/k8sutil v0.0.0-20211125045154-0e2f72b6af86
 	github.com/sirupsen/logrus v1.8.1
 	github.com/spf13/cobra v1.2.1
 	github.com/spf13/viper v1.9.0
@@ -19,7 +20,7 @@ require (
 	golang.org/x/text v0.3.7 // indirect
 	google.golang.org/api v0.57.0
 	google.golang.org/genproto v0.0.0-20210921142501-181ce0d877f6
-	k8s.io/api v0.22.3
-	k8s.io/apimachinery v0.22.3
-	k8s.io/client-go v0.22.3
+	k8s.io/api v0.22.4
+	k8s.io/apimachinery v0.22.4
+	k8s.io/client-go v0.22.4
 )

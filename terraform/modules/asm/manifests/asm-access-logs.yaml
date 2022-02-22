@@ -1,0 +1,9 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: istio-asm-managed
+  namespace: istio-system
+data:
+  mesh: |
+    accessLogFile: /dev/stdout
+    accessLogEncoding: JSON

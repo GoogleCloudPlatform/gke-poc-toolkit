@@ -17,12 +17,18 @@
 terraform {
   required_providers {
     google = {
-      version = "~> 3.63.0"
+      version = ">= 3.53.0, < 5.0.0"
+    }
+    google-beta = {
+      version = ">= 4.3.0, < 5.0.0"
+    }
+    kubernetes = {
+      version = "~> 2.0"
     }
   }
 }
 
 provider "google" {
-  project = var.shared_vpc_project_id
+  project = var.vpc_project_id
   region  = var.region
 }

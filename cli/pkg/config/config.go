@@ -51,7 +51,10 @@ type Config struct {
 	MultiClusterGateway       bool            `yaml:"multiClusterGateway"`
 	PolicyController          bool            `yaml:"policyController"`
 	PrivateEndpoint           bool            `yaml:"privateEndpoint"`
-	EnableWorkloadIdentity    bool            `yaml:"enableWorkloadIdentity"`
+	ReleaseChannel            string          `yaml:"releaseChannel"`
+	InitialNodeCount          int             `yaml:"initialNodeCount"`
+	MinNodeCount              int             `yaml:"minNodeCount`
+	MaxNodeCount              int             `yaml:"maxNodeCount`
 	EnableWindowsNodepool     bool            `yaml:"enableWindowsNodepool"`
 	EnablePreemptibleNodepool bool            `yaml:"enablePreemptibleNodepool"`
 	DefaultNodepoolOS         string          `yaml:"defaultNodepoolOS"`
@@ -72,7 +75,6 @@ type VpcConfig struct {
 
 type ClusterConfig struct {
 	ClusterName string `yaml:"clusterName"`
-	NumNodes    int    `yaml:"nodeSize"`
 	MachineType string `yaml:"machineType"`
 	ClusterType string `yaml:"clusterType"`
 	Region      string `yaml:"region"`
@@ -105,9 +107,9 @@ func InitConf(cfgFile string) *Config {
 		}
 	}
 	// Enable GCP APIs
-	serviceIds := []string{"compute.googleapis.com", "storage.googleapis.com", "anthos.googleapis.com", "sourcerepo.googleapis.com", "gkehub.googleapis.com", "anthosconfigmanagement.googleapis.com"}
-	if conf.VpcConfig.VpcType == "shared" {
-		enableService(conf.VpcConfig.VpcProjectID, serviceIds)
+	serviceIds := []string{
+		"compute.googleapis.com",
+		"storage.googleapis.com",
 	}
 	enableService(conf.ClustersProjectID, serviceIds)
 
@@ -188,19 +190,22 @@ func ValidateConf(c *Config) error {
 
 	// Config-wide vars
 	if c.TerraformState != "local" && c.TerraformState != "cloud" {
-		return fmt.Errorf("Terraform state must be one of: local, cloud")
+		return fmt.Errorf("terraform state must be one of: local, cloud")
 	}
-	if err := validateNodeOS(c.DefaultNodepoolOS); err != nil {
-		return err
-	}
+	// if err := validateNodeOS(c.DefaultNodepoolOS); err != nil {
+	// 	return err
+	// }
 	if err := validateConfigRegion(c.GovernanceProjectID, c.Region); err != nil {
 		return err
 	}
 	if c.PolicyController && !c.ConfigSync {
-		return fmt.Errorf("Terraform constraints require that if Policy Controller is enabled, Config Sync must also be enabled. Please set configSync to true and retry.")
+		return fmt.Errorf("terraform constraints require that if Policy Controller is enabled, config Sync must also be enabled. please set configSync to true and retry.")
 	}
 	if err := validateTFModuleRepo(c.TFModuleRepo); err != nil {
 		return err
+	}
+	if c.MinNodeCount < 1 || c.MaxNodeCount > 100 {
+		return fmt.Errorf("NumNodes must be a number between 1-100")
 	}
 
 	// VPC Config vars
@@ -210,6 +215,12 @@ func ValidateConf(c *Config) error {
 	if c.VpcConfig.VpcName == "" {
 		return fmt.Errorf("VPC Name cannot be empty")
 	}
+	// err := validateVPC(c.VpcConfig.VpcName, c.VpcConfig.VpcProjectID)
+	// if err != nil {
+	// 	return err
+	// }
+	// log.Printf("🌐 VPC name %s is valid + does not yet exist in VPC project %s\n", c.VpcConfig.VpcName, c.VpcConfig.VpcProjectID)
+
 	if !c.PrivateEndpoint {
 		if err := validateAuthCIDR(c.VpcConfig.AuthCIDR); err != nil {
 			return err
@@ -220,9 +231,6 @@ func ValidateConf(c *Config) error {
 	for i, cc := range c.ClustersConfig {
 		// TODO - what is cluster type? why is line 125 here?
 		if cc.ClusterType != "managed" && cc.ClusterType != "on-prem" {
-			if cc.NumNodes < 1 || cc.NumNodes > 100 {
-				return fmt.Errorf("ClustersConfig[%d]: NumNodes must be a number between 1-100", i)
-			}
 			if cc.SubnetName == "" {
 				return fmt.Errorf("ClustersConfig[%d] SubnetName cannot be empty", i)
 			}
@@ -232,13 +240,13 @@ func ValidateConf(c *Config) error {
 			if err := validateMachineType(c.ClustersProjectID, cc.MachineType, cc.Zone); err != nil {
 				return fmt.Errorf("ClustersConfig[%d]: %s", i, err)
 			}
-			if err := validateNodeOS(c.DefaultNodepoolOS); err != nil {
-				return fmt.Errorf("ClustersConfig[%d]: %s", i, err)
-			}
+			// if err := validateNodeOS(c.DefaultNodepoolOS); err != nil {
+			// 	return fmt.Errorf("ClustersConfig[%d]: %s", i, err)
+			// }
 		}
 	}
 
-	log.Println("✅ Config is valid. Ready to write to tfvars.")
+	log.Println("✅ Config is valid.")
 	return nil
 }
 
@@ -410,6 +418,30 @@ func validateTFModuleRepo(repoPath string) error {
 	return nil
 }
 
+// if shared VPC, checks if VPC name already exists in the VPC project
+// https://cloud.google.com/go/docs/reference/cloud.google.com/go/latest/compute/apiv1#cloud_google_com_go_compute_apiv1_NetworksClient_Get
+// https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/compute/v1#GetNetworkRequest.
+func validateVPC(vpcName string, vpcProject string) error {
+	ctx := context.Background()
+	c, err := compute.NewNetworksRESTClient(ctx)
+	if err != nil {
+		return err
+	}
+	defer c.Close()
+
+	req := &computepb.GetNetworkRequest{
+		Network: vpcName,
+		Project: vpcProject,
+	}
+	_, err = c.Get(ctx, req)
+	// 404 = Good
+	if err != nil && strings.Contains(err.Error(), "not found") {
+		log.Infof("VPC %s was not found in project %s", vpcName, vpcProject)
+		return nil
+	}
+	return fmt.Errorf("VPC %s already exists in project %s", vpcName, vpcProject)
+}
+
 func enableService(projectId string, serviceIds []string) {
 	ctx := context.Background()
 	c, err := serviceusage.NewClient(ctx)
@@ -449,6 +481,7 @@ func setTfModuleRepo(tfRepo string, tfBranch string) error {
 			log.Fatalf("error updating TFModuleBranch: %s", err)
 		}
 	}
+	log.Println("✅ main.tf files created. Ready to write to tfvars.")
 	return nil
 }
 

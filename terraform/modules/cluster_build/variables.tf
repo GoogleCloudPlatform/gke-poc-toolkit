@@ -66,28 +66,27 @@ variable "ip_source_ranges_ssh" {
   default     = []
 }
 
-variable "shared_vpc_name" {
-  type        = string
-  description = "The name of the Shared VPC - This is optional and only valid if a Shared VPC is used"
-  default     = ""
-}
-
-variable "shared_vpc_project_id" {
+variable "vpc_project_id" {
   type        = string
   description = "The Share VPC Project ID - This is optional and only valid if a Shared VPC is used"
   default     = ""
 }
 
-variable "shared_vpc_ip_range_pods_name" {
+variable "vpc_ip_range_pods_name" {
   type        = string
   description = "The secondary ip range to use for pods in the shared vpc  - This is optional and only valid if a Shared VPC is used"
   default     = ""
 }
 
-variable "shared_vpc_ip_range_services_name" {
+variable "vpc_ip_range_services_name" {
   type        = string
   description = "The secondary ip range to use for services in the shared vpc  - This is optional and only valid if a Shared VPC is used"
   default     = ""
+}
+
+variable "release_channel" {
+  type = string
+  default = "regular"
 }
 
 variable "node_pool" {
@@ -97,12 +96,12 @@ variable "node_pool" {
 
 variable "initial_node_count" {
   type    = number
-  default = 1
+  default = 3
 }
 
 variable "min_node_count" {
   type    = number
-  default = 1
+  default = 3
 }
 
 variable "max_node_count" {
@@ -177,4 +176,34 @@ variable "acm_tf_module_repo" {
   type        = string
   description = "Repo used "
   default     = "github.com/GoogleCloudPlatform/gke-poc-toolkit//terraform/modules/acm"
+}
+
+variable "multi_cluster_gateway" {
+  type        = bool
+  description = "Enable Multi-cluster gateway on all clusters."
+  default     = true
+}
+
+variable "anthos_service_mesh" {
+  type        = bool
+  description = "Enable Anthos Service Mesh on all clusters."
+  default     = true
+}
+
+variable "asm_version" {
+  type        = string
+  description = "ASM version"
+  default     = "1.12"
+}
+
+variable "asm_package" {
+  type        = string
+  description = "ASM package"
+  default     = "istio-1.12.2-asm.0"
+}
+
+variable "asm_release_channel" {
+  type        = string
+  description = "ASM release channel"
+  default     = "regular"
 }

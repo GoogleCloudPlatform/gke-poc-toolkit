@@ -41,11 +41,11 @@ locals {
   nested_secondary_subnets = {
     for name, config in var.cluster_config : config.subnet_name => [
       {
-        range_name    = var.shared_vpc_ip_range_pods_name
+        range_name    = var.vpc_ip_range_pods_name
         ip_cidr_range = "10.${index(keys(var.cluster_config), name) + 1}.0.0/17"
       },
       {
-        range_name    = var.shared_vpc_ip_range_services_name
+        range_name    = var.vpc_ip_range_services_name
         ip_cidr_range = "10.${index(keys(var.cluster_config), name) + 1}.128.0/17"
       }
     ]
@@ -54,20 +54,21 @@ locals {
 
 module "enabled_shared_vpc_apis" {
   source  = "terraform-google-modules/project-factory/google//modules/project_services"
-  version = "~> 10.0"
+  version = "~> 11.3.1"
 
-  project_id                  = var.shared_vpc_project_id
+  project_id                  = var.vpc_project_id
   disable_services_on_destroy = true
 
   activate_apis = [
     "compute.googleapis.com",
     "container.googleapis.com",
+    "dns.googleapis.com",
   ]
 }
 
 module "enabled_service_project_apis" {
   source  = "terraform-google-modules/project-factory/google//modules/project_services"
-  version = "~> 10.0"
+  version = "~> 11.3.1"
 
   project_id                  = var.project_id
   disable_services_on_destroy = false

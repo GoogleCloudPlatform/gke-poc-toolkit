@@ -20,10 +20,10 @@ module "shared_vpc" {
     module.enabled_service_project_apis
   ]
   source  = "terraform-google-modules/network/google"
-  version = "~> 2.5"
+  version = "~> 4.1.0"
 
-  project_id   = var.shared_vpc_project_id
-  network_name = var.shared_vpc_name
+  project_id   = var.vpc_project_id
+  network_name = var.vpc_name
   # routing_mode = "GLOBAL" default in terraform-google-network
 
   subnets = local.nested_subnets
@@ -35,5 +35,6 @@ resource "google_compute_shared_vpc_host_project" "host_project" {
   depends_on = [
     module.shared_vpc,
   ]
-  project = var.shared_vpc_project_id
+  provider = google-beta  
+  project = var.vpc_project_id
 }
