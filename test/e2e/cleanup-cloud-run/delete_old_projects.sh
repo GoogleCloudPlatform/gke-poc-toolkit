@@ -16,6 +16,7 @@ do
         echo "Project: $project_id created at: $CREATE_TIME" 
         SIX_HOURS_AGO=`date -d '6 hour ago' "+%Y-%m-%dT%H:%M:%SZ"`
         if [[ $CREATE_TIME < $SIX_HOURS_AGO ]]; then 
+            gcloud beta resource-manager folders remove-iam-policy-binding $GPT_TEST_FOLDER_ID --member="serviceAccount:e2e-test@$project_id.iam.gserviceaccount.com" --role="roles/compute.xpnAdmin"    
             echo "🧹 Project $project_id is older than 6 hours (it was created at $CREATE_TIME), deleting..."
             gcloud projects delete --quiet $project_id
         else
