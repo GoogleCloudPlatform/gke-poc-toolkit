@@ -11,8 +11,8 @@ defaultNodepoolOS: cos
 initialNodeCount: 1
 maxNodeCount: 10
 minNodeCount: 1
-configSync: false 
-policyController: false
+configSync: true 
+policyController: true
 multiClusterGateway: false
 anthosServiceMesh: false
 tfModuleRepo: "github.com/GoogleCloudPlatform/gke-poc-toolkit//terraform/modules/"
@@ -20,7 +20,7 @@ tfModuleBranch: "main"
 sendAnalytics: false
 vpcConfig:
   vpcName: "gke-poc-toolkit"
-  vpcType: "standalone" # standalone, shared 
+  vpcType: "shared" # standalone, shared 
   vpcProjectId: "my-host-project" # Required if you are using a sharedVPC
   podCIDRName: "mypodcidr"
   svcCIDRName: "mysvccidr"
@@ -36,3 +36,13 @@ clustersConfig:  # a list of one or more clusters, each with their own config
   region: "us-east1"
   zone: "us-east1-b" 
   subnetName: "us-east1"
+- clusterName: "gke-west"
+  machineType: "e2-standard-4"
+  region: "us-west1"
+  zone: "us-west1-b" 
+  subnetName: "us-west1"
+- clusterName: "gke-west2"
+  machineType: "e2-standard-4"
+  region: "us-west2"
+  zone: "us-west2-b" 
+  subnetName: "us-west2"

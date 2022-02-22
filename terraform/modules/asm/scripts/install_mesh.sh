@@ -25,10 +25,6 @@ kubectl wait --for=condition=ProvisioningFinished controlplanerevision -n istio-
 # Create kubeconfig secret for the current cluster and install it in istio-system of the rest of the mesh clusters
 ${ASM_PACKAGE}/bin/istioctl create-remote-secret --kubeconfig ${KUBECONFIG} --context=gke_${PROJECT_ID}_${LOCATION}_${CLUSTER} --name=${CLUSTER} > ./manifests/secret-kubeconfig-${CLUSTER}.yaml
 
-# while ! [[ -s ./manifests/secret-kubeconfig-${CLUSTER}.yaml ]]; do
-#     ${ASM_PACKAGE}/bin/istioctl create-remote-secret --kubeconfig ${KUBECONFIG} --context=gke_${PROJECT_ID}_${LOCATION}_${CLUSTER} --name=${CLUSTER} > ./manifests/secret-kubeconfig-${CLUSTER}.yaml
-# sleep 5
-# done
 echo -e "${CLUSTER} secret was created here: /manifests/secret-kubeconfig-${CLUSTER}.yaml"
 
 for i in `gcloud container clusters list --project ${PROJECT_ID} --format="value(name)"`; do

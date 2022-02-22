@@ -53,6 +53,17 @@ fi
 echo -e "Enabling ASM Mesh on the GKE HUB"
 gcloud beta container hub mesh enable --project=${PROJECT_ID}
 
+for i in {1..300}; do
+    HUB_CHECK=`gcloud beta container hub memberships list --project=${PROJECT_ID} --format="value(name)" | wc -l | awk '{print $1}'`
+    CLUSTER_CHECK=`gcloud container clusters list --project=${PROJECT_ID} --format="value(name)" | wc -l | awk '{print $1}'`
+    if [[ ${HUB_CHECK} == ${CLUSTER_CHECK} ]]; then
+        echo -e "All clusters are registered to the HUB"
+        break
+    else
+        echo -e "Waiting for all clusters to show in the HUB for $i seconds. Current status - Hub Count: ${HUB_CHECK} Cluster Count: ${CLUSTER_CHECK}"
+    fi
+done
+
 NUM_MEMBERS=`gcloud beta container hub memberships list --project=${PROJECT_ID} --format="value(name)" | wc -l | awk '{print $1}'`
 echo -e "NUM_MEMBERS: ${NUM_MEMBERS}"
 STATE_CODE="OK"
