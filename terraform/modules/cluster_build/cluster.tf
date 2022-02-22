@@ -18,6 +18,7 @@ module "gke" {
   depends_on = [
     module.bastion,
     module.kms,
+    module.enabled_google_apis,
   ]
   for_each                = var.cluster_config
   source                  = "terraform-google-modules/kubernetes-engine/google//modules/safer-cluster"

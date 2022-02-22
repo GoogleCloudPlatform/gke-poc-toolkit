@@ -170,7 +170,7 @@ locals {
   // Check if any anthos feature is enabled and use the anthos api list if true 
   api_list = var.anthos_service_mesh || var.multi_cluster_gateway || var.config_connector ? local.anthos_apis : local.base_apis
 
-  // These locals are using do construct anthos component depends on rules based on which features are enabled
+  // These locals are used to construct anthos component depends on rules based on which features are enabled
   acm_depends_on = var.anthos_service_mesh ? module.asm : (var.multi_cluster_gateway ? module.mcg : module.hub)
   asm_depends_on = var.multi_cluster_gateway ? module.mcg : module.hub
 
@@ -234,7 +234,7 @@ module "hub" {
   depends_on = [
     module.gke,
   ]
-  count          = var.multi_cluster_gateway || var.config_sync ? 1 : 0
+  count          = var.multi_cluster_gateway || var.config_sync || var.anthos_service_mesh ? 1 : 0
   source         = "../hub"
   project_id     = var.project_id
   cluster_config = var.cluster_config
