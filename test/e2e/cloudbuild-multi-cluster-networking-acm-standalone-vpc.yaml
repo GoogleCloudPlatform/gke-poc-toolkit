@@ -93,13 +93,13 @@ steps:
     fi
     echo "🌟 REPO INFO: NAME: $$CLEAN_REPO_NAME, BRANCH: $$CLEAN_BRANCH_NAME"
     TEST_PROJECT_ID=$(cat "/workspace/test-project-id.txt")
-    sed -i 's|.*tfModuleRepo.*|tfModuleRepo: '"$$CLEAN_REPO_NAME"'|' samples/four-clusters-standalone-vpc.yaml 
-    sed -i 's|.*tfModuleBranch.*|tfModuleBranch: '"$$CLEAN_BRANCH_NAME"'|' samples/four-clusters-standalone-vpc.yaml 
-    sed -i 's|.*clustersProjectId.*|clustersProjectId: '"$$TEST_PROJECT_ID"'|' samples/four-clusters-standalone-vpc.yaml 
-    sed -i 's|.*governanceProjectId.*|governanceProjectId: '"$$TEST_PROJECT_ID"'|' samples/four-clusters-standalone-vpc.yaml
-    sed -i 's|.*vpcProjectId.*|  vpcProjectId: '"$$TEST_PROJECT_ID"'|' samples/four-clusters-standalone-vpc.yaml
+    sed -i 's|.*tfModuleRepo.*|tfModuleRepo: '"$$CLEAN_REPO_NAME"'|' samples/multi-cluster-networking-acm-standalone-vpc.yaml 
+    sed -i 's|.*tfModuleBranch.*|tfModuleBranch: '"$$CLEAN_BRANCH_NAME"'|' samples/multi-cluster-networking-acm-standalone-vpc.yaml 
+    sed -i 's|.*clustersProjectId.*|clustersProjectId: '"$$TEST_PROJECT_ID"'|' samples/multi-cluster-networking-acm-standalone-vpc.yaml 
+    sed -i 's|.*governanceProjectId.*|governanceProjectId: '"$$TEST_PROJECT_ID"'|' samples/multi-cluster-networking-acm-standalone-vpc.yaml
+    sed -i 's|.*vpcProjectId.*|  vpcProjectId: '"$$TEST_PROJECT_ID"'|' samples/multi-cluster-networking-acm-standalone-vpc.yaml
     echo "Final config for testing..."
-    cat samples/four-clusters-standalone-vpc.yaml
+    cat samples/multi-cluster-networking-acm-standalone-vpc.yaml
 - name: 'gcr.io/gkepoctoolkit/e2etest:latest'
   id: test-gkekitctl-create
   entrypoint: 'bash'
@@ -117,7 +117,7 @@ steps:
     gcloud auth application-default print-access-token
     gcloud config set project $$TEST_PROJECT_ID
     gcloud auth list
-    ./gkekitctl create --config samples/four-clusters-standalone-vpc.yaml
+    ./gkekitctl create --config samples/multi-cluster-networking-acm-standalone-vpc.yaml
 timeout: "60m"
 availableSecrets:
   secretManager:
