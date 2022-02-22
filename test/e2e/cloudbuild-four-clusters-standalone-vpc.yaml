@@ -27,7 +27,27 @@ steps:
     sleep 10
     gcloud services enable cloudbilling.googleapis.com --project=$$TEST_PROJECT_ID
     gcloud alpha billing projects link $$TEST_PROJECT_ID --billing-account $$BILLING_ID
-  secretEnv: ['FOLDER_ID', 'BILLING_ID']  
+  secretEnv: ['FOLDER_ID', 'BILLING_ID']
+- name: 'gcr.io/cloud-builders/gcloud:latest'
+  id: setup-gcloud-auth
+  entrypoint: 'bash'
+  args:
+  - '-eEuo'
+  - 'pipefail'
+  - '-c'
+  - |-
+    SA_NAME="gpt-test-cli"
+    KEY_PATH="/workspace/gcloud/gpt-test-cli.json"
+    TEST_PROJECT_ID=$(cat "/workspace/test-project-id.txt")
+    gcloud iam service-accounts keys create $$KEY_PATH --iam-account=gpt-test-cli@gkepoctoolkit.iam.gserviceaccount.com --project gkepoctoolkit
+    gcloud auth activate-service-account gpt-test-cli@gkepoctoolkit.iam.gserviceaccount.com --key-file=$$KEY_PATH --project gkepoctoolkit
+    export GOOGLE_APPLICATION_CREDENTIALS=$$KEY_PATH
+    gcloud auth application-default print-access-token
+    gcloud auth list
+    gcloud config set project $$TEST_PROJECT_ID
+    sleep 10
+    gcloud services enable iam.googleapis.com compute.googleapis.com cloudresourcemanager.googleapis.com
+    gcloud iam service-accounts list 
 - name: 'gcr.io/gkepoctoolkit/e2etest:latest'
   id: test-cli-compile
   entrypoint: 'bash'
@@ -86,9 +106,13 @@ steps:
   - |-
     cd /workspace/test
     TEST_PROJECT_ID=$(cat "/workspace/test-project-id.txt")
+    KEY_PATH="/workspace/gcloud/gpt-test-cli.json"
+    gcloud iam service-accounts keys create $$KEY_PATH --iam-account=gpt-test-cli@gkepoctoolkit.iam.gserviceaccount.com --project gkepoctoolkit
+    gcloud auth activate-service-account gpt-test-cli@gkepoctoolkit.iam.gserviceaccount.com --key-file=$$KEY_PATH --project gkepoctoolkit
+    export GOOGLE_APPLICATION_CREDENTIALS=$$KEY_PATH
     gcloud config set project $$TEST_PROJECT_ID
     gcloud auth list
-    ./gkekitctl create --config samples/four-clusters-standalone-vpc.yaml
+    ./gkekitctl create --config samples/four-clusters-shared-vpc.yaml
 timeout: "60m"
 availableSecrets:
   secretManager:
