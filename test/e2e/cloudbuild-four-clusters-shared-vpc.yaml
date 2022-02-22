@@ -20,20 +20,20 @@ steps:
     fi
     echo "🌟 REPO INFO: NAME: $$CLEAN_REPO_NAME, BRANCH: $$CLEAN_BRANCH_NAME"
     TIMESTAMP=`date "+%m%d%y-%H%M%S"`
-    TEST_PROJECT_ID="gpt3-$$TIMESTAMP"
-    VPC_TEST_PROJECT_ID="gpt3-vpc-$$TIMESTAMP"
+    TEST_PROJECT_ID="gpt1-$$TIMESTAMP"
+    VPC_TEST_PROJECT_ID="gpt1-vpc-$$TIMESTAMP"
     echo $$TEST_PROJECT_ID > /workspace/test-project-id.txt
     echo $$VPC_TEST_PROJECT_ID > /workspace/vpc_test-project-id.txt
     gcloud projects create $$TEST_PROJECT_ID --folder="$$FOLDER_ID" 
     gcloud projects create $$VPC_TEST_PROJECT_ID --folder="$$FOLDER_ID" 
     gcloud projects add-iam-policy-binding $$TEST_PROJECT_ID --member=serviceAccount:152393131587@cloudbuild.gserviceaccount.com --role=roles/owner
     gcloud projects add-iam-policy-binding $$VPC_TEST_PROJECT_ID --member=serviceAccount:152393131587@cloudbuild.gserviceaccount.com --role=roles/owner
-    sleep 10
+    sleep 20
     gcloud services enable cloudbilling.googleapis.com --project=$$TEST_PROJECT_ID
     gcloud services enable cloudbilling.googleapis.com --project=$$VPC_TEST_PROJECT_ID
     gcloud alpha billing projects link $$TEST_PROJECT_ID --billing-account $$BILLING_ID
     gcloud alpha billing projects link $$VPC_TEST_PROJECT_ID --billing-account $$BILLING_ID
-  secretEnv: ['FOLDER_ID', 'BILLING_ID']
+  secretEnv: ['FOLDER_ID', 'BILLING_ID']  
 - name: 'gcr.io/cloud-builders/gcloud:latest'
   id: setup-gcloud-auth
   entrypoint: 'bash'
@@ -42,18 +42,25 @@ steps:
   - 'pipefail'
   - '-c'
   - |-
-    SA_NAME="gpt-test-cli"
-    KEY_PATH="/workspace/gcloud/gpt-test-cli.json"
+    SA_NAME="e2e-test"
+    KEY_PATH="/workspace/gcloud/e2e-test.json"
     TEST_PROJECT_ID=$(cat "/workspace/test-project-id.txt")
-    gcloud iam service-accounts keys create $$KEY_PATH --iam-account=gpt-test-cli@gkepoctoolkit.iam.gserviceaccount.com --project gkepoctoolkit
-    gcloud auth activate-service-account gpt-test-cli@gkepoctoolkit.iam.gserviceaccount.com --key-file=$$KEY_PATH --project gkepoctoolkit
+    VPC_TEST_PROJECT_ID=$(cat "/workspace/vpc_test-project-id.txt")
+    gcloud config set project $$TEST_PROJECT_ID
+    gcloud iam service-accounts create $$SA_NAME --project=$$TEST_PROJECT_ID
+    gcloud projects add-iam-policy-binding $$TEST_PROJECT_ID --member="serviceAccount:$$SA_NAME@$$TEST_PROJECT_ID.iam.gserviceaccount.com" --role="roles/owner"
+    gcloud projects add-iam-policy-binding $$VPC_TEST_PROJECT_ID --member="serviceAccount:$$SA_NAME@$$TEST_PROJECT_ID.iam.gserviceaccount.com" --role="roles/owner"
+    gcloud beta resource-manager folders add-iam-policy-binding $$FOLDER_ID --member="serviceAccount:$$SA_NAME@$$TEST_PROJECT_ID.iam.gserviceaccount.com" --role="roles/compute.xpnAdmin"    
+    gcloud iam service-accounts keys create $$KEY_PATH --iam-account=$$SA_NAME@$$TEST_PROJECT_ID.iam.gserviceaccount.com
+    gcloud auth activate-service-account $$SA_NAME@$$TEST_PROJECT_ID.iam.gserviceaccount.com --key-file=$$KEY_PATH --project=$$TEST_PROJECT_ID
     export GOOGLE_APPLICATION_CREDENTIALS=$$KEY_PATH
     gcloud auth application-default print-access-token
     gcloud auth list
     gcloud config set project $$TEST_PROJECT_ID
-    sleep 10
+    sleep 5
     gcloud services enable iam.googleapis.com compute.googleapis.com cloudresourcemanager.googleapis.com
     gcloud iam service-accounts list
+  secretEnv: ['FOLDER_ID']
 - name: 'gcr.io/gkepoctoolkit/e2etest:latest'
   id: test-cli-compile
   entrypoint: 'bash'
@@ -96,13 +103,13 @@ steps:
     echo "🌟 REPO INFO: NAME: $$CLEAN_REPO_NAME, BRANCH: $$CLEAN_BRANCH_NAME"
     TEST_PROJECT_ID=$(cat "/workspace/test-project-id.txt")
     VPC_TEST_PROJECT_ID=$(cat "/workspace/vpc_test-project-id.txt")
-    sed -i 's|.*tfModuleRepo.*|tfModuleRepo: '"$$CLEAN_REPO_NAME"'|' samples/four-clusters-shared-vpc.yaml
-    sed -i 's|.*tfModuleBranch.*|tfModuleBranch: '"$$CLEAN_BRANCH_NAME"'|' samples/four-clusters-shared-vpc.yaml
-    sed -i 's|.*clustersProjectId.*|clustersProjectId: '"$$TEST_PROJECT_ID"'|' samples/four-clusters-shared-vpc.yaml
-    sed -i 's|.*governanceProjectId.*|governanceProjectId: '"$$TEST_PROJECT_ID"'|' samples/four-clusters-shared-vpc.yaml
-    sed -i 's|.*vpcProjectId.*|  vpcProjectId: '"$$VPC_TEST_PROJECT_ID"'|' samples/four-clusters-shared-vpc.yaml
+    sed -i 's|.*tfModuleRepo.*|tfModuleRepo: '"$$CLEAN_REPO_NAME"'|' samples/multi-cluster-networking-acm-shared-vpc.yaml 
+    sed -i 's|.*tfModuleBranch.*|tfModuleBranch: '"$$CLEAN_BRANCH_NAME"'|' samples/multi-cluster-networking-acm-shared-vpc.yaml 
+    sed -i 's|.*clustersProjectId.*|clustersProjectId: '"$$TEST_PROJECT_ID"'|' samples/multi-cluster-networking-acm-shared-vpc.yaml 
+    sed -i 's|.*governanceProjectId.*|governanceProjectId: '"$$TEST_PROJECT_ID"'|' samples/multi-cluster-networking-acm-shared-vpc.yaml
+    sed -i 's|.*vpcProjectId.*|  vpcProjectId: '"$$VPC_TEST_PROJECT_ID"'|' samples/multi-cluster-networking-acm-shared-vpc.yaml
     echo "Final config for testing..."
-    cat samples/four-clusters-shared-vpc.yaml
+    cat samples/multi-cluster-networking-acm-shared-vpc.yaml
 - name: 'gcr.io/gkepoctoolkit/e2etest:latest'
   id: test-gkekitctl-create
   entrypoint: 'bash'
@@ -112,13 +119,15 @@ steps:
   - '-c'
   - |-
     cd /workspace/test
+    SA_NAME="e2e-test"
     TEST_PROJECT_ID=$(cat "/workspace/test-project-id.txt")
-    KEY_PATH="/workspace/gcloud/gpt-test-cli.json"
-    gcloud auth activate-service-account gpt-test-cli@gkepoctoolkit.iam.gserviceaccount.com --key-file=$$KEY_PATH --project gkepoctoolkit
+    KEY_PATH="/workspace/gcloud/e2e-test.json"
+    gcloud auth activate-service-account $$SA_NAME@$$TEST_PROJECT_ID.iam.gserviceaccount.com --key-file=$$KEY_PATH --project=$$TEST_PROJECT_ID
     export GOOGLE_APPLICATION_CREDENTIALS=$$KEY_PATH
+    gcloud auth application-default print-access-token
     gcloud config set project $$TEST_PROJECT_ID
     gcloud auth list
-    ./gkekitctl create --config samples/four-clusters-shared-vpc.yaml
+    ./gkekitctl create --config samples/multi-cluster-networking-acm-shared-vpc.yaml
 timeout: "60m"
 availableSecrets:
   secretManager:
