@@ -35,5 +35,6 @@ resource "google_compute_shared_vpc_host_project" "host_project" {
   depends_on = [
     module.shared_vpc,
   ]
+  provider = google-beta  
   project = var.vpc_project_id
 }

@@ -21,7 +21,6 @@ resource "google_compute_subnetwork_iam_binding" "subnet_networkuser" {
   depends_on = [
     module.shared_vpc
   ]
-  provider = google-beta
   for_each   = var.cluster_config
   project    = var.vpc_project_id
   region     = each.value.region
@@ -37,7 +36,6 @@ resource "google_project_iam_binding" "shared_vpc_serviceagent" {
   depends_on = [
     google_compute_subnetwork_iam_binding.subnet_networkuser
   ]
-  provider = google-beta
   role    = "roles/container.hostServiceAgentUser"
   project = var.vpc_project_id
   members = [
