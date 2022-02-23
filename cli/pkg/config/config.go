@@ -122,6 +122,9 @@ func InitConf(cfgFile string) *Config {
 		"dns.googleapis.com",
 		"iamcredentials.googleapis.com",
 		"stackdriver.googleapis.com",
+	}
+	enableService(conf.ClustersProjectID, serviceIds)
+	anthosServiceIds := []string{
 		"anthos.googleapis.com",
 		"gkehub.googleapis.com",
 		"sourcerepo.googleapis.com",
@@ -136,7 +139,7 @@ func InitConf(cfgFile string) *Config {
 		"meshconfig.googleapis.com",
 		"multiclustermetering.googleapis.com",
 	}
-	enableService(conf.ClustersProjectID, serviceIds)
+	enableService(conf.ClustersProjectID, anthosServiceIds)
 
 	// Validate config
 	err = ValidateConf(conf)
