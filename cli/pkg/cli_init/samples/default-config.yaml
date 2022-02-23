@@ -11,9 +11,9 @@ enableWindowsNodepool: false
 privateEndpoint: false
 releaseChannel: REGULAR
 defaultNodepoolOS: cos
-initialNodeCount: 1
+initialNodeCount: 4
 maxNodeCount: 10
-minNodeCount: 1
+minNodeCount: 4
 configSync: true 
 policyController: true
 multiClusterGateway: false

@@ -243,7 +243,7 @@ module "kms" {
 module "hub" {
   depends_on = [
     module.gke,
-    module.enabled_google_apis,
+    module.enabled_anthos_apis,
   ]
   count          = var.multi_cluster_gateway || var.config_sync || var.anthos_service_mesh ? 1 : 0
   source         = "../hub"
@@ -254,7 +254,7 @@ module "hub" {
 module "acm" {
   depends_on = [
     local.acm_depends_on,
-    module.enabled_google_apis,
+    module.enabled_anthos_apis,
   ]  
   count             = var.config_sync ? 1 : 0
   source            = "../acm"
@@ -267,7 +267,7 @@ module "acm" {
 module "mcg" {
   depends_on = [
     module.hub,
-    module.enabled_google_apis,
+    module.enabled_anthos_apis,
   ]
   count                 = var.multi_cluster_gateway ? 1 : 0
   source                = "../mcg"
@@ -279,7 +279,9 @@ module "mcg" {
 
 module "asm" {
   depends_on = [
-   local.asm_depends_on
+    local.asm_depends_on,
+    module.enabled_anthos_apis,
+
   ]
   count                 = var.anthos_service_mesh ? 1 : 0
   source                = "../asm"
