@@ -48,7 +48,7 @@ module "gke" {
     state    = "ENCRYPTED"
     key_name = "projects/${var.governance_project_id}/locations/${each.value.region}/keyRings/${local.gke_keyring_name}-${each.value.region}/cryptoKeys/${local.gke_key_name}"
   }]
-  remove_default_node_pool = false
+
   node_pools = local.cluster_node_pool
 
   node_pools_oauth_scopes = {
