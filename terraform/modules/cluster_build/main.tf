@@ -119,8 +119,19 @@ locals {
   // Final Node Pool options for Cluster - combines all specified nodepools
   cluster_node_pool = flatten(local.linux_pool)
 
-  // APIs to enable
-  base_apis = [
+  // These locals are used to construct anthos component depends on rules based on which features are enabled
+  acm_depends_on = var.anthos_service_mesh ? module.asm : (var.multi_cluster_gateway ? module.mcg : module.hub)
+  asm_depends_on = var.multi_cluster_gateway ? module.mcg : module.hub
+}
+
+// Enable APIs needed in the gke cluster project
+module "enabled_google_apis" {
+  source  = "terraform-google-modules/project-factory/google//modules/project_services"
+  version = "~> 11.3.1"
+  project_id                  = var.project_id
+  disable_services_on_destroy = false
+
+  activate_apis = [
     "iam.googleapis.com",
     "storage.googleapis.com",
     "compute.googleapis.com",
@@ -135,9 +146,19 @@ locals {
     "dns.googleapis.com",
     "iamcredentials.googleapis.com",
     "stackdriver.googleapis.com",
+    "cloudkms.googleapis.com",
   ]
+}
 
-  anthos_apis = [
+// Enable Anthos APIs in gke cluster project 
+module "enabled_anthos_apis" {
+  source  = "terraform-google-modules/project-factory/google//modules/project_services"
+  version = "~> 11.3.1"
+  count          = var.multi_cluster_gateway || var.config_sync || var.anthos_service_mesh ? 1 : 0
+  project_id                  = var.project_id
+  disable_services_on_destroy = false
+
+  activate_apis = [
     "iam.googleapis.com",
     "storage.googleapis.com",
     "compute.googleapis.com",
@@ -165,25 +186,9 @@ locals {
     "meshtelemetry.googleapis.com",
     "meshconfig.googleapis.com",
     "multiclustermetering.googleapis.com",
+    "cloudkms.googleapis.com",
+    "multiclustermetering.googleapis.com",
   ]
-
-  // Check if any anthos feature is enabled and use the anthos api list if true 
-  api_list = var.anthos_service_mesh || var.multi_cluster_gateway || var.config_connector ? local.anthos_apis : local.base_apis
-
-  // These locals are used to construct anthos component depends on rules based on which features are enabled
-  acm_depends_on = var.anthos_service_mesh ? module.asm : (var.multi_cluster_gateway ? module.mcg : module.hub)
-  asm_depends_on = var.multi_cluster_gateway ? module.mcg : module.hub
-
-}
-
-// Enable APIs needed in the gke cluster project
-module "enabled_google_apis" {
-  source  = "terraform-google-modules/project-factory/google//modules/project_services"
-  version = "~> 11.3.1"
-  project_id                  = var.project_id
-  disable_services_on_destroy = false
-
-  activate_apis = local.api_list
 }
 
 // Enable APIs needed in the governance project
