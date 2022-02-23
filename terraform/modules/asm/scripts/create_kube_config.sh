@@ -67,10 +67,12 @@ done
 NUM_MEMBERS=`gcloud beta container hub memberships list --project=${PROJECT_ID} --format="value(name)" | wc -l | awk '{print $1}'`
 echo -e "NUM_MEMBERS: ${NUM_MEMBERS}"
 STATE_CODE="OK"
+for (( c=$START; c<=$END; c++ ))
+
 if [[ ${NUM_MEMBERS} -le 1 ]]; then
     echo -e "STATE_CODE: ${STATE_CODE}"
 else
-    for i in {2..${NUM_MEMBERS}}; do
+    for (( i=2; i<=${NUM_MEMBERS}; i++)); do
         STATE_CODE="${STATE_CODE};OK"
     done
     echo -e "STATE_CODE: ${STATE_CODE}"
