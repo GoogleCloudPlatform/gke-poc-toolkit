@@ -122,6 +122,7 @@ func InitConf(cfgFile string) *Config {
 		"dns.googleapis.com",
 		"iamcredentials.googleapis.com",
 		"stackdriver.googleapis.com",
+		"cloudkms.googleapis.com",
 	}
 	enableService(conf.ClustersProjectID, serviceIds)
 	anthosServiceIds := []string{
