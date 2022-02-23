@@ -96,12 +96,12 @@ variable "node_pool" {
 
 variable "initial_node_count" {
   type    = number
-  default = 3
+  default = 4
 }
 
 variable "min_node_count" {
   type    = number
-  default = 3
+  default = 4
 }
 
 variable "max_node_count" {
