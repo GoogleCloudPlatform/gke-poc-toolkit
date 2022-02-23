@@ -219,6 +219,7 @@ module "service_accounts" {
 module "kms" {
   depends_on = [
     module.service_accounts,
+    module.enabled_governance_apis,
   ]
   for_each        = local.distinct_cluster_regions
   source          = "terraform-google-modules/kms/google"
@@ -237,6 +238,7 @@ module "kms" {
 module "hub" {
   depends_on = [
     module.gke,
+    module.enabled_google_apis,
   ]
   count          = var.multi_cluster_gateway || var.config_sync || var.anthos_service_mesh ? 1 : 0
   source         = "../hub"
@@ -246,7 +248,8 @@ module "hub" {
 
 module "acm" {
   depends_on = [
-   local.acm_depends_on
+    local.acm_depends_on,
+    module.enabled_google_apis,
   ]  
   count             = var.config_sync ? 1 : 0
   source            = "../acm"
@@ -259,6 +262,7 @@ module "acm" {
 module "mcg" {
   depends_on = [
     module.hub,
+    module.enabled_google_apis,
   ]
   count                 = var.multi_cluster_gateway ? 1 : 0
   source                = "../mcg"
