@@ -59,13 +59,13 @@ module "gke" {
     ]
   }
 
-  # node_pools_labels = {
-  #   # all = {} default set in terraform-google-kubernetes-engine
+  node_pools_labels = {
+    # all = {} default set in terraform-google-kubernetes-engine
 
-  #   default-node-pool = {
-  #     default-node-pool = false
-  #   }
-  # }
+    default-node-pool = {
+      default-node-pool = false
+    }
+  }
 
   node_pools_metadata = {
     # all = {} default set in terraform-google-kubernetes-engine
