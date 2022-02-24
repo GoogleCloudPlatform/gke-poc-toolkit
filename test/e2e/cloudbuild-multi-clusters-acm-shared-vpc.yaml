@@ -20,8 +20,8 @@ steps:
     fi
     echo "🌟 REPO INFO: NAME: $$CLEAN_REPO_NAME, BRANCH: $$CLEAN_BRANCH_NAME"
     TIMESTAMP=`date "+%m%d%y-%H%M%S"`
-    TEST_PROJECT_ID="gpt3-$$TIMESTAMP"
-    VPC_TEST_PROJECT_ID="gpt3-vpc-$$TIMESTAMP"
+    TEST_PROJECT_ID="gpt1-$$TIMESTAMP"
+    VPC_TEST_PROJECT_ID="gpt1-vpc-$$TIMESTAMP"
     echo $$TEST_PROJECT_ID > /workspace/test-project-id.txt
     echo $$VPC_TEST_PROJECT_ID > /workspace/vpc_test-project-id.txt
     gcloud projects create $$TEST_PROJECT_ID --folder="$$FOLDER_ID" 
