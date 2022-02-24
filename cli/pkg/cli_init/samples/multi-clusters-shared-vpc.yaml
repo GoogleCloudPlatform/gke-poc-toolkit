@@ -51,7 +51,7 @@ clustersConfig:  # a list of one or more clusters, each with their own config
   region: "northamerica-northeast1"
   zone: "northamerica-northeast1-c" 
   subnetName: "northamerica-northeast1"
-- clusterName: "gke-west2"
+- clusterName: "asia-northeast1"
   machineType: "e2-standard-4"
   region: "asia-northeast1"
   zone: "asia-northeast1-a" 
