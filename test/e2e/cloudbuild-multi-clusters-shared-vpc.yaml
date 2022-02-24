@@ -105,13 +105,13 @@ steps:
     echo "🌟 REPO INFO: NAME: $$CLEAN_REPO_NAME, BRANCH: $$CLEAN_BRANCH_NAME"
     TEST_PROJECT_ID=$(cat "/workspace/test-project-id.txt")
     VPC_TEST_PROJECT_ID=$(cat "/workspace/vpc_test-project-id.txt")
-    sed -i 's|.*tfModuleRepo.*|tfModuleRepo: '"$$CLEAN_REPO_NAME"'|' samples/multi-clusters-networking-acm-standalone-vpc.yaml 
-    sed -i 's|.*tfModuleBranch.*|tfModuleBranch: '"$$CLEAN_BRANCH_NAME"'|' samples/multi-clusters-networking-acm-standalone-vpc.yaml 
-    sed -i 's|.*clustersProjectId.*|clustersProjectId: '"$$TEST_PROJECT_ID"'|' samples/multi-clusters-networking-acm-standalone-vpc.yaml 
-    sed -i 's|.*governanceProjectId.*|governanceProjectId: '"$$TEST_PROJECT_ID"'|' samples/multi-clusters-networking-acm-standalone-vpc.yaml
-    sed -i 's|.*vpcProjectId.*|  vpcProjectId: '"$$VPC_TEST_PROJECT_ID"'|' samples/multi-clusters-networking-acm-standalone-vpc.yaml
+    sed -i 's|.*tfModuleRepo.*|tfModuleRepo: '"$$CLEAN_REPO_NAME"'|' samples/multi-clusters-shared-vpc.yaml 
+    sed -i 's|.*tfModuleBranch.*|tfModuleBranch: '"$$CLEAN_BRANCH_NAME"'|' samples/multi-clusters-shared-vpc.yaml.yaml 
+    sed -i 's|.*clustersProjectId.*|clustersProjectId: '"$$TEST_PROJECT_ID"'|' samples/multi-clusters-shared-vpc.yaml.yaml 
+    sed -i 's|.*governanceProjectId.*|governanceProjectId: '"$$TEST_PROJECT_ID"'|' samples/multi-clusters-shared-vpc.yaml.yaml
+    sed -i 's|.*vpcProjectId.*|  vpcProjectId: '"$$VPC_TEST_PROJECT_ID"'|' samples/multi-clusters-shared-vpc.yaml.yaml
     echo "Final config for testing..."
-    cat samples/multi-clusters-networking-acm-standalone-vpc.yaml
+    cat samples/multi-clusters-shared-vpc.yaml.yaml
 - name: 'gcr.io/gkepoctoolkit/e2etest:latest'
   id: test-gkekitctl-create
   entrypoint: 'bash'
@@ -129,7 +129,7 @@ steps:
     gcloud auth application-default print-access-token
     gcloud config set project $$TEST_PROJECT_ID
     gcloud auth list
-    ./gkekitctl create --config samples/multi-clusters-networking-acm-standalone-vpc.yaml
+    ./gkekitctl create --config samples/multi-clusters-shared-vpc.yaml.yaml
 timeout: "60m"
 availableSecrets:
   secretManager:
