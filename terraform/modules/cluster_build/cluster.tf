@@ -25,6 +25,8 @@ module "gke" {
   source                  = "terraform-google-modules/kubernetes-engine/google//modules/safer-cluster"
   version                 = "19.0.0"
   project_id              = module.enabled_google_apis.project_id
+  // The initial_node_count size in the module is set to ensure that the default node pool size sets the control plane size sufficiently large to prevent a resize during the build
+  initial_node_count      = 4 
   name                    = each.key
   region                  = each.value.region
   release_channel         = var.release_channel
@@ -59,17 +61,7 @@ module "gke" {
     ]
   }
 
-  node_pools_labels = {
-    # all = {} default set in terraform-google-kubernetes-engine
-
-    default-node-pool = {
-      default-node-pool = false
-    }
-  }
-
   node_pools_metadata = {
-    # all = {} default set in terraform-google-kubernetes-engine
-
     (var.node_pool) = {
       // Set metadata on the VM to supply more entropy
       google-compute-enable-virtio-rng = "true"
