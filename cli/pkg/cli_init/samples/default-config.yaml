@@ -6,18 +6,23 @@ terraformState: cloud
 clustersProjectId: "my-project"
 governanceProjectId: "my-project"
 region: "us-central1"
-enableWorkloadIdentity: true 
 enablePreemptibleNodepool: false # Enforced on Linux Node pools only
 enableWindowsNodepool: false
-defaultNodepoolOS: "cos"
 privateEndpoint: false
+releaseChannel: REGULAR
+defaultNodepoolOS: cos
+initialNodeCount: 1
+maxNodeCount: 10
+minNodeCount: 1
 configSync: true 
 policyController: true
+multiClusterGateway: false
+anthosServiceMesh: false
 tfModuleRepo: "github.com/GoogleCloudPlatform/gke-poc-toolkit//terraform/modules/"
 tfModuleBranch: "main"
 sendAnalytics: false
 vpcConfig:
-  vpcName: "default"
+  vpcName: "gke-poc-toolkit"
   vpcType: "standalone" 
   vpcProjectId: "my-project" 
   podCIDRName: "default"
@@ -25,9 +30,7 @@ vpcConfig:
   authCIDR: "0.0.0.0/0"
 clustersConfig:   
 - clusterName: "gke-central"
-  numNodes: 3 
-  clusterType: "public"
   machineType: "e2-standard-4"
-  region: "us-central1" 
-  zone: "us-central1-b"
+  region: "us-central1"
+  zone: "us-central1-a"  
   subnetName: "us-central1"

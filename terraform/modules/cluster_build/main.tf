@@ -26,11 +26,11 @@ resource "random_id" "deployment" {
 
 locals {
   // Presets for project and network settings
-  project_id               = var.shared_vpc ? var.shared_vpc_project_id : module.enabled_google_apis.project_id
-  network_name             = var.shared_vpc ? var.shared_vpc_name : var.vpc_name
+  project_id               = var.shared_vpc ? var.vpc_project_id : module.enabled_google_apis.project_id
+  network_name             = var.vpc_name
   vpc_selflink             = format("projects/%s/global/networks/%s", local.project_id, local.network_name)
-  ip_range_pods            = var.shared_vpc ? var.shared_vpc_ip_range_pods_name : var.ip_range_pods_name
-  ip_range_services        = var.shared_vpc ? var.shared_vpc_ip_range_services_name : var.ip_range_services_name
+  ip_range_pods            = var.shared_vpc ? var.vpc_ip_range_pods_name : var.ip_range_pods_name
+  ip_range_services        = var.shared_vpc ? var.vpc_ip_range_services_name : var.ip_range_services_name
   distinct_cluster_regions = toset([for cluster in var.cluster_config : "${cluster.region}"])
 
   // Presets for KMS and Key Ring
@@ -102,10 +102,12 @@ locals {
   // Presets for Linux Node Pool
   linux_pool = [{
     name               = format("linux-%s", var.node_pool)
+    initial_node_count = var.initial_node_count
     min_count          = var.min_node_count
     max_count          = var.max_node_count
     auto_upgrade       = true
-    node_metadata      = "GKE_METADATA_SERVER"
+    auto_repair        = true
+    node_metadata      = "GKE_METADATA"
     machine_type       = var.linux_machine_type
     disk_type          = "pd-ssd"
     disk_size_gb       = 30
@@ -116,13 +118,16 @@ locals {
 
   // Final Node Pool options for Cluster - combines all specified nodepools
   cluster_node_pool = flatten(local.linux_pool)
+
+  // These locals are used to construct anthos component depends on rules based on which features are enabled
+  acm_depends_on = var.anthos_service_mesh ? module.asm : (var.multi_cluster_gateway ? module.mcg : module.hub)
+  asm_depends_on = var.multi_cluster_gateway ? module.mcg : module.hub
 }
 
 // Enable APIs needed in the gke cluster project
 module "enabled_google_apis" {
   source  = "terraform-google-modules/project-factory/google//modules/project_services"
-  version = "~> 10.0"
-
+  version = "~> 11.3.1"
   project_id                  = var.project_id
   disable_services_on_destroy = false
 
@@ -137,13 +142,59 @@ module "enabled_google_apis" {
     "binaryauthorization.googleapis.com",
     "stackdriver.googleapis.com",
     "iap.googleapis.com",
+    "cloudresourcemanager.googleapis.com",
+    "dns.googleapis.com",
+    "iamcredentials.googleapis.com",
+    "stackdriver.googleapis.com",
+    "cloudkms.googleapis.com",
+  ]
+}
+
+// Enable Anthos APIs in gke cluster project 
+module "enabled_anthos_apis" {
+  source  = "terraform-google-modules/project-factory/google//modules/project_services"
+  version = "~> 11.3.1"
+  count          = var.multi_cluster_gateway || var.config_sync || var.anthos_service_mesh ? 1 : 0
+  project_id                  = var.project_id
+  disable_services_on_destroy = false
+
+  activate_apis = [
+    "iam.googleapis.com",
+    "storage.googleapis.com",
+    "compute.googleapis.com",
+    "logging.googleapis.com",
+    "monitoring.googleapis.com",
+    "containerregistry.googleapis.com",
+    "container.googleapis.com",
+    "binaryauthorization.googleapis.com",
+    "stackdriver.googleapis.com",
+    "iap.googleapis.com",
+    "cloudresourcemanager.googleapis.com",
+    "dns.googleapis.com",
+    "iamcredentials.googleapis.com",
+    "stackdriver.googleapis.com",
+    "anthos.googleapis.com",
+    "gkehub.googleapis.com",
+    "sourcerepo.googleapis.com",
+    "anthosconfigmanagement.googleapis.com",
+    "anthos.googleapis.com",
+    "gkehub.googleapis.com",
+    "multiclusterservicediscovery.googleapis.com",
+    "multiclusteringress.googleapis.com",
+    "trafficdirector.googleapis.com",
+    "meshca.googleapis.com",
+    "meshtelemetry.googleapis.com",
+    "meshconfig.googleapis.com",
+    "multiclustermetering.googleapis.com",
+    "cloudkms.googleapis.com",
+    "multiclustermetering.googleapis.com",
   ]
 }
 
 // Enable APIs needed in the governance project
 module "enabled_governance_apis" {
   source  = "terraform-google-modules/project-factory/google//modules/project_services"
-  version = "~> 10.0"
+  version = "~> 11.3.1"
 
   project_id                  = var.governance_project_id
   disable_services_on_destroy = false
@@ -156,8 +207,12 @@ module "enabled_governance_apis" {
 // Create the service accounts for GKE and KCC from a map declared in locals.
 module "service_accounts" {
   for_each      = local.service_accounts
+  depends_on = [
+    module.enabled_google_apis,
+    module.enabled_governance_apis,
+  ]
   source        = "terraform-google-modules/service-accounts/google"
-  version       = "~> 3.0"
+  version       = "~> 4.1.0"
   project_id    = module.enabled_google_apis.project_id
   display_name  = "${each.key} service account"
   names         = [each.key]
@@ -169,10 +224,11 @@ module "service_accounts" {
 module "kms" {
   depends_on = [
     module.service_accounts,
+    module.enabled_governance_apis,
   ]
   for_each        = local.distinct_cluster_regions
   source          = "terraform-google-modules/kms/google"
-  version         = "~> 2.0"
+  version         = "~> 2.1.0"
   project_id      = var.governance_project_id
   location        = each.key
   keyring         = "${local.gke_keyring_name}-${each.key}"
@@ -184,14 +240,54 @@ module "kms" {
   ]
 }
 
-module "acm" {
+module "hub" {
   depends_on = [
     module.gke,
+    module.enabled_anthos_apis,
   ]
+  count          = var.multi_cluster_gateway || var.config_sync || var.anthos_service_mesh ? 1 : 0
+  source         = "../hub"
+  project_id     = var.project_id
+  cluster_config = var.cluster_config
+}
+
+module "acm" {
+  depends_on = [
+    local.acm_depends_on,
+    module.enabled_anthos_apis,
+  ]  
   count             = var.config_sync ? 1 : 0
   source            = "../acm"
-  project_id        = module.enabled_google_apis.project_id
+  project_id        = var.project_id
   policy_controller = var.policy_controller
   cluster_config    = var.cluster_config
   email             = data.google_client_openid_userinfo.me.email
+}
+
+module "mcg" {
+  depends_on = [
+    module.hub,
+    module.enabled_anthos_apis,
+  ]
+  count                 = var.multi_cluster_gateway ? 1 : 0
+  source                = "../mcg"
+  project_id            = var.project_id
+  cluster_config        = var.cluster_config
+  vpc_project_id        = var.vpc_project_id
+  vpc_name              = var.vpc_name
+}
+
+module "asm" {
+  depends_on = [
+    local.asm_depends_on,
+    module.enabled_anthos_apis,
+
+  ]
+  count                 = var.anthos_service_mesh ? 1 : 0
+  source                = "../asm"
+  project_id            = var.project_id
+  cluster_config        = var.cluster_config
+  vpc_project_id        = var.vpc_project_id
+  vpc_name              = var.vpc_name  
+  asm_package = var.asm_package
 }

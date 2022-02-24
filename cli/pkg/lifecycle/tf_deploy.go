@@ -28,7 +28,7 @@ import (
 	"github.com/hashicorp/terraform-exec/tfinstall"
 )
 
-func InitTF(tfDir string, tfStateBucket string, vpcType string) {
+func InitTF(tfDir string, tfStateBucket string) {
 	tmpDir, err := ioutil.TempDir("", "tfinstall")
 	if err != nil {
 		log.Fatalf("error creating temp dir: %s", err)

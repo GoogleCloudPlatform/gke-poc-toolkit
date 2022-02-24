@@ -20,7 +20,7 @@ steps:
     fi
     echo "🌟 REPO INFO: NAME: $$CLEAN_REPO_NAME, BRANCH: $$CLEAN_BRANCH_NAME"
     TIMESTAMP=`date "+%m%d%y-%H%M%S"`
-    TEST_PROJECT_ID="gpt-$$TIMESTAMP"
+    TEST_PROJECT_ID="gpt4-$$TIMESTAMP"
     echo $$TEST_PROJECT_ID > /workspace/test-project-id.txt
     gcloud projects create $$TEST_PROJECT_ID --folder="$$FOLDER_ID" 
     gcloud projects add-iam-policy-binding $$TEST_PROJECT_ID --member=serviceAccount:152393131587@cloudbuild.gserviceaccount.com --role=roles/owner
@@ -93,13 +93,13 @@ steps:
     fi
     echo "🌟 REPO INFO: NAME: $$CLEAN_REPO_NAME, BRANCH: $$CLEAN_BRANCH_NAME"
     TEST_PROJECT_ID=$(cat "/workspace/test-project-id.txt")
-    sed -i 's|.*tfModuleRepo.*|tfModuleRepo: '"$$CLEAN_REPO_NAME"'|' samples/default-config.yaml
-    sed -i 's|.*tfModuleBranch.*|tfModuleBranch: '"$$CLEAN_BRANCH_NAME"'|' samples/default-config.yaml
-    sed -i 's|.*clustersProjectId.*|clustersProjectId: '"$$TEST_PROJECT_ID"'|' samples/default-config.yaml
-    sed -i 's|.*governanceProjectId.*|governanceProjectId: '"$$TEST_PROJECT_ID"'|' samples/default-config.yaml
-    sed -i 's|.*vpcProjectId.*|  vpcProjectId: '"$$TEST_PROJECT_ID"'|' samples/default-config.yaml
+    sed -i 's|.*tfModuleRepo.*|tfModuleRepo: '"$$CLEAN_REPO_NAME"'|' samples/multi-clusters-acm-standalone-vpc.yaml 
+    sed -i 's|.*tfModuleBranch.*|tfModuleBranch: '"$$CLEAN_BRANCH_NAME"'|' samples/multi-clusters-acm-standalone-vpc.yaml 
+    sed -i 's|.*clustersProjectId.*|clustersProjectId: '"$$TEST_PROJECT_ID"'|' samples/multi-clusters-acm-standalone-vpc.yaml 
+    sed -i 's|.*governanceProjectId.*|governanceProjectId: '"$$TEST_PROJECT_ID"'|' samples/multi-clusters-acm-standalone-vpc.yaml
+    sed -i 's|.*vpcProjectId.*|  vpcProjectId: '"$$TEST_PROJECT_ID"'|' samples/multi-clusters-acm-standalone-vpc.yaml
     echo "Final config for testing..."
-    cat samples/default-config.yaml
+    cat samples/multi-clusters-acm-standalone-vpc.yaml
 - name: 'gcr.io/gkepoctoolkit/e2etest:latest'
   id: test-gkekitctl-create
   entrypoint: 'bash'
@@ -117,7 +117,7 @@ steps:
     gcloud auth application-default print-access-token
     gcloud config set project $$TEST_PROJECT_ID
     gcloud auth list
-    ./gkekitctl create --config samples/default-config.yaml
+    ./gkekitctl create --config samples/multi-clusters-acm-standalone-vpc.yaml
 timeout: "60m"
 availableSecrets:
   secretManager:

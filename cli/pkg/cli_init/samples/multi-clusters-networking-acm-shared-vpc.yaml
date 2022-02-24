@@ -1,0 +1,48 @@
+# multi-cluster.yaml
+terraformState: cloud  # local, cloud
+clustersProjectId: "my-project"
+governanceProjectId: "my-project" 
+region: "us-east1" # Region for resources aside from GKE clusters
+enableWindowsNodepool: false 
+enablePreemptibleNodepool: false # Enforced on Linux Node pools only
+privateEndpoint: false
+releaseChannel: REGULAR
+defaultNodepoolOS: cos
+initialNodeCount: 1
+maxNodeCount: 10
+minNodeCount: 1
+configSync: true 
+policyController: true
+multiClusterGateway: true
+anthosServiceMesh: true
+tfModuleRepo: "github.com/GoogleCloudPlatform/gke-poc-toolkit//terraform/modules/"
+tfModuleBranch: "main"
+sendAnalytics: false
+vpcConfig:
+  vpcName: "gke-poc-toolkit"
+  vpcType: "shared" # standalone, shared 
+  vpcProjectId: "my-host-project" # Required if you are using a sharedVPC
+  podCIDRName: "mypodcidr"
+  svcCIDRName: "mysvccidr"
+  authCIDR: "0.0.0.0/0" # only needed if enabling private endpoints for clusters
+clustersConfig:  # a list of one or more clusters, each with their own config 
+- clusterName: "gke-central"
+  machineType: "e2-standard-4"
+  region: "us-central1" 
+  zone: "us-central1-a"  
+  subnetName: "us-central1"
+- clusterName: "gke-east"
+  machineType: "e2-standard-4"
+  region: "us-east1"
+  zone: "us-east1-b" 
+  subnetName: "us-east1"
+- clusterName: "gke-west"
+  machineType: "e2-standard-4"
+  region: "us-west1"
+  zone: "us-west1-b" 
+  subnetName: "us-west1"
+- clusterName: "gke-eu-north"
+  machineType: "e2-standard-4"
+  region: "europe-north1"
+  zone: "europe-north1-c" 
+  subnetName: "europe-north1"

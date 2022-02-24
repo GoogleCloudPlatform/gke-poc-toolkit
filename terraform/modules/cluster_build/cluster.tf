@@ -18,13 +18,18 @@ module "gke" {
   depends_on = [
     module.bastion,
     module.kms,
+    module.enabled_google_apis,
+    module.enabled_governance_apis,
   ]
   for_each                = var.cluster_config
   source                  = "terraform-google-modules/kubernetes-engine/google//modules/safer-cluster"
-  version                 = "14.0.1"
+  version                 = "19.0.0"
   project_id              = module.enabled_google_apis.project_id
+  // The initial_node_count size in the module is set to ensure that the default node pool size sets the control plane size sufficiently large to prevent a resize during the build
+  initial_node_count      = 4 
   name                    = each.key
   region                  = each.value.region
+  release_channel         = var.release_channel
   config_connector        = var.config_connector
   network                 = local.network_name
   subnetwork              = each.value.subnet_name
@@ -32,6 +37,7 @@ module "gke" {
   ip_range_pods           = local.ip_range_pods
   ip_range_services       = local.ip_range_services
   enable_private_endpoint = var.private_endpoint
+  grant_registry_access   = true
   enable_shielded_nodes   = true
   master_ipv4_cidr_block  = "172.16.${index(keys(var.cluster_config), each.key)}.16/28"
   master_authorized_networks = [{
@@ -55,17 +61,7 @@ module "gke" {
     ]
   }
 
-  node_pools_labels = {
-    # all = {} default set in terraform-google-kubernetes-engine
-
-    default-node-pool = {
-      default-node-pool = false
-    }
-  }
-
   node_pools_metadata = {
-    # all = {} default set in terraform-google-kubernetes-engine
-
     (var.node_pool) = {
       // Set metadata on the VM to supply more entropy
       google-compute-enable-virtio-rng = "true"
@@ -85,13 +81,13 @@ module "windows_nodepool" {
   cluster_config     = var.cluster_config
   name               = format("windows-%s", var.node_pool)
   project_id         = var.project_id
+  initial_node_count = var.initial_node_count
   min_count          = var.min_node_count
   max_count          = var.max_node_count
   disk_size_gb       = 100
   disk_type          = "pd-ssd"
   image_type         = "WINDOWS_SAC"
   machine_type       = var.windows_machine_type
-  initial_node_count = var.initial_node_count
   service_account    = local.gke_service_account_email
   // Intergrity Monitoring is not enabled in Windows Node pools yet.
   enable_integrity_monitoring = false
