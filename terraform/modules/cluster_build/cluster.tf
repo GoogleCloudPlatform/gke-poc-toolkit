@@ -69,9 +69,7 @@ module "gke" {
       disable-legacy-endpoints = "true"
     }
   }
-  cluster_resource_labels = [
-    local.asm_label  
-  ]
+  cluster_resource_labels = local.asm_label
 }
 
 // Add optional Windows Node Pool
