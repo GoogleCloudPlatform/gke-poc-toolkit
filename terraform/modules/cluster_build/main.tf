@@ -124,9 +124,9 @@ locals {
   asm_depends_on = var.multi_cluster_gateway ? module.mcg : module.hub
 
   // Labels to apply to the cluster - Needed for to enable the ASM UI
-  asm_label = {
-    mesh_id = var.anthos_service_mesh ? format("proj-%s", data.google_project.project.number) : {}
-  }
+  asm_label = var.anthos_service_mesh ? {
+    mesh_id = format("proj-%s", data.google_project.project.number)
+  } : {}
 }
 
 // Enable APIs needed in the gke cluster project
