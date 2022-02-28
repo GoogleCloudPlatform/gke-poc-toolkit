@@ -122,6 +122,11 @@ locals {
   // These locals are used to construct anthos component depends on rules based on which features are enabled
   acm_depends_on = var.anthos_service_mesh ? module.asm : (var.multi_cluster_gateway ? module.mcg : module.hub)
   asm_depends_on = var.multi_cluster_gateway ? module.mcg : module.hub
+
+  // Labels to apply to the cluster - Needed for to enable the ASM UI
+  asm_label = var.anthos_service_mesh ? {
+    mesh_id = format("proj-%s", data.google_project.project.number)
+  } : {}
 }
 
 // Enable APIs needed in the gke cluster project
