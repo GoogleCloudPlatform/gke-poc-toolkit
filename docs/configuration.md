@@ -10,7 +10,7 @@ gkekitctl create --config=my-config.yaml
 
 We provide two sample configurations: 
 - [`default-config.yaml`](/cli/pkg/cli_init/samples/default-config.yaml): this is the default configuration, used when you run `gkekitctl create` without passing in a `--config`. 
-- [`multi-cluster.yaml`](/cli/pkg/cli_init/samples/multi-cluster.yaml): a two-cluster GKE environment with a shared VPC. 
+- [`multi-cluster.yaml`](/cli/pkg/cli_init/samples/multi-clusters-shared-vpc.yaml): a two-cluster GKE environment with a shared VPC. 
 
 You can fork one of these YAML files and customize it with any of the fields listed below. Then, pass in your customized config with the `--config` flag when running `gkekitctl create`.  
 ## Fields 
