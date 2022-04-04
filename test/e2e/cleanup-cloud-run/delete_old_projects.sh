@@ -1,12 +1,6 @@
 #!/bin/bash
+export GPT_TEST_FOLDER_ID="673643246072"
 echo "Folder ID is: $GPT_TEST_FOLDER_ID"
-echo "SA Key is: $GPT_TEST_SA_KEY, writing to file..." 
-
-python3 -m http.server 8080 &
-
-export KEY_PATH="sa_key.json"
-echo $GPT_TEST_SA_KEY > $KEY_PATH
-export GOOGLE_APPLICATION_CREDENTIALS=$KEY_PATH
 
 while true
 do
@@ -16,13 +10,18 @@ do
         echo "Project: $project_id created at: $CREATE_TIME" 
         SIX_HOURS_AGO=`date -d '6 hour ago' "+%Y-%m-%dT%H:%M:%SZ"`
         if [[ $CREATE_TIME < $SIX_HOURS_AGO ]]; then 
-            echo "🧹 Project $project_id is older than 6 hours (it was created at $CREATE_TIME), deleting..."
-            gcloud projects delete --quiet $project_id
-            echo "🧹 Removing shared vpc permissions on test project folder for serviceAccount:e2e-test@$project_id.iam.gserviceaccount.com..."            
+            gcloud alpha resource-manager liens list --project $project_id --format='value(name)' | while read lien; do 
+                echo "🗑 Deleting lien: $lien"
+                gcloud alpha resource-manager liens delete $lien --project $project_id
+            done
+
+            echo "🌎 Removing shared vpc permissions on test project folder for serviceAccount:e2e-test@$project_id.iam.gserviceaccount.com..."            
             gcloud beta resource-manager folders remove-iam-policy-binding $GPT_TEST_FOLDER_ID --member="serviceAccount:e2e-test@$project_id.iam.gserviceaccount.com" --role="roles/compute.xpnAdmin"    
 
+            echo "❌ Deleting project: $project_id"
+            gcloud projects delete --quiet $project_id
         else
-            echo "🌟 Project $project_id is newer than 6 hours (it was created at $CREATE_TIME), keeping..."
+            echo "✅ Project $project_id is newer than 6 hours (it was created at $CREATE_TIME), keeping..."
         fi
     done
     sleep 600
