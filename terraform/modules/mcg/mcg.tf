@@ -115,7 +115,7 @@ resource "google_project_iam_binding" "host-serviceagent" {
   role    = "roles/multiclusterservicediscovery.serviceAgent"
   project = var.vpc_project_id
   members = [
-    "serviceAccount:service-${data.google_project.project.number}@gcp-sa-gkehub.iam.gserviceaccount.com",
+    "serviceAccount:service-${data.google_project.project.number}@gcp-sa-mcsd.iam.gserviceaccount.com",
   ]
 }
 
@@ -124,7 +124,7 @@ resource "google_project_iam_binding" "member-serviceagent" {
   role    = "roles/multiclusterservicediscovery.serviceAgent"
   project = var.project_id
   members = [
-    "serviceAccount:service-${data.google_project.project.number}@gcp-sa-gkehub.iam.gserviceaccount.com",
+    "serviceAccount:service-${data.google_project.project.number}@gcp-sa-mcsd.iam.gserviceaccount.com",
   ]
 }
 
