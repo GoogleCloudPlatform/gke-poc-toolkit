@@ -18,6 +18,6 @@ resource "google_gke_hub_membership" "membership" {
     }
   }
   authority {
-    issuer = "https://container.googleapis.com/projects/${var.project_id}/locations/${each.value.region}/clusters/${each.key}"
+    issuer = "https://container.googleapis.com/v1/projects/${var.project_id}/locations/${each.value.region}/clusters/${each.key}"
   }
 }   
