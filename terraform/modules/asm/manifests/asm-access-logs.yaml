@@ -4,6 +4,9 @@ metadata:
   name: istio-asm-managed
   namespace: istio-system
 data:
-  mesh: |
+  mesh: |- 
     accessLogFile: /dev/stdout
     accessLogEncoding: JSON
+    defaultConfig:
+      tracing:
+        stackdriver: {}

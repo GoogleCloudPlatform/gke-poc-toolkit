@@ -12,8 +12,14 @@ export KUBECONFIG=${WORKDIR}/tempkubeconfig
 
 # Install Gateway API CRDs
 echo -e "Installing GatewayAPI CRDs"
-kubectl kustomize "github.com/kubernetes-sigs/gateway-api/config/crd?ref=${GATEWAY_API_VERSION}" \
-| kubectl apply --kubeconfig ${KUBECONFIG} --context=gke_${PROJECT_ID}_${LOCATION}_${CLUSTER} -f - 2>&1 >/dev/null
+
+# Gateway api crds need to be installed in a specific order, this is temporary.
+# kubectl kustomize "github.com/kubernetes-sigs/gateway-api/config/crd?ref=${GATEWAY_API_VERSION}" \
+# | kubectl apply --kubeconfig ${KUBECONFIG} --context=gke_${PROJECT_ID}_${LOCATION}_${CLUSTER} -f - 2>&1 >/dev/null
+
+kubectl apply -k "github.com/kubernetes-sigs/gateway-api/config/crd?ref=v0.4.2" --kubeconfig ${KUBECONFIG} --context=gke_${PROJECT_ID}_${LOCATION}_${CLUSTER}
+
+kubectl apply -k "github.com/kubernetes-sigs/gateway-api/config/crd?ref=v0.3.0" --kubeconfig ${KUBECONFIG} --context=gke_${PROJECT_ID}_${LOCATION}_${CLUSTER}
 
 # Verify CRD is established in the cluster
 echo -e "Validating GatewayAPI CRD creation"

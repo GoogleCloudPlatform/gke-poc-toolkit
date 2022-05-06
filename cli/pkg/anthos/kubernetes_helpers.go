@@ -22,16 +22,11 @@ import (
 	"fmt"
 	"gkekitctl/pkg/config"
 
-	"github.com/pytimer/k8sutil/apply"
 	log "github.com/sirupsen/logrus"
 	"google.golang.org/api/container/v1"
-	clientgo "k8s.io/apimachinery/pkg/api/errors"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
-	"k8s.io/client-go/discovery"
-	"k8s.io/client-go/dynamic"
 	"k8s.io/client-go/kubernetes"
 	_ "k8s.io/client-go/plugin/pkg/client/auth/gcp"
-	"k8s.io/client-go/rest"
 	"k8s.io/client-go/tools/clientcmd"
 	"k8s.io/client-go/tools/clientcmd/api"
 )
@@ -95,10 +90,10 @@ func GenerateKubeConfig(conf *config.Config) (*api.Config, error) {
 	}
 
 	// Write kubeconfig to YAML file
-	err = clientcmd.WriteToFile(ret, "kubeconfig")
-	if err != nil {
-		return &ret, err
-	}
+	// err = clientcmd.WriteToFile(ret, "kubeconfig")
+	// if err != nil {
+	// 	return &ret, err
+	// }
 	return &ret, nil
 }
 
@@ -131,44 +126,44 @@ func ListNamespaces(kubeConfig *api.Config) error {
 }
 
 // Kubectl apply using client.go
-func Apply(config *rest.Config, clusterName string, fileName []byte) error {
+// func Apply(config *rest.Config, clusterName string, fileName []byte) error {
 
-	dynamicClient, err := dynamic.NewForConfig(config)
-	if err != nil {
-		return fmt.Errorf("failed to setup dynamic client for cluster=%s: %w", clusterName, err)
-	}
-	discoveryClient, err := discovery.NewDiscoveryClientForConfig(config)
-	if err != nil {
-		return fmt.Errorf("failed to setup diecovery client for cluster=%s: %w", clusterName, err)
-	}
+// 	dynamicClient, err := dynamic.NewForConfig(config)
+// 	if err != nil {
+// 		return fmt.Errorf("failed to setup dynamic client for cluster=%s: %w", clusterName, err)
+// 	}
+// 	discoveryClient, err := discovery.NewDiscoveryClientForConfig(config)
+// 	if err != nil {
+// 		return fmt.Errorf("failed to setup diecovery client for cluster=%s: %w", clusterName, err)
+// 	}
 
-	applyOptions := apply.NewApplyOptions(dynamicClient, discoveryClient)
-	if err := applyOptions.Apply(context.TODO(), fileName); err != nil {
-		return fmt.Errorf("failed to create apply gateway crd cluster=%s: %w", clusterName, err)
-	}
+// 	applyOptions := apply.NewApplyOptions(dynamicClient, discoveryClient)
+// 	if err := applyOptions.Apply(context.TODO(), fileName); err != nil {
+// 		return fmt.Errorf("failed to create apply gateway crd cluster=%s: %w", clusterName, err)
+// 	}
 
-	return nil
-}
+// 	return nil
+// }
 
 // check namespace and watch if not created
-func WaitForNamespace(k8s *kubernetes.Clientset, ctx context.Context, nameSpace string, clusterName string) error {
-	ns, err := k8s.CoreV1().Namespaces().Get(ctx, "config-management-system", metav1.GetOptions{})
-	timeout := int64(120)
-	if clientgo.IsNotFound(err) {
-		log.Infof("%s was not found on cluster=%s: %v", nameSpace, clusterName, err)
-		ns, err := k8s.CoreV1().Namespaces().Watch(ctx, metav1.ListOptions{
-			FieldSelector:  "metadata.name=" + nameSpace,
-			Watch:          true,
-			TimeoutSeconds: &timeout,
-		})
-		if err != nil {
-			return fmt.Errorf("failed watch on namespace %s on cluster=%s: %v", nameSpace, clusterName, err)
-		}
-		log.Infof("%s is ready on cluster: %s", ns, clusterName)
+// func WaitForNamespace(k8s *kubernetes.Clientset, ctx context.Context, nameSpace string, clusterName string) error {
+// 	ns, err := k8s.CoreV1().Namespaces().Get(ctx, "config-management-system", metav1.GetOptions{})
+// 	timeout := int64(120)
+// 	if clientgo.IsNotFound(err) {
+// 		log.Infof("%s was not found on cluster=%s: %v", nameSpace, clusterName, err)
+// 		ns, err := k8s.CoreV1().Namespaces().Watch(ctx, metav1.ListOptions{
+// 			FieldSelector:  "metadata.name=" + nameSpace,
+// 			Watch:          true,
+// 			TimeoutSeconds: &timeout,
+// 		})
+// 		if err != nil {
+// 			return fmt.Errorf("failed watch on namespace %s on cluster=%s: %v", nameSpace, clusterName, err)
+// 		}
+// 		log.Infof("%s is ready on cluster: %s", ns, clusterName)
 
-	} else if err != nil {
-		return fmt.Errorf("%s namespace on cluster=%s: %w", nameSpace, clusterName, err)
-	}
-	log.Infof("%s is ready on cluster: %s", ns, clusterName)
-	return nil
-}
+// 	} else if err != nil {
+// 		return fmt.Errorf("%s namespace on cluster=%s: %w", nameSpace, clusterName, err)
+// 	}
+// 	log.Infof("%s is ready on cluster: %s", ns, clusterName)
+// 	return nil
+// }
