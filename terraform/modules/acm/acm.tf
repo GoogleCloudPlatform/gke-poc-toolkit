@@ -87,7 +87,7 @@ resource "google_gke_hub_feature_membership" "feature_member" {
   feature    = "configmanagement"
   membership = "projects/${var.project_id}/locations/global/memberships/${each.key}-membership"
   configmanagement {
-    version = "1.10.1"
+    version = "1.12.1"
     config_sync {
       git {
         sync_repo   = "https://source.developers.google.com/p/${var.project_id}/r/gke-poc-config-sync"
