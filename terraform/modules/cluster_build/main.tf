@@ -292,7 +292,7 @@ module "asm" {
   source                = "../asm"
   project_id            = var.project_id
   cluster_config        = var.cluster_config
-  vpc_project_id        = var.vpc_project_id
-  vpc_name              = var.vpc_name  
-  asm_package = var.asm_package
+#  vpc_project_id        = var.vpc_project_id
+#  vpc_name              = var.vpc_name
+#  asm_package = var.asm_package
 }
