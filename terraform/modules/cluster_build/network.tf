@@ -43,12 +43,18 @@ module "cluster-nat" {
   source_subnetwork_ip_ranges_to_nat = "ALL_SUBNETWORKS_ALL_PRIMARY_IP_RANGES"
 }
 
-data "template_file" "startup_script" {
-  template = <<-EOF
+locals {
+  startup_script = <<-EOF
   sudo apt-get update -y
   sudo apt-get install -y tinyproxy
   EOF
 }
+#data "template_file" "startup_script" {
+#  template = <<-EOF
+#  sudo apt-get update -y
+#  sudo apt-get install -y tinyproxy
+#  EOF
+#}
 
 module "bastion" {
   depends_on = [
@@ -66,7 +72,7 @@ module "bastion" {
   image_project  = "debian-cloud"
   image_family   = "debian-10"
   machine_type   = "g1-small"
-  startup_script = data.template_file.startup_script.rendered
+  startup_script = templatefile(local.startup_script)
   members        = local.bastion_members
   # shielded_vm    = "true" (default set in terraform-google-bastion-host)
 }
