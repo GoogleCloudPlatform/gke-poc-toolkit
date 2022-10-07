@@ -6,9 +6,15 @@ echo -e "CLUSTER is ${CLUSTER}"
 echo -e "LOCATION is ${LOCATION}"
 echo -e "GATEWAY_API_VERSION is ${GATEWAY_API_VERSION}"
 
-# Get cluster creds
+# Setup kubeconfig
 export WORKDIR=`pwd`
+echo -e "Adding cluster ${CLUSTER} to kubeconfig located at ${WORKDIR}/tempkubeconfig"
+echo -e "Creating tempkubeconfig."
+touch ./tempkubeconfig
 export KUBECONFIG=${WORKDIR}/tempkubeconfig
+
+# Get cluster creds
+gcloud container clusters get-credentials ${CLUSTER} --region ${LOCATION} --project ${PROJECT_ID}
 
 # Install Gateway API CRDs
 echo -e "Installing GatewayAPI CRDs"
