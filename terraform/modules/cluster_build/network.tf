@@ -49,12 +49,6 @@ locals {
   sudo apt-get install -y tinyproxy
   EOF
 }
-#data "template_file" "startup_script" {
-#  template = <<-EOF
-#  sudo apt-get update -y
-#  sudo apt-get install -y tinyproxy
-#  EOF
-#}
 
 module "bastion" {
   depends_on = [
