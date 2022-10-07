@@ -81,6 +81,7 @@ func GenerateTfvars(conf *Config) {
 		clusterVars := make(map[string]interface{})
 		clusterVars["ClusterName"] = conf.ClustersConfig[cc].ClusterName
 		clusterVars["Region"] = conf.ClustersConfig[cc].Region
+		clusterVars["Zones"] = conf.ClustersConfig[cc].Zones
 		clusterVars["SubnetName"] = conf.ClustersConfig[cc].SubnetName
 		clusterVars["MachineType"] = conf.ClustersConfig[cc].MachineType
 		tmpl, err := template.ParseFiles("templates/cluster_config.tmpl")

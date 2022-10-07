@@ -33,27 +33,27 @@ import (
 
 // This is an Analytics-only object representing 1 GKE cluster created with gkekitctl.
 type Cluster struct {
-	ClusterId                 string `json:"clusterId"`
-	CreateId                  string `json:"createId"`
-	Version                   string `json:"version"`
-	GitCommit                 string `json:"gitCommit"`
-	Timestamp                 string `json:"timestamp"`
-	OS                        string `json:"os"`
-	TerraformState            string `json:"terraformState"`
-	Region                    string `json:"region"`
-	EnablePreemptibleNodepool bool   `json:"enablePreemptibleNodepool"`
-	DefaultNodepoolOS         string `json:"defaultNodepoolOS"`
-	PrivateEndpoint           bool   `json:"privateEndpoint"`
-	EnableConfigSync          bool   `json:"enableConfigSync"`
-	EnablePolicyController    bool   `json:"enablePolicyController"`
-	AnthosServiceMesh         bool   `json:"anthosServiceMesh"`
-	MultiClusterGateway       bool   `json:"multiClusterGateway"`
-	VPCType                   string `json:"vpcType"`
-	ClusterIndex              int    `json:"clusterIndex"`
-	ClusterType               string `json:"clusterType"`
-	ClusterMachineType        string `json:"clusterMachineType"`
-	ClusterRegion             string `json:"clusterRegion"`
-	ClusterZone               string `json:"clusterZone"`
+	ClusterId                 string   `json:"clusterId"`
+	CreateId                  string   `json:"createId"`
+	Version                   string   `json:"version"`
+	GitCommit                 string   `json:"gitCommit"`
+	Timestamp                 string   `json:"timestamp"`
+	OS                        string   `json:"os"`
+	TerraformState            string   `json:"terraformState"`
+	Region                    string   `json:"region"`
+	EnablePreemptibleNodepool bool     `json:"enablePreemptibleNodepool"`
+	DefaultNodepoolOS         string   `json:"defaultNodepoolOS"`
+	PrivateEndpoint           bool     `json:"privateEndpoint"`
+	EnableConfigSync          bool     `json:"enableConfigSync"`
+	EnablePolicyController    bool     `json:"enablePolicyController"`
+	AnthosServiceMesh         bool     `json:"anthosServiceMesh"`
+	MultiClusterGateway       bool     `json:"multiClusterGateway"`
+	VPCType                   string   `json:"vpcType"`
+	ClusterIndex              int      `json:"clusterIndex"`
+	ClusterType               string   `json:"clusterType"`
+	ClusterMachineType        string   `json:"clusterMachineType"`
+	ClusterRegion             string   `json:"clusterRegion"`
+	ClusterZones              []string `json:"[clusterZone]"`
 }
 
 func SendAnalytics(conf *config.Config, version string, gitCommit string) {
@@ -101,7 +101,7 @@ func SendAnalytics(conf *config.Config, version string, gitCommit string) {
 			ClusterType:               cluster.ClusterType,
 			ClusterMachineType:        cluster.MachineType,
 			ClusterRegion:             cluster.Region,
-			ClusterZone:               cluster.Zone,
+			ClusterZones:              cluster.Zones,
 		}
 		// Encode as JSON
 		json, err := json.Marshal(sendObject)

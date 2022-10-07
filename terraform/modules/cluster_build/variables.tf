@@ -30,6 +30,12 @@ variable "region" {
   default     = "us-central1"
 }
 
+variable "zones" {
+  type        = list(string)
+  description = "The zones used in your nodepool"
+  default     = ["us-central1-b"]
+}
+
 variable "shared_vpc" {
   type        = bool
   description = "boolean value for determining whether to create Standalone VPC or use a preexisting Shared VPC"

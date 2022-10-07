@@ -29,6 +29,7 @@ module "gke" {
   initial_node_count      = 4 
   name                    = each.key
   region                  = each.value.region
+  zones                   = each.value.zones
   release_channel         = var.release_channel
   config_connector        = var.config_connector
   network                 = local.network_name
