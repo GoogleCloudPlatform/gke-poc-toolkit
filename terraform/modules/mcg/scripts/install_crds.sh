@@ -10,6 +10,7 @@ echo -e "GATEWAY_API_VERSION is ${GATEWAY_API_VERSION}"
 export WORKDIR=`pwd`
 echo -e "Adding cluster ${CLUSTER} to kubeconfig located at ${WORKDIR}/tempkubeconfig"
 echo -e "Creating tempkubeconfig."
+rm ./tempkubeconfig
 touch ./tempkubeconfig
 export KUBECONFIG=${WORKDIR}/tempkubeconfig
 
