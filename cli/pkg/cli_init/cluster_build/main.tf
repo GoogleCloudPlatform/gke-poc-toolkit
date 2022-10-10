@@ -3,6 +3,7 @@ module "cluster_build" {
   project_id                        = var.project_id
   governance_project_id             = var.governance_project_id
   region                            = var.region
+  zones                             = var.zones
   shared_vpc                        = var.shared_vpc
   vpc_name                          = var.vpc_name
   ip_range_pods_name                = var.ip_range_pods_name
@@ -46,6 +47,12 @@ variable "region" {
   type        = string
   description = "The region to host the cluster in"
   default     = "us-central1"
+}
+
+variable "zones" {
+  type        = list(string)
+  description = "The zones used in your nodepool"
+  default     = ["us-central1-b"]
 }
 
 variable "shared_vpc" {

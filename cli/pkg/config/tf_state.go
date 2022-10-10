@@ -18,6 +18,8 @@ package config
 
 import (
 	"context"
+	"html/template"
+	"os"
 	"strings"
 
 	"cloud.google.com/go/storage"
@@ -25,37 +27,57 @@ import (
 	"github.com/thanhpk/randstr"
 )
 
-func CheckTfStateType(conf *Config) ([3]string, error) {
+func CheckTfStateType(conf *Config) error {
 	if conf.TerraformState == "cloud" {
 		bucketNames := [3]string{}
 		if conf.VpcConfig.VpcType == "shared" {
 			bucketNameSharedVPC := "tf-state-sharedvpc-" + strings.ToLower(randstr.String(6))
-			CreateTfStateBucket(conf.VpcConfig.VpcProjectID, bucketNameSharedVPC)
-			bucketNames[1] = bucketNameSharedVPC
-		}
-		if conf.ConfigSync || conf.MultiClusterGateway {
-			bucketNameAnthos := "tf-state-anthos-" + strings.ToLower(randstr.String(6))
-			CreateTfStateBucket(conf.ClustersProjectID, bucketNameAnthos)
-			bucketNames[2] = bucketNameAnthos
+			err := createTfBackend(conf.VpcConfig.VpcProjectID, bucketNameSharedVPC, "shared_vpc/backend.tf")
+			if err != nil {
+				return err
+			}
 		}
 		bucketNameClusters := "tf-state-clusters-" + strings.ToLower(randstr.String(6))
-		CreateTfStateBucket(conf.ClustersProjectID, bucketNameClusters)
-		bucketNames[0] = bucketNameClusters
+		err := createTfBackend(conf.ClustersProjectID, bucketNameClusters, "cluster_build/backend.tf")
+		if err != nil {
+			return err
+		}
 		log.Print(bucketNames)
-		return bucketNames, nil
+		return nil
 	}
-	return [3]string{"local", "local", "local"}, nil
+	return nil
 }
 
 // func CreateTfStateBucket(projectId string, bucketName string) error {
-func CreateTfStateBucket(projectId string, bucketName string) {
+func createTfBackend(projectId string, bucketName string, fileLocation string) error {
 	ctx := context.Background()
 	c, err := storage.NewClient(ctx)
 	if err != nil {
 		log.Fatalf("error creating storage client: %s", err)
+		return err
 	}
 	err = c.Bucket(bucketName).Create(ctx, projectId, nil)
 	if err != nil {
 		log.Fatalf("error creating storage bucket: %s", err)
+		return err
 	}
+	vars := make(map[string]interface{})
+	vars["TfStateBucket"] = bucketName
+	tmpl, err := template.ParseFiles("templates/terraform_backend.tf.tmpl")
+	if err != nil {
+		log.Fatalf("error parsing template: %s", err)
+		return err
+	}
+	file, err := os.Create(fileLocation)
+	if err != nil {
+		log.Fatalf("error creating file: %s", err)
+		return err
+	}
+	defer file.Close()
+	err = tmpl.Execute(file, vars)
+	if err != nil {
+		log.Fatalf("error executing tffavs template merge: %s", err)
+		return err
+	}
+	return nil
 }

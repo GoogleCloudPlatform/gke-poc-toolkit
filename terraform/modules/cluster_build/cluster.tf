@@ -21,14 +21,15 @@ module "gke" {
     module.enabled_google_apis,
     module.enabled_governance_apis,
   ]
-  for_each                = var.cluster_config
-  source                  = "terraform-google-modules/kubernetes-engine/google//modules/safer-cluster"
-  version                 = "19.0.0"
-  project_id              = module.enabled_google_apis.project_id
+  for_each   = var.cluster_config
+  source     = "terraform-google-modules/kubernetes-engine/google//modules/safer-cluster"
+  version    = "19.0.0"
+  project_id = module.enabled_google_apis.project_id
   // The initial_node_count size in the module is set to ensure that the default node pool size sets the control plane size sufficiently large to prevent a resize during the build
-  initial_node_count      = 4 
+  initial_node_count      = 12
   name                    = each.key
   region                  = each.value.region
+  zones                   = each.value.zones
   release_channel         = var.release_channel
   config_connector        = var.config_connector
   network                 = local.network_name

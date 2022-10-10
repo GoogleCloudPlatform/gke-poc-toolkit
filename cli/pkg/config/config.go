@@ -74,12 +74,12 @@ type VpcConfig struct {
 }
 
 type ClusterConfig struct {
-	ClusterName string `yaml:"clusterName"`
-	MachineType string `yaml:"machineType"`
-	ClusterType string `yaml:"clusterType"`
-	Region      string `yaml:"region"`
-	Zone        string `yaml:"zone"`
-	SubnetName  string `yaml:"subnetName"`
+	ClusterName string   `yaml:"clusterName"`
+	MachineType string   `yaml:"machineType"`
+	ClusterType string   `yaml:"clusterType"`
+	Region      string   `yaml:"region"`
+	Zones       []string `yaml:"[zone]"`
+	SubnetName  string   `yaml:"subnetName"`
 }
 
 // Create a new config instance.
@@ -263,10 +263,10 @@ func ValidateConf(c *Config) error {
 			if cc.SubnetName == "" {
 				return fmt.Errorf("ClustersConfig[%d] SubnetName cannot be empty", i)
 			}
-			if err := validateRegionAndZone(c.ClustersProjectID, cc.Region, cc.Zone); err != nil {
+			if err := validateRegionAndZone(c.ClustersProjectID, cc.Region, cc.Zones); err != nil {
 				return fmt.Errorf("ClustersConfig[%d]: %s", i, err)
 			}
-			if err := validateMachineType(c.ClustersProjectID, cc.MachineType, cc.Zone); err != nil {
+			if err := validateMachineType(c.ClustersProjectID, cc.MachineType, cc.Zones); err != nil {
 				return fmt.Errorf("ClustersConfig[%d]: %s", i, err)
 			}
 			// if err := validateNodeOS(c.DefaultNodepoolOS); err != nil {
@@ -344,7 +344,7 @@ func validateConfigRegion(projectID, region string) error {
 }
 
 // Validate region + zone for specific clusters.
-func validateRegionAndZone(projectId string, clusterRegion string, clusterZone string) error {
+func validateRegionAndZone(projectId string, clusterRegion string, clusterZones []string) error {
 	regions := map[string]bool{} // region --> true
 	zones := map[string]string{} // zone --> region
 
@@ -389,47 +389,53 @@ func validateRegionAndZone(projectId string, clusterRegion string, clusterZone s
 	}
 
 	// Zone must exist
-	if _, ok := zones[clusterZone]; !ok {
-		return fmt.Errorf("Zone %s invalid - must be one of: %v", clusterZone, zones)
+	for _, clusterZone := range clusterZones {
+		if _, ok := zones[clusterZone]; !ok {
+			return fmt.Errorf("Zone %s invalid - must be one of: %v", clusterZone, zones)
+		}
 	}
 
 	// Zone must be in the right region
-	if zoneRegion, _ := zones[clusterZone]; zoneRegion != clusterRegion {
-		return fmt.Errorf("Zone %s must be in region %s, not region %s", clusterZone, zoneRegion, clusterRegion)
+	for _, clusterZone := range clusterZones {
+		if zoneRegion, _ := zones[clusterZone]; zoneRegion != clusterRegion {
+			return fmt.Errorf("Zone %s must be in region %s, not region %s", clusterZone, zoneRegion, clusterRegion)
+		}
 	}
 	return nil
 }
 
-func validateMachineType(projectId string, machineType string, zone string) error {
-	ctx := context.Background()
-	c, err := compute.NewMachineTypesRESTClient(ctx)
-	if err != nil {
-		return err
-	}
-	defer c.Close()
-
-	req := &computepb.ListMachineTypesRequest{
-		Project: projectId,
-		Zone:    zone,
-	}
-	it := c.List(ctx, req)
-	validMachineTypes := []string{}
-	for {
-		resp, err := it.Next()
-		if err == iterator.Done {
-			break
-		}
+func validateMachineType(projectId string, machineType string, zones []string) error {
+	for _, zone := range zones {
+		ctx := context.Background()
+		c, err := compute.NewMachineTypesRESTClient(ctx)
 		if err != nil {
 			return err
 		}
-		if *resp.Name == machineType {
-			return nil
-		}
-		validMachineTypes = append(validMachineTypes, *resp.Name)
-		_ = resp
-	}
+		defer c.Close()
 
-	return fmt.Errorf("Machine type %s is invalid, must be one of: %v", machineType, validMachineTypes)
+		req := &computepb.ListMachineTypesRequest{
+			Project: projectId,
+			Zone:    zone,
+		}
+		it := c.List(ctx, req)
+		validMachineTypes := []string{}
+		for {
+			resp, err := it.Next()
+			if err == iterator.Done {
+				break
+			}
+			if err != nil {
+				return err
+			}
+			if *resp.Name == machineType {
+				return nil
+			}
+			validMachineTypes = append(validMachineTypes, *resp.Name)
+			_ = resp
+		}
+		return fmt.Errorf("Machine type %s is invalid, must be one of: %v", machineType, validMachineTypes)
+	}
+	return nil
 }
 
 func validateTFModuleRepo(repoPath string) error {
