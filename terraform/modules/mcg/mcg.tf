@@ -86,15 +86,6 @@ resource "google_gke_hub_feature" "mci" {
   provider = google-beta
 }
 
-// Create IAM binding allowing the hub project's GKE Hub service account access to the registered member project
-resource "google_project_iam_binding" "gkehub-serviceagent" {
-  role    = "roles/gkehub.serviceAgent"
-  project = var.project_id
-  members = [
-    "serviceAccount:service-${data.google_project.project.number}@gcp-sa-gkehub.iam.gserviceaccount.com",
-  ]
-}
-
 // Create IAM binding allowing the hub project's MCS service account access to the shared vpc project
 resource "google_project_iam_binding" "host-serviceagent" {
   role    = "roles/multiclusterservicediscovery.serviceAgent"

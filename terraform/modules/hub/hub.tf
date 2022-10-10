@@ -4,17 +4,13 @@ variable "project_id" {
 variable "cluster_config" {
 }
 
-// Grant gkehub default service account permissions to register clusters to the Fleet
-module "service_account-iam-bindings" {
-  source = "terraform-google-modules/iam/google//modules/service_accounts_iam"
-
-  service_accounts = "service-${var.project_id}@gcp-sa-gkehub.iam.gserviceaccount.com"
-  project          = var.project_id
-  bindings = {
-    "roles/gkehub.serviceAgent" = [
-      "service-${var.project_id}@gcp-sa-gkehub.iam.gserviceaccount.com",
-    ]
-  }
+// Create IAM binding allowing the hub project's GKE Hub service account access to the registered member project
+resource "google_project_iam_binding" "gkehub-serviceagent" {
+  role    = "roles/gkehub.serviceAgent"
+  project = var.project_id
+  members = [
+    "serviceAccount:service-${data.google_project.project.number}@gcp-sa-gkehub.iam.gserviceaccount.com",
+  ]
 }
 
 // Register each cluster to GKE Hub (Fleets API)
