@@ -4,6 +4,10 @@ variable "project_id" {
 variable "cluster_config" {
 }
 
+data "google_project" "project" {
+  project_id = var.project_id
+}
+
 // Create IAM binding allowing the hub project's GKE Hub service account access to the registered member project
 resource "google_project_iam_binding" "gkehub-serviceagent" {
   role    = "roles/gkehub.serviceAgent"
