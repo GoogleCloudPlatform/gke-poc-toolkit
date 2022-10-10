@@ -9,7 +9,7 @@ variable "cluster_config" {
 variable "vpc_name" {
 }
 variable "gateway_crds_version" {
-  default = "v0.3.0"     
+  default = "v0.3.0"
 }
 
 data "google_project" "project" {
@@ -27,7 +27,7 @@ module "firewall_rules" {
     description             = null
     direction               = "INGRESS"
     priority                = null
-    ranges                  = ["130.211.0.0/22","35.191.0.0/16"]
+    ranges                  = ["130.211.0.0/22", "35.191.0.0/16"]
     source_tags             = null
     source_service_accounts = null
     target_tags             = null
@@ -43,21 +43,6 @@ module "firewall_rules" {
   }]
 }
 
-// Create Kubeconfig
-#resource "null_resource" "create_kube_config" {
-#  depends_on = [
-#    resource.google_gke_hub_feature.mcs,
-#  ]
-#  provisioner "local-exec" {
-#    interpreter = ["bash", "-exc"]
-#    command     = "scripts/create_kube_config.sh"
-#    working_dir = path.module
-#    environment = {
-#      PROJECT_ID    = var.project_id
-#    }
-#  }
-#}
-
 // Install gateway api crds on each cluster
 resource "null_resource" "exec_mcg_crds" {
   depends_on = [
@@ -67,11 +52,11 @@ resource "null_resource" "exec_mcg_crds" {
   provisioner "local-exec" {
     interpreter = ["bash", "-exc"]
     command     = "scripts/install_crds.sh"
-    working_dir = path.module    
+    working_dir = path.module
     environment = {
-      CLUSTER    = each.key
-      LOCATION   = each.value.region
-      PROJECT_ID    = var.project_id
+      CLUSTER             = each.key
+      LOCATION            = each.value.region
+      PROJECT_ID          = var.project_id
       GATEWAY_API_VERSION = var.gateway_crds_version
     }
   }
@@ -79,7 +64,7 @@ resource "null_resource" "exec_mcg_crds" {
 
 // enable Multi-cluster service discovery
 resource "google_gke_hub_feature" "mcs" {
-  name = "multiclusterservicediscovery"
+  name     = "multiclusterservicediscovery"
   location = "global"
   project  = var.project_id
   provider = google-beta
@@ -90,7 +75,7 @@ resource "google_gke_hub_feature" "mci" {
   depends_on = [
     null_resource.exec_mcg_crds,
   ]
-  name = "multiclusteringress"
+  name     = "multiclusteringress"
   location = "global"
   project  = var.project_id
   spec {

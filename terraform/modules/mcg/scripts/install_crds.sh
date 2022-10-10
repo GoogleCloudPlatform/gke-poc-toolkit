@@ -6,23 +6,19 @@ echo -e "CLUSTER is ${CLUSTER}"
 echo -e "LOCATION is ${LOCATION}"
 echo -e "GATEWAY_API_VERSION is ${GATEWAY_API_VERSION}"
 
-# Setup kubeconfig
 export WORKDIR=`pwd`
+kubeconfig=tempkubeconfig$RANDOM
 echo -e "Adding cluster ${CLUSTER} to kubeconfig located at ${WORKDIR}/tempkubeconfig"
 echo -e "Creating tempkubeconfig."
-rm ./tempkubeconfig
-touch ./tempkubeconfig
-export KUBECONFIG=${WORKDIR}/tempkubeconfig
+rm ${WORKDIR}/${kubeconfig}
+touch ${WORKDIR}/${kubeconfig}
+export KUBECONFIG=${WORKDIR}/${kubeconfig}
 
 # Get cluster creds
 gcloud container clusters get-credentials ${CLUSTER} --region ${LOCATION} --project ${PROJECT_ID}
 
 # Install Gateway API CRDs
 echo -e "Installing GatewayAPI CRDs"
-
-# Gateway api crds need to be installed in a specific order, this is temporary.
-# kubectl kustomize "github.com/kubernetes-sigs/gateway-api/config/crd?ref=${GATEWAY_API_VERSION}" \
-# | kubectl apply --kubeconfig ${KUBECONFIG} --context=gke_${PROJECT_ID}_${LOCATION}_${CLUSTER} -f - 2>&1 >/dev/null
 
 kubectl apply -k "github.com/kubernetes-sigs/gateway-api/config/crd?ref=v0.4.2" --kubeconfig ${KUBECONFIG} --context=gke_${PROJECT_ID}_${LOCATION}_${CLUSTER}
 

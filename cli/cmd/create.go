@@ -5,7 +5,7 @@ Licensed under the Apache License, Version 2.0 (the "License");
 you may not use this file except in compliance with the License.
 You may obtain a copy of the License at
 
-    http://www.apache.org/licenses/LICENSE-2.0
+	http://www.apache.org/licenses/LICENSE-2.0
 
 Unless required by applicable law or agreed to in writing, software
 distributed under the License is distributed on an "AS IS" BASIS,
@@ -17,7 +17,6 @@ package cmd
 
 import (
 	"gkekitctl/pkg/analytics"
-	"gkekitctl/pkg/anthos"
 	"gkekitctl/pkg/config"
 	"gkekitctl/pkg/lifecycle"
 
@@ -44,7 +43,7 @@ var createCmd = &cobra.Command{
 
 		config.GenerateTfvars(conf)
 		log.Info("👟 Started configuring TF State...")
-		tfStateBucket, err := config.CheckTfStateType(conf)
+		err := config.CheckTfStateType(conf)
 		if err != nil {
 			log.Errorf("🚨 Failed checking TF state type: %s", err)
 		} else {
@@ -52,15 +51,15 @@ var createCmd = &cobra.Command{
 		}
 
 		if conf.VpcConfig.VpcType == "shared" {
-			lifecycle.InitTF("shared_vpc", tfStateBucket[1])
+			lifecycle.InitTF("shared_vpc")
 			lifecycle.ApplyTF("shared_vpc")
 		}
-		lifecycle.InitTF("cluster_build", tfStateBucket[0])
+		lifecycle.InitTF("cluster_build")
 		lifecycle.ApplyTF("cluster_build")
 
 		// Authenticate Kubernetes client-go to all clusters
 		log.Info("☸️ Generating Kubeconfig...")
-		kc, err := anthos.GenerateKubeConfig(conf)
+		kc, err := lifecycle.GenerateKubeConfig(conf)
 		if err != nil {
 			log.Errorf("🚨 Failed to generate kube config: %s", err)
 		} else {
@@ -69,23 +68,10 @@ var createCmd = &cobra.Command{
 
 		// Verify access to Kubernetes API on all clusters
 		log.Info("☸️  Verifying Kubernetes API access for all clusters...")
-		err = anthos.ListNamespaces(kc)
+		err = lifecycle.ListNamespaces(kc)
 		if err != nil {
 			log.Errorf("🚨 Failed API access check on clusters: %s", err)
 		} else {
-			log.Info("✅ Clusters API access check passed.")
-		}
-
-		// Init ACM (either ConfigSync or ConfigSync plus PolicyController)
-		if conf.ConfigSync {
-			err := anthos.InitACM(conf, kc)
-			if err != nil {
-				log.Errorf("🚨 Failed to initialize ACM: %s", err)
-			} else {
-				log.Info("✅ ConfigSync setup successfully.")
-			}
-		}
-		if err == nil {
 			log.Info("✅ Clusters API access check passed.")
 		}
 	},

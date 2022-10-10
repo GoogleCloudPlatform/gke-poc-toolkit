@@ -91,7 +91,7 @@ variable "vpc_ip_range_services_name" {
 }
 
 variable "release_channel" {
-  type = string
+  type    = string
   default = "regular"
 }
 

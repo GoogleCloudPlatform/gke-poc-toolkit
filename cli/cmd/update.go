@@ -37,8 +37,10 @@ var updateCmd = &cobra.Command{
 		config.GenerateTfvars(conf)
 
 		if conf.VpcConfig.VpcType == "shared" {
+			lifecycle.InitTF("shared_vpc")
 			lifecycle.ApplyTF("shared_vpc")
 		}
+		lifecycle.InitTF("cluster_build")
 		lifecycle.ApplyTF("cluster_build")
 	},
 }
