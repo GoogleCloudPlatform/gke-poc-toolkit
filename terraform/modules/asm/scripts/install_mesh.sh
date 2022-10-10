@@ -20,9 +20,9 @@ gcloud beta container fleet memberships get-credentials ${CLUSTER}-membership --
 
 # Verify CRD is established in the cluster
 echo -e "Verifying Control Plane Revisions CRD is present on ${CLUSTER}"
-until kubectl get mutatingwebhookconfigurations istiod-asm-managed --kubeconfig ${KUBECONFIG} --context=connectgateway_${PROJECT_ID}_${LOCATION}_${CLUSTER}
+until kubectl get crd controlplanerevisions.mesh.cloud.google.com --kubeconfig ${KUBECONFIG} --context=connectgateway_${PROJECT_ID}_${LOCATION}_${CLUSTER}
   do
-    echo -n "...still waiting for ASM MCP webhook creation"
+    echo -n "...still waiting for the control plan revision crd creation"
     sleep 1
   done
 
