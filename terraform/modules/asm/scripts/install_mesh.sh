@@ -18,7 +18,7 @@ export KUBECONFIG=${WORKDIR}/${kubeconfig}
 gcloud beta container fleet memberships get-credentials ${CLUSTER}-membership --project ${PROJECT_ID}
 #gcloud container clusters get-credentials ${CLUSTER} --region ${LOCATION} --project ${PROJECT_ID}
 
-CONTEXT="connectgateway_${PROJECT_ID}_global_${CLUSTER}"
+CONTEXT="connectgateway_${PROJECT_ID}_global_${CLUSTER}-membership"
 # Verify CRD is established in the cluster
 echo -e "Verifying Control Plane Revisions CRD is present on ${CLUSTER}"
 until kubectl get crd controlplanerevisions.mesh.cloud.google.com --kubeconfig ${KUBECONFIG} --context=${CONTEXT}
