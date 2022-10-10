@@ -3,6 +3,8 @@ kind: ControlPlaneRevision
 metadata:
   name: asm-managed
   namespace: istio-system
+  labels:
+    mesh.cloud.google.com/managed-cni-enabled: "true"
 spec:
   type: managed_service
   channel: regular

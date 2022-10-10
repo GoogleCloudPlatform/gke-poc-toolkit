@@ -16,33 +16,20 @@
 
 // Defines vars so that we can pass them in from cluster_build/main.tf from the overall tfvars
 variable "cluster_config" {}
-variable "vpc_name" {}
-variable "vpc_project_id" {}
 variable "project_id" {}
-variable "asm_package" {}
 
-locals {
-  cluster_count = length(var.cluster_config)
-}
-
-// Create Kubeconfig
-resource "null_resource" "create_kube_config" {
-  provisioner "local-exec" {
-    interpreter = ["bash", "-exc"]
-    command     = "scripts/create_kube_config.sh"
-    working_dir = path.module
-    environment = {
-      PROJECT_ID    = var.project_id
-      ASM_PACKAGE = var.asm_package
-    }
-  }
+resource "google_gke_hub_feature" "mesh" {
+  name     = "servicemesh"
+  project  = var.project_id
+  location = "global"
+  provider = google-beta
 }
 
 // Install asm crds on each cluster
 resource "null_resource" "install_mesh" {
   for_each = var.cluster_config
   depends_on = [
-    null_resource.create_kube_config,
+    google_gke_hub_feature.mesh,
   ]
   provisioner "local-exec" {
     interpreter = ["bash", "-exc"]
@@ -51,8 +38,7 @@ resource "null_resource" "install_mesh" {
     environment = {
       CLUSTER    = each.key
       LOCATION   = each.value.region
-      PROJECT_ID    = var.project_id
-      ASM_PACKAGE = var.asm_package
+      PROJECT_ID = var.project_id
     }
   }
 }

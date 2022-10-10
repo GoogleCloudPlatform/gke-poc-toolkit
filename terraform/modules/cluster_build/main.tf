@@ -131,8 +131,8 @@ locals {
 
 // Enable APIs needed in the gke cluster project
 module "enabled_google_apis" {
-  source  = "terraform-google-modules/project-factory/google//modules/project_services"
-  version = "~> 11.3.1"
+  source                      = "terraform-google-modules/project-factory/google//modules/project_services"
+  version                     = "~> 11.3.1"
   project_id                  = var.project_id
   disable_services_on_destroy = false
 
@@ -157,9 +157,9 @@ module "enabled_google_apis" {
 
 // Enable Anthos APIs in gke cluster project 
 module "enabled_anthos_apis" {
-  source  = "terraform-google-modules/project-factory/google//modules/project_services"
-  version = "~> 11.3.1"
-  count          = var.multi_cluster_gateway || var.config_sync || var.anthos_service_mesh ? 1 : 0
+  source                      = "terraform-google-modules/project-factory/google//modules/project_services"
+  version                     = "~> 11.3.1"
+  count                       = var.multi_cluster_gateway || var.config_sync || var.anthos_service_mesh ? 1 : 0
   project_id                  = var.project_id
   disable_services_on_destroy = false
 
@@ -211,7 +211,7 @@ module "enabled_governance_apis" {
 
 // Create the service accounts for GKE and KCC from a map declared in locals.
 module "service_accounts" {
-  for_each      = local.service_accounts
+  for_each = local.service_accounts
   depends_on = [
     module.enabled_google_apis,
     module.enabled_governance_apis,
@@ -260,7 +260,7 @@ module "acm" {
   depends_on = [
     local.acm_depends_on,
     module.enabled_anthos_apis,
-  ]  
+  ]
   count             = var.config_sync ? 1 : 0
   source            = "../acm"
   project_id        = var.project_id
@@ -274,12 +274,12 @@ module "mcg" {
     module.hub,
     module.enabled_anthos_apis,
   ]
-  count                 = var.multi_cluster_gateway ? 1 : 0
-  source                = "../mcg"
-  project_id            = var.project_id
-  cluster_config        = var.cluster_config
-  vpc_project_id        = var.vpc_project_id
-  vpc_name              = var.vpc_name
+  count          = var.multi_cluster_gateway ? 1 : 0
+  source         = "../mcg"
+  project_id     = var.project_id
+  cluster_config = var.cluster_config
+  vpc_project_id = var.vpc_project_id
+  vpc_name       = var.vpc_name
 }
 
 module "asm" {
@@ -288,11 +288,8 @@ module "asm" {
     module.enabled_anthos_apis,
 
   ]
-  count                 = var.anthos_service_mesh ? 1 : 0
-  source                = "../asm"
-  project_id            = var.project_id
-  cluster_config        = var.cluster_config
-  vpc_project_id        = var.vpc_project_id
-  vpc_name              = var.vpc_name  
-  asm_package = var.asm_package
+  count          = var.anthos_service_mesh ? 1 : 0
+  source         = "../asm"
+  project_id     = var.project_id
+  cluster_config = var.cluster_config
 }

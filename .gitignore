@@ -100,3 +100,5 @@ cli/*.yaml
 
 # Ignore users' kubeconfigs 
 *kubeconfig*
+
+.idea/

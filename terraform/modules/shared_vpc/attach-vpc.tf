@@ -48,7 +48,7 @@ resource "google_compute_shared_vpc_service_project" "attach_toolkit" {
     google_compute_subnetwork_iam_binding.subnet_networkuser,
     google_project_iam_binding.shared_vpc_serviceagent,
   ]
-  provider = google-beta
+  provider        = google-beta
   host_project    = var.vpc_project_id
   service_project = var.project_id
 }
