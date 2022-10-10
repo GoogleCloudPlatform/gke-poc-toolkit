@@ -70,6 +70,14 @@ time="2022-02-04T21:58:00Z" level=info msg="✔️ Kubeconfig generated: &{Kind:
 time="2022-02-04T21:58:00Z" level=info msg="☸️  Verifying Kubernetes API access for all clusters..."
 time="2022-02-04T21:58:00Z" level=info msg="🌎 5 Namespaces found in cluster=gke_gpt-e2etest-020422-214428_us-central1_gke-central"
 ```
+
+## Update
+
+If you want to update your environment change the config file and run the update command. This is a great way to add or remove clusters.
+```bash
+./gkekitctl update --config <config file name>
+```
+
 ## Clean up 
 
 ```bash
