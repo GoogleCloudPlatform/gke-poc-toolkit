@@ -16,7 +16,7 @@ export KUBECONFIG=${WORKDIR}/${kubeconfig}
 
 # Get cluster creds
 gcloud beta container fleet memberships get-credentials ${CLUSTER}-membership --project ${PROJECT_ID}
-CONTEXT="connectgateway_${PROJECT_ID}_global_${CLUSTER}-membership"
+CONTEXT=`kubectl config view -o jsonpath='{.users[*].name}' --kubeconfig ${KUBECONFIG} | grep ${CLUSTER}`
 
 #gcloud container clusters get-credentials ${CLUSTER} --region ${LOCATION} --project ${PROJECT_ID}
 
