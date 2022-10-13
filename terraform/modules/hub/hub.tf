@@ -11,7 +11,7 @@ data "google_project" "project" {
   project_id = var.project_id
 }
 
-local {
+locals {
     location = var.regional ? each.value.region : each.value.zones[0]
 }
 
