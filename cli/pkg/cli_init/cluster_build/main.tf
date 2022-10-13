@@ -30,6 +30,7 @@ module "cluster_build" {
   k8s_users                         = var.k8s_users
   multi_cluster_gateway             = var.multi_cluster_gateway
   anthos_service_mesh               = var.anthos_service_mesh
+  gke_module_bypass                 = var.gke_module_bypass
 }
 
 variable "project_id" {
@@ -207,3 +208,9 @@ variable "anthos_service_mesh" {
   description = "Enable Anthos Service Mesh on all clusters."
   default     = true
 }
+
+ variable "gke_module_bypass" {
+  type = bool
+  description = "Experimental: Setting this to true allows you to use the TF GKE resource directly instead of the GKE module"
+  default = false
+ }

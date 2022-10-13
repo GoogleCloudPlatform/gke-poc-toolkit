@@ -75,9 +75,9 @@ module "gke" {
 
 // Add optional Windows Node Pool
 module "windows_nodepool" {
-  depends_on = [
-    module.gke,
-  ]
+  # depends_on = [
+  #   module.gke,
+  # ]
   count              = var.windows_nodepool ? 1 : 0
   source             = "../windows_nodepool"
   cluster_config     = var.cluster_config

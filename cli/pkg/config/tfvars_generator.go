@@ -49,6 +49,7 @@ func GenerateTfvars(conf *Config) {
 	vars["AnthosServiceMesh"] = conf.AnthosServiceMesh
 	vars["TFModuleRepo"] = conf.TFModuleRepo
 	vars["TFModuleBranch"] = conf.TFModuleBranch
+	vars["GKEModuleBypass"] = conf.GKEModuleBypass
 
 	// Set vpc config vars
 	if conf.VpcConfig.VpcType == "standalone" {

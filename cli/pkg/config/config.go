@@ -62,6 +62,7 @@ type Config struct {
 	DefaultNodepoolOS         string          `yaml:"defaultNodepoolOS"`
 	TFModuleRepo              string          `yaml:"tfModuleRepo"`
 	TFModuleBranch            string          `yaml:"tfModuleBranch"`
+	GKEModuleBypass           bool            `yaml:"gkeModuleBypass`
 	VpcConfig                 VpcConfig       `yaml:"vpcConfig"`
 	ClustersConfig            []ClusterConfig `yaml:"clustersConfig"`
 }
