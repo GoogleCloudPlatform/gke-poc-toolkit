@@ -30,12 +30,6 @@ variable "regional_clusters" {
   default     = true
 }
 
-variable "zones" {
-  type        = list(string)
-  description = "The zones used in your nodepool"
-  default     = ["us-central1-b"]
-}
-
 variable "network" {
   type        = string
   description = "The name of the network being created to host the cluster in"
