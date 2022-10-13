@@ -244,6 +244,7 @@ module "hub" {
   source         = "../hub"
   project_id     = var.project_id
   cluster_config = var.cluster_config
+  regional_clusters = var.regional_clusters
 }
 
 module "acm" {
