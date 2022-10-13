@@ -62,24 +62,14 @@ variable "initial_node_count" {
   default = 4
 }
 
-variable "min_node_count" {
-  type    = number
-  default = 4
+variable "network_project_id" {
+  type = string
 }
 
-variable "max_node_count" {
-  type    = number
-  default = 10
-}
-
-variable "linux_machine_type" {
-  type    = string
-  default = "n1-standard-4"
-}
-
-variable "windows_machine_type" {
-  type    = string
-  default = "n1-standard-4"
+variable "config_connector" {
+  type        = bool
+  description = "(Beta) Whether ConfigConnector is enabled for this cluster."
+  default     = false
 }
 
 variable "private_endpoint" {
@@ -93,20 +83,16 @@ variable "auth_cidr" {
   default = "1.2.3.4/0"
 }
 
-variable "windows_nodepool" {
-  type    = bool
-  default = false
-}
-
-variable "preemptible_nodes" {
-  type        = bool
-  description = "Whether underlying node GCE instances are preemptible"
-  default     = true
-}
-
 variable "cluster_config" {
   description = "For each cluster, create an object that contain the required fields"
   default     = {}
+}
+
+variable "node_cluster_node_pool" {
+}
+
+variable "asm_label" {
+  type = string
 }
 
 variable "gke_service_account_email" {

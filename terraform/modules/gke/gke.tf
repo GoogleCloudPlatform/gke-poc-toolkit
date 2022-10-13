@@ -14,15 +14,14 @@
  * limitations under the License.
  */
 
+data "google_project" "project" {
+  project_id = var.project_id
+}
+
 resource "google_container_cluster" "primary" {
-  depends_on = [
-    module.kms,
-    module.enabled_google_apis,
-    module.enabled_governance_apis,
-  ]
   for_each       = var.cluster_config
   name           = each.key
-  project_id     = var.project_id
+  project        = var.project_id
   location       = var.regional_clusters ? each.value.region : each.value.zones[0]
   node_locations = each.value.zones
   # enable_autopilot = false
@@ -37,14 +36,15 @@ resource "google_container_cluster" "primary" {
   # }
   database_encryption {
     state    = "ENCRYPTED"
-    key_name = "projects/${var.governance_project_id}/locations/${each.value.region}/keyRings/${local.gke_keyring_name}-${each.value.region}/cryptoKeys/${local.gke_key_name}"
+    key_name = "projects/${var.governance_project_id}/locations/${each.value.region}/keyRings/${var.gke_keyring_name}-${each.value.region}/cryptoKeys/${var.gke_key_name}"
   }
   release_channel {
     channel = var.release_channel
   }
-  binary_authorization {
-    evaluation_mode = "PROJECT_SINGLETON_POLICY_ENFORCE"
-  }
+  # binary_authorization {
+  #   evaluation_mode = "PROJECT_SINGLETON_POLICY_ENFORCE"
+  # }
+  enable_binary_authorization = true
   ip_allocation_policy {
     cluster_secondary_range_name  = var.ip_range_pods
     services_secondary_range_name = var.ip_range_services
@@ -83,7 +83,7 @@ resource "google_container_cluster" "primary" {
 resource "google_container_node_pool" "primary_nodes" {
   for_each           = var.cluster_config
   name               = format("linux-%s", var.node_pool)
-  project_id         = var.project_id
+  project            = var.project_id
   location           = var.regional_clusters ? each.value.region : each.value.zones[0]
   cluster            = each.key
   node_locations     = each.value.zones
@@ -108,7 +108,7 @@ resource "google_container_node_pool" "primary_nodes" {
     }
 
     # Google recommends custom service accounts that have cloud-platform scope and permissions granted via IAM Roles.
-    service_account = local.gke_service_account_email
+    service_account = var.gke_service_account_email
     oauth_scopes = [
       "https://www.googleapis.com/auth/cloud-platform",
       "https://www.googleapis.com/auth/logging.write",
@@ -117,39 +117,39 @@ resource "google_container_node_pool" "primary_nodes" {
   }
 }
 
-resource "google_container_node_pool" "windows_nodes" {
-  count              = var.windows_nodepool ? 1 : 0
-  name               = format("windows-%s", var.node_pool)
-  project_id         = var.project_id
-  location           = var.regional_clusters ? each.value.region : each.value.zones[0]
-  cluster            = each.key
-  node_locations     = each.value.zones
-  initial_node_count = var.initial_node_count
-  autoscaling {
-    min_node_count = var.min_node_count
-    max_node_count = var.max_node_count
-  }
-  management {
-    auto_upgrade = true
-    auto_repair  = true
-  }
-  node_config {
-    preemptible  = var.preemptible_nodes ? true : false
-    machine_type = var.windows_machine_type
-    image_type   = "WINDOWS_SAC"
-    disk_type    = "pd-ssd"
-    disk_size_gb = 100
-    shielded_instance_config {
-      enable_secure_boot          = true
-      enable_integrity_monitoring = false
-    }
+# resource "google_container_node_pool" "windows_nodes" {
+#   count              = var.windows_nodepool ? 1 : 0
+#   name               = format("windows-%s", var.node_pool)
+#   project     = var.project_id
+#   location           = var.regional_clusters ? each.value.region : each.value.zones[0]
+#   cluster            = each.key
+#   node_locations     = each.value.zones
+#   initial_node_count = var.initial_node_count
+#   autoscaling {
+#     min_node_count = var.min_node_count
+#     max_node_count = var.max_node_count
+#   }
+#   management {
+#     auto_upgrade = true
+#     auto_repair  = true
+#   }
+#   node_config {
+#     preemptible  = var.preemptible_nodes ? true : false
+#     machine_type = var.windows_machine_type
+#     image_type   = "WINDOWS_SAC"
+#     disk_type    = "pd-ssd"
+#     disk_size_gb = 100
+#     shielded_instance_config {
+#       enable_secure_boot          = true
+#       enable_integrity_monitoring = false
+#     }
 
-    # Google recommends custom service accounts that have cloud-platform scope and permissions granted via IAM Roles.
-    service_account = local.gke_service_account_email
-    oauth_scopes = [
-      "https://www.googleapis.com/auth/cloud-platform",
-      "https://www.googleapis.com/auth/logging.write",
-      "https://www.googleapis.com/auth/monitoring",
-    ]
-  }
-}
+#     # Google recommends custom service accounts that have cloud-platform scope and permissions granted via IAM Roles.
+#     service_account = var.gke_service_account_email
+#     oauth_scopes = [
+#       "https://www.googleapis.com/auth/cloud-platform",
+#       "https://www.googleapis.com/auth/logging.write",
+#       "https://www.googleapis.com/auth/monitoring",
+#     ]
+#   }
+# }

@@ -200,33 +200,6 @@ module "enabled_governance_apis" {
   ]
 }
 
-// Experiments bypassing GKE Module and use GKE resource directly 
-module "gke" {
-  depends_on = [
-    module.hub,
-    module.enabled_anthos_apis,
-  ]
-  count                = var.gke_module_bypass ? 1 : 0
-  source               = "../gke"
-  project_id           = var.project_id
-  cluster_config       = var.cluster_config
-  network              = local.network
-  vpc_name             = var.vpc_name
-  ip_range_pods        = local.ip_range_pods
-  ip_range_services    = local.ip_range_services
-  release_channel      = var.release_channel
-  node_pool            = var.node_pool
-  initial_node_count   = var.initial_node_count
-  min_node_count       = var.min_node_count
-  max_node_count       = var.max_node_count
-  linux_machine_type   = var.linux_machine_type
-  windows_machine_type = var.windows_machine_type
-  private_endpoint     = var.private_endpoint
-  auth_cidr            = var.auth_cidr
-  windows_nodepool     = var.windows_nodepool
-  preemptible_nodes    = var.preemptible_nodes
-}
-
 // Create the service accounts for GKE and KCC from a map declared in locals.
 module "service_accounts" {
   for_each = local.service_accounts
