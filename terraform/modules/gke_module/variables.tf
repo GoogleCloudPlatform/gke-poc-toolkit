@@ -25,9 +25,6 @@ variable "governance_project_id" {
 }
 
 variable "regional_clusters" {
-  type        = bool
-  description = "Enable regional control plane."
-  default     = true
 }
 
 variable "network" {
