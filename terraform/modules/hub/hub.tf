@@ -11,10 +11,6 @@ data "google_project" "project" {
   project_id = var.project_id
 }
 
-locals {
-    location = var.regional ? each.value.region : each.value.zones[0]
-}
-
 // Create IAM binding allowing the hub project's GKE Hub service account access to the registered member project
 resource "google_project_iam_binding" "gkehub-serviceagent" {
   role    = "roles/gkehub.serviceAgent"
@@ -34,10 +30,10 @@ resource "google_gke_hub_membership" "membership" {
   membership_id = "${each.key}-membership"
   endpoint {
     gke_cluster {
-      resource_link = "//container.googleapis.com/projects/${var.project_id}/locations/${local.location}/clusters/${each.key}"
+      resource_link = "//container.googleapis.com/projects/${var.project_id}/locations/${var.regional_clusters ? each.value.region : each.value.zones[0]}/clusters/${each.key}"
     }
   }
   authority {
-    issuer = "https://container.googleapis.com/v1/projects/${var.project_id}/locations/${local.location}/clusters/${each.key}"
+    issuer = "https://container.googleapis.com/v1/projects/${var.project_id}/locations/${var.regional_clusters ? each.value.region : each.value.zones[0]}/clusters/${each.key}"
   }
 }
