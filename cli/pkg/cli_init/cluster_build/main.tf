@@ -8,8 +8,6 @@ module "cluster_build" {
   shared_vpc                        = var.shared_vpc
   vpc_name                          = var.vpc_name
   ip_range_pods_name                = var.ip_range_pods_name
-  bastion_members                   = var.bastion_members
-  ip_source_ranges_ssh              = var.ip_source_ranges_ssh
   vpc_project_id                    = var.vpc_project_id
   vpc_ip_range_pods_name            = var.vpc_ip_range_pods_name
   vpc_ip_range_services_name        = var.vpc_ip_range_services_name
@@ -84,12 +82,6 @@ variable "ip_range_services_name" {
   type        = string
   description = "The secondary ip range to use for pods"
   default     = "ip-range-svc"
-}
-
-variable "ip_source_ranges_ssh" {
-  type        = list(string)
-  description = "Additional source ranges to allow for ssh to bastion host. 35.235.240.0/20 allowed by default for IAP tunnel."
-  default     = []
 }
 
 variable "vpc_project_id" {
