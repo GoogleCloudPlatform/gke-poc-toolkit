@@ -16,7 +16,6 @@
 
 module "gke" {
   depends_on = [
-    module.bastion,
     module.kms,
     module.enabled_google_apis,
     module.enabled_governance_apis,
@@ -43,8 +42,8 @@ module "gke" {
   enable_shielded_nodes   = true
   master_ipv4_cidr_block  = "172.16.${index(keys(var.cluster_config), each.key)}.16/28"
   master_authorized_networks = [{
-    cidr_block   = var.private_endpoint ? "${module.bastion[0].ip_address}/32" : "${var.auth_cidr}"
-    display_name = var.private_endpoint ? "Bastion Host" : "Workstation Public IP"
+    cidr_block   = ${var.auth_cidr}
+    display_name = "Workstation Public IP"
   }]
 
   compute_engine_service_account = local.gke_service_account_email

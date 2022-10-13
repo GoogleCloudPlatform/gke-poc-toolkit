@@ -37,16 +37,6 @@ locals {
   gke_keyring_name = format("gke-toolkit-kr-%s", random_id.deployment.hex)
   gke_key_name     = "gke-toolkit-kek"
 
-  // Presets for Bastion Host
-  default_subnetwork_name   = lookup(var.cluster_config, element(keys(var.cluster_config), 0), "").subnet_name
-  default_subnetwork_region = lookup(var.cluster_config, element(keys(var.cluster_config), 0), "").region
-  bastion_name              = "gke-tk-bastion"
-  bastion_subnet_selflink   = format("projects/%s/regions/%s/subnetworks/%s", local.project_id, local.default_subnetwork_region, local.default_subnetwork_name)
-  bastion_zone              = format("%s-b", local.default_subnetwork_region)
-  bastion_members = [
-    format("user:%s", data.google_client_openid_userinfo.me.email),
-  ]
-
   // Dynamically create subnet and secondary subnet inputs for multi-cluster creation
   nested_subnets = flatten([
     for name, config in var.cluster_config : [
