@@ -20,6 +20,7 @@ module "gke" {
     module.enabled_google_apis,
     module.enabled_governance_apis,
   ]
+  count      = var.gke_module_bypass ? 0 : 1
   for_each   = var.cluster_config
   source     = "terraform-google-modules/kubernetes-engine/google//modules/safer-cluster"
   version    = "19.0.0"
