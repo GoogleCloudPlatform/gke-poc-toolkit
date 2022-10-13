@@ -262,6 +262,7 @@ module "acm" {
     module.enabled_anthos_apis,
   ]
   count             = var.config_sync ? 1 : 0
+  config_sync_repo  = var.config_sync_repo
   source            = "../acm"
   project_id        = var.project_id
   policy_controller = var.policy_controller

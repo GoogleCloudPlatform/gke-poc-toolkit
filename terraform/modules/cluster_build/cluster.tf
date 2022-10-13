@@ -28,6 +28,7 @@ module "gke" {
   // The initial_node_count size in the module is set to ensure that the default node pool size sets the control plane size sufficiently large to prevent a resize during the build
   initial_node_count      = 12
   name                    = each.key
+  regional                = var.regional_clusters
   region                  = each.value.region
   zones                   = each.value.zones
   release_channel         = var.release_channel

@@ -31,11 +31,11 @@ func GenerateTfvars(conf *Config) {
 
 	// Set base config vars
 	vars["Region"] = conf.Region
-	//tfstate is handled in go deploy not terraform
-	// vars["TerraformState"] = conf.TerraformState
+	vars["RegionalClusters"] = conf.RegionalClusters
 	vars["ClustersProjectId"] = conf.ClustersProjectID
 	vars["GovernanceProjectId"] = conf.GovernanceProjectID
 	vars["ConfigSync"] = conf.ConfigSync
+	vars["ConfigSyncRepo"] = conf.ConfigSyncRepo
 	vars["PolicyController"] = conf.PolicyController
 	vars["PrivateEndpoint"] = conf.PrivateEndpoint
 	vars["ReleaseChannel"] = conf.ReleaseChannel

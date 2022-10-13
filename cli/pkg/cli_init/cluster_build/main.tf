@@ -2,6 +2,7 @@ module "cluster_build" {
   source                            = "{{.TFModuleRepo}}cluster_build?ref={{.TFModuleBranch}}"
   project_id                        = var.project_id
   governance_project_id             = var.governance_project_id
+  regional_clusters                 = var.regional_clusters
   region                            = var.region
   zones                             = var.zones
   shared_vpc                        = var.shared_vpc
@@ -22,6 +23,7 @@ module "cluster_build" {
   private_endpoint                  = var.private_endpoint
   auth_cidr                         = var.auth_cidr
   config_sync                       = var.config_sync
+  config_sync_repo                  = var.config_sync_repo
   policy_controller                 = var.policy_controller
   config_connector                  = var.config_connector
   windows_nodepool                  = var.windows_nodepool
@@ -30,7 +32,6 @@ module "cluster_build" {
   k8s_users                         = var.k8s_users
   multi_cluster_gateway             = var.multi_cluster_gateway
   anthos_service_mesh               = var.anthos_service_mesh
-  acm_tf_module_repo                = "{{.TFModuleRepo}}acm?ref={{.TFModuleBranch}}"
 }
 
 variable "project_id" {
@@ -41,6 +42,12 @@ variable "project_id" {
 variable "governance_project_id" {
   type        = string
   description = "The project ID to host governance resources"
+}
+
+variable "regional_clusters" {
+  type        = bool
+  description = "Enable regional control plane."
+  default     = true
 }
 
 variable "region" {
@@ -77,12 +84,6 @@ variable "ip_range_services_name" {
   type        = string
   description = "The secondary ip range to use for pods"
   default     = "ip-range-svc"
-}
-
-variable "bastion_members" {
-  type        = list(string)
-  description = "List of users, groups, SAs who need access to the bastion host"
-  default     = []
 }
 
 variable "ip_source_ranges_ssh" {
@@ -159,6 +160,12 @@ variable "config_sync" {
   type        = bool
   description = "Enable Config Sync on all clusters."
   default     = true
+}
+
+variable "config_sync_repo" {
+  type        = string
+  description = "Name of Cloud Source Repo for Config Sync"
+  default     = "gke-poc-config-sync"
 }
 
 variable "policy_controller" {
