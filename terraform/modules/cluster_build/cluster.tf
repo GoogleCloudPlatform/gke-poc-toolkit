@@ -42,7 +42,7 @@ module "gke" {
   enable_shielded_nodes   = true
   master_ipv4_cidr_block  = "172.16.${index(keys(var.cluster_config), each.key)}.16/28"
   master_authorized_networks = [{
-    cidr_block   = ${var.auth_cidr}
+    cidr_block   = var.auth_cidr
     display_name = "Workstation Public IP"
   }]
 
