@@ -6,20 +6,23 @@ terraformState: cloud
 clustersProjectId: "my-project"
 governanceProjectId: "my-project"
 region: "us-central1"
+regionalClusters: true
 enablePreemptibleNodepool: false # Enforced on Linux Node pools only
 enableWindowsNodepool: false
 privateEndpoint: false
 releaseChannel: REGULAR
 defaultNodepoolOS: cos
-initialNodeCount: 1
+initialNodeCount: 10
 maxNodeCount: 10
 minNodeCount: 1
 configSync: true 
+configSyncRepo: "config-sync-repo" 
 policyController: true
 multiClusterGateway: false
 anthosServiceMesh: false
 tfModuleRepo: "github.com/GoogleCloudPlatform/gke-poc-toolkit//terraform/modules/"
 tfModuleBranch: "main"
+gkeModuleBypass: false
 sendAnalytics: false
 vpcConfig:
   vpcName: "gke-poc-toolkit"
