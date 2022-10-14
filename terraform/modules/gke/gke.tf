@@ -23,7 +23,7 @@ resource "google_container_cluster" "primary" {
   name           = each.key
   project        = var.project_id
   location       = var.regional_clusters ? each.value.region : each.value.zones[0]
-  node_locations = var.regional ? coalescelist(compact(each.value.zones), sort(random_shuffle.available_zones.result)) : slice(each.value.zones, 1, length(each.value.zones))
+  node_locations = slice(each.value.zones, 1, length(each.value.zones))
 
   # enable_autopilot = false
   network                     = var.network
