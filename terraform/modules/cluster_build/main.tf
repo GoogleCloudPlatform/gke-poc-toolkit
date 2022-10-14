@@ -111,8 +111,9 @@ locals {
   cluster_node_pool = flatten(local.linux_pool)
 
   // These locals are used to construct anthos component depends on rules based on which features are enabled
-  acm_depends_on = var.anthos_service_mesh ? module.asm : (var.multi_cluster_gateway ? module.mcg : module.hub)
-  asm_depends_on = var.multi_cluster_gateway ? module.mcg : module.hub
+  acm_depends_on     = var.anthos_service_mesh ? module.asm : (var.multi_cluster_gateway ? module.mcg : module.hub)
+  asm_depends_on     = var.multi_cluster_gateway ? module.mcg : module.hub
+  gke_hub_depends_on = var.gke_module_bypass ? module.gke : module.gke_module
 
   // Labels to apply to the cluster - Needed for to enable the ASM UI
   asm_label = var.anthos_service_mesh ? {
@@ -238,7 +239,7 @@ module "kms" {
 
 module "hub" {
   depends_on = [
-    module.gke,
+    local.gke_hub_depends_on,
     module.enabled_anthos_apis,
   ]
   count             = var.multi_cluster_gateway || var.config_sync || var.anthos_service_mesh ? 1 : 0
