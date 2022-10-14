@@ -21,7 +21,7 @@ gcloud beta container fleet memberships get-credentials ${CLUSTER}-membership --
 # Install Gateway API CRDs
 echo -e "Installing GatewayAPI CRDs"
 
-kubectl apply -k "github.com/kubernetes-sigs/gateway-api/config/crd?ref=v0.5.0" 
+kubectl apply -k "github.com/kubernetes-sigs/gateway-api/config/crd?ref=v0.5.0" --kubeconfig=$KUBECONFIG
 
 # # Verify CRD is established in the cluster
 # echo -e "Validating GatewayAPI CRD creation"
