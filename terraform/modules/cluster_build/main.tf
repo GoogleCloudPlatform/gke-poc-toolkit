@@ -221,7 +221,7 @@ module "service_accounts" {
 // KCC Google Service account(GSA) so the KSA can assume the workload identity users role.
 module "service_account-iam-bindings" {
   depends_on = [
-    module.gke,
+    local.gke_hub_depends_on,
   ]
   count  = var.config_connector ? 1 : 0
   source = "terraform-google-modules/iam/google//modules/service_accounts_iam"

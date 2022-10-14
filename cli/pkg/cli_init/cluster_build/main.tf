@@ -170,7 +170,7 @@ variable "policy_controller" {
 variable "config_connector" {
   type        = bool
   description = "(Beta) Whether ConfigConnector is enabled for this cluster."
-  default     = true
+  default     = false
 }
 
 variable "windows_nodepool" {

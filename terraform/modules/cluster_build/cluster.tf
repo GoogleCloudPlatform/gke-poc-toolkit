@@ -80,7 +80,7 @@ module "gke" {
 // Add optional Windows Node Pool
 module "windows_nodepool" {
   depends_on = [
-    module.gke,
+    local.gke_hub_depends_on,
   ]
   count              = var.windows_nodepool ? 1 : 0
   source             = "../windows_nodepool"
