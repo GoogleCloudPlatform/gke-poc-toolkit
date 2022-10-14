@@ -21,10 +21,10 @@ gcloud beta container fleet memberships get-credentials ${CLUSTER}-membership --
 # Install Gateway API CRDs
 echo -e "Installing GatewayAPI CRDs"
 
-kubectl apply -k "github.com/kubernetes-sigs/gateway-api/config/crd?ref=v0.5.0" --kubeconfig ${KUBECONFIG}
+kubectl apply -k "github.com/kubernetes-sigs/gateway-api/config/crd?ref=v0.5.0" 
 
 # Verify CRD is established in the cluster
 echo -e "Validating GatewayAPI CRD creation"
-kubectl wait --for=condition=established customresourcedefinition.apiextensions.k8s.io/gatewayclasses.gateway.networking.k8s.io --timeout=10m --kubeconfig ${KUBECONFIG}
-kubectl wait --for=condition=established customresourcedefinition.apiextensions.k8s.io/httproutes.gateway.networking.k8s.io --timeout=10m --kubeconfig ${KUBECONFIG}
-kubectl wait --for=condition=established customresourcedefinition.apiextensions.k8s.io/gateways.gateway.networking.k8s.io --timeout=10m --kubeconfig ${KUBECONFIG}
+kubectl wait --for=condition=established customresourcedefinition.apiextensions.k8s.io/gatewayclasses.gateway.networking.k8s.io --timeout=10m
+kubectl wait --for=condition=established customresourcedefinition.apiextensions.k8s.io/httproutes.gateway.networking.k8s.io --timeout=10m
+kubectl wait --for=condition=established customresourcedefinition.apiextensions.k8s.io/gateways.gateway.networking.k8s.io --timeout=10m
