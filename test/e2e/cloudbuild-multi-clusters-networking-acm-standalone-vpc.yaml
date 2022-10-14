@@ -22,9 +22,9 @@ steps:
     TIMESTAMP=`date "+%m%d%y-%H%M%S"`
     TEST_PROJECT_ID="gpt4-$$TIMESTAMP"
     echo $$TEST_PROJECT_ID > /workspace/test-project-id.txt
+    sleep 3
     gcloud projects create $$TEST_PROJECT_ID --folder="$$FOLDER_ID" 
     gcloud projects add-iam-policy-binding $$TEST_PROJECT_ID --member=serviceAccount:152393131587@cloudbuild.gserviceaccount.com --role=roles/owner
-    sleep 10
     gcloud services enable cloudbilling.googleapis.com --project=$$TEST_PROJECT_ID
     gcloud alpha billing projects link $$TEST_PROJECT_ID --billing-account $$BILLING_ID
   secretEnv: ['FOLDER_ID', 'BILLING_ID']  
