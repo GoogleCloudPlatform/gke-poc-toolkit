@@ -40,7 +40,7 @@ module "gke_module" {
   private_endpoint          = var.private_endpoint
   auth_cidr                 = var.auth_cidr
   gke_service_account_email = local.gke_service_account_email
-  node_cluster_node_pool    = local.cluster_node_pool
+  cluster_node_pool         = local.cluster_node_pool
   asm_label                 = local.asm_label
 }
 
@@ -74,6 +74,7 @@ module "gke" {
   windows_nodepool          = var.windows_nodepool
   preemptible_nodes         = var.preemptible_nodes
   gke_service_account_email = local.gke_service_account_email
+  asm_label                 = local.asm_label
 }
 
 // Add optional Windows Node Pool

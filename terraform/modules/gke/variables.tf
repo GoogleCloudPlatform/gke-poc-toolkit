@@ -117,3 +117,6 @@ variable "gke_keyring_name" {
 variable "gke_key_name" {
   type = string
 }
+
+variable "asm_label" {
+}

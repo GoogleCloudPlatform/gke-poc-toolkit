@@ -85,11 +85,10 @@ variable "cluster_config" {
   default     = {}
 }
 
-variable "node_cluster_node_pool" {
+variable "cluster_node_pool" {
 }
 
 variable "asm_label" {
-  type = string
 }
 
 variable "gke_service_account_email" {
