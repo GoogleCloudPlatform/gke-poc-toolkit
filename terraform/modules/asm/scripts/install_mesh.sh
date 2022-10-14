@@ -12,7 +12,7 @@ echo -e "Adding cluster ${CLUSTER} to kubeconfig located at ${WORKDIR}/tempkubec
 echo -e "Creating tempkubeconfig."
 rm ${WORKDIR}/${kubeconfig}
 touch ${WORKDIR}/${kubeconfig}
-export KUBECONFIG=${WORKDIR}/${kubeconfig}
+CONFIG=${WORKDIR}/${kubeconfig}
 
 # Get cluster creds
 gcloud beta container fleet memberships get-credentials ${CLUSTER}-membership --project ${PROJECT_ID}
@@ -21,14 +21,14 @@ gcloud beta container fleet memberships get-credentials ${CLUSTER}-membership --
 # CONTEXT=`kubectl config view -o jsonpath='{.users[*].name}' --kubeconfig ${KUBECONFIG} | grep ${CLUSTER}`
 # Verify CRD is established in the cluster
 echo -e "Verifying Control Plane Revisions CRD is present on ${CLUSTER}"
-until kubectl get crd controlplanerevisions.mesh.cloud.google.com
+until kubectl get crd controlplanerevisions.mesh.cloud.google.com --kubeconfig=$CONFIG
 do
   echo -n "...still waiting for the control plan revision crd creation"
   sleep 1
 done
 
 # Install SAs, Roles, Roledbinding for ASM
-kubectl apply -f ./manifests/istio-system-ns.yaml
-kubectl apply -f ./manifests/
+kubectl apply -f ./manifests/istio-system-ns.yaml --kubeconfig=$CONFIG
+kubectl apply -f ./manifests/ --kubeconfig=$CONFIG
 
-kubectl wait --for=condition=ProvisioningFinished controlplanerevision -n istio-system asm-managed --timeout=10m
+kubectl wait --for=condition=ProvisioningFinished controlplanerevision -n istio-system asm-managed --timeout=10m --kubeconfig=$CONFIG

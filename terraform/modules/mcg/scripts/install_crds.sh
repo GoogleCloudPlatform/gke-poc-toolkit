@@ -12,7 +12,7 @@ echo -e "Adding cluster ${CLUSTER} to kubeconfig located at ${WORKDIR}/tempkubec
 echo -e "Creating tempkubeconfig."
 rm ${WORKDIR}/${kubeconfig}
 touch ${WORKDIR}/${kubeconfig}
-export KUBECONFIG=${WORKDIR}/${kubeconfig}
+CONFIG=${WORKDIR}/${kubeconfig}
 
 # Get cluster creds
 gcloud beta container fleet memberships get-credentials ${CLUSTER}-membership --project ${PROJECT_ID}
@@ -21,7 +21,7 @@ gcloud beta container fleet memberships get-credentials ${CLUSTER}-membership --
 # Install Gateway API CRDs
 echo -e "Installing GatewayAPI CRDs"
 
-kubectl apply -k "github.com/kubernetes-sigs/gateway-api/config/crd?ref=v0.5.0" --kubeconfig=$KUBECONFIG
+kubectl apply -k "github.com/kubernetes-sigs/gateway-api/config/crd?ref=v0.5.0" --kubeconfig=$CONFIG
 
 # # Verify CRD is established in the cluster
 # echo -e "Validating GatewayAPI CRD creation"
