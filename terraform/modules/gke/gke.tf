@@ -24,6 +24,9 @@ resource "google_container_cluster" "primary" {
   project        = var.project_id
   location       = var.regional_clusters ? each.value.region : each.value.zones[0]
   node_locations = each.value.zones
+  # node_locations = var.regional_clusters ? each.value.zones : slice(each.value.zones, 1, length(each.value.zones))
+
+  # node_locations = var.regional_clusters ? each.value.zones : each.value.zones[0]
   # enable_autopilot = false
   network                     = var.network
   subnetwork                  = each.value.subnet_name
@@ -81,6 +84,9 @@ resource "google_container_cluster" "primary" {
 }
 
 resource "google_container_node_pool" "primary_nodes" {
+  depends_on = [
+    resource.google_container_cluster.primary
+  ]
   for_each           = var.cluster_config
   name               = format("linux-%s", var.node_pool)
   project            = var.project_id
