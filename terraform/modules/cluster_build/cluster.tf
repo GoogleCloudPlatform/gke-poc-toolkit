@@ -17,6 +17,7 @@
 // GKE Module using safer clusters
 module "gke_module" {
   depends_on = [
+    module.vpc,
     module.kms,
     module.enabled_google_apis,
     module.enabled_governance_apis,
@@ -47,6 +48,7 @@ module "gke_module" {
 // Experiments bypassing GKE Module and use GKE resource directly 
 module "gke" {
   depends_on = [
+    module.vpc,
     module.kms,
     module.enabled_google_apis,
     module.enabled_governance_apis,
