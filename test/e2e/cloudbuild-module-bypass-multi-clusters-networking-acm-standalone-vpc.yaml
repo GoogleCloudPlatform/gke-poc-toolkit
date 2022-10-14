@@ -20,7 +20,7 @@ steps:
     fi
     echo "🌟 REPO INFO: NAME: $$CLEAN_REPO_NAME, BRANCH: $$CLEAN_BRANCH_NAME"
     TIMESTAMP=`date "+%m%d%y-%H%M%S"`
-    TEST_PROJECT_ID="gpt4-$$TIMESTAMP"
+    TEST_PROJECT_ID="gpt7-$$TIMESTAMP"
     echo $$TEST_PROJECT_ID > /workspace/test-project-id.txt
     gcloud projects create $$TEST_PROJECT_ID --folder="$$FOLDER_ID" 
     gcloud projects add-iam-policy-binding $$TEST_PROJECT_ID --member=serviceAccount:152393131587@cloudbuild.gserviceaccount.com --role=roles/owner
