@@ -1,8 +1,8 @@
-variable "project_id" {
-}
+variable "project_id" {}
 
-variable "cluster_config" {
-}
+variable "cluster_config" {}
+
+variable "regional_clusters" {}
 
 data "google_project" "project" {
   project_id = var.project_id
@@ -27,10 +27,10 @@ resource "google_gke_hub_membership" "membership" {
   membership_id = "${each.key}-membership"
   endpoint {
     gke_cluster {
-      resource_link = "//container.googleapis.com/projects/${var.project_id}/locations/${each.value.region}/clusters/${each.key}"
+      resource_link = "//container.googleapis.com/projects/${var.project_id}/locations/${var.regional_clusters ? each.value.region : each.value.zones[0]}/clusters/${each.key}"
     }
   }
   authority {
-    issuer = "https://container.googleapis.com/v1/projects/${var.project_id}/locations/${each.value.region}/clusters/${each.key}"
+    issuer = "https://container.googleapis.com/v1/projects/${var.project_id}/locations/${var.regional_clusters ? each.value.region : each.value.zones[0]}/clusters/${each.key}"
   }
 }

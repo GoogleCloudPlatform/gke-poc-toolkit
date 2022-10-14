@@ -28,6 +28,7 @@ locals {
   // Presets for project and network settings
   project_id               = var.shared_vpc ? var.vpc_project_id : module.enabled_google_apis.project_id
   network_name             = var.vpc_name
+  network                  = "projects/${local.project_id}/global/networks/${var.vpc_name}"
   vpc_selflink             = format("projects/%s/global/networks/%s", local.project_id, local.network_name)
   ip_range_pods            = var.shared_vpc ? var.vpc_ip_range_pods_name : var.ip_range_pods_name
   ip_range_services        = var.shared_vpc ? var.vpc_ip_range_services_name : var.ip_range_services_name
@@ -36,16 +37,6 @@ locals {
   // Presets for KMS and Key Ring
   gke_keyring_name = format("gke-toolkit-kr-%s", random_id.deployment.hex)
   gke_key_name     = "gke-toolkit-kek"
-
-  // Presets for Bastion Host
-  default_subnetwork_name   = lookup(var.cluster_config, element(keys(var.cluster_config), 0), "").subnet_name
-  default_subnetwork_region = lookup(var.cluster_config, element(keys(var.cluster_config), 0), "").region
-  bastion_name              = "gke-tk-bastion"
-  bastion_subnet_selflink   = format("projects/%s/regions/%s/subnetworks/%s", local.project_id, local.default_subnetwork_region, local.default_subnetwork_name)
-  bastion_zone              = format("%s-b", local.default_subnetwork_region)
-  bastion_members = [
-    format("user:%s", data.google_client_openid_userinfo.me.email),
-  ]
 
   // Dynamically create subnet and secondary subnet inputs for multi-cluster creation
   nested_subnets = flatten([
@@ -120,8 +111,9 @@ locals {
   cluster_node_pool = flatten(local.linux_pool)
 
   // These locals are used to construct anthos component depends on rules based on which features are enabled
-  acm_depends_on = var.anthos_service_mesh ? module.asm : (var.multi_cluster_gateway ? module.mcg : module.hub)
-  asm_depends_on = var.multi_cluster_gateway ? module.mcg : module.hub
+  acm_depends_on     = var.anthos_service_mesh ? module.asm : (var.multi_cluster_gateway ? module.mcg : module.hub)
+  asm_depends_on     = var.multi_cluster_gateway ? module.mcg : module.hub
+  gke_hub_depends_on = var.gke_module_bypass ? module.gke : module.gke_module
 
   // Labels to apply to the cluster - Needed for to enable the ASM UI
   asm_label = var.anthos_service_mesh ? {
@@ -225,6 +217,25 @@ module "service_accounts" {
   generate_keys = true
 }
 
+// Bind the KCC operator Kubernetes service account(KSA) to the 
+// KCC Google Service account(GSA) so the KSA can assume the workload identity users role.
+module "service_account-iam-bindings" {
+  depends_on = [
+    module.gke,
+  ]
+  count  = var.config_connector ? 1 : 0
+  source = "terraform-google-modules/iam/google//modules/service_accounts_iam"
+
+  service_accounts = [local.kcc_service_account_email]
+  project          = module.enabled_google_apis.project_id
+  bindings = {
+    "roles/iam.workloadIdentityUser" = [
+      "serviceAccount:${module.enabled_google_apis.project_id}.svc.id.goog[cnrm-system/cnrm-controller-manager]",
+    ]
+  }
+}
+
+
 // Create the KMS keyring and owner 
 module "kms" {
   depends_on = [
@@ -247,13 +258,14 @@ module "kms" {
 
 module "hub" {
   depends_on = [
-    module.gke,
+    local.gke_hub_depends_on,
     module.enabled_anthos_apis,
   ]
-  count          = var.multi_cluster_gateway || var.config_sync || var.anthos_service_mesh ? 1 : 0
-  source         = "../hub"
-  project_id     = var.project_id
-  cluster_config = var.cluster_config
+  count             = var.multi_cluster_gateway || var.config_sync || var.anthos_service_mesh ? 1 : 0
+  source            = "../hub"
+  project_id        = var.project_id
+  cluster_config    = var.cluster_config
+  regional_clusters = var.regional_clusters
 }
 
 module "acm" {
@@ -262,6 +274,7 @@ module "acm" {
     module.enabled_anthos_apis,
   ]
   count             = var.config_sync ? 1 : 0
+  config_sync_repo  = var.config_sync_repo
   source            = "../acm"
   project_id        = var.project_id
   policy_controller = var.policy_controller

@@ -24,6 +24,12 @@ variable "governance_project_id" {
   description = "The project ID to host governance resources"
 }
 
+variable "regional_clusters" {
+  type        = bool
+  description = "Enable regional control plane."
+  default     = true
+}
+
 variable "region" {
   type        = string
   description = "The region to host the cluster in"
@@ -58,18 +64,6 @@ variable "ip_range_services_name" {
   type        = string
   description = "The secondary ip range to use for pods"
   default     = "ip-range-svc"
-}
-
-variable "bastion_members" {
-  type        = list(string)
-  description = "List of users, groups, SAs who need access to the bastion host"
-  default     = []
-}
-
-variable "ip_source_ranges_ssh" {
-  type        = list(string)
-  description = "Additional source ranges to allow for ssh to bastion host. 35.235.240.0/20 allowed by default for IAP tunnel."
-  default     = []
 }
 
 variable "vpc_project_id" {
@@ -136,24 +130,6 @@ variable "auth_cidr" {
   default = "1.2.3.4/0"
 }
 
-variable "config_sync" {
-  type        = bool
-  description = "Enable Config Sync on all clusters."
-  default     = true
-}
-
-variable "policy_controller" {
-  type        = bool
-  description = "Enable Policy Controller on all clusters."
-  default     = true
-}
-
-variable "config_connector" {
-  type        = bool
-  description = "(Beta) Whether ConfigConnector is enabled for this cluster."
-  default     = true
-}
-
 variable "windows_nodepool" {
   type    = bool
   default = false
@@ -178,10 +154,28 @@ variable "k8s_users" {
   }
 }
 
-variable "acm_tf_module_repo" {
+variable "config_sync" {
+  type        = bool
+  description = "Enable Config Sync on all clusters."
+  default     = true
+}
+
+variable "config_sync_repo" {
   type        = string
-  description = "Repo used "
-  default     = "github.com/GoogleCloudPlatform/gke-poc-toolkit//terraform/modules/acm"
+  description = "Name of Cloud Source Repo for Config Sync"
+  default     = "gke-poc-config-sync"
+}
+
+variable "policy_controller" {
+  type        = bool
+  description = "Enable Policy Controller on all clusters."
+  default     = true
+}
+
+variable "config_connector" {
+  type        = bool
+  description = "(Beta) Whether ConfigConnector is enabled for this cluster."
+  default     = false
 }
 
 variable "multi_cluster_gateway" {
@@ -195,21 +189,8 @@ variable "anthos_service_mesh" {
   description = "Enable Anthos Service Mesh on all clusters."
   default     = true
 }
-
-variable "asm_version" {
-  type        = string
-  description = "ASM version"
-  default     = "1.12"
-}
-
-variable "asm_package" {
-  type        = string
-  description = "ASM package"
-  default     = "istio-1.12.2-asm.0"
-}
-
-variable "asm_release_channel" {
-  type        = string
-  description = "ASM release channel"
-  default     = "regular"
+variable "gke_module_bypass" {
+  type        = bool
+  description = "Experimental: Setting this to true allows you to use the TF GKE resource directly instead of the GKE module"
+  default     = false
 }

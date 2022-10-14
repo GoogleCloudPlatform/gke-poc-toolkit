@@ -2,13 +2,12 @@ module "cluster_build" {
   source                            = "{{.TFModuleRepo}}cluster_build?ref={{.TFModuleBranch}}"
   project_id                        = var.project_id
   governance_project_id             = var.governance_project_id
+  regional_clusters                 = var.regional_clusters
   region                            = var.region
   zones                             = var.zones
   shared_vpc                        = var.shared_vpc
   vpc_name                          = var.vpc_name
   ip_range_pods_name                = var.ip_range_pods_name
-  bastion_members                   = var.bastion_members
-  ip_source_ranges_ssh              = var.ip_source_ranges_ssh
   vpc_project_id                    = var.vpc_project_id
   vpc_ip_range_pods_name            = var.vpc_ip_range_pods_name
   vpc_ip_range_services_name        = var.vpc_ip_range_services_name
@@ -22,6 +21,7 @@ module "cluster_build" {
   private_endpoint                  = var.private_endpoint
   auth_cidr                         = var.auth_cidr
   config_sync                       = var.config_sync
+  config_sync_repo                  = var.config_sync_repo
   policy_controller                 = var.policy_controller
   config_connector                  = var.config_connector
   windows_nodepool                  = var.windows_nodepool
@@ -30,7 +30,7 @@ module "cluster_build" {
   k8s_users                         = var.k8s_users
   multi_cluster_gateway             = var.multi_cluster_gateway
   anthos_service_mesh               = var.anthos_service_mesh
-  acm_tf_module_repo                = "{{.TFModuleRepo}}acm?ref={{.TFModuleBranch}}"
+  gke_module_bypass                 = var.gke_module_bypass
 }
 
 variable "project_id" {
@@ -41,6 +41,12 @@ variable "project_id" {
 variable "governance_project_id" {
   type        = string
   description = "The project ID to host governance resources"
+}
+
+variable "regional_clusters" {
+  type        = bool
+  description = "Enable regional control plane."
+  default     = true
 }
 
 variable "region" {
@@ -77,18 +83,6 @@ variable "ip_range_services_name" {
   type        = string
   description = "The secondary ip range to use for pods"
   default     = "ip-range-svc"
-}
-
-variable "bastion_members" {
-  type        = list(string)
-  description = "List of users, groups, SAs who need access to the bastion host"
-  default     = []
-}
-
-variable "ip_source_ranges_ssh" {
-  type        = list(string)
-  description = "Additional source ranges to allow for ssh to bastion host. 35.235.240.0/20 allowed by default for IAP tunnel."
-  default     = []
 }
 
 variable "vpc_project_id" {
@@ -161,6 +155,12 @@ variable "config_sync" {
   default     = true
 }
 
+variable "config_sync_repo" {
+  type        = string
+  description = "Name of Cloud Source Repo for Config Sync"
+  default     = "gke-poc-config-sync"
+}
+
 variable "policy_controller" {
   type        = bool
   description = "Enable Policy Controller on all clusters."
@@ -208,3 +208,9 @@ variable "anthos_service_mesh" {
   description = "Enable Anthos Service Mesh on all clusters."
   default     = true
 }
+
+ variable "gke_module_bypass" {
+  type = bool
+  description = "Experimental: Setting this to true allows you to use the TF GKE resource directly instead of the GKE module"
+  default = false
+ }

@@ -41,12 +41,14 @@ import (
 // Config defines the config file structure. Has config-wide vars, and two sub-structs:
 // a VPC Config, and a slice of Cluster Configs, representing one or more GKE clusters.
 type Config struct {
+	RegionalClusters          bool            `yaml:"regionalClusters"`
 	Region                    string          `yaml:"region"`
 	TerraformState            string          `yaml:"terraformState"`
 	SendAnalytics             bool            `yaml:"sendAnalytics"`
 	ClustersProjectID         string          `yaml:"clustersProjectId"`
 	GovernanceProjectID       string          `yaml:"governanceProjectId"`
 	ConfigSync                bool            `yaml:"configSync"`
+	ConfigSyncRepo            string          `yaml:"configSyncRepo"`
 	AnthosServiceMesh         bool            `yaml:"anthosServiceMesh"`
 	MultiClusterGateway       bool            `yaml:"multiClusterGateway"`
 	PolicyController          bool            `yaml:"policyController"`
@@ -60,6 +62,7 @@ type Config struct {
 	DefaultNodepoolOS         string          `yaml:"defaultNodepoolOS"`
 	TFModuleRepo              string          `yaml:"tfModuleRepo"`
 	TFModuleBranch            string          `yaml:"tfModuleBranch"`
+	GKEModuleBypass           bool            `yaml:"gkeModuleBypass`
 	VpcConfig                 VpcConfig       `yaml:"vpcConfig"`
 	ClustersConfig            []ClusterConfig `yaml:"clustersConfig"`
 }

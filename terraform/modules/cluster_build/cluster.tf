@@ -14,63 +14,67 @@
  * limitations under the License.
  */
 
-module "gke" {
+// GKE Module using safer clusters
+module "gke_module" {
   depends_on = [
-    module.bastion,
     module.kms,
     module.enabled_google_apis,
     module.enabled_governance_apis,
   ]
-  for_each   = var.cluster_config
-  source     = "terraform-google-modules/kubernetes-engine/google//modules/safer-cluster"
-  version    = "19.0.0"
-  project_id = module.enabled_google_apis.project_id
-  // The initial_node_count size in the module is set to ensure that the default node pool size sets the control plane size sufficiently large to prevent a resize during the build
-  initial_node_count      = 12
-  name                    = each.key
-  region                  = each.value.region
-  zones                   = each.value.zones
-  release_channel         = var.release_channel
-  config_connector        = var.config_connector
-  network                 = local.network_name
-  subnetwork              = each.value.subnet_name
-  network_project_id      = local.project_id
-  ip_range_pods           = local.ip_range_pods
-  ip_range_services       = local.ip_range_services
-  enable_private_endpoint = var.private_endpoint
-  grant_registry_access   = true
-  enable_shielded_nodes   = true
-  master_ipv4_cidr_block  = "172.16.${index(keys(var.cluster_config), each.key)}.16/28"
-  master_authorized_networks = [{
-    cidr_block   = var.private_endpoint ? "${module.bastion[0].ip_address}/32" : "${var.auth_cidr}"
-    display_name = var.private_endpoint ? "Bastion Host" : "Workstation Public IP"
-  }]
+  count                     = var.gke_module_bypass ? 0 : 1
+  source                    = "../gke_module"
+  project_id                = var.project_id
+  governance_project_id     = var.governance_project_id
+  cluster_config            = var.cluster_config
+  network                   = local.network_name
+  ip_range_pods             = local.ip_range_pods
+  ip_range_services         = local.ip_range_services
+  release_channel           = var.release_channel
+  gke_keyring_name          = local.gke_keyring_name
+  gke_key_name              = local.gke_key_name
+  node_pool                 = var.node_pool
+  initial_node_count        = var.initial_node_count
+  regional_clusters         = var.regional_clusters
+  config_connector          = var.config_connector
+  network_project_id        = local.project_id
+  private_endpoint          = var.private_endpoint
+  auth_cidr                 = var.auth_cidr
+  gke_service_account_email = local.gke_service_account_email
+  cluster_node_pool         = local.cluster_node_pool
+  asm_label                 = local.asm_label
+}
 
-  compute_engine_service_account = local.gke_service_account_email
-  database_encryption = [{
-    state    = "ENCRYPTED"
-    key_name = "projects/${var.governance_project_id}/locations/${each.value.region}/keyRings/${local.gke_keyring_name}-${each.value.region}/cryptoKeys/${local.gke_key_name}"
-  }]
-
-  node_pools = local.cluster_node_pool
-
-  node_pools_oauth_scopes = {
-    (var.node_pool) = [
-      "https://www.googleapis.com/auth/cloud-platform",
-      "https://www.googleapis.com/auth/logging.write",
-      "https://www.googleapis.com/auth/monitoring",
-    ]
-  }
-
-  node_pools_metadata = {
-    (var.node_pool) = {
-      // Set metadata on the VM to supply more entropy
-      google-compute-enable-virtio-rng = "true"
-      // Explicitly remove GCE legacy metadata API endpoint
-      disable-legacy-endpoints = "true"
-    }
-  }
-  cluster_resource_labels = local.asm_label
+// Experiments bypassing GKE Module and use GKE resource directly 
+module "gke" {
+  depends_on = [
+    module.kms,
+    module.enabled_google_apis,
+    module.enabled_governance_apis,
+  ]
+  count                     = var.gke_module_bypass ? 1 : 0
+  source                    = "../gke"
+  project_id                = var.project_id
+  governance_project_id     = var.governance_project_id
+  cluster_config            = var.cluster_config
+  network                   = local.network
+  ip_range_pods             = local.ip_range_pods
+  ip_range_services         = local.ip_range_services
+  release_channel           = var.release_channel
+  gke_keyring_name          = local.gke_keyring_name
+  gke_key_name              = local.gke_key_name
+  node_pool                 = var.node_pool
+  initial_node_count        = var.initial_node_count
+  regional_clusters         = var.regional_clusters
+  min_node_count            = var.min_node_count
+  max_node_count            = var.max_node_count
+  linux_machine_type        = var.linux_machine_type
+  windows_machine_type      = var.windows_machine_type
+  private_endpoint          = var.private_endpoint
+  auth_cidr                 = var.auth_cidr
+  windows_nodepool          = var.windows_nodepool
+  preemptible_nodes         = var.preemptible_nodes
+  gke_service_account_email = local.gke_service_account_email
+  asm_label                 = local.asm_label
 }
 
 // Add optional Windows Node Pool
@@ -94,21 +98,4 @@ module "windows_nodepool" {
   // Intergrity Monitoring is not enabled in Windows Node pools yet.
   enable_integrity_monitoring = false
   enable_secure_boot          = true
-}
-
-// Bind the KCC operator Kubernetes service account(KSA) to the 
-// KCC Google Service account(GSA) so the KSA can assume the workload identity users role.
-module "service_account-iam-bindings" {
-  depends_on = [
-    module.gke,
-  ]
-  source = "terraform-google-modules/iam/google//modules/service_accounts_iam"
-
-  service_accounts = [local.kcc_service_account_email]
-  project          = module.enabled_google_apis.project_id
-  bindings = {
-    "roles/iam.workloadIdentityUser" = [
-      "serviceAccount:${module.enabled_google_apis.project_id}.svc.id.goog[cnrm-system/cnrm-controller-manager]",
-    ]
-  }
 }
