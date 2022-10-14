@@ -25,6 +25,21 @@ kubectl apply -k "github.com/kubernetes-sigs/gateway-api/config/crd?ref=v0.5.0"
 
 # Verify CRD is established in the cluster
 echo -e "Validating GatewayAPI CRD creation"
-kubectl wait --for=condition=established customresourcedefinition.apiextensions.k8s.io/gatewayclasses.gateway.networking.k8s.io --timeout=10m
-kubectl wait --for=condition=established customresourcedefinition.apiextensions.k8s.io/httproutes.gateway.networking.k8s.io --timeout=10m
-kubectl wait --for=condition=established customresourcedefinition.apiextensions.k8s.io/gateways.gateway.networking.k8s.io --timeout=10m
+until kubectl get crd gatewayclasses.gateway.networking.k8s.io
+do
+  echo -n "...still waiting for the gatewayclasses crd creation"
+  sleep 1
+done
+until kubectl get crd httproutes.gateway.networking.k8s.io
+do
+  echo -n "...still waiting for the httproutes crd creation"
+  sleep 1
+done
+until kubectl get crd gateways.gateway.networking.k8s.io
+do
+  echo -n "...still waiting for the httproutes crd creation"
+  sleep 1
+done
+# kubectl wait --for=condition=established customresourcedefinition.apiextensions.k8s.io/gatewayclasses.gateway.networking.k8s.io --timeout=10m
+# kubectl wait --for=condition=established customresourcedefinition.apiextensions.k8s.io/ --timeout=10m
+# kubectl wait --for=condition=established customresourcedefinition.apiextensions.k8s.io/gateways.gateway.networking.k8s.io --timeout=10m
