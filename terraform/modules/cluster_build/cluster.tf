@@ -99,20 +99,3 @@ module "windows_nodepool" {
   enable_integrity_monitoring = false
   enable_secure_boot          = true
 }
-
-// Bind the KCC operator Kubernetes service account(KSA) to the 
-// KCC Google Service account(GSA) so the KSA can assume the workload identity users role.
-module "service_account-iam-bindings" {
-  depends_on = [
-    module.gke,
-  ]
-  source = "terraform-google-modules/iam/google//modules/service_accounts_iam"
-
-  service_accounts = [local.kcc_service_account_email]
-  project          = module.enabled_google_apis.project_id
-  bindings = {
-    "roles/iam.workloadIdentityUser" = [
-      "serviceAccount:${module.enabled_google_apis.project_id}.svc.id.goog[cnrm-system/cnrm-controller-manager]",
-    ]
-  }
-}

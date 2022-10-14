@@ -1,11 +1,8 @@
-variable "project_id" {
-}
+variable "project_id" {}
 
-variable "regional_clusters" {
-}
+variable "cluster_config" {}
 
-variable "cluster_config" {
-}
+variable "regional_clusters" {}
 
 data "google_project" "project" {
   project_id = var.project_id

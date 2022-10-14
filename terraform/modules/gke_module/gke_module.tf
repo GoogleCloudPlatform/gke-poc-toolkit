@@ -9,6 +9,7 @@ module "gke" {
   release_channel         = var.release_channel
   initial_node_count      = var.initial_node_count
   name                    = each.key
+  regional                = var.regional_clusters
   region                  = each.value.region
   zones                   = each.value.zones
   config_connector        = var.config_connector
