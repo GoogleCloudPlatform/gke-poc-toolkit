@@ -33,7 +33,7 @@ func DestroyTF(tfDir string) {
 	}
 	defer os.RemoveAll(tmpDir)
 
-	execPath, err := tfinstall.Find(context.Background(), tfinstall.ExactVersion("1.1.9", tmpDir))
+	execPath, err := tfinstall.Find(context.Background(), tfinstall.ExactVersion("1.3.2", tmpDir))
 	if err != nil {
 		log.Fatalf("error locating Terraform binary: %s", err)
 	}

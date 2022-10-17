@@ -1,7 +1,7 @@
 terraformState: cloud  # local, cloud
 clustersProjectId: "my-project"
 governanceProjectId: "my-project" 
-regionalClusters: true # Control plane availability
+regionalClusters: false # Control plane availability
 region: "us-east1" # Region for resources aside from GKE clusters
 enableWindowsNodepool: false 
 enablePreemptibleNodepool: false # Enforced on Linux Node pools only
@@ -14,11 +14,11 @@ minNodeCount: 1
 configSync: true 
 configSyncRepo: "config-sync-repo" 
 policyController: true
-multiClusterGateway: false
-anthosServiceMesh: false
+multiClusterGateway: true
+anthosServiceMesh: true
 tfModuleRepo: "github.com/GoogleCloudPlatform/gke-poc-toolkit//terraform/modules/"
 tfModuleBranch: "main"
-gkeModuleBypass: false
+gkeModuleBypass: true
 sendAnalytics: false
 vpcConfig:
   vpcName: "gke-poc-toolkit"

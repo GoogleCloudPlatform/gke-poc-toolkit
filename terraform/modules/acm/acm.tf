@@ -18,6 +18,9 @@
 variable "project_id" {
 }
 
+variable "config_sync_repo" {
+}
+
 variable "policy_controller" {
 }
 
@@ -35,7 +38,7 @@ locals {
 // https://registry.terraform.io/providers/hashicorp/google/latest/docs/resources/sourcerepo_repository 
 // Create 1 centralized Cloud Source Repo, that all GKE clusters will sync to  
 resource "google_sourcerepo_repository" "gke-poc-config-sync" {
-  name    = "gke-poc-config-sync"
+  name    = var.config_sync_repo
   project = var.project_id
 }
 
