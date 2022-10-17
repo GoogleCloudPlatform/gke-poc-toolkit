@@ -26,7 +26,7 @@ vpcConfig:
   vpcProjectId: "my-host-project"
   podCIDRName: "mypodcidr"
   svcCIDRName: "mysvccidr"
-  authCIDR: "1.2.3.4/32" # Change to your workstation public IP
+  authCIDR: "0.0.0.0/0"  # Change to your workstation public IP
 clustersConfig:  # a list of one or more clusters, each with their own config 
 - clusterName: "gke-central"
   machineType: "e2-standard-4"
