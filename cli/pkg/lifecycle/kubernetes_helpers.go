@@ -21,7 +21,6 @@ import (
 	"encoding/base64"
 	"fmt"
 	"gkekitctl/pkg/config"
-	"os"
 
 	log "github.com/sirupsen/logrus"
 	"google.golang.org/api/container/v1"
@@ -36,9 +35,6 @@ func GenerateKubeConfig(conf *config.Config) (*api.Config, error) {
 	projectId := conf.ClustersProjectID
 	log.Infof("Clusters Project ID is %s", projectId)
 	ctx := context.Background()
-
-	// Get project number from projectid
-	projectNumber := os.Getenv("GOOGLE_PROJECT_NUMBER")
 
 	svc, err := container.NewService(ctx)
 	if err != nil {
@@ -68,16 +64,15 @@ func GenerateKubeConfig(conf *config.Config) (*api.Config, error) {
 			return &ret, fmt.Errorf("invalid certificate cluster=%s cert=%s: %w", name, f.MasterAuth.ClusterCaCertificate, err)
 		}
 		// example: gke_my-project_us-central1-b_cluster-1 => https://XX.XX.XX.XX
-		// proxy := ""
-		// if conf.PrivateEndpoint {
-		// 	proxy = "http://localhost:8888"
-		// }
-		server := fmt.Sprintf("https://connectgateway.googleapis.com/v1beta1/projects/%s/locations/global/gkeMemberships/%s", projectNumber, f.Name)
+		proxy := ""
+		if conf.PrivateEndpoint {
+			proxy = "http://localhost:8888"
+		}
 		ret.Clusters[name] = &api.Cluster{
 			CertificateAuthorityData: cert,
-			Server:                   server,
+			Server:                   "https://" + f.Endpoint,
+			ProxyURL:                 proxy,
 		}
-
 		// Just reuse the context name as an auth name.
 		ret.Contexts[name] = &api.Context{
 			Cluster:  name,
