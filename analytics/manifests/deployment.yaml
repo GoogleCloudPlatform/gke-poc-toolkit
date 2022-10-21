@@ -1,0 +1,64 @@
+# Source: https://cloud.google.com/sql/docs/postgres/quickstart-kubernetes-engine#gcloud_3 
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: analytics-server
+  namespace: analytics
+spec:
+  selector:
+    matchLabels:
+      app: analytics-server
+  template:
+    metadata:
+      labels:
+        app: analytics-server
+    spec:
+      serviceAccountName: analytics-ksa
+      containers:
+      - name: analytics-server
+        image: analytics-server
+        ports:
+        - containerPort: 8000
+        readinessProbe:
+          initialDelaySeconds: 10
+          httpGet:
+            path: "/_healthz"
+            port: 8000
+        livenessProbe:
+          initialDelaySeconds: 10
+          httpGet:
+            path: "/_healthz"
+            port: 8000
+        env:
+        - name: PORT
+          value: "8000"
+        - name: DB_HOST
+          value: "127.0.0.1"
+        - name: DB_PORT
+          value: "5432"  
+        - name: DB_USER
+          valueFrom:
+            secretKeyRef:
+              name: cloudsql-user
+              key: username
+        - name: DB_PASS
+          valueFrom:
+            secretKeyRef:
+              name: cloudsql-user
+              key: password
+        - name: DB_NAME
+          valueFrom:
+            secretKeyRef:
+              name: cloudsql-user
+              key: database
+      - name: cloud-sql-proxy
+        image: gcr.io/cloudsql-docker/gce-proxy:1.27.0
+        command:
+          - "/cloud_sql_proxy"
+          - "-instances=gkepoctoolkit:us-central1:gkepoc-metrics=tcp:5432"
+        securityContext:
+          runAsNonRoot: true
+        resources:
+          requests:
+            memory: "2Gi"
+            cpu:    "1"
