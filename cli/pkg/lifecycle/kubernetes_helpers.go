@@ -18,11 +18,12 @@ package lifecycle
 
 import (
 	"context"
-	"encoding/base64"
 	"fmt"
 	"gkekitctl/pkg/config"
+	"strconv"
 
 	log "github.com/sirupsen/logrus"
+	"google.golang.org/api/cloudresourcemanager/v1"
 	"google.golang.org/api/container/v1"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/client-go/kubernetes"
@@ -33,6 +34,11 @@ import (
 
 func GenerateKubeConfig(conf *config.Config) (*api.Config, error) {
 	projectId := conf.ClustersProjectID
+	projectNumber, err := GetProjectNumber(projectId)
+	if err != nil {
+		return api.NewConfig(), fmt.Errorf("GetProjectNumber: %w", err)
+	}
+
 	log.Infof("Clusters Project ID is %s", projectId)
 	ctx := context.Background()
 
@@ -57,21 +63,12 @@ func GenerateKubeConfig(conf *config.Config) (*api.Config, error) {
 	}
 
 	for _, f := range resp.Clusters {
-		name := fmt.Sprintf("gke_%s_%s_%s", projectId, f.Zone, f.Name)
+		name := fmt.Sprintf("connectgateway_%s_global_%s-membership", projectId, f.Name)
+		server := fmt.Sprintf("https://connectgateway.googleapis.com/v1beta1/projects/%s/locations/global/gkeMemberships/%s-membership", projectNumber, f.Name)
 		log.Infof("Connecting to cluster: %s,", name)
-		cert, err := base64.StdEncoding.DecodeString(f.MasterAuth.ClusterCaCertificate)
-		if err != nil {
-			return &ret, fmt.Errorf("invalid certificate cluster=%s cert=%s: %w", name, f.MasterAuth.ClusterCaCertificate, err)
-		}
-		// example: gke_my-project_us-central1-b_cluster-1 => https://XX.XX.XX.XX
-		proxy := ""
-		if conf.PrivateEndpoint {
-			proxy = "http://localhost:8888"
-		}
+
 		ret.Clusters[name] = &api.Cluster{
-			CertificateAuthorityData: cert,
-			Server:                   "https://" + f.Endpoint,
-			ProxyURL:                 proxy,
+			Server: server,
 		}
 		// Just reuse the context name as an auth name.
 		ret.Contexts[name] = &api.Context{
@@ -82,18 +79,15 @@ func GenerateKubeConfig(conf *config.Config) (*api.Config, error) {
 		ret.AuthInfos[name] = &api.AuthInfo{
 			AuthProvider: &api.AuthProviderConfig{
 				Name: "gcp",
-				Config: map[string]string{
-					"scopes": "https://www.googleapis.com/auth/cloud-platform",
-				},
 			},
 		}
 	}
 
 	// Write kubeconfig to YAML file
-	// err = clientcmd.WriteToFile(ret, "kubeconfig")
-	// if err != nil {
-	// 	return &ret, err
-	// }
+	err = clientcmd.WriteToFile(ret, "kubeconfig")
+	if err != nil {
+		return &ret, err
+	}
 	return &ret, nil
 }
 
@@ -123,6 +117,19 @@ func ListNamespaces(kubeConfig *api.Config) error {
 	}
 
 	return nil
+}
+
+func GetProjectNumber(project_id string) (string, error) {
+	ctx := context.Background()
+	cloudresourcemanagerService, err := cloudresourcemanager.NewService(ctx)
+	if err != nil {
+		fmt.Errorf("cloudresourcemanager.NewService: %w", err)
+	}
+	project, err := cloudresourcemanagerService.Projects.Get(project_id).Do()
+	if err != nil {
+		fmt.Errorf("cloudresourcemanager.NewService: %w", err)
+	}
+	return strconv.FormatInt(project.ProjectNumber, 10), nil
 }
 
 // Kubectl apply using client.go

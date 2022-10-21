@@ -16,6 +16,7 @@ limitations under the License.
 package cmd
 
 import (
+	"gkekitctl/pkg/analytics"
 	"gkekitctl/pkg/config"
 	"gkekitctl/pkg/lifecycle"
 
@@ -25,16 +26,46 @@ import (
 )
 
 // createCmd represents the create command
-var updateCmd = &cobra.Command{
-	Use:     "update",
-	Short:   "update your gke toolkit environment",
-	Example: `gkekitctl update --config <file.yaml>`,
+var applyCmd = &cobra.Command{
+	Use:   "apply",
+	Short: "Create or Update GKE Demo Environment",
+	Example: ` gkekitctl apply
+	gkekitctl apply --config <file.yaml>`,
 	Run: func(cmd *cobra.Command, args []string) {
+		bucketNameClusters, err := cmd.Flags().GetString("gkestate")
+		if err != nil {
+			log.Errorf("🚨Failed to get bucketNameClusters value from flag: %s", err)
+		}
+		if bucketNameClusters != "" {
+			log.Infof("✅ Terraform state storage bucket for clusters is %s", bucketNameClusters)
+		}
+		bucketNameSharedVPC, err := cmd.Flags().GetString("vpcstate")
+		if err != nil {
+			log.Errorf("🚨Failed to get bucketNameSharedVPC value from flag: %s", err)
+		}
+		if bucketNameSharedVPC != "" {
+			log.Infof("✅ Terraform state storage bucket for shared VPC is %s", bucketNameSharedVPC)
+		}
+
 		log.Info("👟 Started config validation...")
 		conf := config.InitConf(cfgFile)
-		log.Info("👟 Started generating TFVars...")
 
+		// Send user analytics - async
+		if conf.SendAnalytics {
+			go analytics.SendAnalytics(conf, Version, GitCommit)
+		}
+
+		log.Info("👟 Started generating TFVars...")
 		config.GenerateTfvars(conf)
+
+		log.Info("👟 Started configuring TF State...")
+		err = config.CheckTfStateType(conf, bucketNameClusters, bucketNameSharedVPC)
+
+		if err != nil {
+			log.Errorf("🚨 Failed setting up TF state: %s", err)
+		} else {
+			log.Info("✅ TF state configured successfully.")
+		}
 
 		if conf.VpcConfig.VpcType == "shared" {
 			lifecycle.InitTF("shared_vpc")
@@ -64,5 +95,10 @@ var updateCmd = &cobra.Command{
 }
 
 func init() {
-	rootCmd.AddCommand(updateCmd)
+	var bucketNameClusters string
+	var bucketNameSharedVPC string
+
+	rootCmd.AddCommand(applyCmd)
+	applyCmd.Flags().StringVarP(&bucketNameClusters, "gkestate", "g", "", "GKE Tf State bucket name")
+	applyCmd.Flags().StringVarP(&bucketNameSharedVPC, "vpcstate", "v", "", "Shared VPC Tf State bucket name")
 }

@@ -18,6 +18,7 @@ package config
 
 import (
 	"context"
+	"fmt"
 	"html/template"
 	"os"
 	"strings"
@@ -27,40 +28,60 @@ import (
 	"github.com/thanhpk/randstr"
 )
 
-func CheckTfStateType(conf *Config) error {
+func CheckTfStateType(conf *Config, bucketNameClusters string, bucketNameSharedVPC string) error {
 	if conf.TerraformState == "cloud" {
-		bucketNames := [3]string{}
 		if conf.VpcConfig.VpcType == "shared" {
-			bucketNameSharedVPC := "tf-state-sharedvpc-" + strings.ToLower(randstr.String(6))
-			err := createTfBackend(conf.VpcConfig.VpcProjectID, bucketNameSharedVPC, "shared_vpc/backend.tf")
+			if bucketNameSharedVPC == "" {
+				bucketNameSharedVPC := "tf-state-sharedvpc-" + strings.ToLower(randstr.String(6))
+				err := createTfStorage(conf.VpcConfig.VpcProjectID, bucketNameSharedVPC)
+				if err != nil {
+					return err
+				}
+			}
+			err := createTfBackend(bucketNameSharedVPC, "shared_vpc/backend.tf")
 			if err != nil {
 				return err
 			}
 		}
-		bucketNameClusters := "tf-state-clusters-" + strings.ToLower(randstr.String(6))
-		err := createTfBackend(conf.ClustersProjectID, bucketNameClusters, "cluster_build/backend.tf")
+		if bucketNameClusters == "" {
+			log.Infof("Clusters Bucket Name: %s", bucketNameClusters)
+			bucketNameClusters := "tf-state-clusters-" + strings.ToLower(randstr.String(6))
+			err := createTfStorage(conf.ClustersProjectID, bucketNameClusters)
+			if err != nil {
+				return err
+			}
+		}
+		err := createTfBackend(bucketNameClusters, "cluster_build/backend.tf")
 		if err != nil {
 			return err
 		}
-		log.Print(bucketNames)
 		return nil
 	}
 	return nil
 }
 
 // func CreateTfStateBucket(projectId string, bucketName string) error {
-func createTfBackend(projectId string, bucketName string, fileLocation string) error {
+func createTfStorage(projectId string, bucketName string) error {
 	ctx := context.Background()
 	c, err := storage.NewClient(ctx)
 	if err != nil {
-		log.Fatalf("error creating storage client: %s", err)
 		return err
 	}
-	err = c.Bucket(bucketName).Create(ctx, projectId, nil)
-	if err != nil {
-		log.Fatalf("error creating storage bucket: %s", err)
-		return err
+	attrs, err := c.Bucket(bucketName).Attrs(ctx)
+	if err == storage.ErrBucketNotExist {
+		log.Infof("Creating storage bucket: %s ", bucketName)
+		err = c.Bucket(bucketName).Create(ctx, projectId, nil)
+		if err != nil {
+			log.Fatalf("error creating storage bucket: %s", err)
+			return err
+		}
+	} else {
+		fmt.Printf("The bucket exists and has attributes: %#v\n", attrs)
 	}
+	return err
+}
+
+func createTfBackend(bucketName string, fileLocation string) error {
 	vars := make(map[string]interface{})
 	vars["TfStateBucket"] = bucketName
 	tmpl, err := template.ParseFiles("templates/terraform_backend.tf.tmpl")

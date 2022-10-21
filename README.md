@@ -46,10 +46,10 @@ curl -sLSf -o ./gkekitctl https://github.com/GoogleCloudPlatform/gke-poc-toolkit
 ./gkekitctl init
 ```
 
-7. **Run `gkekitctl create` to run the Toolkit.** By default, this command sets up a single-cluster GKE environment. ([Configuration here](cli/pkg/cli_init/samples/default-config.yaml)). Enter your project ID when prompted.
+7. **Run `gkekitctl apply` to run the Toolkit.** By default, this command sets up a single-cluster GKE environment. ([Configuration here](cli/pkg/cli_init/samples/default-config.yaml)). Enter your project ID when prompted.
 
 ```shell
-./gkekitctl create
+./gkekitctl apply
 ```
 ```shell
 # expected output 
@@ -73,9 +73,13 @@ time="2022-02-04T21:58:00Z" level=info msg="🌎 5 Namespaces found in cluster=g
 
 ## Update
 
-If you want to update your environment change the config file and run the update command. This is a great way to add or remove clusters.
+If you want to update your environment change the config file and re-run the apply command. This is a great way to add or remove clusters.
 ```bash
-./gkekitctl update --config <config file name>
+## Local tf state 
+./gkekitctl apply --config <"config file name">
+
+## If you are using remote TF state 
+./gkekitctl apply --config <"config file name"> --gkestate <"bucket name used for state file"> --vpcstate <"if using sharevpc, bucket name for shared vpc state file">
 ```
 
 ## Clean up 
