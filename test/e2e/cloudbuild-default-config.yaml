@@ -116,7 +116,7 @@ steps:
     gcloud auth application-default print-access-token
     gcloud config set project $$TEST_PROJECT_ID
     gcloud auth list
-    ./gkekitctl create --config samples/default-config.yaml
+    ./gkekitctl apply --config samples/default-config.yaml
 timeout: "60m"
 availableSecrets:
   secretManager:
