@@ -62,7 +62,7 @@ var applyCmd = &cobra.Command{
 		err = config.CheckTfStateType(conf, bucketNameClusters, bucketNameSharedVPC)
 
 		if err != nil {
-			log.Errorf("🚨 Failed checking TF state type: %s", err)
+			log.Errorf("🚨 Failed setting up TF state: %s", err)
 		} else {
 			log.Info("✅ TF state configured successfully.")
 		}
