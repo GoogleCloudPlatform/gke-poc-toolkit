@@ -18,7 +18,6 @@ package config
 
 import (
 	"context"
-	"fmt"
 	"html/template"
 	"os"
 	"strings"
@@ -32,7 +31,7 @@ func CheckTfStateType(conf *Config, bucketNameClusters string, bucketNameSharedV
 	if conf.TerraformState == "cloud" {
 		if conf.VpcConfig.VpcType == "shared" {
 			if bucketNameSharedVPC == "" {
-				bucketNameSharedVPC := "tf-state-sharedvpc-" + strings.ToLower(randstr.String(6))
+				bucketNameSharedVPC = "tf-state-sharedvpc-" + strings.ToLower(randstr.String(6))
 				err := createTfStorage(conf.VpcConfig.VpcProjectID, bucketNameSharedVPC)
 				if err != nil {
 					return err
@@ -44,17 +43,18 @@ func CheckTfStateType(conf *Config, bucketNameClusters string, bucketNameSharedV
 			}
 		}
 		if bucketNameClusters == "" {
-			log.Infof("Clusters Bucket Name: %s", bucketNameClusters)
-			bucketNameClusters := "tf-state-clusters-" + strings.ToLower(randstr.String(6))
+			bucketNameClusters = "tf-state-clusters-" + strings.ToLower(randstr.String(6))
 			err := createTfStorage(conf.ClustersProjectID, bucketNameClusters)
 			if err != nil {
 				return err
 			}
+			log.Infof("✅ Created a bucket for the Clusters TF State: %s", bucketNameClusters)
 		}
 		err := createTfBackend(bucketNameClusters, "cluster_build/backend.tf")
 		if err != nil {
 			return err
 		}
+		log.Infof("✅ Created Cluster TF State backend file in bucket: %s", bucketNameClusters)
 		return nil
 	}
 	return nil
@@ -67,17 +67,12 @@ func createTfStorage(projectId string, bucketName string) error {
 	if err != nil {
 		return err
 	}
-	attrs, err := c.Bucket(bucketName).Attrs(ctx)
-	if err == storage.ErrBucketNotExist {
-		log.Infof("Creating storage bucket: %s ", bucketName)
-		err = c.Bucket(bucketName).Create(ctx, projectId, nil)
-		if err != nil {
-			log.Fatalf("error creating storage bucket: %s", err)
-			return err
-		}
-	} else {
-		fmt.Printf("The bucket exists and has attributes: %#v\n", attrs)
+	err = c.Bucket(bucketName).Create(ctx, projectId, nil)
+	if err != nil {
+		log.Fatalf("error creating storage bucket: %s", err)
+		return err
 	}
+	log.Infof("✅ Created storage bucket: %s ", bucketName)
 	return err
 }
 
