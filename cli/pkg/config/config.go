@@ -138,9 +138,7 @@ func InitConf(cfgFile string) *Config {
 		"multiclusterservicediscovery.googleapis.com",
 		"multiclusteringress.googleapis.com",
 		"trafficdirector.googleapis.com",
-		"meshca.googleapis.com",
-		"meshtelemetry.googleapis.com",
-		"meshconfig.googleapis.com",
+		"mesh.googleapis.com",
 		"multiclustermetering.googleapis.com",
 	}
 	enableService(conf.ClustersProjectID, anthosServiceIds)

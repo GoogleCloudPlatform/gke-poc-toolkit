@@ -100,9 +100,9 @@ locals {
     auto_repair        = true
     node_metadata      = "GKE_METADATA"
     machine_type       = var.linux_machine_type
-    disk_type          = "pd-ssd"
+    disk_type          = "pd-balanced"
     disk_size_gb       = 30
-    image_type         = "COS"
+    image_type         = "COS_CONTAINERD"
     preemptible        = var.preemptible_nodes ? true : false
     enable_secure_boot = true
   }]
@@ -124,7 +124,7 @@ locals {
 // Enable APIs needed in the gke cluster project
 module "enabled_google_apis" {
   source                      = "terraform-google-modules/project-factory/google//modules/project_services"
-  version                     = "~> 11.3.1"
+  version                     = "~> 14.2.0"
   project_id                  = var.project_id
   disable_services_on_destroy = false
 
@@ -150,7 +150,7 @@ module "enabled_google_apis" {
 // Enable Anthos APIs in gke cluster project 
 module "enabled_anthos_apis" {
   source                      = "terraform-google-modules/project-factory/google//modules/project_services"
-  version                     = "~> 11.3.1"
+  version                     = "~> 14.2.0"
   count                       = var.multi_cluster_gateway || var.config_sync || var.anthos_service_mesh ? 1 : 0
   project_id                  = var.project_id
   disable_services_on_destroy = false
@@ -179,9 +179,7 @@ module "enabled_anthos_apis" {
     "multiclusterservicediscovery.googleapis.com",
     "multiclusteringress.googleapis.com",
     "trafficdirector.googleapis.com",
-    "meshca.googleapis.com",
-    "meshtelemetry.googleapis.com",
-    "meshconfig.googleapis.com",
+    "mesh.googleapis.com",
     "multiclustermetering.googleapis.com",
     "cloudkms.googleapis.com",
     "multiclustermetering.googleapis.com",
@@ -191,7 +189,7 @@ module "enabled_anthos_apis" {
 // Enable APIs needed in the governance project
 module "enabled_governance_apis" {
   source  = "terraform-google-modules/project-factory/google//modules/project_services"
-  version = "~> 11.3.1"
+  version = "~> 14.2.0"
 
   project_id                  = var.governance_project_id
   disable_services_on_destroy = false
@@ -209,7 +207,7 @@ module "service_accounts" {
     module.enabled_governance_apis,
   ]
   source        = "terraform-google-modules/service-accounts/google"
-  version       = "~> 4.1.0"
+  version       = "~> 4.2.0"
   project_id    = module.enabled_google_apis.project_id
   display_name  = "${each.key} service account"
   names         = [each.key]
@@ -244,7 +242,7 @@ module "kms" {
   ]
   for_each        = local.distinct_cluster_regions
   source          = "terraform-google-modules/kms/google"
-  version         = "~> 2.1.0"
+  version         = "~> 2.2.1"
   project_id      = var.governance_project_id
   location        = each.key
   keyring         = "${local.gke_keyring_name}-${each.key}"

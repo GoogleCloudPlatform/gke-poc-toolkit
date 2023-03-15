@@ -1,7 +1,7 @@
 module "gke" {
   for_each                = var.cluster_config
   source                  = "terraform-google-modules/kubernetes-engine/google//modules/safer-cluster"
-  version                 = "19.0.0"
+  version                 = "25.0.0"
   project_id              = var.project_id
   network                 = var.network
   ip_range_pods           = var.ip_range_pods
@@ -16,6 +16,7 @@ module "gke" {
   subnetwork              = each.value.subnet_name
   network_project_id      = var.network_project_id
   enable_private_endpoint = var.private_endpoint
+  gateway_api_channel     = "CHANNEL_STANDARD"
   grant_registry_access   = true
   enable_shielded_nodes   = true
   master_ipv4_cidr_block  = "172.16.${index(keys(var.cluster_config), each.key)}.16/28"

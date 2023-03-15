@@ -45,7 +45,7 @@ resource "google_sourcerepo_repository" "gke-poc-config-sync" {
 // create ACM service account 
 module "service_accounts" {
   source        = "terraform-google-modules/service-accounts/google"
-  version       = "~> 3.0"
+  version       = "~> 4.2.0"
   project_id    = var.project_id
   display_name  = "ACM service account"
   names         = [local.acm_service_account]
@@ -90,7 +90,7 @@ resource "google_gke_hub_feature_membership" "feature_member" {
   feature    = "configmanagement"
   membership = "projects/${var.project_id}/locations/global/memberships/${each.key}-membership"
   configmanagement {
-    version = "1.12.1"
+    version = "1.14.2"
     config_sync {
       git {
         sync_repo                 = "https://source.developers.google.com/p/${var.project_id}/r/gke-poc-config-sync"

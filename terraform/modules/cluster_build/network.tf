@@ -17,7 +17,7 @@
 module "vpc" {
   count   = var.shared_vpc ? 0 : 1
   source  = "terraform-google-modules/network/google"
-  version = "~> 4.1.0"
+  version = "~> 6.0.1"
 
   project_id   = module.enabled_google_apis.project_id
   network_name = var.vpc_name
@@ -33,7 +33,7 @@ module "cluster-nat" {
     module.vpc,
   ]
   for_each                           = local.distinct_cluster_regions
-  version                            = "~> 2.1.0"
+  version                            = "~> 2.2.2"
   source                             = "terraform-google-modules/cloud-nat/google"
   create_router                      = true
   project_id                         = local.project_id
@@ -49,4 +49,3 @@ data "template_file" "startup_script" {
   sudo apt-get install -y tinyproxy
   EOF
 }
-
