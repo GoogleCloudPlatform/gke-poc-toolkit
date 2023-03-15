@@ -20,5 +20,5 @@ dist:
 	CGO_ENABLED=0 GOOS=linux go build -mod=mod -a -ldflags $(LDFLAGS) -installsuffix cgo -o bin/gkekitctl-amd64
 	CGO_ENABLED=0 GOOS=darwin go build -mod=mod -a -ldflags $(LDFLAGS) -installsuffix cgo -o bin/gkekitctl-darwin
 	GOARM=7 GOARCH=arm CGO_ENABLED=0 GOOS=linux go build -mod=vendor -a -ldflags $(LDFLAGS) -installsuffix cgo -o bin/gkekitctl-arm -mod=mod
-	GOARCH=arm64 CGO_ENABLED=0 GOOS=linux go build -mod=vendor -a -ldflags $(LDFLAGS) -installsuffix cgo -o bin/gkekitctl-arm64
+	GOARCH=arm64 CGO_ENABLED=0 GOOS=linux go build -mod=vendor -a -ldflags $(LDFLAGS) -installsuffix cgo -o bin/gkekitctl-arm64 -mod=mod
 #	GOOS=windows CGO_ENABLED=0 go build -mod=vendor -a -ldflags $(LDFLAGS) -installsuffix cgo -o bin/gkekitctl.exe
