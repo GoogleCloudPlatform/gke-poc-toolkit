@@ -20,7 +20,6 @@ import (
 	"bufio"
 	"bytes"
 	"fmt"
-	"io/ioutil"
 	"net"
 	"os"
 	"strings"
@@ -229,7 +228,7 @@ func ValidateConf(c *Config) error {
 		return err
 	}
 	if c.PolicyController && !c.ConfigSync {
-		return fmt.Errorf("terraform constraints require that if Policy Controller is enabled, config Sync must also be enabled. please set configSync to true and retry.")
+		return fmt.Errorf("terraform constraints require that if Policy Controller is enabled, config Sync must also be enabled. please set configSync to true and retry")
 	}
 	if err := validateTFModuleRepo(c.TFModuleRepo); err != nil {
 		return err
@@ -331,7 +330,7 @@ func validateConfigRegion(projectID, region string) error {
 		r := resp.GetRegion()
 		spl := strings.Split(r, "/")
 		if len(spl) < 2 {
-			return fmt.Errorf("Error validating region (%s) - GCP region (%s) is invalid\n", region, r)
+			return fmt.Errorf("error validating region (%s) - GCP region (%s) is invalid\n", region, r)
 		}
 		sanitizedRegion := spl[len(spl)-1]
 		regions[sanitizedRegion] = true
@@ -339,7 +338,7 @@ func validateConfigRegion(projectID, region string) error {
 
 	// check if Config.Region is in the map.
 	if _, ok := regions[region]; !ok {
-		return fmt.Errorf("Config-wide region %s not found. Must be one of: %v\n", region, regions)
+		return fmt.Errorf("config-wide region %s not found. Must be one of: %v\n", region, regions)
 	}
 	return nil
 }
@@ -386,20 +385,20 @@ func validateRegionAndZone(projectId string, clusterRegion string, clusterZones 
 
 	// Region must exist
 	if _, ok := regions[clusterRegion]; !ok {
-		return fmt.Errorf("Region %s invalid - must be one of: %v", clusterRegion, regions)
+		return fmt.Errorf("region %s invalid - must be one of: %v", clusterRegion, regions)
 	}
 
 	// Zone must exist
 	for _, clusterZone := range clusterZones {
 		if _, ok := zones[clusterZone]; !ok {
-			return fmt.Errorf("Zone %s invalid - must be one of: %v", clusterZone, zones)
+			return fmt.Errorf("zone %s invalid - must be one of: %v", clusterZone, zones)
 		}
 	}
 
 	// Zone must be in the right region
 	for _, clusterZone := range clusterZones {
 		if zoneRegion, _ := zones[clusterZone]; zoneRegion != clusterRegion {
-			return fmt.Errorf("Zone %s must be in region %s, not region %s", clusterZone, zoneRegion, clusterRegion)
+			return fmt.Errorf("zone %s must be in region %s, not region %s", clusterZone, zoneRegion, clusterRegion)
 		}
 	}
 	return nil
@@ -434,7 +433,7 @@ func validateMachineType(projectId string, machineType string, zones []string) e
 			validMachineTypes = append(validMachineTypes, *resp.Name)
 			_ = resp
 		}
-		return fmt.Errorf("Machine type %s is invalid, must be one of: %v", machineType, validMachineTypes)
+		return fmt.Errorf("machine type %s is invalid, must be one of: %v", machineType, validMachineTypes)
 	}
 	return nil
 }
@@ -522,12 +521,12 @@ func setTfModuleRepo(tfRepo string, tfBranch string) error {
 }
 
 func replaceWord(word string, file string, tfRepo string) error {
-	input, err := ioutil.ReadFile(file)
+	input, err := os.ReadFile(file)
 	if err != nil {
 		log.Fatalf("error reading file: %s", err)
 	}
 	output := bytes.Replace(input, []byte(word), []byte(tfRepo), -1)
-	if err = ioutil.WriteFile(file, output, 0666); err != nil {
+	if err = os.WriteFile(file, output, 0666); err != nil {
 		log.Fatalf("error writing file: %s", err)
 	}
 	return nil

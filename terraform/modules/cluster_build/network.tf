@@ -17,7 +17,7 @@
 module "vpc" {
   count   = var.shared_vpc ? 0 : 1
   source  = "terraform-google-modules/network/google"
-  version = "~> 6.0.1"
+  version = "~> 9.2.1"
 
   project_id   = module.enabled_google_apis.project_id
   network_name = var.vpc_name
@@ -33,7 +33,7 @@ module "cluster-nat" {
     module.vpc,
   ]
   for_each                           = local.distinct_cluster_regions
-  version                            = "~> 2.2.2"
+  version                            = "~> 5.0"
   source                             = "terraform-google-modules/cloud-nat/google"
   create_router                      = true
   project_id                         = local.project_id
@@ -43,9 +43,9 @@ module "cluster-nat" {
   source_subnetwork_ip_ranges_to_nat = "ALL_SUBNETWORKS_ALL_PRIMARY_IP_RANGES"
 }
 
-data "template_file" "startup_script" {
-  template = <<-EOF
-  sudo apt-get update -y
-  sudo apt-get install -y tinyproxy
-  EOF
-}
+# data "template_file" "startup_script" {
+#   template = <<-EOF
+#   sudo apt-get update -y
+#   sudo apt-get install -y tinyproxy
+#   EOF
+# }

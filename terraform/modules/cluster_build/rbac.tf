@@ -14,10 +14,44 @@
  * limitations under the License.
  */
 
+// Create the service accounts for GKE and KCC from a map declared in locals.
+module "service_accounts" {
+  for_each = local.service_accounts
+  depends_on = [
+    module.enabled_google_apis,
+    module.enabled_governance_apis,
+  ]
+  source        = "terraform-google-modules/service-accounts/google"
+  version       = "~> 4.4.0"
+  project_id    = module.enabled_google_apis.project_id
+  display_name  = "${each.key} service account"
+  names         = [each.key]
+  project_roles = each.value
+  generate_keys = true
+}
+
+// Bind the KCC operator Kubernetes service account(KSA) to the 
+// KCC Google Service account(GSA) so the KSA can assume the workload identity users role.
+module "service_account-iam-bindings" {
+  depends_on = [
+    local.gke_hub_depends_on,
+  ]
+  count  = var.config_connector ? 1 : 0
+  source = "terraform-google-modules/iam/google//modules/service_accounts_iam"
+
+  service_accounts = [local.kcc_service_account_email]
+  project          = module.enabled_google_apis.project_id
+  bindings = {
+    "roles/iam.workloadIdentityUser" = [
+      "serviceAccount:${module.enabled_google_apis.project_id}.svc.id.goog[cnrm-system/cnrm-controller-manager]",
+    ]
+  }
+}
+
 module "rbac_service_accounts" {
   for_each   = var.k8s_users
   source     = "terraform-google-modules/service-accounts/google"
-  version    = "~> 4.2.0"
+  version    = "~> 4.4.0"
   project_id = var.project_id
   names      = [each.key]
   project_roles = [

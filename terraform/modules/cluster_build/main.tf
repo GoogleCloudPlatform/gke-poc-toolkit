@@ -124,7 +124,7 @@ locals {
 // Enable APIs needed in the gke cluster project
 module "enabled_google_apis" {
   source                      = "terraform-google-modules/project-factory/google//modules/project_services"
-  version                     = "~> 14.2.0"
+  version                     = "~> 17.0"
   project_id                  = var.project_id
   disable_services_on_destroy = false
 
@@ -150,7 +150,7 @@ module "enabled_google_apis" {
 // Enable Anthos APIs in gke cluster project 
 module "enabled_anthos_apis" {
   source                      = "terraform-google-modules/project-factory/google//modules/project_services"
-  version                     = "~> 14.2.0"
+  version                     = "~> 17.0"
   count                       = var.multi_cluster_gateway || var.config_sync || var.anthos_service_mesh ? 1 : 0
   project_id                  = var.project_id
   disable_services_on_destroy = false
@@ -189,7 +189,7 @@ module "enabled_anthos_apis" {
 // Enable APIs needed in the governance project
 module "enabled_governance_apis" {
   source  = "terraform-google-modules/project-factory/google//modules/project_services"
-  version = "~> 14.2.0"
+  version = "~> 17.0"
 
   project_id                  = var.governance_project_id
   disable_services_on_destroy = false
@@ -199,41 +199,6 @@ module "enabled_governance_apis" {
   ]
 }
 
-// Create the service accounts for GKE and KCC from a map declared in locals.
-module "service_accounts" {
-  for_each = local.service_accounts
-  depends_on = [
-    module.enabled_google_apis,
-    module.enabled_governance_apis,
-  ]
-  source        = "terraform-google-modules/service-accounts/google"
-  version       = "~> 4.2.0"
-  project_id    = module.enabled_google_apis.project_id
-  display_name  = "${each.key} service account"
-  names         = [each.key]
-  project_roles = each.value
-  generate_keys = true
-}
-
-// Bind the KCC operator Kubernetes service account(KSA) to the 
-// KCC Google Service account(GSA) so the KSA can assume the workload identity users role.
-module "service_account-iam-bindings" {
-  depends_on = [
-    local.gke_hub_depends_on,
-  ]
-  count  = var.config_connector ? 1 : 0
-  source = "terraform-google-modules/iam/google//modules/service_accounts_iam"
-
-  service_accounts = [local.kcc_service_account_email]
-  project          = module.enabled_google_apis.project_id
-  bindings = {
-    "roles/iam.workloadIdentityUser" = [
-      "serviceAccount:${module.enabled_google_apis.project_id}.svc.id.goog[cnrm-system/cnrm-controller-manager]",
-    ]
-  }
-}
-
-
 // Create the KMS keyring and owner 
 module "kms" {
   depends_on = [
@@ -242,7 +207,7 @@ module "kms" {
   ]
   for_each        = local.distinct_cluster_regions
   source          = "terraform-google-modules/kms/google"
-  version         = "~> 2.2.1"
+  version         = "~> 3.0"
   project_id      = var.governance_project_id
   location        = each.key
   keyring         = "${local.gke_keyring_name}-${each.key}"

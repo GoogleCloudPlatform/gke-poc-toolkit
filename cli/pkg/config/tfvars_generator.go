@@ -18,7 +18,6 @@ package config
 
 import (
 	"bytes"
-	"io/ioutil"
 	"os"
 	"strings"
 	"text/template"
@@ -102,12 +101,12 @@ func GenerateTfvars(conf *Config) {
 		files := []string{"terraform.tfvars", "clusters.tf"}
 		var buf bytes.Buffer
 		for _, file := range files {
-			b, err := ioutil.ReadFile(file)
+			b, err := os.ReadFile(file)
 			if err != nil {
 				log.Fatalf("error reading %s: %s", file, err)
 			}
 			buf.Write(b)
-			err = ioutil.WriteFile("terraform.tfvars", buf.Bytes(), 0644)
+			err = os.WriteFile("terraform.tfvars", buf.Bytes(), 0644)
 			if err != nil {
 				log.Fatalf("error writing to %s: %s", file, err)
 			}

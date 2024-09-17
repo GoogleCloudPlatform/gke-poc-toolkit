@@ -15,15 +15,15 @@
  */
 
 terraform {
+  required_version = ">=0.13.0"
   required_providers {
     google = {
-      version = ">= 3.53.0, < 5.0.0"
+      source  = "hashicorp/google"
+      version = ">= 5.41, < 7"
     }
     google-beta = {
-      version = ">= 4.3.0, < 5.0.0"
-    }
-    kubernetes = {
-      version = "~> 2.0"
+      source  = "hashicorp/google-beta"
+      version = ">= 5.41, < 7"
     }
   }
 }

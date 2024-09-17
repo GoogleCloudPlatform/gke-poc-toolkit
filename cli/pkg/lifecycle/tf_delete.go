@@ -18,7 +18,6 @@ package lifecycle
 
 import (
 	"context"
-	"io/ioutil"
 	"log"
 	"os"
 
@@ -27,7 +26,7 @@ import (
 )
 
 func DestroyTF(tfDir string) {
-	tmpDir, err := ioutil.TempDir("", "tfinstall")
+	tmpDir, err := os.MkdirTemp("", "tfinstall")
 	if err != nil {
 		log.Fatalf("error creating temp dir: %s", err)
 	}
