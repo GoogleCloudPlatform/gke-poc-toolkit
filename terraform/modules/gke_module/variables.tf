@@ -102,3 +102,9 @@ variable "gke_keyring_name" {
 variable "gke_key_name" {
   type = string
 }
+
+variable "authenticator_security_group" {
+  type        = string
+  description = "The name of the RBAC security group for use with Google security groups in Kubernetes RBAC. Group name must be in format gke-security-groups@yourdomain.com"
+  default     = null
+}

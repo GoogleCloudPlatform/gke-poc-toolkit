@@ -1,7 +1,19 @@
 module "gke" {
   for_each                = var.cluster_config
   source                  = "terraform-google-modules/kubernetes-engine/google//modules/safer-cluster"
-  version                 = "25.0.0"
+  version                 = "~>33.0"
+  authenticator_security_group = var.authenticator_security_group
+  cluster_dns_provider    = "CLOUD_DNS"
+  cluster_dns_scope       = "CLUSTER_SCOPE"
+  datapath_provider       = "ADVANCED_DATAPATH"
+  enable_cost_allocation  = true
+  enable_gcfs             = true
+  enable_intranode_visibility = true
+  enable_private_endpoint = true
+  filestore_csi_driver	  = true
+  gce_pd_csi_driver       = true
+  gke_backup_agent_config = true
+  monitoring_enable_managed_prometheus = true
   project_id              = var.project_id
   network                 = var.network
   ip_range_pods           = var.ip_range_pods
@@ -15,7 +27,6 @@ module "gke" {
   config_connector        = var.config_connector
   subnetwork              = each.value.subnet_name
   network_project_id      = var.network_project_id
-  enable_private_endpoint = var.private_endpoint
   gateway_api_channel     = "CHANNEL_STANDARD"
   grant_registry_access   = true
   enable_shielded_nodes   = true

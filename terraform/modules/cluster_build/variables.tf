@@ -189,8 +189,15 @@ variable "anthos_service_mesh" {
   description = "Enable Anthos Service Mesh on all clusters."
   default     = true
 }
+
 variable "gke_module_bypass" {
   type        = bool
   description = "Experimental: Setting this to true allows you to use the TF GKE resource directly instead of the GKE module"
   default     = false
+}
+
+variable "authenticator_security_group" {
+  type        = string
+  description = "The name of the RBAC security group for use with Google security groups in Kubernetes RBAC. Group name must be in format gke-security-groups@yourdomain.com"
+  default     = null
 }

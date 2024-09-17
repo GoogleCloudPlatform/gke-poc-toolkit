@@ -45,7 +45,6 @@ resource "google_container_cluster" "primary" {
   # binary_authorization {
   #   evaluation_mode = "PROJECT_SINGLETON_POLICY_ENFORCE"
   # }
-  enable_binary_authorization = true
   ip_allocation_policy {
     cluster_secondary_range_name  = var.ip_range_pods
     services_secondary_range_name = var.ip_range_services

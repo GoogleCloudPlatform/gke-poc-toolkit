@@ -43,6 +43,7 @@ module "gke_module" {
   gke_service_account_email = local.gke_service_account_email
   cluster_node_pool         = local.cluster_node_pool
   asm_label                 = local.asm_label
+  authenticator_security_group = var.authenticator_security_group
 }
 
 // Experiments bypassing GKE Module and use GKE resource directly 
