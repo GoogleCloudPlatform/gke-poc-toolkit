@@ -14,6 +14,7 @@ module "cluster_build" {
   max_node_count                    = var.max_node_count
   linux_machine_type                = var.linux_machine_type
   private_endpoint                  = var.private_endpoint
+  authenticator_security_group = var.authenticator_security_group
   # auth_cidr                         = var.auth_cidr
   cluster_config                    = var.cluster_config
 }
@@ -67,6 +68,12 @@ variable "vpc_ip_range_services_name" {
 variable "release_channel" {
   type = string
   default = "regular"
+}
+
+variable "authenticator_security_group" {
+  type        = string
+  description = "The name of the RBAC security group for use with Google security groups in Kubernetes RBAC. Group name must be in format gke-security-groups@yourdomain.com"
+  default     = null
 }
 
 variable "initial_node_count" {

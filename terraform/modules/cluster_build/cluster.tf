@@ -42,7 +42,6 @@ module "gke" {
   regional                             = var.regional_clusters
   region                               = each.value.region
   zones                                = each.value.zones
-  config_connector                     = var.config_connector
   subnetwork                           = each.value.subnet_name
   network_project_id                   = var.vpc_project_id
   gateway_api_channel                  = "CHANNEL_STANDARD"

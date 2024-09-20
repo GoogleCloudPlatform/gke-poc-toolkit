@@ -42,11 +42,11 @@ variable "region" {
   default     = "us-central1"
 }
 
-variable "zones" {
-  type        = list(string)
-  description = "The zones used in your nodepool"
-  default     = ["us-central1-b"]
-}
+# variable "zones" {
+#   type        = list(string)
+#   description = "The zones used in your nodepool"
+#   default     = ["us-central1-b"]
+# }
 
 variable "shared_vpc" {
   type        = bool
@@ -109,31 +109,15 @@ variable "linux_machine_type" {
   default = "n1-standard-4"
 }
 
-variable "windows_machine_type" {
-  type    = string
-  default = "n1-standard-4"
-}
-
 variable "private_endpoint" {
   type    = bool
   default = false
 }
 
-# Need this default to run PR build test
-variable "auth_cidr" {
-  type    = string
-  default = "0.0.0.0/0"
-}
-
-variable "windows_nodepool" {
-  type    = bool
-  default = false
-}
-
-variable "preemptible_nodes" {
-  type        = bool
-  description = "Whether underlying node GCE instances are preemptible"
-  default     = true
+variable "authenticator_security_group" {
+  type        = string
+  description = "The name of the RBAC security group for use with Google security groups in Kubernetes RBAC. Group name must be in format gke-security-groups@yourdomain.com"
+  default     = null
 }
 
 variable "cluster_config" {
@@ -141,49 +125,66 @@ variable "cluster_config" {
   default     = {}
 }
 
-variable "k8s_users" {
-  type = map(string)
-  default = {
-    rbac-demo-auditor = "view"
-    rbac-demo-editor  = "edit"
-  }
-}
+# Need this default to run PR build test
+# variable "auth_cidr" {
+#   type    = string
+#   default = "0.0.0.0/0"
+# }
 
-variable "config_sync" {
-  type        = bool
-  description = "Enable Config Sync on all clusters."
-  default     = true
-}
+# variable "windows_nodepool" {
+#   type    = bool
+#   default = false
+# }
 
-variable "config_sync_repo" {
-  type        = string
-  description = "Name of Cloud Source Repo for Config Sync"
-  default     = "gke-poc-config-sync"
-}
+# variable "preemptible_nodes" {
+#   type        = bool
+#   description = "Whether underlying node GCE instances are preemptible"
+#   default     = true
+# }
 
-variable "policy_controller" {
-  type        = bool
-  description = "Enable Policy Controller on all clusters."
-  default     = true
-}
+# variable "k8s_users" {
+#   type = map(string)
+#   default = {
+#     rbac-demo-auditor = "view"
+#     rbac-demo-editor  = "edit"
+#   }
+# }
 
-variable "config_connector" {
-  type        = bool
-  description = "(Beta) Whether ConfigConnector is enabled for this cluster."
-  default     = false
-}
+# variable "config_sync" {
+#   type        = bool
+#   description = "Enable Config Sync on all clusters."
+#   default     = true
+# }
 
-variable "multi_cluster_gateway" {
-  type        = bool
-  description = "Enable Multi-cluster gateway on all clusters."
-  default     = true
-}
+# variable "config_sync_repo" {
+#   type        = string
+#   description = "Name of Cloud Source Repo for Config Sync"
+#   default     = "gke-poc-config-sync"
+# }
 
-variable "anthos_service_mesh" {
-  type        = bool
-  description = "Enable Anthos Service Mesh on all clusters."
-  default     = true
-}
+# variable "policy_controller" {
+#   type        = bool
+#   description = "Enable Policy Controller on all clusters."
+#   default     = true
+# }
+
+# variable "config_connector" {
+#   type        = bool
+#   description = "(Beta) Whether ConfigConnector is enabled for this cluster."
+#   default     = false
+# }
+
+# variable "multi_cluster_gateway" {
+#   type        = bool
+#   description = "Enable Multi-cluster gateway on all clusters."
+#   default     = true
+# }
+
+# variable "anthos_service_mesh" {
+#   type        = bool
+#   description = "Enable Anthos Service Mesh on all clusters."
+#   default     = true
+# }
 
 # variable "gke_module_bypass" {
 #   type        = bool
@@ -191,8 +192,7 @@ variable "anthos_service_mesh" {
 #   default     = false
 # }
 
-variable "authenticator_security_group" {
-  type        = string
-  description = "The name of the RBAC security group for use with Google security groups in Kubernetes RBAC. Group name must be in format gke-security-groups@yourdomain.com"
-  default     = null
-}
+# variable "windows_machine_type" {
+#   type    = string
+#   default = "n1-standard-4"
+# }

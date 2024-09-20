@@ -93,7 +93,6 @@ locals {
     disk_type          = "pd-balanced"
     disk_size_gb       = 200
     image_type         = "COS_CONTAINERD"
-    preemptible        = var.preemptible_nodes ? true : false
     enable_secure_boot = true
   }]
 
@@ -125,43 +124,6 @@ module "enabled_google_apis" {
     "iamcredentials.googleapis.com",
     "stackdriver.googleapis.com",
     "cloudkms.googleapis.com",
-  ]
-}
-
-// Enable Anthos APIs in gke cluster project 
-module "enabled_anthos_apis" {
-  source                      = "terraform-google-modules/project-factory/google//modules/project_services"
-  version                     = "~> 17.0"
-  count                       = var.multi_cluster_gateway || var.config_sync || var.anthos_service_mesh ? 1 : 0
-  project_id                  = var.project_id
-  disable_services_on_destroy = false
-
-  activate_apis = [
-    "iam.googleapis.com",
-    "storage.googleapis.com",
-    "connectgateway.googleapis.com",
-    "compute.googleapis.com",
-    "logging.googleapis.com",
-    "monitoring.googleapis.com",
-    "containerregistry.googleapis.com",
-    "container.googleapis.com",
-    "binaryauthorization.googleapis.com",
-    "stackdriver.googleapis.com",
-    "cloudresourcemanager.googleapis.com",
-    "dns.googleapis.com",
-    "iamcredentials.googleapis.com",
-    "anthos.googleapis.com",
-    "gkehub.googleapis.com",
-    "sourcerepo.googleapis.com",
-    "anthosconfigmanagement.googleapis.com",
-    "anthos.googleapis.com",
-    "gkehub.googleapis.com",
-    "gkeconnect.googleapis.com",
-    "multiclusterservicediscovery.googleapis.com",
-    "multiclusteringress.googleapis.com",
-    "trafficdirector.googleapis.com",
-    "mesh.googleapis.com",
-    "multiclustermetering.googleapis.com",
   ]
 }
 
