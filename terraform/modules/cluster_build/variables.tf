@@ -60,17 +60,6 @@ variable "vpc_name" {
   default     = "gke-toolkit-network"
 }
 
-variable "ip_range_pods_name" {
-  type        = string
-  description = "The secondary ip range to use for pods"
-  default     = "ip-range-pods"
-}
-
-variable "ip_range_services_name" {
-  type        = string
-  description = "The secondary ip range to use for pods"
-  default     = "ip-range-svc"
-}
 
 variable "vpc_project_id" {
   type        = string

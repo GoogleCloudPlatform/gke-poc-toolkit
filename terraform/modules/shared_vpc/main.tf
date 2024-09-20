@@ -26,8 +26,17 @@ locals {
   prj_service_account = format("%s@cloudservices.gserviceaccount.com", data.google_project.project.number)
 
   // Dynamically create subnet and secondary subnet inputs for multi-cluster creation
-  nested_subnets = flatten([
-    for name, config in var.cluster_config : [
+  admin_subnet = flatten([
+    {
+      subnet_name           = "admin-control-plane"
+      subnet_ip             = "10.0.100.0/24"
+      subnet_region         = "us-central1"
+      subnet_private_access = true
+      description           = "This subnet is for the admin control plane and is managed by Terraform"
+    }
+  ])
+  nested_subnets_raw = flatten([
+    for name, config in var.cluster_config  : [
       {
         subnet_name           = config.subnet_name
         subnet_ip             = "10.0.${index(keys(var.cluster_config), name)}.0/24"
@@ -37,8 +46,23 @@ locals {
       }
     ]
   ])
-
-  nested_secondary_subnets = {
+  
+  nested_subnets = concat(local.admin_subnet, local.nested_subnets_raw)
+  
+  admin_secondary_subnets = {
+    "admin-control-plane" = [
+      {
+        range_name    = "admin-pods"
+        ip_cidr_range = "10.101.0.0/17"
+      },
+      {
+        range_name    = "admin-svcs"
+        ip_cidr_range = "10.103.0.0/17"
+      }
+    ]
+  }
+    
+  nested_secondary_subnets = merge(local.admin_secondary_subnets,{
     for name, config in var.cluster_config : config.subnet_name => [
       {
         range_name    = var.vpc_ip_range_pods_name
@@ -47,9 +71,9 @@ locals {
       {
         range_name    = var.vpc_ip_range_services_name
         ip_cidr_range = "10.${index(keys(var.cluster_config), name) + 1}.128.0/17"
-      }
+      },
     ]
-  }
+  })
 }
 
 module "enabled_shared_vpc_apis" {
