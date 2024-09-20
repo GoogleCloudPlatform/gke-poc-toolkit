@@ -43,7 +43,7 @@ resource "google_gke_hub_feature" "mci" {
       config_membership = "projects/${var.project_id}/locations/global/memberships/gke-ap-admin-cp-00"
     }
   }
-  depends_on = module.gke
+  depends_on = [ module.gke ]
 }
 
 // Create IAM binding allowing the hub project's MCS service account access to the shared vpc project
