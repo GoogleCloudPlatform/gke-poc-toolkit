@@ -40,10 +40,10 @@ resource "google_gke_hub_feature" "mci" {
   project  = var.fleet_project
   spec {
     multiclusteringress {
-      config_membership = "projects/${var.project_id}/locations/global/memberships/${keys(var.cluster_config)[0]}-membership"
+      config_membership = "projects/${var.project_id}/locations/global/memberships/gke-ap-admin-cp-00"
     }
   }
-  provider = google-beta
+  depends_on = module.gke
 }
 
 // Create IAM binding allowing the hub project's MCS service account access to the shared vpc project
