@@ -30,8 +30,8 @@ locals {
   network_name             = var.vpc_name
   network                  = "projects/${local.project_id}/global/networks/${var.vpc_name}"
   vpc_selflink             = format("projects/%s/global/networks/%s", local.project_id, local.network_name)
-  ip_range_pods            = var.shared_vpc ? var.vpc_ip_range_pods_name : var.ip_range_pods_name
-  ip_range_services        = var.shared_vpc ? var.vpc_ip_range_services_name : var.ip_range_services_name
+  ip_range_pods            = var.vpc_ip_range_pods_name 
+  ip_range_services        = var.vpc_ip_range_services_name
   distinct_cluster_regions = toset([for cluster in var.cluster_config : "${cluster.region}"])
 
   // Dynamically create subnet and secondary subnet inputs for multi-cluster creation
