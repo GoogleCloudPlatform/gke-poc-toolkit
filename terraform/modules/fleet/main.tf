@@ -1,3 +1,7 @@
+data "google_project" "project" {
+  project_id = module.enabled_google_apis.project_id
+}
+
 // policy defaults
 resource "google_gke_hub_feature" "fleet_policy_defaults" {
   project  = var.fleet_project
