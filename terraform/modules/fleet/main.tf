@@ -48,7 +48,6 @@ resource "google_gke_hub_feature" "feature" {
   ]
 }
 
-
 // mesh defaults
 resource "google_gke_hub_feature" "mesh_config_defaults" {
   project  = var.fleet_project

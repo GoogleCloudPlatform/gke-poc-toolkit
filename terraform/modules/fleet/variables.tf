@@ -55,6 +55,29 @@ variable "shared_vpc" {
   default     = false
 }
 
+variable "vpc_ip_range_pods_name" {
+  type        = string
+  description = "The secondary ip range to use for pods in the shared vpc  - This is optional and only valid if a Shared VPC is used"
+  default     = ""
+}
+
+variable "vpc_ip_range_services_name" {
+  type        = string
+  description = "The secondary ip range to use for services in the shared vpc  - This is optional and only valid if a Shared VPC is used"
+  default     = ""
+}
+
+variable "release_channel" {
+  type    = string
+  default = "regular"
+}
+
+variable "authenticator_security_group" {
+  type        = string
+  description = "The name of the RBAC security group for use with Google security groups in Kubernetes RBAC. Group name must be in format gke-security-groups@yourdomain.com"
+  default     = null
+}
+
 variable "cluster_config" {
 }
 variable "vpc_name" {
