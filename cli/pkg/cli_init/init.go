@@ -31,7 +31,7 @@ import (
 // embeding flatfiles and setting them as a file system variable, embed.FS.
 // embed.FS can be treated like io.FS.
 
-//go:embed templates/* samples/* cluster_build/* shared_vpc/*
+//go:embed templates/* samples/* cluster_build/* shared_vpc/* fleet/*
 var templates embed.FS
 
 func InitFlatFiles(folders []string) error {
