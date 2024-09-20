@@ -19,10 +19,16 @@ variable "project_id" {
   description = "The project ID to host the cluster in"
 }
 
-variable "governance_project_id" {
+variable "fleet_project" {
+  description = "(Optional) Register the cluster with the fleet in this project."
   type        = string
-  description = "The project ID to host governance resources"
+  default     = null
 }
+
+# variable "governance_project_id" {
+#   type        = string
+#   description = "The project ID to host governance resources"
+# }
 
 variable "regional_clusters" {
   type        = bool
@@ -127,7 +133,7 @@ variable "private_endpoint" {
 # Need this default to run PR build test
 variable "auth_cidr" {
   type    = string
-  default = "1.2.3.4/0"
+  default = "0.0.0.0/0"
 }
 
 variable "windows_nodepool" {
@@ -190,11 +196,11 @@ variable "anthos_service_mesh" {
   default     = true
 }
 
-variable "gke_module_bypass" {
-  type        = bool
-  description = "Experimental: Setting this to true allows you to use the TF GKE resource directly instead of the GKE module"
-  default     = false
-}
+# variable "gke_module_bypass" {
+#   type        = bool
+#   description = "Experimental: Setting this to true allows you to use the TF GKE resource directly instead of the GKE module"
+#   default     = false
+# }
 
 variable "authenticator_security_group" {
   type        = string

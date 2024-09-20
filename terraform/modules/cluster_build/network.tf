@@ -17,7 +17,7 @@
 module "vpc" {
   count   = var.shared_vpc ? 0 : 1
   source  = "terraform-google-modules/network/google"
-  version = "~> 9.2.1"
+  version = "~> 9.2.0"
 
   project_id   = module.enabled_google_apis.project_id
   network_name = var.vpc_name
@@ -42,10 +42,3 @@ module "cluster-nat" {
   network                            = local.vpc_selflink
   source_subnetwork_ip_ranges_to_nat = "ALL_SUBNETWORKS_ALL_PRIMARY_IP_RANGES"
 }
-
-# data "template_file" "startup_script" {
-#   template = <<-EOF
-#   sudo apt-get update -y
-#   sudo apt-get install -y tinyproxy
-#   EOF
-# }

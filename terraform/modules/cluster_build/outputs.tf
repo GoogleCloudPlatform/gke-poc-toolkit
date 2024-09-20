@@ -21,7 +21,7 @@ output "project_id" {
 
 output "get_credential_commands" {
   description = "gcloud get-credentials command to generate kubeconfig for the private cluster"
-  value       = flatten([for s in module.gke : (var.private_endpoint ? (format("gcloud container clusters get-credentials --project %s --zone %s --internal-ip %s", var.project_id, s.location, s.name)) : (format("gcloud container clusters get-credentials --project %s --zone %s %s", var.project_id, s.location, s.name)))])
+  value       = flatten([for s in module.gke : (format("gcloud container fleet memberships get-credentials %s --project %s --location=%s", s.name, var.project_id, s.location ))])
 }
 
 output "cluster_names" {
@@ -33,10 +33,4 @@ output "endpoints" {
   sensitive   = true
   description = "List of GKE cluster endpoints"
   value       = flatten([for s in module.gke : s.endpoint])
-}
-
-output "ca_certificates" {
-  sensitive   = true
-  description = "List of GKE cluster ca certificates (base64 encoded)"
-  value       = flatten([for s in module.gke : s.ca_certificate])
 }
