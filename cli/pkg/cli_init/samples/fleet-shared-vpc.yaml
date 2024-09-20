@@ -16,7 +16,7 @@ configSyncRepo: "config-sync-repo"
 policyController: false
 multiClusterGateway: false
 anthosServiceMesh: false
-tfModuleRepo: "github.com/GoogleCloudPlatform/gke-poc-toolkit//terraform/modules/"
+tfModuleRepo: "github.com/knee-berts/gke-poc-toolkit//terraform/modules/"
 tfModuleBranch: "main"
 gkeModuleBypass: false
 sendAnalytics: true
