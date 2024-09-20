@@ -1,6 +1,6 @@
 locals {
   gke_service_account       = "gke-toolkit-sa"
-  gke_service_account_email = "${local.gke_service_account}@${module.enabled_google_apis.project_id}.iam.gserviceaccount.com"
+  gke_service_account_email = "${local.gke_service_account}@${var.project_id}.iam.gserviceaccount.com"
 }
 
 module "gke" {
