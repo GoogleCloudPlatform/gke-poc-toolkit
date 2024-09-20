@@ -1,39 +1,41 @@
-terraformState: cloud  # local, cloud
-clustersProjectId: "my-project"
-governanceProjectId: "my-project" 
+## Global
+sendAnalytics: true
+
+## VPC Build
+vpcConfig:
+  vpcName: "prod"
+  vpcType: "shared" # standalone, shared 
+  vpcProjectId: "shared-vpc-prod-00"
+  vpcPodCIDRName: "mypodcidr"
+  vpcSvcCIDRName: "mysvccidr"
+
+## FleetBuild
+configSyncRepo: "https://github.com/knee-berts/fleets-next24-demo"
+configSyncBranch: "dev"
+configSyncDir: "default-configs"
+
+## Cluster Build
 regionalClusters: true # Control plane availability
-region: "us-east1" # Region for resources aside from GKE clusters
-enableWindowsNodepool: false 
-enablePreemptibleNodepool: false # Enforced on Linux Node pools only
-privateEndpoint: false
+terraformState: cloud  # local, cloud
+authenticatorSecurityGroup: "gke-security-groups@gkedemos.joonix.net"
+clustersProjectId: "fleet-prod-2"
+fleetProjectId: "fleet-prod-2" 
+privateEndpoint: true
 releaseChannel: REGULAR
-defaultNodepoolOS: cos
 initialNodeCount: 10
-maxNodeCount: 10
 minNodeCount: 1
-configSync: true 
-configSyncRepo: "config-sync-repo" 
-policyController: false
-multiClusterGateway: false
-anthosServiceMesh: false
+maxNodeCount: 10
+defaultNodepoolOS: cos
 tfModuleRepo: "github.com/knee-berts/gke-poc-toolkit//terraform/modules/"
 tfModuleBranch: "main"
-gkeModuleBypass: false
-sendAnalytics: true
-vpcConfig:
-  vpcName: "gke-poc-toolkit"
-  vpcType: "shared" # standalone, shared 
-  vpcProjectId: "my-host-project"
-  podCIDRName: "mypodcidr"
-  svcCIDRName: "mysvccidr"
-  authCIDR: "0.0.0.0/0" # Change to your workstation public IP
+
 clustersConfig:  # a list of one or more clusters, each with their own config 
-- clusterName: "gke-central"
+- clusterName: "gke-std-central-00"
   machineType: "e2-standard-4"
   region: "us-central1"
   zones: ["us-central1-b"]
   subnetName: "us-central1"
-- clusterName: "gke-east"
+- clusterName: "gke-std-east-00"
   machineType: "e2-standard-4"
   region: "us-east1"
   zones: ["us-east1-b"]
