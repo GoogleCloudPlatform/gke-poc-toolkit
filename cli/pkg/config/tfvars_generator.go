@@ -29,26 +29,16 @@ func GenerateTfvars(conf *Config) {
 	vars := make(map[string]interface{})
 
 	// Set base config vars
-	vars["Region"] = conf.Region
 	vars["RegionalClusters"] = conf.RegionalClusters
 	vars["ClustersProjectId"] = conf.ClustersProjectID
-	vars["GovernanceProjectId"] = conf.GovernanceProjectID
-	vars["ConfigSync"] = conf.ConfigSync
-	vars["ConfigSyncRepo"] = conf.ConfigSyncRepo
-	vars["PolicyController"] = conf.PolicyController
 	vars["PrivateEndpoint"] = conf.PrivateEndpoint
 	vars["ReleaseChannel"] = conf.ReleaseChannel
 	vars["InitialNodeCount"] = conf.InitialNodeCount
 	vars["MinNodeCount"] = conf.MinNodeCount
 	vars["MaxNodeCount"] = conf.MaxNodeCount
 	vars["DefaultNodepoolOS"] = conf.DefaultNodepoolOS
-	vars["EnableWindowsNodepool"] = conf.EnableWindowsNodepool
-	vars["EnablePreemptibleNodepool"] = conf.EnablePreemptibleNodepool
-	vars["MultiClusterGateway"] = conf.MultiClusterGateway
-	vars["AnthosServiceMesh"] = conf.AnthosServiceMesh
 	vars["TFModuleRepo"] = conf.TFModuleRepo
 	vars["TFModuleBranch"] = conf.TFModuleBranch
-	vars["GKEModuleBypass"] = conf.GKEModuleBypass
 
 	// Set vpc config vars
 	if conf.VpcConfig.VpcType == "standalone" {
@@ -60,7 +50,6 @@ func GenerateTfvars(conf *Config) {
 	vars["VpcProjectId"] = conf.VpcConfig.VpcProjectID
 	vars["PodCidrName"] = conf.VpcConfig.PodCIDRName
 	vars["SvcCidrName"] = conf.VpcConfig.SvcCIDRName
-	vars["AuthCIDR"] = conf.VpcConfig.AuthCIDR
 
 	// First phase of templating tfvars (base and VPC configs)
 	tmpl, err := template.ParseFiles("templates/terraform.tfvars.tmpl")

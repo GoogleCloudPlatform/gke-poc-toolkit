@@ -2,7 +2,6 @@ module "shared_vpc" {
   source                            = "{{.TFModuleRepo}}shared_vpc?ref={{.TFModuleBranch}}"
   project_id                        = var.project_id
   vpc_project_id                    = var.vpc_project_id
-  region                            = var.region
   vpc_name                          = var.vpc_name
   vpc_ip_range_pods_name            = var.vpc_ip_range_pods_name
   vpc_ip_range_services_name        = var.vpc_ip_range_services_name
@@ -18,12 +17,6 @@ variable "vpc_project_id" {
   type        = string
   description = "The Share VPC Project ID - This is optional and only valid if a Shared VPC is used"
   default     = ""
-}
-
-variable "region" {
-  type        = string
-  description = "The region to host the cluster in"
-  default     = "us-central1"
 }
 
 variable "vpc_name" {
