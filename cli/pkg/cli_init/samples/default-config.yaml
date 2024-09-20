@@ -2,38 +2,56 @@
 # These are the default values used for `gkekitctl create` when 
 # the user does not supply their own config.yml. Note that the user 
 # *does* have to provide their GCP project ID at runtime.  
-terraformState: cloud  
-clustersProjectId: "my-project"
-governanceProjectId: "my-project"
-region: "us-central1"
-regionalClusters: true
-enablePreemptibleNodepool: false # Enforced on Linux Node pools only
-enableWindowsNodepool: false
-privateEndpoint: false
-releaseChannel: REGULAR
-defaultNodepoolOS: cos
-initialNodeCount: 10
-maxNodeCount: 10
-minNodeCount: 1
-configSync: true 
-configSyncRepo: "config-sync-repo" 
-policyController: true
-multiClusterGateway: false
-anthosServiceMesh: false
-tfModuleRepo: "github.com/GoogleCloudPlatform/gke-poc-toolkit//terraform/modules/"
-tfModuleBranch: "main"
-gkeModuleBypass: false
-sendAnalytics: false
+
+## Global
+sendAnalytics: true
+
+## VPC Build
 vpcConfig:
-  vpcName: "gke-poc-toolkit"
-  vpcType: "standalone" 
-  vpcProjectId: "my-project" 
-  podCIDRName: "default"
-  svcCIDRName: "default"
-  authCIDR: "0.0.0.0/0"
-clustersConfig:   
-- clusterName: "gke-central"
+  vpcName: "prod"
+  vpcType: "shared" # standalone, shared 
+  vpcProjectId: "shared-vpc-prod-00"
+  vpcPodCIDRName: "mypodcidr"
+  vpcSvcCIDRName: "mysvccidr"
+
+## FleetBuild
+configSyncRepo: "https://github.com/knee-berts/fleets-next24-demo"
+configSyncBranch: "dev"
+configSyncDir: "default-configs"
+
+## Cluster Build
+regionalClusters: true # Control plane availability
+terraformState: cloud  # local, cloud
+authenticatorSecurityGroup: "gke-security-groups@gkedemos.joonix.net"
+clustersProjectId: "fleet-prod-2"
+fleetProjectId: "fleet-prod-2" 
+privateEndpoint: true
+releaseChannel: REGULAR
+initialNodeCount: 10
+minNodeCount: 1
+maxNodeCount: 10
+defaultNodepoolOS: cos
+tfModuleRepo: "github.com//knee-berts/gke-poc-toolkit//terraform/modules/"
+tfModuleBranch: "main"
+
+clustersConfig:  # a list of one or more clusters, each with their own config 
+- clusterName: "gke-std-central-00"
   machineType: "e2-standard-4"
   region: "us-central1"
-  zones: ["us-central1-a"]
+  zones: ["us-central1-b"]
   subnetName: "us-central1"
+- clusterName: "gke-std-east-00"
+  machineType: "e2-standard-4"
+  region: "us-east1"
+  zones: ["us-east1-b"]
+  subnetName: "us-east1"
+# - clusterName: "gke-west"
+#   machineType: "e2-standard-4"
+#   region: "us-west1"
+#   zones: ["us-west1-b"]
+#   subnetName: "us-west1"
+# - clusterName: "gke-eu-north"
+#   machineType: "e2-standard-4"
+#   region: "europe-north1"
+#   zones: ["europe-north1-c"]
+#   subnetName: "europe-north1"

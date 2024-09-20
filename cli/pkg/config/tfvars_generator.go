@@ -30,7 +30,9 @@ func GenerateTfvars(conf *Config) {
 
 	// Set base config vars
 	vars["RegionalClusters"] = conf.RegionalClusters
+	vars["AuthenticatorSecurityGroup"] = conf.AuthenticatorSecurityGroup
 	vars["ClustersProjectId"] = conf.ClustersProjectID
+	vars["FleetProjectId"] = conf.FleetProjectID
 	vars["PrivateEndpoint"] = conf.PrivateEndpoint
 	vars["ReleaseChannel"] = conf.ReleaseChannel
 	vars["InitialNodeCount"] = conf.InitialNodeCount
@@ -39,6 +41,9 @@ func GenerateTfvars(conf *Config) {
 	vars["DefaultNodepoolOS"] = conf.DefaultNodepoolOS
 	vars["TFModuleRepo"] = conf.TFModuleRepo
 	vars["TFModuleBranch"] = conf.TFModuleBranch
+	vars["ConfigSyncRepo"] = conf.ConfigSyncRepo
+	vars["ConfigSyncRepoBranch"] = conf.ConfigSyncRepoBranch
+	vars["ConfigSyncRepoDir"] = conf.ConfigSyncRepoDir
 
 	// Set vpc config vars
 	if conf.VpcConfig.VpcType == "standalone" {
@@ -48,8 +53,8 @@ func GenerateTfvars(conf *Config) {
 	}
 	vars["VpcName"] = conf.VpcConfig.VpcName
 	vars["VpcProjectId"] = conf.VpcConfig.VpcProjectID
-	vars["PodCidrName"] = conf.VpcConfig.PodCIDRName
-	vars["SvcCidrName"] = conf.VpcConfig.SvcCIDRName
+	vars["VpcPodCidrName"] = conf.VpcConfig.VpcPodCIDRName
+	vars["VpcSvcCidrName"] = conf.VpcConfig.VpcSvcCIDRName
 
 	// First phase of templating tfvars (base and VPC configs)
 	tmpl, err := template.ParseFiles("templates/terraform.tfvars.tmpl")

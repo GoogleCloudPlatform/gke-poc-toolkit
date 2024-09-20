@@ -39,29 +39,33 @@ import (
 // Config defines the config file structure. Has config-wide vars, and two sub-structs:
 // a VPC Config, and a slice of Cluster Configs, representing one or more GKE clusters.
 type Config struct {
-	RegionalClusters  bool            `yaml:"regionalClusters"`
-	TerraformState    string          `yaml:"terraformState"`
-	SendAnalytics     bool            `yaml:"sendAnalytics"`
-	ClustersProjectID string          `yaml:"clustersProjectId"`
-	FleetProjectID    string          `yaml:"fleetProjectId"`
-	PrivateEndpoint   bool            `yaml:"privateEndpoint"`
-	ReleaseChannel    string          `yaml:"releaseChannel"`
-	InitialNodeCount  int             `yaml:"initialNodeCount"`
-	MinNodeCount      int             `yaml:"minNodeCount`
-	MaxNodeCount      int             `yaml:"maxNodeCount`
-	DefaultNodepoolOS string          `yaml:"defaultNodepoolOS"`
-	TFModuleRepo      string          `yaml:"tfModuleRepo"`
-	TFModuleBranch    string          `yaml:"tfModuleBranch"`
-	VpcConfig         VpcConfig       `yaml:"vpcConfig"`
-	ClustersConfig    []ClusterConfig `yaml:"clustersConfig"`
+	RegionalClusters           bool            `yaml:"regionalClusters"`
+	AuthenticatorSecurityGroup string          `yaml:"authenticatorSecurityGroup"`
+	TerraformState             string          `yaml:"terraformState"`
+	SendAnalytics              bool            `yaml:"sendAnalytics"`
+	ClustersProjectID          string          `yaml:"clustersProjectId"`
+	FleetProjectID             string          `yaml:"fleetProjectId"`
+	PrivateEndpoint            bool            `yaml:"privateEndpoint"`
+	ReleaseChannel             string          `yaml:"releaseChannel"`
+	InitialNodeCount           int             `yaml:"initialNodeCount"`
+	MinNodeCount               int             `yaml:"minNodeCount`
+	MaxNodeCount               int             `yaml:"maxNodeCount`
+	DefaultNodepoolOS          string          `yaml:"defaultNodepoolOS"`
+	TFModuleRepo               string          `yaml:"tfModuleRepo"`
+	TFModuleBranch             string          `yaml:"tfModuleBranch"`
+	ConfigSyncRepo             string          `yaml:"configSyncRepo"`
+	ConfigSyncRepoBranch       string          `yaml:"configSyncRepoBranch"`
+	ConfigSyncRepoDir          string          `yaml:"configSyncRepoDir"`
+	VpcConfig                  VpcConfig       `yaml:"vpcConfig"`
+	ClustersConfig             []ClusterConfig `yaml:"clustersConfig"`
 }
 
 type VpcConfig struct {
-	VpcName      string `yaml:"vpcName"`
-	VpcType      string `yaml:"vpcType"`
-	VpcProjectID string `yaml:"vpcProjectId"`
-	PodCIDRName  string `yaml:"vpcPodCIDRName"`
-	SvcCIDRName  string `yaml:"vpcSvcCIDRName"`
+	VpcName        string `yaml:"vpcName"`
+	VpcType        string `yaml:"vpcType"`
+	VpcProjectID   string `yaml:"vpcProjectId"`
+	VpcPodCIDRName string `yaml:"vpcPodCIDRName"`
+	VpcSvcCIDRName string `yaml:"vpcSvcCIDRName"`
 }
 
 type ClusterConfig struct {
