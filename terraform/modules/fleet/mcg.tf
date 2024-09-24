@@ -31,6 +31,7 @@ resource "google_gke_hub_feature" "mcs" {
   location = "global"
   project  = var.fleet_project
   provider = google-beta
+  depends_on = [ module.gke ]
 }
 
 // enable Multi-cluster Ingress(also gateway) project wide
@@ -46,42 +47,77 @@ resource "google_gke_hub_feature" "mci" {
   depends_on = [ module.gke ]
 }
 
-// Create IAM binding allowing the hub project's MCS service account access to the shared vpc project
-resource "google_project_iam_binding" "host-serviceagent" {
-  role    = "roles/multiclusterservicediscovery.serviceAgent"
-  project = var.shared_vpc ? var.vpc_project_id : var.project_id
+// Create IAM binding granting the fleet host project's GKE Hub service account the GKE Service Agent role for cluster project - ONLY NEEDED IF CLUSTER IS IN NOT IN THE FLEET HOST PROJECT and needs to be done for every cluster project 
+resource "google_project_iam_binding" "serviceagent-fleet-member" {
+  role    = "roles/gkehub.serviceAgent"
+  project = var.project_id
+  depends_on = [
+    resource.google_gke_hub_feature.mcs,
+  ]
   members = [
-    "serviceAccount:service-${data.google_project.project.number}@gcp-sa-mcsd.iam.gserviceaccount.com",
+    "serviceAccount:service-${var.fleet_project.number}@gcp-sa-mcsd.iam.gserviceaccount.com",
   ]
 }
 
-// Create IAM binding allowing the hub project's MCS service account access to the gke cluster project
-resource "google_project_iam_binding" "member-serviceagent" {
+// Create IAM binding granting the fleet host project's MCS service account the MCS Service Agent role for cluster project - this needs to be done for every cluster project
+resource "google_project_iam_binding" "serviceagent-fleet-member" {
   role    = "roles/multiclusterservicediscovery.serviceAgent"
   project = var.project_id
+  depends_on = [
+    resource.google_gke_hub_feature.mcs,
+  ]
   members = [
-    "serviceAccount:service-${data.google_project.project.number}@gcp-sa-mcsd.iam.gserviceaccount.com",
+    "serviceAccount:service-${var.fleet_project.number}@gcp-sa-mcsd.iam.gserviceaccount.com",
   ]
 }
 
-resource "google_project_iam_binding" "network-viewer-member" {
+// Create IAM binding granting the fleet host project MCS service account the MCS Service Agent role on the Shared VPC host project 
+resource "google_project_iam_binding" "serviceagent-fleet-host" {
+  role    = "roles/multiclusterservicediscovery.serviceAgent"
+  project = var.shared_vpc ? var.vpc_project_id : var.project_id
+  depends_on = [
+    resource.google_gke_hub_feature.mcs,
+  ]
+  members = [
+    "serviceAccount:service-${var.fleet_project.number}@gcp-sa-mcsd.iam.gserviceaccount.com",
+  ]
+}
+
+
+
+// Create IAM binding granting the fleet host project MCS service account the MCS Service Agent role on the Shared VPC host project
+resource "google_project_iam_binding" "network-viewer-fleet-host" {
   depends_on = [
     resource.google_gke_hub_feature.mcs,
   ]
   role    = "roles/compute.networkViewer"
   project = var.shared_vpc ? var.vpc_project_id : var.project_id
   members = [
-    "serviceAccount:${var.project_id}.svc.id.goog[gke-mcs/gke-mcs-importer]",
+    "serviceAccount:${var.fleet_project}.svc.id.goog[gke-mcs/gke-mcs-importer]",
   ]
 }
 
-resource "google_project_iam_binding" "container-admin-mcgsa" {
-  role    = "roles/container.admin"
-  project = var.project_id
+
+
+// Create IAM binding granting the fleet host project MCS service account the MCS Service Agent role on the Shared VPC host project
+resource "google_project_iam_binding" "network-viewer-member" {
   depends_on = [
-    resource.google_gke_hub_feature.mci,
+    resource.google_gke_hub_feature.mcs,
   ]
+  role    = "roles/compute.networkViewer"
+  project = var.fleet_project
   members = [
-    "serviceAccount:service-${data.google_project.project.number}@gcp-sa-multiclusteringress.iam.gserviceaccount.com",
+    "serviceAccount:${var.fleet_project}.svc.id.goog[gke-mcs/gke-mcs-importer]",
   ]
 }
+
+# resource "google_project_iam_binding" "container-admin-mcgsa" {
+#   role    = "roles/container.admin"
+#   project = var.project_id
+#   depends_on = [
+#     resource.google_gke_hub_feature.mci,
+#   ]
+#   members = [
+#     "serviceAccount:service-${data.google_project.project.number}@gcp-sa-multiclusteringress.iam.gserviceaccount.com",
+#   ]
+# }

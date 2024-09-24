@@ -8,6 +8,7 @@ resource "google_project_service" "services" {
   for_each = toset([
     "container.googleapis.com",
     "anthos.googleapis.com",
+    "dns.googleapis.com",
     "gkehub.googleapis.com",
     "gkeconnect.googleapis.com",
     "anthosconfigmanagement.googleapis.com",
@@ -17,6 +18,8 @@ resource "google_project_service" "services" {
     "containersecurity.googleapis.com",
     "gkemulticloud.googleapis.com",
     "logging.googleapis.com",
+    "cloudresourcemanager.googleapis.com",
+    "multiclusterservicediscovery.googleapis.com"
   ])
   service            = each.value
   disable_on_destroy = false
