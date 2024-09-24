@@ -51,9 +51,9 @@ resource "google_gke_hub_feature" "mci" {
 resource "google_project_iam_binding" "serviceagent-fleet-member-hubagent" {
   role    = "roles/gkehub.serviceAgent"
   project = var.project_id
-  depends_on = [
-    resource.google_gke_hub_feature.mcs,
-  ]
+  # depends_on = [
+  #   resource.google_gke_hub_feature.mcs,
+  # ]
   members = [
     "serviceAccount:service-${data.google_project.fleet-project.number}@gcp-sa-mcsd.iam.gserviceaccount.com",
   ]
@@ -63,9 +63,9 @@ resource "google_project_iam_binding" "serviceagent-fleet-member-hubagent" {
 resource "google_project_iam_binding" "serviceagent-fleet-member-mcsagent" {
   role    = "roles/multiclusterservicediscovery.serviceAgent"
   project = var.project_id
-  depends_on = [
-    resource.google_gke_hub_feature.mcs,
-  ]
+  # depends_on = [
+  #   resource.google_gke_hub_feature.mcs,
+  # ]
   members = [
     "serviceAccount:service-${data.google_project.fleet-project.number}@gcp-sa-mcsd.iam.gserviceaccount.com",
   ]
@@ -75,9 +75,9 @@ resource "google_project_iam_binding" "serviceagent-fleet-member-mcsagent" {
 resource "google_project_iam_binding" "serviceagent-fleet-host" {
   role    = "roles/multiclusterservicediscovery.serviceAgent"
   project = var.shared_vpc ? var.vpc_project_id : var.project_id
-  depends_on = [
-    resource.google_gke_hub_feature.mcs,
-  ]
+  # depends_on = [
+  #   resource.google_gke_hub_feature.mcs,
+  # ]
   members = [
     "serviceAccount:service-${data.google_project.fleet-project.number}@gcp-sa-mcsd.iam.gserviceaccount.com",
   ]
@@ -87,9 +87,9 @@ resource "google_project_iam_binding" "serviceagent-fleet-host" {
 
 // Create IAM binding granting the fleet host project MCS service account the MCS Service Agent role on the Shared VPC host project
 resource "google_project_iam_binding" "network-viewer-fleet-host" {
-  depends_on = [
-    resource.google_gke_hub_feature.mcs,
-  ]
+  # depends_on = [
+  #   resource.google_gke_hub_feature.mcs,
+  # ]
   role    = "roles/compute.networkViewer"
   project = var.shared_vpc ? var.vpc_project_id : var.project_id
   members = [
