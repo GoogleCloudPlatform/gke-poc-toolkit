@@ -48,7 +48,7 @@ resource "google_gke_hub_feature" "mci" {
 }
 
 // Create IAM binding granting the fleet host project's GKE Hub service account the GKE Service Agent role for cluster project - ONLY NEEDED IF CLUSTER IS IN NOT IN THE FLEET HOST PROJECT and needs to be done for every cluster project 
-resource "google_project_iam_binding" "serviceagent-fleet-member" {
+resource "google_project_iam_binding" "serviceagent-fleet-member-hubagent" {
   role    = "roles/gkehub.serviceAgent"
   project = var.project_id
   depends_on = [
@@ -60,7 +60,7 @@ resource "google_project_iam_binding" "serviceagent-fleet-member" {
 }
 
 // Create IAM binding granting the fleet host project's MCS service account the MCS Service Agent role for cluster project - this needs to be done for every cluster project
-resource "google_project_iam_binding" "serviceagent-fleet-member" {
+resource "google_project_iam_binding" "serviceagent-fleet-member-mcsagent" {
   role    = "roles/multiclusterservicediscovery.serviceAgent"
   project = var.project_id
   depends_on = [
