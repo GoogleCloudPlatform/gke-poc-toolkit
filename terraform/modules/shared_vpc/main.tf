@@ -26,7 +26,18 @@ locals {
   prj_service_account = format("%s@cloudservices.gserviceaccount.com", data.google_project.project.number)
   gke_service_account       = "gke-toolkit-sa"
   gke_service_account_email = "${local.gke_service_account}@${var.project_id}.iam.gserviceaccount.com"
-
+  
+  // Presets for Service Account permissions
+  service_accounts = {
+    (local.gke_service_account) = [
+      "${module.enabled_google_apis.project_id}=>roles/artifactregistry.reader",
+      "${module.enabled_google_apis.project_id}=>roles/logging.logWriter",
+      "${module.enabled_google_apis.project_id}=>roles/monitoring.metricWriter",
+      "${module.enabled_google_apis.project_id}=>roles/monitoring.viewer",
+      "${module.enabled_google_apis.project_id}=>roles/stackdriver.resourceMetadata.writer",
+      "${module.enabled_google_apis.project_id}=>roles/storage.objectViewer",
+    ]
+  }
   // Dynamically create subnet and secondary subnet inputs for multi-cluster creation
   admin_subnet = flatten([
     {
@@ -78,6 +89,21 @@ locals {
   })
 }
 
+// Create the service accounts from a map declared in locals.
+module "service_accounts" {
+  for_each = local.service_accounts
+  depends_on = [
+    module.enabled_service_project_apis,
+  ]
+  source        = "terraform-google-modules/service-accounts/google"
+  version       = "~> 4.0"
+  project_id    = module.enabled_google_apis.project_id
+  display_name  = "${each.key} service account"
+  names         = [each.key]
+  project_roles = each.value
+  generate_keys = true
+}
+
 module "enabled_shared_vpc_apis" {
   source  = "terraform-google-modules/project-factory/google//modules/project_services"
   version = "~> 17.0"
@@ -89,6 +115,7 @@ module "enabled_shared_vpc_apis" {
     "compute.googleapis.com",
     "container.googleapis.com",
     "dns.googleapis.com",
+    "iam.googleapis.com",
   ]
 }
 
@@ -102,5 +129,10 @@ module "enabled_service_project_apis" {
   activate_apis = [
     "compute.googleapis.com",
     "container.googleapis.com",
+    "iam.googleapis.com",
+    "compute.googleapis.com",
+    "container.googleapis.com",
+    "cloudresourcemanager.googleapis.com",
+    "iamcredentials.googleapis.com",
   ]
 }

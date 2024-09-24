@@ -127,17 +127,17 @@ module "enabled_google_apis" {
   ]
 }
 
-// Create the service accounts from a map declared in locals.
-module "service_accounts" {
-  for_each = local.service_accounts
-  depends_on = [
-    module.enabled_google_apis,
-  ]
-  source        = "terraform-google-modules/service-accounts/google"
-  version       = "~> 4.0"
-  project_id    = module.enabled_google_apis.project_id
-  display_name  = "${each.key} service account"
-  names         = [each.key]
-  project_roles = each.value
-  generate_keys = true
-}
+# // Create the service accounts from a map declared in locals.
+# module "service_accounts" {
+#   for_each = local.service_accounts
+#   depends_on = [
+#     module.enabled_google_apis,
+#   ]
+#   source        = "terraform-google-modules/service-accounts/google"
+#   version       = "~> 4.0"
+#   project_id    = module.enabled_google_apis.project_id
+#   display_name  = "${each.key} service account"
+#   names         = [each.key]
+#   project_roles = each.value
+#   generate_keys = true
+# }
