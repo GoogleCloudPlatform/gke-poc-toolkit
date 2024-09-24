@@ -29,6 +29,7 @@ resource "google_compute_subnetwork_iam_binding" "subnet_networkuser" {
   members = [
     "serviceAccount:${local.clu_service_account}",
     "serviceAccount:${local.prj_service_account}",
+    "serviceAccount:${gke_service_account_email}",
   ]
 }
 
