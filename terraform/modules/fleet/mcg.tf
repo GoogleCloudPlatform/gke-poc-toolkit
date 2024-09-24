@@ -25,14 +25,6 @@ module "firewall_rules" {
   }]
 }
 
-module "service_account" {
-  source        = "terraform-google-modules/service-accounts/google"
-  version       = "~> 4.0"
-  project_id    = var.fleet_project
-  display_name  = "${each.key} service account"
-  names         = "service-${data.google_project.fleet-project.number}@gcp-sa-mcsd.iam.gserviceaccount.com"
-}
-
 // enable Multi-cluster service discovery
 resource "google_gke_hub_feature" "mcs" {
   name     = "multiclusterservicediscovery"
@@ -40,7 +32,11 @@ resource "google_gke_hub_feature" "mcs" {
   project  = var.fleet_project
   provider = google-beta
   depends_on = [ 
-    module.gke 
+    google_project_iam_binding.network-viewer-fleet-host,
+    google_project_iam_binding.network-viewer-member,
+    google_project_iam_binding.serviceagent-fleet-host,
+    google_project_iam_binding.serviceagent-fleet-member-hubagent,
+    google_project_iam_binding.serviceagent-fleet-member-mcsagent,
     ]
 }
 
@@ -61,9 +57,6 @@ resource "google_gke_hub_feature" "mci" {
 resource "google_project_iam_binding" "serviceagent-fleet-member-hubagent" {
   role    = "roles/gkehub.serviceAgent"
   project = var.project_id
-  depends_on = [
-    module.service_account,
-  ]
   members = [
     "serviceAccount:service-${data.google_project.fleet-project.number}@gcp-sa-mcsd.iam.gserviceaccount.com",
   ]
@@ -73,9 +66,6 @@ resource "google_project_iam_binding" "serviceagent-fleet-member-hubagent" {
 resource "google_project_iam_binding" "serviceagent-fleet-member-mcsagent" {
   role    = "roles/multiclusterservicediscovery.serviceAgent"
   project = var.project_id
-  depends_on = [
-    module.service_account,
-  ]
   members = [
     "serviceAccount:service-${data.google_project.fleet-project.number}@gcp-sa-mcsd.iam.gserviceaccount.com",
   ]
@@ -85,9 +75,6 @@ resource "google_project_iam_binding" "serviceagent-fleet-member-mcsagent" {
 resource "google_project_iam_binding" "serviceagent-fleet-host" {
   role    = "roles/multiclusterservicediscovery.serviceAgent"
   project = var.shared_vpc ? var.vpc_project_id : var.project_id
-  depends_on = [
-    module.service_account,
-  ]
   members = [
     "serviceAccount:service-${data.google_project.fleet-project.number}@gcp-sa-mcsd.iam.gserviceaccount.com",
   ]
@@ -97,9 +84,6 @@ resource "google_project_iam_binding" "serviceagent-fleet-host" {
 
 // Create IAM binding granting the fleet host project MCS service account the MCS Service Agent role on the Shared VPC host project
 resource "google_project_iam_binding" "network-viewer-fleet-host" {
-  depends_on = [
-    module.service_account,
-  ]
   role    = "roles/compute.networkViewer"
   project = var.shared_vpc ? var.vpc_project_id : var.project_id
   members = [
@@ -111,22 +95,16 @@ resource "google_project_iam_binding" "network-viewer-fleet-host" {
 
 // Create IAM binding granting the fleet host project MCS service account the MCS Service Agent role on the Shared VPC host project
 resource "google_project_iam_binding" "network-viewer-member" {
-  depends_on = [
-    module.service_account,
-  ]
   role    = "roles/compute.networkViewer"
   project = var.fleet_project
   members = [
     "serviceAccount:${var.fleet_project}.svc.id.goog[gke-mcs/gke-mcs-importer]",
-  ]
+  ] 
 }
 
 # resource "google_project_iam_binding" "container-admin-mcgsa" {
 #   role    = "roles/container.admin"
 #   project = var.project_id
-  # depends_on = [
-  #   module.service_account,
-  # ]
 #   members = [
 #     "serviceAccount:service-${data.google_project.project.number}@gcp-sa-multiclusteringress.iam.gserviceaccount.com",
 #   ]
