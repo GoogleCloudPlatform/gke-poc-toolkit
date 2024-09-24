@@ -44,7 +44,7 @@ resource "google_gke_hub_feature" "mci" {
       config_membership = "projects/${var.project_id}/locations/us-central1/memberships/gke-ap-admin-cp-00"
     }
   }
-  depends_on = [ module.gke ]
+  depends_on = [ google_gke_hub_feature.feature.mcs ]
 }
 
 // Create IAM binding granting the fleet host project's GKE Hub service account the GKE Service Agent role for cluster project - ONLY NEEDED IF CLUSTER IS IN NOT IN THE FLEET HOST PROJECT and needs to be done for every cluster project 
