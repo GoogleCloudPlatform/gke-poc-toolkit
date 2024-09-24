@@ -90,7 +90,7 @@ locals {
 }
 
 // Create the service accounts from a map declared in locals.
-module "service_accounts" {
+module "service_account" {
   for_each = local.service_accounts
   depends_on = [
     module.enabled_service_project_apis,
@@ -101,7 +101,6 @@ module "service_accounts" {
   display_name  = "${each.key} service account"
   names         = [each.key]
   project_roles = each.value
-  generate_keys = true
 }
 
 module "enabled_shared_vpc_apis" {
