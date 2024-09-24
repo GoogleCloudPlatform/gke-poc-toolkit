@@ -29,7 +29,7 @@ resource "google_compute_subnetwork_iam_binding" "subnet_networkuser" {
   members = [
     "serviceAccount:${local.clu_service_account}",
     "serviceAccount:${local.prj_service_account}",
-    "serviceAccount:${gke_service_account_email}",
+    "serviceAccount:${local.gke_service_account_email}",
   ]
 }
 
@@ -41,7 +41,6 @@ resource "google_project_iam_binding" "shared_vpc_serviceagent" {
   project = var.vpc_project_id
   members = [
     "serviceAccount:${local.clu_service_account}",
-    "serviceAccount:${local.gke_service_account_email}",
   ]
 }
 
