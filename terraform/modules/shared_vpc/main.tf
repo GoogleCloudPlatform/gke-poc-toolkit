@@ -30,12 +30,12 @@ locals {
   // Presets for Service Account permissions
   service_accounts = {
     (local.gke_service_account) = [
-      "${module.enabled_google_apis.project_id}=>roles/artifactregistry.reader",
-      "${module.enabled_google_apis.project_id}=>roles/logging.logWriter",
-      "${module.enabled_google_apis.project_id}=>roles/monitoring.metricWriter",
-      "${module.enabled_google_apis.project_id}=>roles/monitoring.viewer",
-      "${module.enabled_google_apis.project_id}=>roles/stackdriver.resourceMetadata.writer",
-      "${module.enabled_google_apis.project_id}=>roles/storage.objectViewer",
+      "${module.enabled_service_project_apis.project_id}=>roles/artifactregistry.reader",
+      "${module.enabled_service_project_apis.project_id}=>roles/logging.logWriter",
+      "${module.enabled_service_project_apis.project_id}=>roles/monitoring.metricWriter",
+      "${module.enabled_service_project_apis.project_id}=>roles/monitoring.viewer",
+      "${module.enabled_service_project_apis.project_id}=>roles/stackdriver.resourceMetadata.writer",
+      "${module.enabled_service_project_apis.project_id}=>roles/storage.objectViewer",
     ]
   }
   // Dynamically create subnet and secondary subnet inputs for multi-cluster creation
@@ -97,7 +97,7 @@ module "service_accounts" {
   ]
   source        = "terraform-google-modules/service-accounts/google"
   version       = "~> 4.0"
-  project_id    = module.enabled_google_apis.project_id
+  project_id    = module.enabled_service_project_apis.project_id
   display_name  = "${each.key} service account"
   names         = [each.key]
   project_roles = each.value
