@@ -33,6 +33,21 @@ resource "google_compute_subnetwork_iam_binding" "subnet_networkuser" {
   ]
 }
 
+resource "google_compute_subnetwork_iam_binding" "subnet_networkuser-cp" {
+  depends_on = [
+    google_compute_subnetwork_iam_binding.subnet_networkuser.subnet_networkuser
+  ]
+  project    = var.vpc_project_id
+  region     = "us-central1"
+  subnetwork = "admin-control-plane"
+  role       = "roles/compute.networkUser"
+  members = [
+    "serviceAccount:${local.clu_service_account}",
+    "serviceAccount:${local.prj_service_account}",
+    "serviceAccount:${local.gke_service_account_email}",
+  ]
+}
+
 resource "google_project_iam_binding" "shared_vpc_serviceagent" {
   depends_on = [
     google_compute_subnetwork_iam_binding.subnet_networkuser
