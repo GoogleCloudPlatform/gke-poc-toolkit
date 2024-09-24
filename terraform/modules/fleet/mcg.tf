@@ -55,7 +55,6 @@ resource "google_project_iam_binding" "serviceagent-fleet-member-hubagent" {
     resource.google_gke_hub_feature.mcs,
   ]
   members = [
-  ]{POkj}
     "serviceAccount:service-${data.google_project.fleet-project.number}@gcp-sa-mcsd.iam.gserviceaccount.com",
   ]
 }
