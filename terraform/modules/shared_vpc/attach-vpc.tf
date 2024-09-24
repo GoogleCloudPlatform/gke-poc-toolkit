@@ -40,6 +40,7 @@ resource "google_project_iam_binding" "shared_vpc_serviceagent" {
   project = var.vpc_project_id
   members = [
     "serviceAccount:${local.clu_service_account}",
+    "serviceAccount:${local.gke_service_account_email}",
   ]
 }
 

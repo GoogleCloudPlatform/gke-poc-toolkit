@@ -1,7 +1,10 @@
 locals {
   gke_service_account       = "gke-toolkit-sa"
   gke_service_account_email = "${local.gke_service_account}@${var.project_id}.iam.gserviceaccount.com"
+  clu_service_account = format("service-%s@container-engine-robot.iam.gserviceaccount.com", data.google_project.project.number)
 }
+
+
 
 module "gke" {
   deletion_protection                  = false
