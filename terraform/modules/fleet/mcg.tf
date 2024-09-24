@@ -55,7 +55,8 @@ resource "google_project_iam_binding" "serviceagent-fleet-member-hubagent" {
     resource.google_gke_hub_feature.mcs,
   ]
   members = [
-    "serviceAccount:service-${var.fleet_project.number}@gcp-sa-mcsd.iam.gserviceaccount.com",
+  ]{POkj}
+    "serviceAccount:service-${data.google_project.fleet-project.number}@gcp-sa-mcsd.iam.gserviceaccount.com",
   ]
 }
 
@@ -67,7 +68,7 @@ resource "google_project_iam_binding" "serviceagent-fleet-member-mcsagent" {
     resource.google_gke_hub_feature.mcs,
   ]
   members = [
-    "serviceAccount:service-${var.fleet_project.number}@gcp-sa-mcsd.iam.gserviceaccount.com",
+    "serviceAccount:service-${data.google_project.fleet-project.number}@gcp-sa-mcsd.iam.gserviceaccount.com",
   ]
 }
 
@@ -79,7 +80,7 @@ resource "google_project_iam_binding" "serviceagent-fleet-host" {
     resource.google_gke_hub_feature.mcs,
   ]
   members = [
-    "serviceAccount:service-${var.fleet_project.number}@gcp-sa-mcsd.iam.gserviceaccount.com",
+    "serviceAccount:service-${data.google_project.fleet-project.number}@gcp-sa-mcsd.iam.gserviceaccount.com",
   ]
 }
 

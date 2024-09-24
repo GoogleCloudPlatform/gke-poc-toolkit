@@ -1,5 +1,13 @@
-data "google_project" "project" {
+data "google_project" "cluster-project" {
   project_id = var.fleet_project
+}
+
+data "google_project" "fleet-project" {
+  project_id = var.fleet_project
+}
+
+data "google_project" "vpc-project" {
+  project_id = var.vpc_project_id
 }
 
 // policy defaults
