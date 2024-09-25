@@ -35,7 +35,7 @@ resource "google_compute_subnetwork_iam_binding" "subnet_networkuser" {
 
 resource "google_compute_subnetwork_iam_binding" "subnet_networkuser_cp" {
   depends_on = [
-    google_compute_subnetwork_iam_binding.subnet_networkuser_cp
+    google_compute_subnetwork_iam_binding.subnet_networkuser
   ]
   project    = var.vpc_project_id
   region     = "us-central1"
