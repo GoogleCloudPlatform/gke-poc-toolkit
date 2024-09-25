@@ -12,7 +12,7 @@ data "google_project" "vpc-project" {
 
 locals {
   // Presets for Service Accounts
-  clu_service_account = format("service-%s@container-engine-robot.iam.gserviceaccount.com", data.google_project.cluster-project)
+  clu_service_account = format("service-%s@container-engine-robot.iam.gserviceaccount.com", data.google_project.cluster-project.number)
   prj_service_account = format("%s@cloudservices.gserviceaccount.com", data.google_project.cluster-project.number)
   gke_service_account       = "gke-toolkit-sa"
   gke_service_account_email = "${local.gke_service_account}@${var.project_id}.iam.gserviceaccount.com"
