@@ -36,7 +36,7 @@ module "cluster-nat" {
   version                            = "~> 5.0"
   source                             = "terraform-google-modules/cloud-nat/google"
   create_router                      = true
-  project_id                         = local.project_id
+  project_id                         = var.project_id
   region                             = each.key
   router                             = "gke-toolkit-rtr-${each.key}"
   network                            = local.vpc_selflink
