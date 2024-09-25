@@ -19,7 +19,7 @@ module "vpc" {
   source  = "terraform-google-modules/network/google"
   version = "~> 9.2.0"
 
-  project_id   = module.enabled_google_apis.project_id
+  project_id   = var.project_id
   network_name = var.vpc_name
   routing_mode = "GLOBAL"
 
