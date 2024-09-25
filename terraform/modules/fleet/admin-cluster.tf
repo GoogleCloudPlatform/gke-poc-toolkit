@@ -21,7 +21,6 @@ module "gke" {
   dns_cache                            = true
   horizontal_pod_autoscaling           = true
   enable_private_nodes                 = true
-  service_account                      = local.gke_service_account_email
   depends_on = [ 
     module.vpc,
     module.service_account,

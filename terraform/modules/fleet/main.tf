@@ -14,20 +14,6 @@ locals {
   // Presets for Service Accounts
   clu_service_account = format("service-%s@container-engine-robot.iam.gserviceaccount.com", data.google_project.cluster-project.number)
   prj_service_account = format("%s@cloudservices.gserviceaccount.com", data.google_project.cluster-project.number)
-  gke_service_account       = "gke-toolkit-sa"
-  gke_service_account_email = "${local.gke_service_account}@${var.project_id}.iam.gserviceaccount.com"
-  
-  // Presets for Service Account permissions
-  service_accounts = {
-    (local.gke_service_account) = [
-      "${module.enabled_service_project_apis.project_id}=>roles/artifactregistry.reader",
-      "${module.enabled_service_project_apis.project_id}=>roles/logging.logWriter",
-      "${module.enabled_service_project_apis.project_id}=>roles/monitoring.metricWriter",
-      "${module.enabled_service_project_apis.project_id}=>roles/monitoring.viewer",
-      "${module.enabled_service_project_apis.project_id}=>roles/stackdriver.resourceMetadata.writer",
-      "${module.enabled_service_project_apis.project_id}=>roles/storage.objectViewer",
-    ]
-  }
   vpc_selflink             = format("projects/%s/global/networks/%s", var.project_id, var.vpc_name)
   distinct_cluster_regions = toset([for cluster in var.cluster_config : "${cluster.region}"])
 // Dynamically create subnet and secondary subnet inputs for multi-cluster creation
@@ -122,20 +108,6 @@ resource "google_gke_hub_feature" "fleet_policy_defaults" {
   depends_on = [
     google_project_service.services
   ]
-}
-
-// Create the service accounts from a map declared in locals.
-module "service_account" {
-  for_each = local.service_accounts
-  depends_on = [
-    module.enabled_service_project_apis,
-  ]
-  source        = "terraform-google-modules/service-accounts/google"
-  version       = "~> 4.0"
-  project_id    = module.enabled_service_project_apis.project_id
-  display_name  = "${each.key} service account"
-  names         = [each.key]
-  project_roles = each.value
 }
 
 // config sync defaults

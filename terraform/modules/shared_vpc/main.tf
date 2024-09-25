@@ -24,20 +24,7 @@ locals {
   // Presets for Service Accounts
   clu_service_account = format("service-%s@container-engine-robot.iam.gserviceaccount.com", data.google_project.project.number)
   prj_service_account = format("%s@cloudservices.gserviceaccount.com", data.google_project.project.number)
-  gke_service_account       = "gke-toolkit-sa"
-  gke_service_account_email = "${local.gke_service_account}@${var.project_id}.iam.gserviceaccount.com"
-  
-  // Presets for Service Account permissions
-  service_accounts = {
-    (local.gke_service_account) = [
-      "${module.enabled_service_project_apis.project_id}=>roles/artifactregistry.reader",
-      "${module.enabled_service_project_apis.project_id}=>roles/logging.logWriter",
-      "${module.enabled_service_project_apis.project_id}=>roles/monitoring.metricWriter",
-      "${module.enabled_service_project_apis.project_id}=>roles/monitoring.viewer",
-      "${module.enabled_service_project_apis.project_id}=>roles/stackdriver.resourceMetadata.writer",
-      "${module.enabled_service_project_apis.project_id}=>roles/storage.objectViewer",
-    ]
-  }
+
   // Dynamically create subnet and secondary subnet inputs for multi-cluster creation
   admin_subnet = flatten([
     {
