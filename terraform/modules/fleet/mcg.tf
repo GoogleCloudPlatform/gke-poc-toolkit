@@ -31,13 +31,6 @@ resource "google_gke_hub_feature" "mcs" {
   location = "global"
   project  = var.fleet_project
   provider = google-beta
-  depends_on = [ 
-    google_project_iam_binding.network-viewer-fleet-host,
-    google_project_iam_binding.network-viewer-member,
-    google_project_iam_binding.serviceagent-fleet-host,
-    google_project_iam_binding.serviceagent-fleet-member-hubagent,
-    google_project_iam_binding.serviceagent-fleet-member-mcsagent,
-    ]
 }
 
 // enable Multi-cluster Ingress(also gateway) project wide
