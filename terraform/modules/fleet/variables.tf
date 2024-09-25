@@ -77,5 +77,13 @@ variable "authenticator_security_group" {
   description = "The name of the RBAC security group for use with Google security groups in Kubernetes RBAC. Group name must be in format gke-security-groups@yourdomain.com"
   default     = null
 }
+
 variable "vpc_name" {
+  type        = string
+  description = "The name of the VPC - used for shared or local VPC"
+  default     = ""
+}
+variable "cluster_config" {
+  description = "For each cluster, create an object that contain the required fields"
+  default     = {}
 }

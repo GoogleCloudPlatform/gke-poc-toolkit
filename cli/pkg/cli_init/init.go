@@ -106,7 +106,6 @@ func OptInAnalytics() error {
 	return nil
 }
 
-// Source: https://stackoverflow.com/questions/55176623/how-to-ask-yes-or-no-using-golang
 func yesNo() bool {
 	prompt := promptui.Select{
 		Label: "Select[Yes/No]",
