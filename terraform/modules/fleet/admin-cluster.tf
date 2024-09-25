@@ -23,6 +23,5 @@ module "gke" {
   enable_private_nodes                 = true
   depends_on = [ 
     module.vpc,
-    module.service_account,
     ]
 }
