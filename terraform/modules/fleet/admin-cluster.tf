@@ -24,5 +24,6 @@ module "gke" {
   master_ipv4_cidr_block               = "172.16.100.16/28"
   depends_on = [ 
     module.vpc,
+    google_project_service.services,
     ]
 }
