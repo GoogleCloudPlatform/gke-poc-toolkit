@@ -49,7 +49,7 @@ resource "google_container_cluster" "primary" {
   name           = "gke-ap-admin-cp-00"
   project        = var.project_id
   location       = "us-central1"
-  node_locations = "us-central1-c"
+  # node_locations = "us-central1-c"
   
   fleet {
     project = var.fleet_project

@@ -45,7 +45,7 @@ resource "google_gke_hub_feature" "mci" {
   }
   depends_on = [ 
     google_gke_hub_feature.mcs,
-    module.gke,
+    google_container_cluster.primary,
   ]
 }
 
