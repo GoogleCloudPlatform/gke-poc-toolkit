@@ -92,6 +92,8 @@ resource "google_container_cluster" "primary" {
       display_name = "Workstation Public IP"
     }
   }
+  deletion_protection = false
+}  
   # node_config {
   #   gcfs_config { enabled = true }
   # }
@@ -106,7 +108,7 @@ resource "google_container_cluster" "primary" {
   #   gce_persistent_disk_csi_driver_config { enabled = true }
   #   gke_backup_agent_config { enabled = true }
   # }
-}
+
 
 # resource "google_container_node_pool" "primary_nodes" {
 #   depends_on = [

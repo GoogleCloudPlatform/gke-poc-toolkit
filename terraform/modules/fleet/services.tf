@@ -1,8 +1,4 @@
 
-locals {
-  disable_on_destroy = false
-}
-
 resource "google_project_service" "services" {
   project = var.fleet_project
   for_each = toset([
@@ -26,5 +22,4 @@ resource "google_project_service" "services" {
     "iamcredentials.googleapis.com",
   ])
   service            = each.value
-  disable_on_destroy = false
 }
