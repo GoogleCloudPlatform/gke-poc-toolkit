@@ -21,6 +21,7 @@ module "gke" {
   dns_cache                            = true
   horizontal_pod_autoscaling           = true
   enable_private_nodes                 = true
+  master_ipv4_cidr_block               = "172.16.100.16/28"
   depends_on = [ 
     module.vpc,
     ]
