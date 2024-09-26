@@ -11,6 +11,7 @@ module "gke" {
   network                              = var.vpc_name
   ip_range_pods                        = "admin-pods"
   ip_range_services                    = "admin-svcs"
+  identity_namespace                   = "${var.fleet_project}.svc.id.goog"
   release_channel                      = var.release_channel
   name                                 = "gke-ap-admin-cp-00"
   region                               = "us-central1"
