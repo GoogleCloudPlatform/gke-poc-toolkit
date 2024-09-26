@@ -50,7 +50,6 @@ resource "google_container_cluster" "primary" {
   name           = "gke-ap-admin-cp-00"
   project        = var.project_id
   location       = "us-central1"
-  # node_locations = "us-central1-c"
   
   fleet { project = var.fleet_project }
   cost_management_config { enabled = true }
@@ -60,22 +59,12 @@ resource "google_container_cluster" "primary" {
   network                     = var.vpc_name
   subnetwork                  = "projects/${var.project_id}/regions/us-central1/subnetworks/admin-control-plane"
   networking_mode             = "VPC_NATIVE"
-  enable_intranode_visibility = true
   datapath_provider           = "ADVANCED_DATAPATH"
-  # dns_config {
-  #   cluster_dns = "CLOUD_DNS"
-  #   cluster_dns_scope = "CLUSTER_SCOPE"
-  # }
-
-  release_channel {
-    channel = var.release_channel
-  }
-
+  release_channel { channel = var.release_channel }
   security_posture_config {
     mode = "ENTERPRISE"
     vulnerability_mode = "VULNERABILITY_ENTERPRISE"
   }
-
   ip_allocation_policy {
     cluster_secondary_range_name  = "admin-pods"
     services_secondary_range_name = "admin-svcs"
@@ -87,16 +76,8 @@ resource "google_container_cluster" "primary" {
     managed_prometheus { enabled = true }
     enable_components = ["SYSTEM_COMPONENTS", "WORKLOADS", "APISERVER", "CONTROLLER_MANAGER", "SCHEDULER", "STORAGE", "HPA", "POD", "DAEMONSET", "DEPLOYMENT", "STATEFULSET", "KUBELET", "CADVISOR", "DCGM"]
   }
-
-  # node_config {
-  #   gcfs_config { enabled = true }
-  # }
-  cluster_autoscaling {
-    autoscaling_profile = "OPTIMIZE_UTILIZATION"
-  }
-  workload_identity_config {
-    workload_pool = "${var.fleet_project}.svc.id.goog"
-  }
+  cluster_autoscaling { autoscaling_profile = "OPTIMIZE_UTILIZATION" }
+  workload_identity_config { workload_pool = "${var.fleet_project}.svc.id.goog" }
   private_cluster_config {
     enable_private_nodes    = true
     enable_private_endpoint = true
@@ -105,12 +86,16 @@ resource "google_container_cluster" "primary" {
       enabled = true
     }
   }
-  # master_authorized_networks_config {
-  #   cidr_blocks {
-  #     cidr_block   = var.auth_cidr
-  #     display_name = "Workstation Public IP"
-  #   }
+  master_authorized_networks_config {
+    cidr_blocks {
+      cidr_block   = "1.2.3.4/24"
+      display_name = "Workstation Public IP"
+    }
+  }
+  # node_config {
+  #   gcfs_config { enabled = true }
   # }
+
   # remove_default_node_pool = true
   # initial_node_count       = 12
   # addons_config {
