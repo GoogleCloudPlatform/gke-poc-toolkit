@@ -74,7 +74,7 @@ resource "google_container_cluster" "primary" {
   }
   monitoring_config {
     managed_prometheus { enabled = true }
-    enable_components = ["SYSTEM_COMPONENTS", "WORKLOADS", "APISERVER", "CONTROLLER_MANAGER", "SCHEDULER", "STORAGE", "HPA", "POD", "DAEMONSET", "DEPLOYMENT", "STATEFULSET", "KUBELET", "CADVISOR", "DCGM"]
+    enable_components = ["SYSTEM_COMPONENTS", "APISERVER", "CONTROLLER_MANAGER", "SCHEDULER", "STORAGE", "HPA", "POD", "DAEMONSET", "DEPLOYMENT", "STATEFULSET", "KUBELET", "CADVISOR", "DCGM"]
   }
   cluster_autoscaling { autoscaling_profile = "OPTIMIZE_UTILIZATION" }
   workload_identity_config { workload_pool = "${var.fleet_project}.svc.id.goog" }
@@ -88,7 +88,7 @@ resource "google_container_cluster" "primary" {
   }
   master_authorized_networks_config {
     cidr_blocks {
-      cidr_block   = "1.2.3.4/24"
+      cidr_block   = "1.2.3.0/24"
       display_name = "Workstation Public IP"
     }
   }
