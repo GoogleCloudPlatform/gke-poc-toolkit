@@ -67,24 +67,6 @@ locals {
   })
 }
 
-module "enabled_service_project_apis" {
-  source  = "terraform-google-modules/project-factory/google//modules/project_services"
-  version = "~> 17.0"
-
-  project_id                  = var.project_id
-  disable_services_on_destroy = false
-
-  activate_apis = [
-    "compute.googleapis.com",
-    "container.googleapis.com",
-    "iam.googleapis.com",
-    "compute.googleapis.com",
-    "container.googleapis.com",
-    "cloudresourcemanager.googleapis.com",
-    "iamcredentials.googleapis.com",
-  ]
-}
-
 // policy defaults
 resource "google_gke_hub_feature" "fleet_policy_defaults" {
   project  = var.fleet_project
