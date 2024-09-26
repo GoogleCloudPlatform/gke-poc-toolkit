@@ -88,7 +88,7 @@ resource "google_container_cluster" "primary" {
   }
   master_authorized_networks_config {
     cidr_blocks {
-      cidr_block   = "1.2.3.0/24"
+      cidr_block   = "172.16.100.16/28"
       display_name = "Workstation Public IP"
     }
   }

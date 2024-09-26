@@ -125,11 +125,10 @@ variable "cluster_config" {
   default     = {}
 }
 
-# Need this default to run PR build test
-# variable "auth_cidr" {
-#   type    = string
-#   default = "0.0.0.0/0"
-# }
+variable "auth_cidr" {
+  type    = string
+  default = "172.16.100.16/28"
+}
 
 # variable "windows_nodepool" {
 #   type    = bool

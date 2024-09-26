@@ -76,3 +76,8 @@ variable "authenticator_security_group" {
 }
 variable "vpc_name" {
 }
+
+variable "auth_cidr" {
+  type    = string
+  default = "172.16.100.16/28"
+}

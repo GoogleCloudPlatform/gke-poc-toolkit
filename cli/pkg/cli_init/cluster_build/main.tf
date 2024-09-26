@@ -101,11 +101,10 @@ variable "private_endpoint" {
   default = false
 }
 
-# Need this default to run PR build test
-# variable "auth_cidr" {
-#   type    = string
-#   default = "1.2.3.4/0"
-# }
+variable "auth_cidr" {
+  type    = string
+  default = "172.16.100.16/28"
+}
 
 variable "cluster_config" {
   description = "For each cluster, create an object that contain the required fields"
