@@ -46,29 +46,26 @@
  */
 
 resource "google_container_cluster" "primary" {
+  provider = google-beta
   name           = "gke-ap-admin-cp-00"
   project        = var.project_id
   location       = "us-central1"
   # node_locations = "us-central1-c"
   
-  fleet {
-    project = var.fleet_project
-  }
-
-  cost_management_config {
-    enabled = true
-  }
-
+  fleet { project = var.fleet_project }
+  cost_management_config { enabled = true }
+  gateway_api_config { channel = "CHANNEL_STANDARD" }
+  secret_manager_config { enabled = true }
   enable_autopilot = true
   network                     = var.vpc_name
-  subnetwork                  = "admin-control-plane"
+  subnetwork                  = "projects/${var.project_id}/regions/us-central1/subnetworks/admin-control-plane"
   networking_mode             = "VPC_NATIVE"
-  # enable_intranode_visibility = true
+  enable_intranode_visibility = true
   datapath_provider           = "ADVANCED_DATAPATH"
-  dns_config {
-    cluster_dns = "CLOUD_DNS"
-    cluster_dns_scope = "CLUSTER_SCOPE"
-  }
+  # dns_config {
+  #   cluster_dns = "CLOUD_DNS"
+  #   cluster_dns_scope = "CLUSTER_SCOPE"
+  # }
 
   release_channel {
     channel = var.release_channel
@@ -91,9 +88,9 @@ resource "google_container_cluster" "primary" {
     enable_components = ["SYSTEM_COMPONENTS", "WORKLOADS", "APISERVER", "CONTROLLER_MANAGER", "SCHEDULER", "STORAGE", "HPA", "POD", "DAEMONSET", "DEPLOYMENT", "STATEFULSET", "KUBELET", "CADVISOR", "DCGM"]
   }
 
-  node_config {
-    gcfs_config { enabled = true }
-  }
+  # node_config {
+  #   gcfs_config { enabled = true }
+  # }
   cluster_autoscaling {
     autoscaling_profile = "OPTIMIZE_UTILIZATION"
   }
@@ -115,19 +112,15 @@ resource "google_container_cluster" "primary" {
   #   }
   # }
   # remove_default_node_pool = true
-  initial_node_count       = 12
-  addons_config {
-    # network_policy_config { disabled = false }
-    # gcp_filestore_csi_driver_config { enabled = true }
-    gcs_fuse_csi_driver_config { enabled = true }
-    # dns_cache_config { enabled = true }
-    gce_persistent_disk_csi_driver_config { enabled = true }
-    gke_backup_agent_config { enabled = true }
-  }
-  secret_manager_config { enabled = true }
-  gateway_api_config {
-    channel = "CHANNEL_STANDARD"
-  }
+  # initial_node_count       = 12
+  # addons_config {
+  #   # network_policy_config { disabled = false }
+  #   # gcp_filestore_csi_driver_config { enabled = true }
+  #   gcs_fuse_csi_driver_config { enabled = true }
+  #   # dns_cache_config { enabled = true }
+  #   gce_persistent_disk_csi_driver_config { enabled = true }
+  #   gke_backup_agent_config { enabled = true }
+  # }
 }
 
 # resource "google_container_node_pool" "primary_nodes" {
