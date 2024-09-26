@@ -63,7 +63,7 @@ resource "google_container_cluster" "primary" {
   network                     = var.vpc_name
   subnetwork                  = "admin-control-plane"
   networking_mode             = "VPC_NATIVE"
-  enable_intranode_visibility = true
+  # enable_intranode_visibility = true
   datapath_provider           = "ADVANCED_DATAPATH"
   dns_config {
     cluster_dns = "CLOUD_DNS"
@@ -117,10 +117,10 @@ resource "google_container_cluster" "primary" {
   # remove_default_node_pool = true
   initial_node_count       = 12
   addons_config {
-    network_policy_config { disabled = false }
-    gcp_filestore_csi_driver_config { enabled = true }
+    # network_policy_config { disabled = false }
+    # gcp_filestore_csi_driver_config { enabled = true }
     gcs_fuse_csi_driver_config { enabled = true }
-    dns_cache_config { enabled = true }
+    # dns_cache_config { enabled = true }
     gce_persistent_disk_csi_driver_config { enabled = true }
     gke_backup_agent_config { enabled = true }
   }
