@@ -52,8 +52,8 @@ resource "google_container_cluster" "primary" {
   location       = "us-central1"
   enable_autopilot = true
   initial_node_count       = 1
-  network                     = "projects/${var.shared_vpc}/global/networks/${var.vpc_name}"
-  subnetwork                  = "projects/${var.shared_vpc}/regions/us-central1/subnetworks/admin-control-plane"
+  network                     = "projects/${var.vpc_project_id}/global/networks/${var.vpc_name}"
+  subnetwork                  = "projects/${var.vpc_project_id}/regions/us-central1/subnetworks/admin-control-plane"
   # networking_mode             = "VPC_NATIVE"
   # datapath_provider           = "ADVANCED_DATAPATH"
 
