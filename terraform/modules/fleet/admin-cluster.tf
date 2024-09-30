@@ -67,7 +67,7 @@ resource "google_container_cluster" "primary" {
       disabled = false
     }
     cloudrun_config {
-      disabled = !var.enable_addons.cloudrun
+      disabled = true
     }
 
     kalm_config {
