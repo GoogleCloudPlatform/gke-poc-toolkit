@@ -119,4 +119,8 @@ resource "google_container_cluster" "primary" {
     mode = "ENTERPRISE"
     vulnerability_mode = "VULNERABILITY_ENTERPRISE"
   }
+  depends_on = [ 
+    module.vpc,
+    google_project_service.services,
+    ]
 }  
