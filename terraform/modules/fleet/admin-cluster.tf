@@ -122,5 +122,6 @@ resource "google_container_cluster" "primary" {
   depends_on = [ 
     module.vpc,
     google_project_service.services,
+    google_gke_hub_feature.mesh_config_defaults,
     ]
 }  
