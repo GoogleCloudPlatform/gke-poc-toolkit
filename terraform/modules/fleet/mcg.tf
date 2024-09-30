@@ -23,6 +23,9 @@ module "firewall_rules" {
       metadata = "INCLUDE_ALL_METADATA"
     }
   }]
+  depends_on = [ 
+    module.vpc,
+  ]
 }
 
 // enable Multi-cluster service discovery
@@ -66,7 +69,7 @@ resource "google_project_iam_binding" "serviceagent-fleet-member-mcsagent" {
   members = [
     "serviceAccount:service-${data.google_project.fleet-project.number}@gcp-sa-mcsd.iam.gserviceaccount.com",
   ]
-  depends_on = [ google_gke_hub_feature.mcs ]
+  depends_on = [ google_gke_hub_feature.mcs, ]
 }
 
 // Create IAM binding granting the fleet host project MCS service account the MCS Service Agent role on the Shared VPC host project 
@@ -88,7 +91,7 @@ resource "google_project_iam_binding" "network-viewer-fleet-host" {
   members = [
     "serviceAccount:${var.fleet_project}.svc.id.goog[gke-mcs/gke-mcs-importer]",
   ]
-  depends_on = [ google_gke_hub_feature.mcs ]
+  depends_on = [ google_gke_hub_feature.mcs, ]
 }
 
 
@@ -100,7 +103,7 @@ resource "google_project_iam_binding" "network-viewer-member" {
   members = [
     "serviceAccount:${var.fleet_project}.svc.id.goog[gke-mcs/gke-mcs-importer]",
   ] 
-  depends_on = [ google_gke_hub_feature.mcs ]
+  depends_on = [ google_gke_hub_feature.mcs, ]
 }
 
 # resource "google_project_iam_binding" "container-admin-mcgsa" {
