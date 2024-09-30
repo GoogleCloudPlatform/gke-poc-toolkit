@@ -118,7 +118,7 @@ resource "google_gke_hub_feature" "fleet_policy_defaults" {
     }
   }
   depends_on = [
-    google_project_service.services
+    module.enabled_service_project_apis,
   ]
 }
 
@@ -143,7 +143,7 @@ resource "google_gke_hub_feature" "feature" {
     }
   }
   depends_on = [
-    google_project_service.services
+    module.enabled_service_project_apis,
   ]
 }
 
@@ -159,7 +159,7 @@ resource "google_gke_hub_feature" "mesh_config_defaults" {
   }
 
   depends_on = [
-    google_project_service.services
+    module.enabled_service_project_apis,
   ]
 }
 
@@ -182,7 +182,7 @@ resource "google_gke_hub_feature" "fleetobservability" {
   }
 
   depends_on = [
-    google_project_service.services
+    module.enabled_service_project_apis,
   ]
 }
 
@@ -198,6 +198,6 @@ resource "google_gke_hub_fleet" "default" {
   }
 
   depends_on = [
-    google_project_service.services
+    module.enabled_service_project_apis,
   ]
 }
