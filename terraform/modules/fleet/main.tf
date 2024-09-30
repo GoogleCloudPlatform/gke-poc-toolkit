@@ -67,6 +67,36 @@ locals {
   })
 }
 
+// enable fleet services
+module "enabled_service_project_apis" {
+  source  = "terraform-google-modules/project-factory/google//modules/project_services"
+  version = "~> 17.0"
+
+  project_id                  = var.fleet_project
+  disable_services_on_destroy = true
+
+  activate_apis = [
+    "container.googleapis.com",
+    "anthos.googleapis.com",
+    "dns.googleapis.com",
+    "gkehub.googleapis.com",
+    "gkeconnect.googleapis.com",
+    "anthosconfigmanagement.googleapis.com",
+    "anthospolicycontroller.googleapis.com",
+    "meshconfig.googleapis.com",
+    "meshca.googleapis.com",
+    "containersecurity.googleapis.com",
+    "gkemulticloud.googleapis.com",
+    "logging.googleapis.com",
+    "cloudresourcemanager.googleapis.com",
+    "multiclusterservicediscovery.googleapis.com",
+    "compute.googleapis.com",
+    "iam.googleapis.com",
+    "cloudresourcemanager.googleapis.com",
+    "iamcredentials.googleapis.com",
+  ]
+}
+
 // policy defaults
 resource "google_gke_hub_feature" "fleet_policy_defaults" {
   project  = var.fleet_project
