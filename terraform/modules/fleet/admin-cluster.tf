@@ -50,21 +50,43 @@ resource "google_container_cluster" "primary" {
   name           = "gke-ap-admin-cp-00"
   project        = var.project_id
   location       = "us-central1"
-  
-  fleet { project = var.fleet_project }
-  cost_management_config { enabled = true }
-  gateway_api_config { channel = "CHANNEL_STANDARD" }
-  secret_manager_config { enabled = true }
   enable_autopilot = true
-  network                     = var.vpc_name
-  subnetwork                  = "projects/${var.project_id}/regions/us-central1/subnetworks/admin-control-plane"
-  networking_mode             = "VPC_NATIVE"
-  datapath_provider           = "ADVANCED_DATAPATH"
-  release_channel { channel = var.release_channel }
-  security_posture_config {
-    mode = "ENTERPRISE"
-    vulnerability_mode = "VULNERABILITY_ENTERPRISE"
+  initial_node_count       = 1
+  network                     = "projects/${var.shared_vpc}/global/networks/${var.vpc_name}"
+  subnetwork                  = "projects/${var.shared_vpc}/regions/us-central1/subnetworks/admin-control-plane"
+  # networking_mode             = "VPC_NATIVE"
+  # datapath_provider           = "ADVANCED_DATAPATH"
+
+  addons_config {
+    # HTTP Load Balancing is required to be enabled in Autopilot clusters
+    http_load_balancing {
+      disabled = false
+    }
+    # Horizontal Pod Autoscaling is required to be enabled in Autopilot clusters
+    horizontal_pod_autoscaling {
+      disabled = false
+    }
+    cloudrun_config {
+      disabled = !var.enable_addons.cloudrun
+    }
+
+    kalm_config {
+      enabled = false
+    }
+    config_connector_config {
+      enabled = false
+    }
+    gke_backup_agent_config {
+      enabled = true
+    }
   }
+
+  authenticator_groups_config { security_group = var.authenticator_security_group }
+  cluster_autoscaling { autoscaling_profile = "OPTIMIZE_UTILIZATION" }
+  cost_management_config { enabled = true }
+  deletion_protection = false  
+  fleet { project = var.fleet_project }
+  gateway_api_config { channel = "CHANNEL_STANDARD" }
   ip_allocation_policy {
     cluster_secondary_range_name  = "admin-pods"
     services_secondary_range_name = "admin-svcs"
@@ -72,12 +94,16 @@ resource "google_container_cluster" "primary" {
   logging_config {
     enable_components = ["SYSTEM_COMPONENTS", "WORKLOADS", "APISERVER", "CONTROLLER_MANAGER", "SCHEDULER"]
   }
+  master_authorized_networks_config {
+    cidr_blocks {
+      cidr_block   = "10.0.0.0/8"
+      display_name = "Internal VMs"
+    }
+  }
   monitoring_config {
     managed_prometheus { enabled = true }
     enable_components = ["SYSTEM_COMPONENTS", "APISERVER", "CONTROLLER_MANAGER", "SCHEDULER", "STORAGE", "HPA", "POD", "DAEMONSET", "DEPLOYMENT", "STATEFULSET", "KUBELET", "CADVISOR", "DCGM"]
   }
-  cluster_autoscaling { autoscaling_profile = "OPTIMIZE_UTILIZATION" }
-  workload_identity_config { workload_pool = "${var.fleet_project}.svc.id.goog" }
   private_cluster_config {
     enable_private_nodes    = true
     enable_private_endpoint = true
@@ -86,13 +112,13 @@ resource "google_container_cluster" "primary" {
       enabled = true
     }
   }
-  master_authorized_networks_config {
-    cidr_blocks {
-      cidr_block   = "10.0.0.0/8"
-      display_name = "Internal VMs"
-    }
+  release_channel { channel = var.release_channel }
+  secret_manager_config { enabled = true }
+
+  security_posture_config {
+    mode = "ENTERPRISE"
+    vulnerability_mode = "VULNERABILITY_ENTERPRISE"
   }
-  deletion_protection = false
 }  
   # node_config {
   #   gcfs_config { enabled = true }
