@@ -44,11 +44,11 @@ locals {
     "admin-control-plane" = [
       {
         range_name    = "admin-pods"
-        ip_cidr_range = "10.101.0.0/17"
+        ip_cidr_range = "10.0.101.0/17"
       },
       {
         range_name    = "admin-svcs"
-        ip_cidr_range = "10.103.0.0/17"
+        ip_cidr_range = "10.0.103.0/17"
       }
     ]
   }
