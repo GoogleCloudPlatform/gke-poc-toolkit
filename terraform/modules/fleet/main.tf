@@ -73,7 +73,7 @@ module "enabled_service_project_apis" {
   version = "~> 17.0"
 
   project_id                  = var.fleet_project
-  disable_services_on_destroy = true
+  disable_services_on_destroy = false
 
   activate_apis = [
     "container.googleapis.com",
