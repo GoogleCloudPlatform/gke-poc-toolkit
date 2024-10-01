@@ -1,5 +1,5 @@
 /**
- * Copyright 2020 Google LLC
+ * Copyright 2024 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,6 +14,7 @@
  * limitations under the License.
  */
 
+# VPC Module
 module "vpc" {
   count   = var.shared_vpc ? 0 : 1
   source  = "terraform-google-modules/network/google"
@@ -23,18 +24,17 @@ module "vpc" {
   network_name = var.vpc_name
   routing_mode = "GLOBAL"
 
-  subnets = local.nested_subnets
-
+  subnets          = local.nested_subnets
   secondary_ranges = local.nested_secondary_subnets
 }
 
-module "cluster-nat" {
-  depends_on = [
-    module.vpc,
-  ]
-  for_each                           = local.distinct_cluster_regions
-  version                            = "~> 5.0"
+# Cloud NAT Module
+module "cluster_nat" {
+  depends_on = [module.vpc]
+  for_each   = local.distinct_cluster_regions
+
   source                             = "terraform-google-modules/cloud-nat/google"
+  version                            = "~> 5.0"
   create_router                      = true
   project_id                         = var.project_id
   region                             = each.key

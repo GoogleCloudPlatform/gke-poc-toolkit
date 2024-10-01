@@ -1,3 +1,19 @@
+/**
+ * Copyright 2024 Google LLC
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *      http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
 // https://cloud.google.com/kubernetes-engine/docs/how-to/multi-cluster-ingress-setup#shared_vpc_deployment 
 module "firewall_rules" {
   source       = "terraform-google-modules/network/google//modules/firewall-rules"
@@ -34,6 +50,7 @@ resource "google_gke_hub_feature" "mcs" {
   location = "global"
   project  = var.fleet_project
   provider = google-beta
+  depends_on = [ module.enabled_service_project_apis ]
 }
 
 // enable Multi-cluster Ingress(also gateway) project wide
@@ -69,7 +86,7 @@ resource "google_project_iam_binding" "serviceagent-fleet-member-mcsagent" {
   members = [
     "serviceAccount:service-${data.google_project.fleet-project.number}@gcp-sa-mcsd.iam.gserviceaccount.com",
   ]
-  depends_on = [ google_gke_hub_feature.mcs, ]
+  depends_on = [ google_gke_hub_feature.mcs ]
 }
 
 // Create IAM binding granting the fleet host project MCS service account the MCS Service Agent role on the Shared VPC host project 
@@ -91,7 +108,7 @@ resource "google_project_iam_binding" "network-viewer-fleet-host" {
   members = [
     "serviceAccount:${var.fleet_project}.svc.id.goog[gke-mcs/gke-mcs-importer]",
   ]
-  depends_on = [ google_gke_hub_feature.mcs, ]
+  depends_on = [ google_gke_hub_feature.mcs ]
 }
 
 
@@ -103,13 +120,5 @@ resource "google_project_iam_binding" "network-viewer-member" {
   members = [
     "serviceAccount:${var.fleet_project}.svc.id.goog[gke-mcs/gke-mcs-importer]",
   ] 
-  depends_on = [ google_gke_hub_feature.mcs, ]
+  depends_on = [ google_gke_hub_feature.mcs ]
 }
-
-# resource "google_project_iam_binding" "container-admin-mcgsa" {
-#   role    = "roles/container.admin"
-#   project = var.project_id
-#   members = [
-#     "serviceAccount:service-${data.google_project.project.number}@gcp-sa-multiclusteringress.iam.gserviceaccount.com",
-#   ]
-# }
