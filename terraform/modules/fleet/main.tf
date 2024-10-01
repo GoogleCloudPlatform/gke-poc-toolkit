@@ -64,7 +64,14 @@ locals {
         ip_cidr_range = "10.${index(keys(var.cluster_config), name) + 1}.128.0/17"
       },
     ]
-  })
+  })  
+  // Presets for Service Account permissions
+  hub_service_account       = format("service-%s@gcp-sa-gkehub.iam.gserviceaccount.com", data.google_project.fleet-project.number)
+  service_accounts = {
+    (local.hub_service_account) = [
+      "${data.google_project.fleet-project.project_id}=>roles/gkehub.serviceAgent",
+    ]
+  }
 }
 
 // enable fleet services
@@ -95,6 +102,21 @@ module "enabled_service_project_apis" {
     "cloudresourcemanager.googleapis.com",
     "iamcredentials.googleapis.com",
   ]
+}
+
+# // Create the service accounts from a map declared in locals.
+module "service_accounts" {
+  for_each = local.service_accounts
+  depends_on = [
+    module.enabled_service_project_apis,
+  ]
+  source        = "terraform-google-modules/service-accounts/google"
+  version       = "~> 4.0"
+  project_id    = data.google_project.fleet-project.project_id
+  display_name  = "${each.key} service account"
+  names         = [each.key]
+  project_roles = each.value
+  generate_keys = false
 }
 
 // policy defaults
@@ -159,7 +181,7 @@ resource "google_gke_hub_feature" "mesh_config_defaults" {
   }
 
   depends_on = [
-    module.enabled_service_project_apis,
+    module.service_accounts,
   ]
 }
 
