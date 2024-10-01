@@ -34,7 +34,7 @@ locals {
   distinct_cluster_regions = toset([for cluster in var.cluster_config : cluster.region])
 
   # Subnet configurations
-  admin_subnet = [
+  admin_subnet = flatten([
     {
       subnet_name           = "admin-control-plane"
       subnet_ip             = "10.0.100.0/24"
@@ -42,17 +42,18 @@ locals {
       subnet_private_access = true
       description           = "This subnet is for the admin control plane and is managed by Terraform"
     }
-  ]
-
-  nested_subnets_raw = [
-    for name, config in var.cluster_config : {
-      subnet_name           = config.subnet_name
-      subnet_ip             = "10.0.${index(keys(var.cluster_config), name)}.0/24"
-      subnet_region         = config.region
-      subnet_private_access = true
-      description           = "This subnet is managed by Terraform"
-    }
-  ]
+  ])
+  nested_subnets_raw = flatten([
+    for name, config in var.cluster_config : [
+      {
+        subnet_name           = config.subnet_name
+        subnet_ip             = "10.0.${index(keys(var.cluster_config), name)}.0/24"
+        subnet_region         = config.region
+        subnet_private_access = true
+        description           = "This subnet is managed by Terraform"
+      }
+    ]
+  ])
 
   nested_subnets = concat(local.admin_subnet, local.nested_subnets_raw)
 
@@ -69,21 +70,18 @@ locals {
     ]
   }
 
-  nested_secondary_subnets = merge(
-    local.admin_secondary_subnets,
-    {
-      for name, config in var.cluster_config : config.subnet_name => [
-        {
-          range_name    = var.vpc_ip_range_pods_name
-          ip_cidr_range = "10.${index(keys(var.cluster_config), name) + 1}.0.0/17"
-        },
-        {
-          range_name    = var.vpc_ip_range_services_name
-          ip_cidr_range = "10.${index(keys(var.cluster_config), name) + 1}.128.0/17"
-        },
-      ]
-    }
-  )
+  nested_secondary_subnets = merge(local.admin_secondary_subnets, {
+    for name, config in var.cluster_config : config.subnet_name => [
+      {
+        range_name    = var.vpc_ip_range_pods_name
+        ip_cidr_range = "10.${index(keys(var.cluster_config), name) + 1}.0.0/17"
+      },
+      {
+        range_name    = var.vpc_ip_range_services_name
+        ip_cidr_range = "10.${index(keys(var.cluster_config), name) + 1}.128.0/17"
+      },
+    ]
+  })
 
   # Hub service account
   hub_service_account_email = format("service-%s@gcp-sa-gkehub.iam.gserviceaccount.com", data.google_project.fleet_project.number)
