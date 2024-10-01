@@ -16,12 +16,12 @@
 
 // Data Resources
 data "google_project" "project" {
-  project_id = module.enabled_google_apis.project_id
+  project_id = var.project_id
 }
 
 locals {
   // Presets for project and network settings
-  project_id               = var.shared_vpc ? var.vpc_project_id : module.enabled_google_apis.project_id
+  project_id               = var.shared_vpc ? var.vpc_project_id : var.project_id 
   network_name             = var.vpc_name
   network                  = "projects/${local.project_id}/global/networks/${var.vpc_name}"
   vpc_selflink             = format("projects/%s/global/networks/%s", local.project_id, local.network_name)
