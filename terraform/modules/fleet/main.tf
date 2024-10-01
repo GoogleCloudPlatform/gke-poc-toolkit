@@ -66,13 +66,28 @@ locals {
     ]
   })  
   // Presets for Service Account permissions
-  hub_service_account       = format("service-%s@gcp-sa-gkehub.iam.gserviceaccount.com", data.google_project.fleet-project.number)
-  service_accounts = {
-    (local.hub_service_account) = [
-      "${data.google_project.fleet-project.project_id}=>roles/gkehub.serviceAgent",
-    ]
-  }
+
+  cluster_project_number = data.google_project.fleet-project.number
+  hub_service_account_email       = format("service-%s@gcp-sa-gkehub.iam.gserviceaccount.com", data.google_project.fleet-project.number)
+  hub_service_account      = "serviceAccount:${local.hub_service_account_email}"
+
+  
+  # service_accounts = {
+  #   (local.hub_service_account) = [
+  #     "${data.google_project.fleet-project.project_id}=>roles/gkehub.serviceAgent",
+  #   ]
+  # }
 }
+
+resource "google_project_iam_member" "hubsa" {
+  project = var.fleet_project
+  role    = "roles/gkehub.serviceAgent"
+  member  = local.hub_service_account
+  depends_on = [
+    module.enabled_service_project_apis,
+  ]
+}
+
 
 // enable fleet services
 module "enabled_service_project_apis" {
@@ -105,19 +120,19 @@ module "enabled_service_project_apis" {
 }
 
 # // Create the service accounts from a map declared in locals.
-module "service_accounts" {
-  for_each = local.service_accounts
-  depends_on = [
-    module.enabled_service_project_apis,
-  ]
-  source        = "terraform-google-modules/service-accounts/google"
-  version       = "~> 4.0"
-  project_id    = data.google_project.fleet-project.project_id
-  display_name  = "${each.key} service account"
-  names         = [each.key]
-  project_roles = each.value
-  generate_keys = false
-}
+# module "service_accounts" {
+#   for_each = local.service_accounts
+#   depends_on = [
+#     module.enabled_service_project_apis,
+#   ]
+#   source        = "terraform-google-modules/service-accounts/google"
+#   version       = "~> 4.0"
+#   project_id    = data.google_project.fleet-project.project_id
+#   display_name  = "${each.key} service account"
+#   names         = [each.key]
+#   project_roles = each.value
+#   generate_keys = false
+# }
 
 // policy defaults
 resource "google_gke_hub_feature" "fleet_policy_defaults" {
