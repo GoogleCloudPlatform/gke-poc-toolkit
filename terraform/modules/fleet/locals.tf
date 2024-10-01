@@ -15,7 +15,7 @@
  */
 
 data "google_project" "cluster_project" {
-  project_id = var.fleet_project
+  project_id = var.project_id
 }
 
 data "google_project" "fleet_project" {
