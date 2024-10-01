@@ -14,6 +14,16 @@
  * limitations under the License.
  */
 
+# Create Hub Service Account
+resource "google_project_iam_member" "hubsa" {
+  project = var.fleet_project
+  role    = "roles/gkehub.serviceAgent"
+  member  = local.hub_service_account
+  depends_on = [
+    module.enabled_service_project_apis,
+  ]
+}
+
 # Fleet Policy Defaults
 resource "google_gke_hub_feature" "fleet_policy_defaults" {
   project  = var.fleet_project
