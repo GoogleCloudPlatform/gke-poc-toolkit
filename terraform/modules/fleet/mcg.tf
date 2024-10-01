@@ -74,7 +74,7 @@ resource "google_project_iam_binding" "serviceagent-fleet-member-hubagent" {
   role    = "roles/gkehub.serviceAgent"
   project = var.project_id
   members = [
-    "serviceAccount:service-${data.google_project.fleet-project.number}@gcp-sa-mcsd.iam.gserviceaccount.com",
+    "serviceAccount:service-${data.google_project.fleet_project.number}@gcp-sa-mcsd.iam.gserviceaccount.com",
   ]
     depends_on = [ google_gke_hub_feature.mcs ]
 }
@@ -84,7 +84,7 @@ resource "google_project_iam_binding" "serviceagent-fleet-member-mcsagent" {
   role    = "roles/multiclusterservicediscovery.serviceAgent"
   project = var.project_id
   members = [
-    "serviceAccount:service-${data.google_project.fleet-project.number}@gcp-sa-mcsd.iam.gserviceaccount.com",
+    "serviceAccount:service-${data.google_project.fleet_project.number}@gcp-sa-mcsd.iam.gserviceaccount.com",
   ]
   depends_on = [ google_gke_hub_feature.mcs ]
 }
@@ -94,7 +94,7 @@ resource "google_project_iam_binding" "serviceagent-fleet-host" {
   role    = "roles/multiclusterservicediscovery.serviceAgent"
   project = var.shared_vpc ? var.vpc_project_id : var.project_id
   members = [
-    "serviceAccount:service-${data.google_project.fleet-project.number}@gcp-sa-mcsd.iam.gserviceaccount.com",
+    "serviceAccount:service-${data.google_project.fleet_project.number}@gcp-sa-mcsd.iam.gserviceaccount.com",
   ]
   depends_on = [ google_gke_hub_feature.mcs ]
 }
