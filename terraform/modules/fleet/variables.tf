@@ -20,61 +20,60 @@ variable "project_id" {
 }
 
 variable "fleet_project" {
-  description = "(Optional) Register the cluster with the fleet in this project."
   type        = string
-  default     = null
+  description = "(Optional) Register the cluster with the fleet in this project."
 }
 
 variable "vpc_project_id" {
-  description = "Shared vpc project needed for setting MCI and MCS RBAC."
   type        = string
-  default     = null
+  description = "Shared VPC project needed for setting MCI and MCS RBAC."
 }
 
 variable "config_sync_repo" {
   description = "Git repo used as the default config sync repo for your fleet."
-  type = string
-  default = null
+  type        = string
+  default     = null
 }
 
 variable "config_sync_repo_branch" {
   description = "Git repo branch used as the default config sync repo for your fleet."
-  type = string
-  default = null
+  type        = string
+  default     = null
 }
 
 variable "config_sync_repo_dir" {
   description = "Git repo directory used as the default config sync repo for your fleet."
-  type = string
-  default = null
+  type        = string
+  default     = null
 }
 
 variable "shared_vpc" {
   type        = bool
-  description = "boolean value for determining whether to create Standalone VPC or use a preexisting Shared VPC"
+  description = "Determines whether to create a standalone VPC or use an existing Shared VPC"
   default     = false
 }
 
 variable "vpc_ip_range_pods_name" {
   type        = string
-  description = "The secondary ip range to use for pods in the shared vpc  - This is optional and only valid if a Shared VPC is used"
+  description = "The secondary IP range to use for pods in the shared VPC"
   default     = ""
 }
 
 variable "vpc_ip_range_services_name" {
   type        = string
-  description = "The secondary ip range to use for services in the shared vpc  - This is optional and only valid if a Shared VPC is used"
+  description = "The secondary IP range to use for services in the shared VPC"
   default     = ""
 }
 
 variable "release_channel" {
-  type    = string
-  default = "regular"
+  type        = string
+  description = "The release channel of the cluster"
+  default     = "regular"
 }
 
 variable "authenticator_security_group" {
   type        = string
-  description = "The name of the RBAC security group for use with Google security groups in Kubernetes RBAC. Group name must be in format gke-security-groups@yourdomain.com"
+  description = "The name of the RBAC security group for use with Google security groups in Kubernetes RBAC."
   default     = null
 }
 
@@ -83,7 +82,12 @@ variable "vpc_name" {
   description = "The name of the VPC - used for shared or local VPC"
   default     = ""
 }
+
 variable "cluster_config" {
-  description = "For each cluster, create an object that contain the required fields"
+  type = map(object({
+    subnet_name = string
+    region      = string
+  }))
+  description = "For each cluster, create an object that contains the required fields"
   default     = {}
 }
