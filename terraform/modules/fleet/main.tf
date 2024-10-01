@@ -196,7 +196,7 @@ resource "google_gke_hub_feature" "mesh_config_defaults" {
   }
 
   depends_on = [
-    module.service_accounts,
+    google_project_iam_member.hubsa,
   ]
 }
 
