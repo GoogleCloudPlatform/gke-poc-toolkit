@@ -19,18 +19,13 @@ data "google_project" "project" {
   project_id = module.enabled_google_apis.project_id
 }
 
-# // Random string used to create a unique key ring name
-# resource "random_id" "deployment" {
-#   byte_length = 2
-# }
-
 locals {
   // Presets for project and network settings
   project_id               = var.shared_vpc ? var.vpc_project_id : module.enabled_google_apis.project_id
   network_name             = var.vpc_name
   network                  = "projects/${local.project_id}/global/networks/${var.vpc_name}"
   vpc_selflink             = format("projects/%s/global/networks/%s", local.project_id, local.network_name)
-  ip_range_pods            = var.vpc_ip_range_pods_name 
+  ip_range_pods            = var.vpc_ip_range_pods_name
   ip_range_services        = var.vpc_ip_range_services_name
   distinct_cluster_regions = toset([for cluster in var.cluster_config : "${cluster.region}"])
 
@@ -62,24 +57,6 @@ locals {
 
   # subnetworks_to_nat = flatten([ for cluster in var.cluster_config : [{ "name" = cluster.subnet_name, "source_ip_ranges_to_nat" = ["PRIMARY_IP_RANGE"], "secondary_ip_range_names" = [] }] ])
 
-  // Presets for Service Accounts
-  gke_service_account       = "gke-toolkit-sa"
-  gke_service_account_email = "${local.gke_service_account}@${module.enabled_google_apis.project_id}.iam.gserviceaccount.com"
-  clu_service_account       = format("service-%s@container-engine-robot.iam.gserviceaccount.com", data.google_project.project.number)
-  prj_service_account       = format("%s@cloudservices.gserviceaccount.com", data.google_project.project.number)
-
-  // Presets for Service Account permissions
-  service_accounts = {
-    (local.gke_service_account) = [
-      "${module.enabled_google_apis.project_id}=>roles/artifactregistry.reader",
-      "${module.enabled_google_apis.project_id}=>roles/logging.logWriter",
-      "${module.enabled_google_apis.project_id}=>roles/monitoring.metricWriter",
-      "${module.enabled_google_apis.project_id}=>roles/monitoring.viewer",
-      "${module.enabled_google_apis.project_id}=>roles/stackdriver.resourceMetadata.writer",
-      "${module.enabled_google_apis.project_id}=>roles/storage.objectViewer",
-    ]
-  }
-
   // Presets for Linux Node Pool
   linux_pool = [{
     name               = format("linux-%s", var.node_pool)
@@ -102,30 +79,29 @@ locals {
 }
 
 // Enable APIs needed in the gke cluster project
-module "enabled_google_apis" {
-  source                      = "terraform-google-modules/project-factory/google//modules/project_services"
-  version                     = "~> 17.0"
-  project_id                  = var.project_id
-  disable_services_on_destroy = false
+# module "enabled_google_apis" {
+#   source                      = "terraform-google-modules/project-factory/google//modules/project_services"
+#   version                     = "~> 17.0"
+#   project_id                  = var.project_id
+#   disable_services_on_destroy = false
 
-  activate_apis = [
-    "iam.googleapis.com",
-    "storage.googleapis.com",
-    "compute.googleapis.com",
-    "logging.googleapis.com",
-    "monitoring.googleapis.com",
-    "containerregistry.googleapis.com",
-    "container.googleapis.com",
-    "binaryauthorization.googleapis.com",
-    "stackdriver.googleapis.com",
-    "iap.googleapis.com",
-    "cloudresourcemanager.googleapis.com",
-    "dns.googleapis.com",
-    "iamcredentials.googleapis.com",
-    "stackdriver.googleapis.com",
-    "cloudkms.googleapis.com",
-  ]
-}
+#   activate_apis = [
+#     "storage.googleapis.com",
+#     "compute.googleapis.com",
+#     "logging.googleapis.com",
+#     "monitoring.googleapis.com",
+#     "containerregistry.googleapis.com",
+#     "container.googleapis.com",
+#     "binaryauthorization.googleapis.com",
+#     "stackdriver.googleapis.com",
+#     "iap.googleapis.com",
+#     "cloudresourcemanager.googleapis.com",
+#     "dns.googleapis.com",
+#     "iamcredentials.googleapis.com",
+#     "stackdriver.googleapis.com",
+#     "cloudkms.googleapis.com",
+#   ]
+# }
 
 # // Create the service accounts from a map declared in locals.
 # module "service_accounts" {

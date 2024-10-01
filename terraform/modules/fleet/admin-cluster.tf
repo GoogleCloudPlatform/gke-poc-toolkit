@@ -45,15 +45,15 @@
  * limitations under the License.
  */
 
-resource "google_container_cluster" "primary" {
-  provider = google-beta
-  name           = "gke-ap-admin-cp-00"
-  project        = var.project_id
-  location       = "us-central1"
-  enable_autopilot = true
-  initial_node_count       = 1
-  network                     = "projects/${var.vpc_project_id}/global/networks/${var.vpc_name}"
-  subnetwork                  = "projects/${var.vpc_project_id}/regions/us-central1/subnetworks/admin-control-plane"
+resource "google_container_cluster" "admin" {
+  provider           = google-beta
+  name               = "gke-ap-admin-cp-00"
+  project            = var.project_id
+  location           = "us-central1"
+  enable_autopilot   = true
+  initial_node_count = 1
+  network            = "projects/${var.vpc_project_id}/global/networks/${var.vpc_name}"
+  subnetwork         = "projects/${var.vpc_project_id}/regions/us-central1/subnetworks/admin-control-plane"
   # networking_mode             = "VPC_NATIVE"
   # datapath_provider           = "ADVANCED_DATAPATH"
 
@@ -84,7 +84,7 @@ resource "google_container_cluster" "primary" {
   authenticator_groups_config { security_group = var.authenticator_security_group }
   cluster_autoscaling { autoscaling_profile = "OPTIMIZE_UTILIZATION" }
   cost_management_config { enabled = true }
-  deletion_protection = false  
+  deletion_protection = false
   fleet { project = var.fleet_project }
   gateway_api_config { channel = "CHANNEL_STANDARD" }
   ip_allocation_policy {
@@ -116,13 +116,13 @@ resource "google_container_cluster" "primary" {
   secret_manager_config { enabled = true }
 
   security_posture_config {
-    mode = "ENTERPRISE"
+    mode               = "ENTERPRISE"
     vulnerability_mode = "VULNERABILITY_ENTERPRISE"
   }
-  depends_on = [ 
+  depends_on = [
     module.vpc,
     module.enabled_service_project_apis,
     google_gke_hub_feature.mesh_config_defaults,
     google_gke_hub_fleet.default,
-    ]
-}  
+  ]
+}

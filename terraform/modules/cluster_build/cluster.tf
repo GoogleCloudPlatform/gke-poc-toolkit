@@ -14,63 +14,86 @@
  * limitations under the License.
  */
 
-// GKE Module using private clusters
-module "gke" {
-  for_each                             = var.cluster_config
-  deletion_protection                  = false
-  source                               = "terraform-google-modules/kubernetes-engine/google//modules/private-cluster"
-  version                              = "~>33.0.4"
-  authenticator_security_group         = var.authenticator_security_group
-  cluster_dns_provider                 = "CLOUD_DNS"
-  cluster_dns_scope                    = "CLUSTER_SCOPE"
-  datapath_provider                    = "ADVANCED_DATAPATH"
-  enable_cost_allocation               = true
-  enable_intranode_visibility          = true
-  enable_private_endpoint              = true
-  filestore_csi_driver                 = true
-  gce_pd_csi_driver                    = true
-  gke_backup_agent_config              = true
-  monitoring_enable_managed_prometheus = true
-  project_id                           = var.project_id
-  fleet_project                        = var.fleet_project
-  network                              = var.vpc_name
-  ip_range_pods                        = var.vpc_ip_range_pods_name
-  ip_range_services                    = var.vpc_ip_range_services_name
-  release_channel                      = var.release_channel
-  initial_node_count                   = var.initial_node_count
-  name                                 = each.key
-  regional                             = var.regional_clusters
-  region                               = each.value.region
-  zones                                = each.value.zones
-  subnetwork                           = each.value.subnet_name
-  network_project_id                   = var.vpc_project_id
-  gateway_api_channel                  = "CHANNEL_STANDARD"
-  grant_registry_access                = true
-  enable_shielded_nodes                = true
-  master_ipv4_cidr_block               = "172.16.${index(keys(var.cluster_config), each.key)}.16/28"
-  master_authorized_networks = [{
-    cidr_block   = var.auth_cidr
-    display_name = "Workstation Public IP"
-  }]
+# Create clusters listing in the cluster_config variable
+resource "google_container_cluster" "gke_ap" {
+  for_each           = var.cluster_config
+  provider           = google-beta
+  name               = each.key
+  project            = var.project_id
+  location           = each.value.region
+  enable_autopilot   = true
+  initial_node_count = var.initial_node_count
+  network            = "projects/${var.vpc_project_id}/global/networks/${var.vpc_name}"
+  subnetwork         = "projects/${var.vpc_project_id}/regions/us-central1/subnetworks/${each.value.subnet_name}"
+  # networking_mode             = "VPC_NATIVE"
+  # datapath_provider           = "ADVANCED_DATAPATH"
 
-  service_account = local.gke_service_account_email
+  addons_config {
+    # HTTP Load Balancing is required to be enabled in Autopilot clusters
+    http_load_balancing {
+      disabled = false
+    }
+    # Horizontal Pod Autoscaling is required to be enabled in Autopilot clusters
+    horizontal_pod_autoscaling {
+      disabled = false
+    }
+    cloudrun_config {
+      disabled = true
+    }
 
-  node_pools = local.cluster_node_pool
-  remove_default_node_pool = true
-  node_pools_oauth_scopes = {
-    (var.node_pool) = [
-      "https://www.googleapis.com/auth/cloud-platform",
-      "https://www.googleapis.com/auth/logging.write",
-      "https://www.googleapis.com/auth/monitoring",
-    ]
-  }
-
-  node_pools_metadata = {
-    (var.node_pool) = {
-      // Set metadata on the VM to supply more entropy
-      google-compute-enable-virtio-rng = "true"
-      // Explicitly remove GCE legacy metadata API endpoint
-      disable-legacy-endpoints = "true"
+    kalm_config {
+      enabled = false
+    }
+    config_connector_config {
+      enabled = false
+    }
+    gke_backup_agent_config {
+      enabled = true
     }
   }
+
+  authenticator_groups_config { security_group = var.authenticator_security_group }
+  cluster_autoscaling { autoscaling_profile = "OPTIMIZE_UTILIZATION" }
+  cost_management_config { enabled = true }
+  deletion_protection = false
+  fleet { project = var.fleet_project }
+  gateway_api_config { channel = "CHANNEL_STANDARD" }
+  ip_allocation_policy {
+    cluster_secondary_range_name  = var.vpc_ip_range_pods_name
+    services_secondary_range_name = var.vpc_ip_range_services_name
+  }
+  logging_config {
+    enable_components = ["SYSTEM_COMPONENTS", "WORKLOADS", "APISERVER", "CONTROLLER_MANAGER", "SCHEDULER"]
+  }
+  master_authorized_networks_config {
+    cidr_blocks {
+      cidr_block   = "10.0.0.0/8"
+      display_name = "Internal VMs"
+    }
+  }
+  monitoring_config {
+    managed_prometheus { enabled = true }
+    enable_components = ["SYSTEM_COMPONENTS", "APISERVER", "CONTROLLER_MANAGER", "SCHEDULER", "STORAGE", "HPA", "POD", "DAEMONSET", "DEPLOYMENT", "STATEFULSET", "KUBELET", "CADVISOR", "DCGM"]
+  }
+  private_cluster_config {
+    enable_private_nodes    = true
+    enable_private_endpoint = false
+    master_ipv4_cidr_block  = "172.16.${index(keys(var.cluster_config), each.key)}.16/28"
+    master_global_access_config {
+      enabled = true
+    }
+  }
+  release_channel { channel = var.release_channel }
+  secret_manager_config { enabled = true }
+
+  security_posture_config {
+    mode               = "ENTERPRISE"
+    vulnerability_mode = "VULNERABILITY_ENTERPRISE"
+  }
+  depends_on = [
+    module.vpc,
+    module.enabled_service_project_apis,
+    google_gke_hub_feature.mesh_config_defaults,
+    google_gke_hub_fleet.default,
+  ]
 }

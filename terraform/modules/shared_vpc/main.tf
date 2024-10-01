@@ -36,7 +36,7 @@ locals {
     }
   ])
   nested_subnets_raw = flatten([
-    for name, config in var.cluster_config  : [
+    for name, config in var.cluster_config : [
       {
         subnet_name           = config.subnet_name
         subnet_ip             = "10.0.${index(keys(var.cluster_config), name)}.0/24"
@@ -46,9 +46,9 @@ locals {
       }
     ]
   ])
-  
+
   nested_subnets = concat(local.admin_subnet, local.nested_subnets_raw)
-  
+
   admin_secondary_subnets = {
     "admin-control-plane" = [
       {
@@ -61,8 +61,8 @@ locals {
       }
     ]
   }
-    
-  nested_secondary_subnets = merge(local.admin_secondary_subnets,{
+
+  nested_secondary_subnets = merge(local.admin_secondary_subnets, {
     for name, config in var.cluster_config : config.subnet_name => [
       {
         range_name    = var.vpc_ip_range_pods_name

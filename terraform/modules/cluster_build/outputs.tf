@@ -21,7 +21,7 @@ output "project_id" {
 
 output "get_credential_commands" {
   description = "gcloud get-credentials command to generate kubeconfig for the private cluster"
-  value       = flatten([for s in module.gke : (format("gcloud container fleet memberships get-credentials %s --project %s --location=%s", s.name, var.project_id, s.location ))])
+  value       = flatten([for s in module.gke : (format("gcloud container fleet memberships get-credentials %s --project %s --location=%s", s.name, var.project_id, s.location))])
 }
 
 output "cluster_names" {

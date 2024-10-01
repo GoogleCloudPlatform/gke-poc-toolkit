@@ -39,18 +39,18 @@ module "firewall_rules" {
       metadata = "INCLUDE_ALL_METADATA"
     }
   }]
-  depends_on = [ 
+  depends_on = [
     module.vpc,
   ]
 }
 
 // enable Multi-cluster service discovery
 resource "google_gke_hub_feature" "mcs" {
-  name     = "multiclusterservicediscovery"
-  location = "global"
-  project  = var.fleet_project
-  provider = google-beta
-  depends_on = [ module.enabled_service_project_apis ]
+  name       = "multiclusterservicediscovery"
+  location   = "global"
+  project    = var.fleet_project
+  provider   = google-beta
+  depends_on = [module.enabled_service_project_apis]
 }
 
 // enable Multi-cluster Ingress(also gateway) project wide
@@ -63,9 +63,9 @@ resource "google_gke_hub_feature" "mci" {
       config_membership = "projects/${var.project_id}/locations/us-central1/memberships/gke-ap-admin-cp-00"
     }
   }
-  depends_on = [ 
+  depends_on = [
     google_gke_hub_feature.mcs,
-    google_container_cluster.primary,
+    google_container_cluster.admin,
   ]
 }
 
@@ -76,7 +76,7 @@ resource "google_project_iam_binding" "serviceagent-fleet-member-hubagent" {
   members = [
     "serviceAccount:service-${data.google_project.fleet_project.number}@gcp-sa-mcsd.iam.gserviceaccount.com",
   ]
-    depends_on = [ google_gke_hub_feature.mcs ]
+  depends_on = [google_gke_hub_feature.mcs]
 }
 
 // Create IAM binding granting the fleet host project's MCS service account the MCS Service Agent role for cluster project - this needs to be done for every cluster project
@@ -86,7 +86,7 @@ resource "google_project_iam_binding" "serviceagent-fleet-member-mcsagent" {
   members = [
     "serviceAccount:service-${data.google_project.fleet_project.number}@gcp-sa-mcsd.iam.gserviceaccount.com",
   ]
-  depends_on = [ google_gke_hub_feature.mcs ]
+  depends_on = [google_gke_hub_feature.mcs]
 }
 
 // Create IAM binding granting the fleet host project MCS service account the MCS Service Agent role on the Shared VPC host project 
@@ -96,7 +96,7 @@ resource "google_project_iam_binding" "serviceagent-fleet-host" {
   members = [
     "serviceAccount:service-${data.google_project.fleet_project.number}@gcp-sa-mcsd.iam.gserviceaccount.com",
   ]
-  depends_on = [ google_gke_hub_feature.mcs ]
+  depends_on = [google_gke_hub_feature.mcs]
 }
 
 
@@ -108,7 +108,7 @@ resource "google_project_iam_binding" "network-viewer-fleet-host" {
   members = [
     "serviceAccount:${var.fleet_project}.svc.id.goog[gke-mcs/gke-mcs-importer]",
   ]
-  depends_on = [ google_gke_hub_feature.mcs ]
+  depends_on = [google_gke_hub_feature.mcs]
 }
 
 
@@ -119,6 +119,6 @@ resource "google_project_iam_binding" "network-viewer-member" {
   project = var.fleet_project
   members = [
     "serviceAccount:${var.fleet_project}.svc.id.goog[gke-mcs/gke-mcs-importer]",
-  ] 
-  depends_on = [ google_gke_hub_feature.mcs ]
+  ]
+  depends_on = [google_gke_hub_feature.mcs]
 }
