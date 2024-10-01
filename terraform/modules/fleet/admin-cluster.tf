@@ -123,5 +123,6 @@ resource "google_container_cluster" "primary" {
     module.vpc,
     module.enabled_service_project_apis,
     google_gke_hub_feature.mesh_config_defaults,
+    google_gke_hub_fleet.default,
     ]
 }  
