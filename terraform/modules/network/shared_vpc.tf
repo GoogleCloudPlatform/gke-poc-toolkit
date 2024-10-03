@@ -57,6 +57,7 @@ resource "google_compute_subnetwork_iam_binding" "subnet_networkuser_cp" {
 }
 
 resource "google_project_iam_binding" "shared_vpc_serviceagent" {
+  count = var.shared_vpc ? 1 : 0  
   depends_on = [
     google_compute_subnetwork_iam_binding.subnet_networkuser
   ]
@@ -68,6 +69,7 @@ resource "google_project_iam_binding" "shared_vpc_serviceagent" {
 }
 
 resource "google_compute_shared_vpc_service_project" "attach_toolkit" {
+  count = var.shared_vpc ? 1 : 0  
   depends_on = [
     google_compute_subnetwork_iam_binding.subnet_networkuser,
     google_project_iam_binding.shared_vpc_serviceagent,
