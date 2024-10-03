@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-module "shared_vpc" {
+module "vpc" {
   depends_on = [
     module.enabled_shared_vpc_apis,
     module.enabled_service_project_apis
@@ -31,10 +31,17 @@ module "shared_vpc" {
   secondary_ranges = local.nested_secondary_subnets
 }
 
-resource "google_compute_shared_vpc_host_project" "host_project" {
-  depends_on = [
-    module.shared_vpc,
-  ]
-  provider = google-beta
-  project  = var.vpc_project_id
+# Cloud NAT Module
+module "cluster_nat" {
+  depends_on = [module.vpc]
+  for_each   = local.distinct_cluster_regions
+
+  source                             = "terraform-google-modules/cloud-nat/google"
+  version                            = "~> 5.0"
+  create_router                      = true
+  project_id                         = var.project_id
+  region                             = each.key
+  router                             = "gke-toolkit-rtr-${each.key}"
+  network                            = local.vpc_selflink
+  source_subnetwork_ip_ranges_to_nat = "ALL_SUBNETWORKS_ALL_PRIMARY_IP_RANGES"
 }

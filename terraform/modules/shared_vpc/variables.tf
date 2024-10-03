@@ -25,6 +25,12 @@ variable "vpc_project_id" {
   default     = ""
 }
 
+variable "shared_vpc" {
+  type        = bool
+  description = "Determines whether to create a standalone VPC or use an existing Shared VPC"
+  default     = false
+}
+
 variable "region" {
   type        = string
   description = "The region to host the cluster in"

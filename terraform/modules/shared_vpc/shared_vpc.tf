@@ -17,7 +17,17 @@
 // Performs necessary steps to attach service project to Shared VPC host project
 // Modules and resources below do not get executed if SHARED_VPC=false
 
+resource "google_compute_shared_vpc_host_project" "host_project" {
+  count = var.shared_vpc ? 1 : 0  
+  depends_on = [
+    module.vpc,
+  ]
+  provider = google-beta
+  project  = var.vpc_project_id
+}
+
 resource "google_compute_subnetwork_iam_binding" "subnet_networkuser" {
+  count = var.shared_vpc ? 1 : 0    
   depends_on = [
     module.shared_vpc
   ]
@@ -33,6 +43,7 @@ resource "google_compute_subnetwork_iam_binding" "subnet_networkuser" {
 }
 
 resource "google_compute_subnetwork_iam_binding" "subnet_networkuser_cp" {
+  count = var.shared_vpc ? 1 : 0    
   depends_on = [
     google_compute_subnetwork_iam_binding.subnet_networkuser
   ]

@@ -21,6 +21,12 @@ data "google_project" "project" {
 
 // Locals used to construct names of stuffs.
 locals {
+  # VPC Self-link
+  vpc_selflink = format("projects/%s/global/networks/%s", var.project_id, var.vpc_name)
+
+  # Distinct cluster regions
+  distinct_cluster_regions = toset([for cluster in var.cluster_config : cluster.region])
+
   // Presets for Service Accounts
   clu_service_account = format("service-%s@container-engine-robot.iam.gserviceaccount.com", data.google_project.project.number)
   prj_service_account = format("%s@cloudservices.gserviceaccount.com", data.google_project.project.number)
@@ -76,20 +82,6 @@ locals {
   })
 }
 
-// Create the service accounts from a map declared in locals.
-# module "service_account" {
-#   for_each = local.service_accounts
-#   depends_on = [
-#     module.enabled_service_project_apis,
-#   ]
-#   source        = "terraform-google-modules/service-accounts/google"
-#   version       = "~> 4.0"
-#   project_id    = module.enabled_service_project_apis.project_id
-#   display_name  = "${each.key} service account"
-#   names         = [each.key]
-#   project_roles = each.value
-# }
-
 module "enabled_shared_vpc_apis" {
   source  = "terraform-google-modules/project-factory/google//modules/project_services"
   version = "~> 17.0"
@@ -119,6 +111,5 @@ module "enabled_service_project_apis" {
     "compute.googleapis.com",
     "container.googleapis.com",
     "cloudresourcemanager.googleapis.com",
-    "iamcredentials.googleapis.com",
   ]
 }

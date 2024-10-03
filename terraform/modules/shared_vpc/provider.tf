@@ -30,5 +30,4 @@ terraform {
 
 provider "google" {
   project = var.vpc_project_id
-  region  = var.region
 }
