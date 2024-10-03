@@ -485,7 +485,7 @@ func enableService(projectId string, serviceIds []string) {
 }
 
 func setTfModuleRepo(tfRepo string, tfBranch string) error {
-	files := []string{"cluster_build/main.tf", "shared_vpc/main.tf"}
+	files := []string{"clusters/main.tf", "network/main.tf", "fleet/main.tf"}
 	for _, file := range files {
 		err := replaceWord("{{.TFModuleRepo}}", file, tfRepo)
 		if err != nil {
