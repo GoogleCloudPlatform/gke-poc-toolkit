@@ -120,7 +120,6 @@ resource "google_container_cluster" "admin" {
     vulnerability_mode = "VULNERABILITY_ENTERPRISE"
   }
   depends_on = [
-    module.vpc,
     module.enabled_service_project_apis,
     google_gke_hub_feature.mesh_config_defaults,
     google_gke_hub_fleet.default,

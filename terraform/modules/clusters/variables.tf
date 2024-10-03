@@ -25,11 +25,6 @@ variable "fleet_project" {
   default     = null
 }
 
-# variable "governance_project_id" {
-#   type        = string
-#   description = "The project ID to host governance resources"
-# }
-
 variable "regional_clusters" {
   type        = bool
   description = "Enable regional control plane."
@@ -41,12 +36,6 @@ variable "region" {
   description = "The region to host the cluster in"
   default     = "us-central1"
 }
-
-# variable "zones" {
-#   type        = list(string)
-#   description = "The zones used in your nodepool"
-#   default     = ["us-central1-b"]
-# }
 
 variable "shared_vpc" {
   type        = bool
@@ -129,69 +118,3 @@ variable "auth_cidr" {
   type    = string
   default = "172.16.100.16/28"
 }
-
-# variable "windows_nodepool" {
-#   type    = bool
-#   default = false
-# }
-
-# variable "preemptible_nodes" {
-#   type        = bool
-#   description = "Whether underlying node GCE instances are preemptible"
-#   default     = true
-# }
-
-# variable "k8s_users" {
-#   type = map(string)
-#   default = {
-#     rbac-demo-auditor = "view"
-#     rbac-demo-editor  = "edit"
-#   }
-# }
-
-# variable "config_sync" {
-#   type        = bool
-#   description = "Enable Config Sync on all clusters."
-#   default     = true
-# }
-
-# variable "config_sync_repo" {
-#   type        = string
-#   description = "Name of Cloud Source Repo for Config Sync"
-#   default     = "gke-poc-config-sync"
-# }
-
-# variable "policy_controller" {
-#   type        = bool
-#   description = "Enable Policy Controller on all clusters."
-#   default     = true
-# }
-
-# variable "config_connector" {
-#   type        = bool
-#   description = "(Beta) Whether ConfigConnector is enabled for this cluster."
-#   default     = false
-# }
-
-# variable "multi_cluster_gateway" {
-#   type        = bool
-#   description = "Enable Multi-cluster gateway on all clusters."
-#   default     = true
-# }
-
-# variable "anthos_service_mesh" {
-#   type        = bool
-#   description = "Enable Anthos Service Mesh on all clusters."
-#   default     = true
-# }
-
-# variable "gke_module_bypass" {
-#   type        = bool
-#   description = "Experimental: Setting this to true allows you to use the TF GKE resource directly instead of the GKE module"
-#   default     = false
-# }
-
-# variable "windows_machine_type" {
-#   type    = string
-#   default = "n1-standard-4"
-# }
