@@ -1,4 +1,4 @@
-module "cluster_build" {
+module "clusters" {
   source                            = "{{.TFModuleRepo}}clusters?ref={{.TFModuleBranch}}"
   project_id                        = var.project_id
   fleet_project                     = var.fleet_project

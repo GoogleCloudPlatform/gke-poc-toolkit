@@ -1,4 +1,4 @@
-module "shared_vpc" {
+module "network" {
   source                            = "{{.TFModuleRepo}}network?ref={{.TFModuleBranch}}"
   project_id                        = var.project_id
   vpc_project_id                    = var.vpc_project_id
