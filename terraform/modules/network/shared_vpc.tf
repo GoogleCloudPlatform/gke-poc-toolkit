@@ -27,11 +27,10 @@ resource "google_compute_shared_vpc_host_project" "host_project" {
 }
 
 resource "google_compute_subnetwork_iam_binding" "subnet_networkuser" {
-  count = var.shared_vpc ? 1 : 0    
   depends_on = [
     module.shared_vpc
   ]
-  for_each   = var.cluster_config
+  for_each   = { for key, value in var.cluster_config : key => value if var.shared_vpc != false }
   project    = var.vpc_project_id
   region     = each.value.region
   subnetwork = each.value.subnet_name
