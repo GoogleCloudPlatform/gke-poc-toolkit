@@ -27,20 +27,19 @@ import (
 	"github.com/thanhpk/randstr"
 )
 
-func CheckTfStateType(conf *Config, bucketNameSharedVPC string, bucketNameFleet string, bucketNameClusters string) error {
+func CheckTfStateType(conf *Config, bucketNameNetwork string, bucketNameFleet string, bucketNameClusters string) error {
 	if conf.TerraformState == "cloud" {
-		if conf.VpcConfig.VpcType == "shared" {
-			if bucketNameSharedVPC == "" {
-				bucketNameSharedVPC = "tf-state-sharedvpc-" + strings.ToLower(randstr.String(6))
-				err := createTfStorage(conf.VpcConfig.VpcProjectID, bucketNameSharedVPC)
-				if err != nil {
-					return err
-				}
-			}
-			err := createTfBackend(bucketNameSharedVPC, "shared_vpc/backend.tf")
+		if bucketNameNetwork == "" {
+			bucketNameNetwork = "tf-state-network-" + strings.ToLower(randstr.String(6))
+			err := createTfStorage(conf.ClustersProjectID, bucketNameNetwork)
 			if err != nil {
 				return err
 			}
+			log.Infof("✅ Created a bucket for the Network TF State: %s", bucketNameNetwork)
+		}
+		err := createTfBackend(bucketNameNetwork, "network/backend.tf")
+		if err != nil {
+			return err
 		}
 		if bucketNameFleet == "" {
 			bucketNameFleet = "tf-state-fleet-" + strings.ToLower(randstr.String(6))
@@ -50,7 +49,7 @@ func CheckTfStateType(conf *Config, bucketNameSharedVPC string, bucketNameFleet 
 			}
 			log.Infof("✅ Created a bucket for the Fleet TF State: %s", bucketNameFleet)
 		}
-		err := createTfBackend(bucketNameFleet, "fleet/backend.tf")
+		err = createTfBackend(bucketNameFleet, "fleet/backend.tf")
 		if err != nil {
 			return err
 		}
@@ -62,7 +61,7 @@ func CheckTfStateType(conf *Config, bucketNameSharedVPC string, bucketNameFleet 
 			}
 			log.Infof("✅ Created a bucket for the Clusters TF State: %s", bucketNameFleet)
 		}
-		err = createTfBackend(bucketNameClusters, "cluster_build/backend.tf")
+		err = createTfBackend(bucketNameClusters, "clusters/backend.tf")
 		if err != nil {
 			return err
 		}

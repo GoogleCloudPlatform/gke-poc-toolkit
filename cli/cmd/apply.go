@@ -31,21 +31,21 @@ var applyCmd = &cobra.Command{
 	Short: "Create or Update GKE Demo Environment",
 	Example: ` gkekitctl apply
 	gkekitctl apply --config <file.yaml>
-	gkekitctl apply --config <file.yaml> -g <cluster-tfstate-bucket> -v <cluster-tfstate-sharedvpc> -f <cluster-tfstate-fleet>`,
+	gkekitctl apply --config <file.yaml> -g <cluster-tfstate-clusters> -v <cluster-tfstate-network> -f <cluster-tfstate-fleet>`,
 	Run: func(cmd *cobra.Command, args []string) {
-		bucketNameSharedVPC, err := cmd.Flags().GetString("vpcstate")
+		bucketNameNetwork, err := cmd.Flags().GetString("vpcstate")
 		if err != nil {
 			log.Errorf("🚨Failed to get bucketNameSharedVPC value from flag: %s", err)
 		}
-		if bucketNameSharedVPC != "" {
-			log.Infof("✅ Terraform state storage bucket for shared VPC is %s", bucketNameSharedVPC)
+		if bucketNameNetwork != "" {
+			log.Infof("✅ Terraform state storage bucket for shared VPC is %s", bucketNameNetwork)
 		}
 		bucketNameFleet, err := cmd.Flags().GetString("fleetstate")
 		if err != nil {
 			log.Errorf("🚨Failed to get bucketNameFleet value from flag: %s", err)
 		}
 		if bucketNameFleet != "" {
-			log.Infof("✅ Terraform state storage bucket for Fleet is %s", bucketNameSharedVPC)
+			log.Infof("✅ Terraform state storage bucket for Fleet is %s", bucketNameFleet)
 		}
 		bucketNameClusters, err := cmd.Flags().GetString("gkestate")
 		if err != nil {
@@ -67,7 +67,7 @@ var applyCmd = &cobra.Command{
 		config.GenerateTfvars(conf)
 
 		log.Info("👟 Started configuring TF State...")
-		err = config.CheckTfStateType(conf, bucketNameSharedVPC, bucketNameFleet, bucketNameClusters)
+		err = config.CheckTfStateType(conf, bucketNameNetwork, bucketNameFleet, bucketNameClusters)
 
 		if err != nil {
 			log.Errorf("🚨 Failed setting up TF state: %s", err)
@@ -75,14 +75,12 @@ var applyCmd = &cobra.Command{
 			log.Info("✅ TF state configured successfully.")
 		}
 
-		if conf.VpcConfig.VpcType == "shared" {
-			lifecycle.InitTF("shared_vpc")
-			lifecycle.ApplyTF("shared_vpc")
-		}
+		lifecycle.InitTF("network")
+		lifecycle.ApplyTF("network")
 		lifecycle.InitTF("fleet")
 		lifecycle.ApplyTF("fleet")
-		lifecycle.InitTF("cluster_build")
-		lifecycle.ApplyTF("cluster_build")
+		lifecycle.InitTF("clusters")
+		lifecycle.ApplyTF("clusters")
 
 		// Authenticate Kubernetes client-go to all clusters
 		log.Info("☸️ Generating Kubeconfig...")
@@ -106,11 +104,11 @@ var applyCmd = &cobra.Command{
 
 func init() {
 	var bucketNameClusters string
-	var bucketNameSharedVPC string
+	var bucketNameNetwork string
 	var bucketNameFleet string
 
 	rootCmd.AddCommand(applyCmd)
 	applyCmd.Flags().StringVarP(&bucketNameClusters, "gkestate", "g", "", "GKE Tf State bucket name")
-	applyCmd.Flags().StringVarP(&bucketNameSharedVPC, "vpcstate", "v", "", "Shared VPC Tf State bucket name")
+	applyCmd.Flags().StringVarP(&bucketNameNetwork, "vpcstate", "v", "", "Network Tf State bucket name")
 	applyCmd.Flags().StringVarP(&bucketNameFleet, "fleetstate", "f", "", "Fleet Tf State bucket name")
 }

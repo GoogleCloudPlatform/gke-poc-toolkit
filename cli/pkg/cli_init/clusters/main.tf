@@ -24,14 +24,21 @@ variable "project_id" {
 }
 
 variable "fleet_project" {
+  description = "(Optional) Register the cluster with the fleet in this project."
   type        = string
-  description = "The project ID to host the cluster in"
+  default     = null
 }
 
 variable "regional_clusters" {
   type        = bool
   description = "Enable regional control plane."
   default     = true
+}
+
+variable "region" {
+  type        = string
+  description = "The region to host the cluster in"
+  default     = "us-central1"
 }
 
 variable "shared_vpc" {
@@ -45,6 +52,7 @@ variable "vpc_name" {
   description = "The name of the network being created to host the cluster in"
   default     = "gke-toolkit-network"
 }
+
 
 variable "vpc_project_id" {
   type        = string
@@ -65,24 +73,23 @@ variable "vpc_ip_range_services_name" {
 }
 
 variable "release_channel" {
-  type = string
+  type    = string
   default = "regular"
 }
 
-variable "authenticator_security_group" {
-  type        = string
-  description = "The name of the RBAC security group for use with Google security groups in Kubernetes RBAC. Group name must be in format gke-security-groups@yourdomain.com"
-  default     = null
+variable "node_pool" {
+  type    = string
+  default = "gke-toolkit-pool"
 }
 
 variable "initial_node_count" {
   type    = number
-  default = 1
+  default = 4
 }
 
 variable "min_node_count" {
   type    = number
-  default = 1
+  default = 4
 }
 
 variable "max_node_count" {
@@ -92,7 +99,7 @@ variable "max_node_count" {
 
 variable "linux_machine_type" {
   type    = string
-  default = "n1-standard-2"
+  default = "n1-standard-4"
 }
 
 variable "private_endpoint" {
@@ -100,12 +107,18 @@ variable "private_endpoint" {
   default = false
 }
 
-variable "auth_cidr" {
-  type    = string
-  default = "172.16.100.16/28"
+variable "authenticator_security_group" {
+  type        = string
+  description = "The name of the RBAC security group for use with Google security groups in Kubernetes RBAC. Group name must be in format gke-security-groups@yourdomain.com"
+  default     = null
 }
 
 variable "cluster_config" {
   description = "For each cluster, create an object that contain the required fields"
   default     = {}
+}
+
+variable "auth_cidr" {
+  type    = string
+  default = "172.16.100.16/28"
 }

@@ -16,7 +16,6 @@ limitations under the License.
 package cmd
 
 import (
-	"gkekitctl/pkg/config"
 	"gkekitctl/pkg/lifecycle"
 
 	log "github.com/sirupsen/logrus"
@@ -32,10 +31,7 @@ var deleteCmd = &cobra.Command{
 
 	Run: func(cmd *cobra.Command, args []string) {
 		log.Println("Starting delete...")
-		conf := config.InitConf(cfgFile)
-		if conf.VpcConfig.VpcType == "shared" {
-			lifecycle.DestroyTF("shared_vpc")
-		}
+		lifecycle.DestroyTF("network")
 		lifecycle.DestroyTF("cluster_build")
 
 	},
