@@ -1,5 +1,5 @@
 module "cluster_build" {
-  source                            = "{{.TFModuleRepo}}cluster_build?ref={{.TFModuleBranch}}"
+  source                            = "{{.TFModuleRepo}}clusters?ref={{.TFModuleBranch}}"
   project_id                        = var.project_id
   fleet_project                     = var.fleet_project
   regional_clusters                 = var.regional_clusters
@@ -15,7 +15,6 @@ module "cluster_build" {
   linux_machine_type                = var.linux_machine_type
   private_endpoint                  = var.private_endpoint
   authenticator_security_group = var.authenticator_security_group
-  # auth_cidr                         = var.auth_cidr
   cluster_config                    = var.cluster_config
 }
 
