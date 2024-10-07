@@ -116,7 +116,7 @@ resource "google_gke_hub_fleet" "default" {
 
   default_cluster_config {
     security_posture_config {
-      mode               = "ADVANCED"
+      mode               = "ENTERPRISE"
       vulnerability_mode = "VULNERABILITY_BASIC"
     }
   }
