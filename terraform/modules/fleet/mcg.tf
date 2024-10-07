@@ -39,9 +39,6 @@ module "firewall_rules" {
       metadata = "INCLUDE_ALL_METADATA"
     }
   }]
-  depends_on = [
-    module.vpc,
-  ]
 }
 
 // enable Multi-cluster service discovery
