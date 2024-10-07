@@ -84,21 +84,12 @@ var applyCmd = &cobra.Command{
 
 		// Authenticate Kubernetes client-go to all clusters
 		log.Info("☸️ Generating Kubeconfig...")
-		kc, err := lifecycle.GenerateKubeConfig(conf)
+		kc, err := lifecycle.GenerateKubeConfig(conf.FleetProjectID)
 		if err != nil {
 			log.Errorf("🚨 Failed to generate kube config: %s", err)
 		} else {
 			log.Infof("✅ Kubeconfig generated: %+v", kc)
 		}
-
-		// Verify access to Kubernetes API on all clusters
-		// log.Info("☸️  Verifying Kubernetes API access for all clusters...")
-		// err = lifecycle.ListNamespaces(kc)
-		// if err != nil {
-		// 	log.Errorf("🚨 Failed API access check on clusters: %s", err)
-		// } else {
-		// 	log.Info("✅ Clusters API access check passed.")
-		// }
 	},
 }
 

@@ -23,6 +23,7 @@ import (
 )
 
 var cfgFile string
+var fleetProjectId string
 
 var (
 	Version   string
@@ -53,6 +54,7 @@ func init() {
 	// will be global for your application.
 
 	rootCmd.PersistentFlags().StringVarP(&cfgFile, "config", "c", "", "config file (default is /.gkekitctl.yaml)")
+	rootCmd.PersistentFlags().StringVarP(&fleetProjectId, "fleet-project-id", "p", "", "Fleet project ID")
 
 	// Cobra also supports local flags, which will only run
 	// when this action is called directly.

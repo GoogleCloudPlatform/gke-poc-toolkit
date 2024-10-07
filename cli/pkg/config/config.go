@@ -102,38 +102,38 @@ func InitConf(cfgFile string) *Config {
 		}
 	}
 	// Enable GCP APIs - Temporarily adding all apis needed to deal with flakes in the enable service TF module
-	serviceIds := []string{
-		"iam.googleapis.com",
-		"storage.googleapis.com",
-		"compute.googleapis.com",
-		"logging.googleapis.com",
-		"monitoring.googleapis.com",
-		"containerregistry.googleapis.com",
-		"container.googleapis.com",
-		"binaryauthorization.googleapis.com",
-		"stackdriver.googleapis.com",
-		"iap.googleapis.com",
-		"cloudresourcemanager.googleapis.com",
-		"dns.googleapis.com",
-		"iamcredentials.googleapis.com",
-		"stackdriver.googleapis.com",
-		"cloudkms.googleapis.com",
-	}
-	enableService(conf.ClustersProjectID, serviceIds)
-	anthosServiceIds := []string{
-		"anthos.googleapis.com",
-		"gkehub.googleapis.com",
-		"sourcerepo.googleapis.com",
-		"anthosconfigmanagement.googleapis.com",
-		"anthos.googleapis.com",
-		"gkehub.googleapis.com",
-		"multiclusterservicediscovery.googleapis.com",
-		"multiclusteringress.googleapis.com",
-		"trafficdirector.googleapis.com",
-		"mesh.googleapis.com",
-		"multiclustermetering.googleapis.com",
-	}
-	enableService(conf.ClustersProjectID, anthosServiceIds)
+	// serviceIds := []string{
+	// 	"iam.googleapis.com",
+	// 	"storage.googleapis.com",
+	// 	"compute.googleapis.com",
+	// 	"logging.googleapis.com",
+	// 	"monitoring.googleapis.com",
+	// 	"containerregistry.googleapis.com",
+	// 	"container.googleapis.com",
+	// 	"binaryauthorization.googleapis.com",
+	// 	"stackdriver.googleapis.com",
+	// 	"iap.googleapis.com",
+	// 	"cloudresourcemanager.googleapis.com",
+	// 	"dns.googleapis.com",
+	// 	"iamcredentials.googleapis.com",
+	// 	"stackdriver.googleapis.com",
+	// 	"cloudkms.googleapis.com",
+	// }
+	// enableService(conf.ClustersProjectID, serviceIds)
+	// anthosServiceIds := []string{
+	// 	"anthos.googleapis.com",
+	// 	"gkehub.googleapis.com",
+	// 	"sourcerepo.googleapis.com",
+	// 	"anthosconfigmanagement.googleapis.com",
+	// 	"anthos.googleapis.com",
+	// 	"gkehub.googleapis.com",
+	// 	"multiclusterservicediscovery.googleapis.com",
+	// 	"multiclusteringress.googleapis.com",
+	// 	"trafficdirector.googleapis.com",
+	// 	"mesh.googleapis.com",
+	// 	"multiclustermetering.googleapis.com",
+	// }
+	// enableService(conf.ClustersProjectID, anthosServiceIds)
 
 	// Validate config
 	err = ValidateConf(conf)
