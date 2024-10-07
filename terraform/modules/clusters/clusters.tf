@@ -24,7 +24,7 @@ resource "google_container_cluster" "gke_ap" {
   enable_autopilot   = true
   initial_node_count = var.initial_node_count
   network            = "projects/${var.vpc_project_id}/global/networks/${var.vpc_name}"
-  subnetwork         = "projects/${var.vpc_project_id}/regions/us-central1/subnetworks/${each.value.subnet_name}"
+  subnetwork         = "projects/${var.vpc_project_id}/regions/{${each.value.region}}/subnetworks/${each.value.subnet_name}"
   # networking_mode             = "VPC_NATIVE"
   # datapath_provider           = "ADVANCED_DATAPATH"
 
