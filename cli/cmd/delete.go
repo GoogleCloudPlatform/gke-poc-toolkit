@@ -31,8 +31,9 @@ var deleteCmd = &cobra.Command{
 
 	Run: func(cmd *cobra.Command, args []string) {
 		log.Println("Starting delete...")
+		lifecycle.DestroyTF("clusters")
+		lifecycle.DestroyTF("fleet")
 		lifecycle.DestroyTF("network")
-		lifecycle.DestroyTF("cluster_build")
 
 	},
 }
