@@ -18,7 +18,6 @@ package lifecycle
 
 import (
 	"context"
-	"io/ioutil"
 	"log"
 	"os"
 
@@ -27,13 +26,13 @@ import (
 )
 
 func DestroyTF(tfDir string) {
-	tmpDir, err := ioutil.TempDir("", "tfinstall")
+	tmpDir, err := os.MkdirTemp("", "tfinstall")
 	if err != nil {
 		log.Fatalf("error creating temp dir: %s", err)
 	}
 	defer os.RemoveAll(tmpDir)
 
-	execPath, err := tfinstall.Find(context.Background(), tfinstall.ExactVersion("1.3.2", tmpDir))
+	execPath, err := tfinstall.Find(context.Background(), tfinstall.ExactVersion("1.9.5", tmpDir))
 	if err != nil {
 		log.Fatalf("error locating Terraform binary: %s", err)
 	}

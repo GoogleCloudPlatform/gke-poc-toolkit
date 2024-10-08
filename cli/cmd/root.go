@@ -23,6 +23,7 @@ import (
 )
 
 var cfgFile string
+var fleetProjectId string
 
 var (
 	Version   string
@@ -37,15 +38,6 @@ var rootCmd = &cobra.Command{
 	Example: `        gkekitctl create 
 	gkectl create --config <file.yaml>
 	gkekitctl delete`,
-
-	// Uncomment the following line if your bare application
-	// has an action associated with it:
-	// Run: func(cmd *cobra.Command, args []string) {
-	// 	out := cmd.OutOrStdout()
-
-	// 	fmt.Fprintln(out, "Terraform state will be stored:", viper.GetString("terraformState"))
-	// 	fmt.Fprintln(out, conf.ConfigSync)
-	//  },
 }
 
 // Execute adds all child commands to the root command and sets flags appropriately.
@@ -62,6 +54,7 @@ func init() {
 	// will be global for your application.
 
 	rootCmd.PersistentFlags().StringVarP(&cfgFile, "config", "c", "", "config file (default is /.gkekitctl.yaml)")
+	rootCmd.PersistentFlags().StringVarP(&fleetProjectId, "fleet-project-id", "p", "", "Fleet project ID")
 
 	// Cobra also supports local flags, which will only run
 	// when this action is called directly.
@@ -77,11 +70,6 @@ func initConfig() {
 		// Use config file from the flag.
 		viper.SetConfigFile(cfgFile)
 	} else {
-		// Find home directory.
-		// home, err := os.UserHomeDir()
-		// cobra.CheckErr(err)
-
-		// Search config in home directory with name ".gkekitctl" (without extension).
 		viper.AddConfigPath(".")
 		viper.SetConfigType("yaml")
 		viper.SetConfigName(".gkekitctl")

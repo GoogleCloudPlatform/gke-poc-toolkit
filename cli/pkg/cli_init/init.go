@@ -20,7 +20,6 @@ import (
 	"bytes"
 	"embed"
 	"fmt"
-	"io/ioutil"
 	"os"
 	"strings"
 
@@ -32,7 +31,7 @@ import (
 // embeding flatfiles and setting them as a file system variable, embed.FS.
 // embed.FS can be treated like io.FS.
 
-//go:embed templates/* samples/* cluster_build/* shared_vpc/*
+//go:embed templates/* samples/* clusters/* network/* fleet/*
 var templates embed.FS
 
 func InitFlatFiles(folders []string) error {
@@ -56,7 +55,7 @@ func InitFlatFiles(folders []string) error {
 				os.MkdirAll(folder, 0700)
 			}
 			buf.Write(b)
-			err = ioutil.WriteFile(folder+"/"+file.Name(), buf.Bytes(), 0644)
+			err = os.WriteFile(folder+"/"+file.Name(), buf.Bytes(), 0644)
 			if err != nil {
 				return err
 			}
@@ -92,7 +91,7 @@ func OptInAnalytics() error {
 		return nil
 	}
 	// Write opt-in to all config files
-	files, err := ioutil.ReadDir("./samples")
+	files, err := os.ReadDir("./samples")
 	if err != nil {
 		return err
 	}
@@ -107,7 +106,6 @@ func OptInAnalytics() error {
 	return nil
 }
 
-// Source: https://stackoverflow.com/questions/55176623/how-to-ask-yes-or-no-using-golang
 func yesNo() bool {
 	prompt := promptui.Select{
 		Label: "Select[Yes/No]",
@@ -122,7 +120,7 @@ func yesNo() bool {
 }
 
 func addOptInAnalyticsToConfigFile(f string) error {
-	input, err := ioutil.ReadFile(f)
+	input, err := os.ReadFile(f)
 	if err != nil {
 		return err
 	}
@@ -135,7 +133,7 @@ func addOptInAnalyticsToConfigFile(f string) error {
 		}
 	}
 	output := strings.Join(lines, "\n")
-	err = ioutil.WriteFile(f, []byte(output), 0644)
+	err = os.WriteFile(f, []byte(output), 0644)
 	if err != nil {
 		return err
 	}

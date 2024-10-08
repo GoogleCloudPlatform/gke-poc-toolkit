@@ -2,37 +2,39 @@
 # These are the default values used for `gkekitctl create` when 
 # the user does not supply their own config.yml. Note that the user 
 # *does* have to provide their GCP project ID at runtime.  
-terraformState: cloud  
+
+## Global
+sendAnalytics: false
+terraformState: cloud  # local, cloud
+
+## VPC Build
+vpcConfig:
+  vpcName: "prod"
+  vpcType: "standalone" # standalone, shared 
+  vpcProjectId: "my-project"
+  vpcPodCIDRName: "default"
+  vpcSvcCIDRName: "default"
+
+## FleetBuild
+configSyncRepo: "default-config-sync-repo" 
+configSyncBranch: "main"
+configSyncDir: "/"
+
+## Cluster Build
+authenticatorSecurityGroup: "gke-security-groups@<cloud identity domain>"
 clustersProjectId: "my-project"
-governanceProjectId: "my-project"
-region: "us-central1"
-regionalClusters: true
-enablePreemptibleNodepool: false # Enforced on Linux Node pools only
-enableWindowsNodepool: false
-privateEndpoint: false
+fleetProjectId: "my-project" 
+privateEndpoint: true
 releaseChannel: REGULAR
-defaultNodepoolOS: cos
-initialNodeCount: 10
-maxNodeCount: 10
+initialNodeCount: 1 # for Autopilot this has to be 1
 minNodeCount: 1
-configSync: true 
-configSyncRepo: "config-sync-repo" 
-policyController: true
-multiClusterGateway: false
-anthosServiceMesh: false
+maxNodeCount: 10
+defaultNodepoolOS: cos
 tfModuleRepo: "github.com/GoogleCloudPlatform/gke-poc-toolkit//terraform/modules/"
 tfModuleBranch: "main"
-gkeModuleBypass: false
-sendAnalytics: false
-vpcConfig:
-  vpcName: "gke-poc-toolkit"
-  vpcType: "standalone" 
-  vpcProjectId: "my-project" 
-  podCIDRName: "default"
-  svcCIDRName: "default"
-  authCIDR: "0.0.0.0/0"
-clustersConfig:   
-- clusterName: "gke-central"
+
+clustersConfig:  # a list of one or more clusters, each with their own config 
+- clusterName: "gke-ap-central-00"
   machineType: "e2-standard-4"
   region: "us-central1"
   zones: ["us-central1-a"]

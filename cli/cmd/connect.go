@@ -23,21 +23,26 @@ import (
 	"github.com/spf13/cobra"
 )
 
-// deleteCmd represents the delete command
-var deleteCmd = &cobra.Command{
-	Use:     "delete",
-	Short:   "delete GKE Demo Environment",
-	Example: ` gkekitctl delete`,
+// connectCmd represents the connect command
+var connectCmd = &cobra.Command{
+	Use:     "connect",
+	Short:   "connect for all clusters in GKE Demo Environment",
+	Example: ` gkekitctl connect -p <fleet-project-id>`,
 
 	Run: func(cmd *cobra.Command, args []string) {
-		log.Println("Starting delete...")
-		lifecycle.DestroyTF("clusters")
-		lifecycle.DestroyTF("fleet")
-		lifecycle.DestroyTF("network")
+		log.Println("Getting credentials...")
+		// conf := config.InitConf(cfgFile)
 
+		log.Info("☸️ Generating Kubeconfig...")
+		kc, err := lifecycle.GenerateKubeConfig(fleetProjectId)
+		if err != nil {
+			log.Errorf("🚨 Failed to generate kube config: %s", err)
+		} else {
+			log.Infof("✅ Kubeconfig generated: %+v", kc)
+		}
 	},
 }
 
 func init() {
-	rootCmd.AddCommand(deleteCmd)
+	rootCmd.AddCommand(connectCmd)
 }

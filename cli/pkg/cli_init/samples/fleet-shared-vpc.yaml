@@ -1,0 +1,52 @@
+## Global
+sendAnalytics: true
+terraformState: cloud  # local, cloud
+
+## VPC Build
+vpcConfig:
+  vpcName: "prod"
+  vpcType: "shared" # standalone, shared 
+  vpcProjectId: "shared-vpc-prod-00"
+  vpcPodCIDRName: "mypodcidr"
+  vpcSvcCIDRName: "mysvccidr"
+
+## FleetBuild
+configSyncRepo: "https://github.com/knee-berts/fleets-next24-demo"
+configSyncBranch: "dev"
+configSyncDir: "default-configs"
+
+## Cluster Build
+regionalClusters: true # Control plane availability
+authenticatorSecurityGroup: "gke-security-groups@gkedemos.joonix.net"
+clustersProjectId: "fleet-prod-2"
+fleetProjectId: "fleet-prod-2" 
+privateEndpoint: true
+releaseChannel: REGULAR
+initialNodeCount: 10
+minNodeCount: 1
+maxNodeCount: 10
+defaultNodepoolOS: cos
+tfModuleRepo: "github.com/knee-berts/gke-poc-toolkit//terraform/modules/"
+tfModuleBranch: "main"
+
+clustersConfig:  # a list of one or more clusters, each with their own config 
+- clusterName: "gke-std-central-00"
+  machineType: "e2-standard-4"
+  region: "us-central1"
+  zones: ["us-central1-b"]
+  subnetName: "us-central1"
+- clusterName: "gke-std-east-00"
+  machineType: "e2-standard-4"
+  region: "us-east1"
+  zones: ["us-east1-b"]
+  subnetName: "us-east1"
+# - clusterName: "gke-west"
+#   machineType: "e2-standard-4"
+#   region: "us-west1"
+#   zones: ["us-west1-b"]
+#   subnetName: "us-west1"
+# - clusterName: "gke-eu-north"
+#   machineType: "e2-standard-4"
+#   region: "europe-north1"
+#   zones: ["europe-north1-c"]
+#   subnetName: "europe-north1"
