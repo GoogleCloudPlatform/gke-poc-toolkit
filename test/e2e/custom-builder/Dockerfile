@@ -1,4 +1,4 @@
-FROM golang:1.17.6
+FROM golang:1.22.0
 
 # install basic dependencies 
 RUN apt-get update && apt-get install -y --no-install-recommends \
