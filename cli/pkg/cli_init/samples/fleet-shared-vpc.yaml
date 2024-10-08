@@ -1,5 +1,6 @@
 ## Global
 sendAnalytics: true
+terraformState: cloud  # local, cloud
 
 ## VPC Build
 vpcConfig:
@@ -16,7 +17,6 @@ configSyncDir: "default-configs"
 
 ## Cluster Build
 regionalClusters: true # Control plane availability
-terraformState: cloud  # local, cloud
 authenticatorSecurityGroup: "gke-security-groups@gkedemos.joonix.net"
 clustersProjectId: "fleet-prod-2"
 fleetProjectId: "fleet-prod-2" 

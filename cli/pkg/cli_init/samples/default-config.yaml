@@ -4,54 +4,38 @@
 # *does* have to provide their GCP project ID at runtime.  
 
 ## Global
-sendAnalytics: true
+sendAnalytics: false
+terraformState: cloud  # local, cloud
 
 ## VPC Build
 vpcConfig:
   vpcName: "prod"
-  vpcType: "shared" # standalone, shared 
-  vpcProjectId: "shared-vpc-prod-00"
-  vpcPodCIDRName: "mypodcidr"
-  vpcSvcCIDRName: "mysvccidr"
+  vpcType: "standalone" # standalone, shared 
+  vpcProjectId: "my-project"
+  vpcPodCIDRName: "default"
+  vpcSvcCIDRName: "default"
 
 ## FleetBuild
-configSyncRepo: "https://github.com/knee-berts/fleets-next24-demo"
-configSyncBranch: "dev"
-configSyncDir: "default-configs"
+configSyncRepo: "default-config-sync-repo" 
+configSyncBranch: "main"
+configSyncDir: "/"
 
 ## Cluster Build
-regionalClusters: true # Control plane availability
-terraformState: cloud  # local, cloud
-authenticatorSecurityGroup: "gke-security-groups@gkedemos.joonix.net"
-clustersProjectId: "fleet-prod-2"
-fleetProjectId: "fleet-prod-2" 
+authenticatorSecurityGroup: "gke-security-groups@<cloud identity domain>"
+clustersProjectId: "my-project"
+fleetProjectId: "my-project" 
 privateEndpoint: true
 releaseChannel: REGULAR
-initialNodeCount: 10
+initialNodeCount: 1 # for Autopilot this has to be 1
 minNodeCount: 1
 maxNodeCount: 10
 defaultNodepoolOS: cos
-tfModuleRepo: "github.com//knee-berts/gke-poc-toolkit//terraform/modules/"
+tfModuleRepo: "github.com/GoogleCloudPlatform/gke-poc-toolkit//terraform/modules/"
 tfModuleBranch: "main"
 
 clustersConfig:  # a list of one or more clusters, each with their own config 
-- clusterName: "gke-std-central-00"
+- clusterName: "gke-ap-central-00"
   machineType: "e2-standard-4"
   region: "us-central1"
-  zones: ["us-central1-b"]
+  zones: ["us-central1-a"]
   subnetName: "us-central1"
-- clusterName: "gke-std-east-00"
-  machineType: "e2-standard-4"
-  region: "us-east1"
-  zones: ["us-east1-b"]
-  subnetName: "us-east1"
-# - clusterName: "gke-west"
-#   machineType: "e2-standard-4"
-#   region: "us-west1"
-#   zones: ["us-west1-b"]
-#   subnetName: "us-west1"
-# - clusterName: "gke-eu-north"
-#   machineType: "e2-standard-4"
-#   region: "europe-north1"
-#   zones: ["europe-north1-c"]
-#   subnetName: "europe-north1"

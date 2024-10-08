@@ -24,6 +24,43 @@ resource "google_project_iam_member" "hubsa" {
   ]
 }
 
+locals {
+  cs_service_account       = "cs-service-account"
+  cs_service_account_email = "${local.cs_service_account}@${var.project_id}.iam.gserviceaccount.com"
+}
+
+// https://registry.terraform.io/providers/hashicorp/google/latest/docs/resources/sourcerepo_repository 
+// Create 1 centralized Cloud Source Repo, that all GKE clusters will sync to  
+resource "google_sourcerepo_repository" "default-config-sync-repo" {
+  name    = var.config_sync_repo
+  project = var.fleet_project
+}
+
+// create ACM service account 
+module "service_accounts" {
+  source        = "terraform-google-modules/service-accounts/google"
+  # version       = "~> 4.2.0"
+  project_id    = var.fleet_project
+  display_name  = "CS service account"
+  names         = [local.cs_service_account]
+  project_roles = ["${var.fleet_project}=>roles/source.reader"]
+}
+
+module "service_account-iam-bindings" {
+  depends_on = [
+    resource.google_gke_hub_feature.config_management,
+  ]
+  source = "terraform-google-modules/iam/google//modules/service_accounts_iam"
+
+  service_accounts = [local.cs_service_account_email]
+  project          = var.fleet_project
+  bindings = {
+    "roles/iam.workloadIdentityUser" = [
+      "serviceAccount:${var.fleet_project}.svc.id.goog[config-management-system/root-reconciler]",
+    ]
+  }
+}
+
 # Fleet Policy Defaults
 resource "google_gke_hub_feature" "fleet_policy_defaults" {
   project  = var.fleet_project
@@ -64,13 +101,14 @@ resource "google_gke_hub_feature" "config_management" {
           sync_repo   = var.config_sync_repo
           sync_branch = var.config_sync_repo_branch
           policy_dir  = var.config_sync_repo_dir
-          secret_type = "none"
+          secret_type               = "gcpserviceaccount"
+          gcp_service_account_email = local.cs_service_account_email
         }
       }
     }
   }
 
-  depends_on = [module.enabled_service_project_apis]
+  depends_on = [module.service_account-iam-bindings]
 }
 
 # Mesh Config Defaults
