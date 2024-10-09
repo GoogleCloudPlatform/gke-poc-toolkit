@@ -14,6 +14,18 @@
  * limitations under the License.
  */
 
+// Public IP for CSM MCG 
+resource "google_compute_global_address" "csm_ingressgw_ip" {
+  name = "csm-ingressgw-ip"
+  project        = var.fleet_project
+}
+
+resource "google_endpoints_service" "csm_ingressgw_service" {
+  service_name   = "api-name.endpoints.project-id.cloud.goog"
+  project        = var.fleet_project
+  openapi_config = file("csm_openapi_spec.yml")
+}
+
 // https://cloud.google.com/kubernetes-engine/docs/how-to/multi-cluster-ingress-setup#shared_vpc_deployment 
 module "firewall_rules" {
   source       = "terraform-google-modules/network/google//modules/firewall-rules"

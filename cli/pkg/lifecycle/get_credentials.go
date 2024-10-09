@@ -8,6 +8,7 @@ import (
 	gateway "cloud.google.com/go/gkeconnect/gateway/apiv1"
 	gatewaypb "cloud.google.com/go/gkeconnect/gateway/apiv1/gatewaypb"
 	log "github.com/sirupsen/logrus"
+	"google.golang.org/api/cloudresourcemanager/v1"
 	"google.golang.org/api/gkehub/v1"
 	"google.golang.org/api/option"
 	"k8s.io/client-go/tools/clientcmd"
@@ -34,6 +35,13 @@ func GenerateKubeConfig(fleetProjectId string) (*clientcmdapi.Config, error) {
 		return nil, err
 	}
 
+	// Get the project number for the fleet project needed later in the generate credentials request
+	projectNumber, err := getProjectNumber(fleetProjectId)
+	if err != nil {
+		log.Errorf("Failed to get project number: %v", err)
+		return nil, err
+	}
+
 	// Create a new kubeconfig.
 	config := clientcmdapi.NewConfig()
 
@@ -55,7 +63,7 @@ func GenerateKubeConfig(fleetProjectId string) (*clientcmdapi.Config, error) {
 
 		// Create a Gateway Control Client with the correct endpoint
 		ctx2 := context.Background()
-		gcc, err := gateway.NewGatewayControlClient(ctx2, option.WithEndpoint(endpoint))
+		gcc, err := gateway.NewGatewayControlRESTClient(ctx2, option.WithEndpoint(endpoint))
 		if err != nil {
 			log.Errorf("Failed to create gateway control client for %s: %v", membershipName, err)
 			failedMemberships = append(failedMemberships, membershipName)
@@ -64,6 +72,10 @@ func GenerateKubeConfig(fleetProjectId string) (*clientcmdapi.Config, error) {
 		defer gcc.Close()
 
 		log.Infof("Generating credentials for membership: %s", membershipName)
+
+		// Construct the correct membership name with project number
+		membershipName = fmt.Sprintf("projects/%s/locations/%s/memberships/%s",
+			projectNumber, membershipLocation, extractMembershipID(membership.Name))
 
 		// Generate credentials for each membership
 		req := &gatewaypb.GenerateCredentialsRequest{
@@ -125,4 +137,24 @@ func extractLocation(path string) string {
 		}
 	}
 	return ""
+}
+
+func extractMembershipID(membershipName string) string {
+	parts := strings.Split(membershipName, "/")
+	return parts[len(parts)-1]
+}
+
+func getProjectNumber(projectID string) (string, error) {
+	ctx := context.Background()
+	crmService, err := cloudresourcemanager.NewService(ctx)
+	if err != nil {
+		return "", fmt.Errorf("failed to create Resource Manager client: %v", err)
+	}
+
+	project, err := crmService.Projects.Get(projectID).Do()
+	if err != nil {
+		return "", fmt.Errorf("failed to get project: %v", err)
+	}
+
+	return fmt.Sprintf("%d", project.ProjectNumber), nil
 }
