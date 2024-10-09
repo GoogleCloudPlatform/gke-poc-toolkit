@@ -14,16 +14,59 @@
  * limitations under the License.
  */
 
-// Public IP for CSM MCG 
-resource "google_compute_global_address" "csm_ingressgw_ip" {
-  name = "csm-ingressgw-ip"
+// Hydrate 
+locals{
+  whereami_openapi_spec = <<-EOT
+    swagger: "2.0"
+    info:
+      description: "Cloud Endpoints DNS"
+      title: "Cloud Endpoints DNS"
+      version: "1.0.0"
+    paths: {}
+    host: "whereami.endpoints.${var.fleet_project}.cloud.goog"
+    x-google-endpoints:
+    - name: "whereami.endpoints.${var.fleet_project}.cloud.goog"
+      target: "whereami-ip"
+  EOT 
+
+  inference_openapi_spec = <<-EOT
+    swagger: "2.0"
+    info:
+      description: "Cloud Endpoints DNS"
+      title: "Cloud Endpoints DNS"
+      version: "1.0.0"
+    paths: {}
+    host: "inference.endpoints.${var.fleet_project}.cloud.goog"
+    x-google-endpoints:
+    - name: "inference.endpoints.${var.fleet_project}.cloud.goog"
+      target: "inference-ip"
+  EOT 
+}
+
+// Public IP & endpoint for whereami app 
+resource "google_compute_global_address" "whereami_ip" {
+  name = "whereami-ip"
   project        = var.fleet_project
 }
 
-resource "google_endpoints_service" "csm_ingressgw_service" {
-  service_name   = "api-name.endpoints.project-id.cloud.goog"
+resource "google_endpoints_service" "whereami_service" {
+  service_name   = "whereami.endpoints.project-id.cloud.goog"
   project        = var.fleet_project
-  openapi_config = file("csm_openapi_spec.yml")
+  openapi_config = local.whereami_openapi_spec
+  depends_on     = resource.google_compute_global_address.whereami_ip
+}
+
+// Public IP for inference app 
+resource "google_compute_global_address" "inference_ip" {
+  name = "inference-ip"
+  project        = var.fleet_project
+}
+
+resource "google_endpoints_service" "inference_service" {
+  service_name   = "inference.endpoints.project-id.cloud.goog"
+  project        = var.fleet_project
+  openapi_config = local.inference_openapi_spec
+  depends_on     = resource.google_compute_global_address.inference_ip
 }
 
 // https://cloud.google.com/kubernetes-engine/docs/how-to/multi-cluster-ingress-setup#shared_vpc_deployment 

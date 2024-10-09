@@ -68,7 +68,11 @@ resource "google_gke_hub_feature" "config_management" {
     }
   }
 
-  depends_on = [module.service_account-iam-bindings]
+  depends_on = [
+    module.service_account-iam-bindings,
+    resource.google_endpoints_service.whereami_service,
+    resource.google_endpoints_service.inference_service,
+  ]
 }
 
 # Mesh Config Defaults

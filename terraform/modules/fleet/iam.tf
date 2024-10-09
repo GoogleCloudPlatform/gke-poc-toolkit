@@ -1,6 +1,10 @@
 locals {
+  # Config Sync Service Account
   cs_service_account       = "cs-service-account"
   cs_service_account_email = "${local.cs_service_account}@${var.fleet_project}.iam.gserviceaccount.com"
+  # Hub service account
+  hub_service_account_email = format("service-%s@gcp-sa-gkehub.iam.gserviceaccount.com", data.google_project.fleet_project.number)
+  hub_service_account       = "serviceAccount:${local.hub_service_account_email}"
 }
 
 # Create Hub Service Account
