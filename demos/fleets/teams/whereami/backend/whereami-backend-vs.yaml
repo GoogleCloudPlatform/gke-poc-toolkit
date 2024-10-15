@@ -1,0 +1,14 @@
+apiVersion: networking.istio.io/v1beta1
+kind: VirtualService
+metadata:
+  name: whereami-vs
+  namespace: whereami-backend
+spec:
+  hosts:
+  - 'whereami-backend.whereami-backend.svc.cluster.local'
+  http:
+  - route:
+    - destination:
+        host: whereami-backend
+        port:
+          number: 80

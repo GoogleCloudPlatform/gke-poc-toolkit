@@ -1,0 +1,47 @@
+## Global
+sendAnalytics: true
+terraformState: cloud  # local, cloud
+
+## VPC Build
+vpcConfig:
+  vpcName: "prod-3"
+  vpcType: "standalone" # standalone, shared 
+  vpcProjectId: "MYPROJECT"
+  vpcPodCIDRName: "mypodcidr"
+  vpcSvcCIDRName: "mysvccidr"
+
+## FleetBuild
+configSyncRepo: "default-config-sync-repo" 
+configSyncBranch: "main"
+configSyncDir: "/"
+
+## Cluster Build
+authenticatorSecurityGroup: "gke-security-groups@gkedemos.joonix.net"
+clustersProjectId: "MYPROJECT"
+fleetProjectId: "MYPROJECT" 
+privateEndpoint: true
+releaseChannel: REGULAR
+initialNodeCount: 1
+minNodeCount: 1
+maxNodeCount: 10
+defaultNodepoolOS: cos
+tfModuleRepo: "github.com/GoogleCloudPlatform/gke-poc-toolkit//terraform/modules/"
+tfModuleBranch: "main"
+
+clustersConfig:  # a list of one or more clusters, each with their own config 
+- clusterName: "gke-ap-central-00"
+  region: "us-central1"
+  # zones: ["us-central1-b"]
+  subnetName: "us-central1"
+- clusterName: "gke-ap-east-00"
+  region: "us-east1"
+  # zones: ["us-east1-b"]
+  subnetName: "us-east1"
+# - clusterName: "gke-west"
+#   region: "us-west1"
+#   zones: ["us-west1-b"]
+#   subnetName: "us-west1"
+# - clusterName: "gke-eu-north"
+#   region: "europe-north1"
+#   zones: ["europe-north1-c"]
+#   subnetName: "europe-north1"

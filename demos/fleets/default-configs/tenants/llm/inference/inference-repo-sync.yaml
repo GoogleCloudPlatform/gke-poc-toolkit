@@ -1,0 +1,30 @@
+kind: RepoSync
+apiVersion: configsync.gke.io/v1beta1
+metadata:
+  name: inference
+  annotations:
+    configmanagement.gke.io/namespace-selector: inference
+    # configsync.gke.io/deletion-propagation-policy: Foreground
+spec:
+  sourceFormat: unstructured
+  git:
+    repo: https://github.com/GoogleCloudPlatform/gke-poc-toolkit
+    branch: main
+    dir: demo/fleets/teams/llm/inference
+    auth: gcpserviceaccount
+    gcpServiceAccountEmail: cs-service-account@MYPROJECT.iam.gserviceaccount.com
+---
+kind: RoleBinding
+apiVersion: rbac.authorization.k8s.io/v1
+metadata:
+  name: inference
+  annotations:
+    configmanagement.gke.io/namespace-selector: inference
+subjects:
+- kind: ServiceAccount
+  name: ns-reconciler-inference-inference-9
+  namespace: config-management-system
+roleRef:
+  kind: ClusterRole
+  name: edit
+  apiGroup: rbac.authorization.k8s.io

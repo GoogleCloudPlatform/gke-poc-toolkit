@@ -1,0 +1,28 @@
+# apiVersion: constraints.gatekeeper.sh/v1beta1
+# kind: TeamResourceQuota
+# metadata:
+#   name: whereami-resource-quota
+#   annotations:
+#     # configmanagement.gke.io/namespace-selector: whereami-team-scope
+# spec:
+#   enforcementAction: deny
+#   match:
+#     kinds:
+#     - apiGroups:
+#       - ""
+#       kinds:
+#       - Pod
+#       - ResourceQuota
+#   parameters:
+#     fields:
+#       limits.cpu: 1.5k
+#       limits.memory: 128Gi
+#       requests.cpu: 1k
+#       requests.memory: 96Gi
+#       requests.storage: 128Gi
+#       services.loadbalancers: "10"
+#       services.nodeports: "10"
+#     selector:
+#       label:
+#         key: teamresourcequota
+#         value: team-whereami

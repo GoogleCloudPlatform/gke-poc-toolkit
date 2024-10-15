@@ -102,24 +102,24 @@ func InitConf(cfgFile string) *Config {
 		}
 	}
 	// Enable GCP APIs - Temporarily adding all apis needed to deal with flakes in the enable service TF module
-	// serviceIds := []string{
-	// 	"iam.googleapis.com",
-	// 	"storage.googleapis.com",
-	// 	"compute.googleapis.com",
-	// 	"logging.googleapis.com",
-	// 	"monitoring.googleapis.com",
-	// 	"containerregistry.googleapis.com",
-	// 	"container.googleapis.com",
-	// 	"binaryauthorization.googleapis.com",
-	// 	"stackdriver.googleapis.com",
-	// 	"iap.googleapis.com",
-	// 	"cloudresourcemanager.googleapis.com",
-	// 	"dns.googleapis.com",
-	// 	"iamcredentials.googleapis.com",
-	// 	"stackdriver.googleapis.com",
-	// 	"cloudkms.googleapis.com",
-	// }
-	// enableService(conf.ClustersProjectID, serviceIds)
+	serviceIds := []string{
+		// 	"iam.googleapis.com",
+		// 	"storage.googleapis.com",
+		"compute.googleapis.com",
+		// 	"logging.googleapis.com",
+		// 	"monitoring.googleapis.com",
+		// 	"containerregistry.googleapis.com",
+		// 	"container.googleapis.com",
+		// 	"binaryauthorization.googleapis.com",
+		// 	"stackdriver.googleapis.com",
+		// 	"iap.googleapis.com",
+		// 	"cloudresourcemanager.googleapis.com",
+		// 	"dns.googleapis.com",
+		// 	"iamcredentials.googleapis.com",
+		// 	"stackdriver.googleapis.com",
+		// 	"cloudkms.googleapis.com",
+	}
+	enableService(conf.ClustersProjectID, serviceIds)
 	// anthosServiceIds := []string{
 	// 	"anthos.googleapis.com",
 	// 	"gkehub.googleapis.com",

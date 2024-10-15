@@ -1,0 +1,160 @@
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  # annotations:
+  #   configmanagement.gke.io/namespace-selector: wherami-fleet-scope-selector
+  labels:
+    app: whereami-frontend
+  name: whereami-frontend
+  namespace: whereami-frontend
+---
+kind: ConfigMap
+metadata:
+  # annotations:
+  #   configmanagement.gke.io/namespace-selector: wherami-fleet-scope-selector
+  labels:
+    app: whereami-frontend
+  name: whereami-frontend
+  namespace: whereami-frontend
+apiVersion: v1
+data:
+  BACKEND_ENABLED: "True"
+  BACKEND_SERVICE: http://whereami-backend.whereami-backend.svc.cluster.local
+  ECHO_HEADERS: "False"
+  GRPC_ENABLED: "False"
+  HOST: 0.0.0.0
+  METADATA: frontend
+  TRACE_SAMPLING_RATIO: "0.00"
+---
+apiVersion: v1
+kind: Service
+metadata:
+  # annotations:
+  #   configmanagement.gke.io/namespace-selector: wherami-fleet-scope-selector
+  labels:
+    app: whereami-frontend
+  name: whereami-frontend
+  namespace: whereami-frontend
+spec:
+  ports:
+  - name: http
+    port: 80
+    protocol: TCP
+    targetPort: 8080
+  selector:
+    app: whereami-frontend
+  type: ClusterIP
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  # annotations:
+  #   configmanagement.gke.io/namespace-selector: wherami-fleet-scope-selector
+  labels:
+    app: whereami-frontend
+  name: whereami-frontend
+  namespace: whereami-frontend
+spec:
+  replicas: 3
+  selector:
+    matchLabels:
+      app: whereami-frontend
+  template:
+    metadata:
+      labels:
+        app: whereami-frontend
+        version: v1
+    spec:
+      containers:
+      - env:
+        - name: NODE_NAME
+          valueFrom:
+            fieldRef:
+              fieldPath: spec.nodeName
+        - name: POD_NAMESPACE
+          valueFrom:
+            fieldRef:
+              fieldPath: metadata.namespace
+        - name: POD_IP
+          valueFrom:
+            fieldRef:
+              fieldPath: status.podIP
+        - name: POD_SERVICE_ACCOUNT
+          valueFrom:
+            fieldRef:
+              fieldPath: spec.serviceAccountName
+        - name: BACKEND_ENABLED
+          valueFrom:
+            configMapKeyRef:
+              key: BACKEND_ENABLED
+              name: whereami-frontend
+        - name: BACKEND_SERVICE
+          valueFrom:
+            configMapKeyRef:
+              key: BACKEND_SERVICE
+              name: whereami-frontend
+        - name: METADATA
+          valueFrom:
+            configMapKeyRef:
+              key: METADATA
+              name: whereami-frontend
+        - name: ECHO_HEADERS
+          valueFrom:
+            configMapKeyRef:
+              key: ECHO_HEADERS
+              name: whereami-frontend
+        - name: GRPC_ENABLED
+          valueFrom:
+            configMapKeyRef:
+              key: GRPC_ENABLED
+              name: whereami-frontend
+        - name: TRACE_SAMPLING_RATIO
+          valueFrom:
+            configMapKeyRef:
+              key: TRACE_SAMPLING_RATIO
+              name: whereami-frontend
+        - name: HOST
+          valueFrom:
+            configMapKeyRef:
+              key: HOST
+              name: whereami-frontend
+        image: us-docker.pkg.dev/google-samples/containers/gke/whereami:v1.2.22
+        livenessProbe:
+          httpGet:
+            path: /healthz
+            port: 8080
+            scheme: HTTP
+          initialDelaySeconds: 10
+          periodSeconds: 15
+          timeoutSeconds: 5
+        name: whereami
+        ports:
+        - containerPort: 8080
+          name: http
+        readinessProbe:
+          httpGet:
+            path: /healthz
+            port: 8080
+            scheme: HTTP
+          initialDelaySeconds: 10
+          timeoutSeconds: 1
+        resources:
+          limits:
+            cpu: 250m
+            memory: 512Mi
+          requests:
+            cpu: 250m
+            memory: 512Mi
+        securityContext:
+          allowPrivilegeEscalation: false
+          capabilities:
+            drop:
+            - all
+          privileged: false
+          readOnlyRootFilesystem: true
+      securityContext:
+        fsGroup: 1000
+        runAsGroup: 1000
+        runAsNonRoot: true
+        runAsUser: 1000
+      serviceAccountName: whereami-frontend

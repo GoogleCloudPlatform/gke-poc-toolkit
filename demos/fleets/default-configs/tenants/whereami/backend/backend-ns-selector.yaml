@@ -1,0 +1,10 @@
+kind: NamespaceSelector
+apiVersion: configmanagement.gke.io/v1
+metadata:
+  name: whereami-backend
+spec:
+  mode: dynamic
+  selector:
+    matchLabels: 
+      fleet.gke.io/fleet-scope: team-whereami
+      kubernetes.io/metadata.name: whereami-backend

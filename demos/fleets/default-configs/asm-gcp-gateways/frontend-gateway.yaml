@@ -1,0 +1,23 @@
+kind: Gateway
+apiVersion: gateway.networking.k8s.io/v1beta1
+metadata:
+  name: external-http
+  namespace: asm-gateways
+  annotations:
+    networking.gke.io/certmap: mcg-cert-map
+    configsync.gke.io/cluster-name-selector: gke-dev-us-central1-01
+spec:
+  gatewayClassName: gke-l7-global-external-managed-mc
+  listeners:
+  - name: http # list the port only so we can redirect any incoming http requests to https
+    protocol: HTTP
+    port: 80
+  - name: https
+    protocol: HTTPS
+    port: 443
+    allowedRoutes:
+      kinds:
+      - kind: HTTPRoute
+  addresses:
+  - type: NamedAddress
+    value: whereami-ip

@@ -1,0 +1,12 @@
+apiVersion: networking.gke.io/v1
+kind: GCPBackendPolicy
+metadata:
+  name: cloud-armor-backendpolicy
+  namespace: asm-gateways
+spec:
+  default:
+    securityPolicy: edge-fw-policy
+  targetRef:
+    group: net.gke.io
+    kind: ServiceImport
+    name: asm-ingress-gateway-xlb

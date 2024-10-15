@@ -1,0 +1,5 @@
+kind: ServiceExport
+apiVersion: net.gke.io/v1
+metadata:
+ namespace: inference
+ name: llm-service-global

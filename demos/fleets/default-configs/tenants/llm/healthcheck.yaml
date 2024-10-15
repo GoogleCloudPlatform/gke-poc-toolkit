@@ -1,0 +1,23 @@
+apiVersion: networking.gke.io/v1
+kind: HealthCheckPolicy
+metadata:
+  name: llm-gateway-healthcheck
+  namespace: inference
+  annotations:
+    configsync.gke.io/cluster-name-selector: gke-dev-us-central1-01
+spec:
+  default:
+    checkIntervalSec: 15
+    healthyThreshold: 10
+    unhealthyThreshold: 1  
+    config:
+      httpHealthCheck:
+        port: 15021
+        portSpecification: USE_FIXED_PORT
+        requestPath: /health
+      type: HTTP
+  targetRef:
+    group: net.gke.io
+    kind: ServiceImport
+    name: llm-service-global
+    namespace: inference

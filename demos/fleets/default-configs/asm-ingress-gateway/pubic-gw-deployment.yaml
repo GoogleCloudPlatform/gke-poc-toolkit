@@ -1,0 +1,96 @@
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: asm-ingress-gateway
+  namespace: asm-gateways
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: asm-ingress-gateway-xlb
+  namespace: asm-gateways
+spec:
+  selector:
+    matchLabels:
+      asm: asm-ingress-gateway-xlb
+  template:
+    metadata:
+      annotations:
+        inject.istio.io/templates: gateway
+      labels:
+        asm: asm-ingress-gateway-xlb
+        # asm.io/rev: ${ASM_LABEL} # This is required only if the namespace is not labeled.
+    spec:
+      containers:
+      - name: istio-proxy
+        image: auto
+        env:
+        - name: ISTIO_META_UNPRIVILEGED_POD
+          value: "true"
+        ports:
+        - containerPort: 8080
+          protocol: TCP
+        resources:
+          limits:
+            cpu: 2000m
+            memory: 1024Mi
+          requests:
+            cpu: 100m
+            memory: 128Mi
+        securityContext:
+          allowPrivilegeEscalation: false
+          capabilities:
+            drop:
+              - all
+          privileged: false
+          readOnlyRootFilesystem: true
+        volumeMounts:
+          - mountPath: "/var/secrets"
+            name: certs
+      securityContext:
+        fsGroup: 1337
+        runAsGroup: 1337
+        runAsNonRoot: true
+        runAsUser: 1337
+      serviceAccountName: asm-ingress-gateway
+      volumes:
+        - name: certs
+          csi:
+            driver: secrets-store-gke.csi.k8s.io
+            readOnly: true
+            volumeAttributes:
+              secretProviderClass: asm-gateway-ss-cert
+---
+apiVersion: secrets-store.csi.x-k8s.io/v1
+kind: SecretProviderClass
+metadata:
+  name: asm-gateway-ss-cert
+  namespace: asm-gateways
+spec:
+  provider: gke
+  parameters:
+    secrets: |
+      - resourceName: "projects/MYPROJECT/secrets/edge2mesh-credential-crt/versions/1"
+        path: "edge2mesh-credential.crt"    
+      - resourceName: "projects/MYPROJECT/secrets/edge2mesh-credential-key/versions/1"
+        path: "edge2mesh-credential.key"
+---
+apiVersion: autoscaling/v2
+kind: HorizontalPodAutoscaler
+metadata:
+  name: asm-ingress-gateway
+  namespace: asm-gateways
+spec:
+  maxReplicas: 5
+  minReplicas: 1
+  metrics:
+  - type: Resource
+    resource:
+      name: cpu
+      target:
+        type: Utilization
+        averageUtilization: 50
+  scaleTargetRef:
+    apiVersion: apps/v1
+    kind: Deployment
+    name: asm-ingress-gateway-xlb

@@ -26,7 +26,7 @@ locals{
     host: "whereami.endpoints.${var.fleet_project}.cloud.goog"
     x-google-endpoints:
     - name: "whereami.endpoints.${var.fleet_project}.cloud.goog"
-      target: "whereami-ip"
+      target: ${google_compute_global_address.whereami_ip.address}
   EOT 
 
   inference_openapi_spec = <<-EOT
@@ -39,7 +39,7 @@ locals{
     host: "inference.endpoints.${var.fleet_project}.cloud.goog"
     x-google-endpoints:
     - name: "inference.endpoints.${var.fleet_project}.cloud.goog"
-      target: "inference-ip"
+      target: ${google_compute_global_address.inference_ip.address}
   EOT 
 }
 
@@ -50,10 +50,13 @@ resource "google_compute_global_address" "whereami_ip" {
 }
 
 resource "google_endpoints_service" "whereami_service" {
-  service_name   = "whereami.endpoints.project-id.cloud.goog"
+  service_name   = "whereami.endpoints.${var.fleet_project}.cloud.goog"
   project        = var.fleet_project
   openapi_config = local.whereami_openapi_spec
-  depends_on     = resource.google_compute_global_address.whereami_ip
+  depends_on     = [
+      resource.google_compute_global_address.whereami_ip,
+      module.enabled_service_project_apis,
+    ]
 }
 
 // Public IP for inference app 
@@ -63,10 +66,13 @@ resource "google_compute_global_address" "inference_ip" {
 }
 
 resource "google_endpoints_service" "inference_service" {
-  service_name   = "inference.endpoints.project-id.cloud.goog"
+  service_name   = "inference.endpoints.${var.fleet_project}.cloud.goog"
   project        = var.fleet_project
   openapi_config = local.inference_openapi_spec
-  depends_on     = resource.google_compute_global_address.inference_ip
+  depends_on     = [
+    resource.google_compute_global_address.inference_ip,
+    module.enabled_service_project_apis,
+    ]
 }
 
 // https://cloud.google.com/kubernetes-engine/docs/how-to/multi-cluster-ingress-setup#shared_vpc_deployment 
@@ -150,8 +156,6 @@ resource "google_project_iam_binding" "serviceagent-fleet-host" {
   ]
   depends_on = [google_gke_hub_feature.mcs]
 }
-
-
 
 // Create IAM binding granting the fleet host project MCS service account the MCS Service Agent role on the Shared VPC host project
 resource "google_project_iam_binding" "network-viewer-fleet-host" {

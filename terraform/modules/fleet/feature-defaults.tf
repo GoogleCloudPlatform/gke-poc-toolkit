@@ -58,7 +58,7 @@ resource "google_gke_hub_feature" "config_management" {
       config_sync {
         source_format = "unstructured"
         git {
-          sync_repo   = var.config_sync_repo
+          sync_repo   = "https://source.developers.google.com/p/${var.fleet_project}/r/${var.config_sync_repo}"
           sync_branch = var.config_sync_repo_branch
           policy_dir  = var.config_sync_repo_dir
           secret_type               = "gcpserviceaccount"
@@ -69,7 +69,6 @@ resource "google_gke_hub_feature" "config_management" {
   }
 
   depends_on = [
-    module.service_account-iam-bindings,
     resource.google_endpoints_service.whereami_service,
     resource.google_endpoints_service.inference_service,
   ]

@@ -1,0 +1,55 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: prometheus-frontend
+  namespace: prod-tools
+  # annotations:
+  #   configmanagement.gke.io/cluster-selector: selector-prod
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: prometheus-frontend
+  template:
+    metadata:
+      labels:
+        app: prometheus-frontend
+    spec:
+      automountServiceAccountToken: true
+      # nodeSelector:
+      #   kubernetes.io/os: linux
+      #   kubernetes.io/arch: amd64
+      containers:
+      - name: frontend
+        image: "gke.gcr.io/prometheus-engine/frontend:v0.4.1-gke.0"
+        args:
+        - "--web.listen-address=:9090"
+        - "--query.project-id=MYPROJECT"
+        ports:
+        - name: web
+          containerPort: 9090
+        readinessProbe:
+          httpGet:
+            path: /-/ready
+            port: web
+        livenessProbe:
+          httpGet:
+            path: /-/healthy
+            port: web
+        resources:
+          requests:
+            memory: 512Mi
+            cpu: 250m
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: prometheus-frontend
+  namespace: prod-tools
+spec:
+  clusterIP: None
+  selector:
+    app: prometheus-frontend
+  ports:
+  - name: web
+    port: 9090

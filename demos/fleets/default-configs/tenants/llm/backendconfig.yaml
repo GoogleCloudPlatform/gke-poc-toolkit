@@ -1,0 +1,12 @@
+# apiVersion: cloud.google.com/v1
+# kind: BackendConfig
+# metadata:
+#   name: llm-gateway-config
+#   namespace: inference
+#   # annotations:
+#   #   configsync.gke.io/cluster-name-selector: gke-dev-us-central1-01
+# spec:
+#   healthCheck:
+#     requestPath: /healthz/ready
+#     port: 15021
+#     type: HTTP

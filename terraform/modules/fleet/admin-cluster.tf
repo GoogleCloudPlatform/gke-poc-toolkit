@@ -92,5 +92,7 @@ resource "google_container_cluster" "admin" {
     module.enabled_service_project_apis,
     google_gke_hub_feature.mesh_config_defaults,
     google_gke_hub_fleet.default,
+    google_project_iam_member.hubsa,
+    
   ]
 }

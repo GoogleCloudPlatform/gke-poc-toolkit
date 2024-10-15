@@ -36,7 +36,10 @@ module "enabled_service_project_apis" {
     "logging.googleapis.com",
     "cloudresourcemanager.googleapis.com",
     "multiclusterservicediscovery.googleapis.com",
+    "multiclusteringress.googleapis.com",
     "compute.googleapis.com",
     "iam.googleapis.com",
+    "sourcerepo.googleapis.com",
+    "endpoints.googleapis.com",
   ]
 }

@@ -1,0 +1,11 @@
+# ### from https://kubernetes.io/docs/concepts/services-networking/network-policies/#default-deny-all-ingress-traffic
+# apiVersion: networking.k8s.io/v1
+# kind: NetworkPolicy
+# metadata:
+#   name: whereami-default-deny-ingress
+#   annotations:
+#     configmanagement.gke.io/namespace-selector: whereami-team-scope
+# spec:
+#   podSelector: {}
+#   policyTypes:
+#   - Ingress
