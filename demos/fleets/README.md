@@ -105,8 +105,20 @@ nomos status
 ## Multi cluster load balancing demo
 stuffs
 
-1. **Setup Teams and bind that Whereami team to a cluster that us not the closest to your location.**
+1. **Create the Whereami Team and binde the Whereami team to a cluster that is not the closest to your location.**
 ```bash
+# grant source repo access to the whereami frontend and backend KSAs
+gcloud iam service-accounts add-iam-policy-binding \
+    cs-service-account@gke-toolkit-test-nonsharedvpc.iam.gserviceaccount.com \
+    --role=roles/iam.workloadIdentityUser \
+    --member="serviceAccount:gke-toolkit-test-nonsharedvpc.svc.id.goog[config-management-system/ns-reconciler-whereami-frontend-whereami-frontend-17" \
+    --project=gke-toolkit-test-nonsharedvpc
+gcloud iam service-accounts add-iam-policy-binding \
+    cs-service-account@gke-toolkit-test-nonsharedvpc.iam.gserviceaccount.com \
+    --role=roles/iam.workloadIdentityUser \
+    --member="serviceAccount:gke-toolkit-test-nonsharedvpc.svc.id.goog[config-management-system/ns-reconciler-whereami-frontend-whereami-backend-16" \
+    --project=gke-toolkit-test-nonsharedvpc
+
 gcloud container fleet scopes create team-whereami --project ${GKE_PROJECT_ID}
 gcloud container fleet scopes namespaces create whereami-frontend --scope=team-whereami --project ${GKE_PROJECT_ID} 
 gcloud container fleet memberships bindings create gke-ap-central-00-team-whereami \

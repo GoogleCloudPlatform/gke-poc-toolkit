@@ -70,3 +70,12 @@ module "prom-service_account-iam-bindings" {
     ]
   }
 }
+
+// Create IAM binding granting the ASM Gateway KSA access to the self signed certs stored in secret manager
+resource "google_project_iam_binding" "asm-gw-secret-accessor" {
+  role    = "roles/secretmanager.secretAccessor"
+  project = var.fleet_project
+  members = [
+    "serviceAccount:${var.fleet_project}.svc.id.goog[asm-gateways/asm-ingress-gateway]",
+  ]
+}
