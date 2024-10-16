@@ -111,12 +111,12 @@ stuffs
 gcloud iam service-accounts add-iam-policy-binding \
     cs-service-account@gke-toolkit-test-nonsharedvpc.iam.gserviceaccount.com \
     --role=roles/iam.workloadIdentityUser \
-    --member="serviceAccount:gke-toolkit-test-nonsharedvpc.svc.id.goog[config-management-system/ns-reconciler-whereami-frontend-whereami-frontend-17" \
+    --member="serviceAccount:gke-toolkit-test-nonsharedvpc.svc.id.goog[config-management-system/ns-reconciler-whereami-frontend-whereami-frontend-17]" \
     --project=gke-toolkit-test-nonsharedvpc
 gcloud iam service-accounts add-iam-policy-binding \
     cs-service-account@gke-toolkit-test-nonsharedvpc.iam.gserviceaccount.com \
     --role=roles/iam.workloadIdentityUser \
-    --member="serviceAccount:gke-toolkit-test-nonsharedvpc.svc.id.goog[config-management-system/ns-reconciler-whereami-frontend-whereami-backend-16" \
+    --member="serviceAccount:gke-toolkit-test-nonsharedvpc.svc.id.goog[config-management-system/ns-reconciler-whereami-frontend-whereami-backend-16]" \
     --project=gke-toolkit-test-nonsharedvpc
 
 gcloud container fleet scopes create team-whereami --project ${GKE_PROJECT_ID}
