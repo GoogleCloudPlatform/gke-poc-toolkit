@@ -246,9 +246,9 @@ func ValidateConf(c *Config) error {
 			if err := validateRegionAndZone(c.ClustersProjectID, cc.Region, cc.Zones); err != nil {
 				return fmt.Errorf("ClustersConfig[%d]: %s", i, err)
 			}
-			if err := validateMachineType(c.ClustersProjectID, cc.MachineType, cc.Zones); err != nil {
-				return fmt.Errorf("ClustersConfig[%d]: %s", i, err)
-			}
+			// if err := validateMachineType(c.ClustersProjectID, cc.MachineType, cc.Zones); err != nil {
+			// 	return fmt.Errorf("ClustersConfig[%d]: %s", i, err)
+			// }
 			if err := validateNodeOS(c.DefaultNodepoolOS); err != nil {
 				return fmt.Errorf("ClustersConfig[%d]: %s", i, err)
 			}
@@ -384,39 +384,39 @@ func validateRegionAndZone(projectId string, clusterRegion string, clusterZones 
 	return nil
 }
 
-func validateMachineType(projectId string, machineType string, zones []string) error {
-	for _, zone := range zones {
-		ctx := context.Background()
-		c, err := compute.NewMachineTypesRESTClient(ctx)
-		if err != nil {
-			return err
-		}
-		defer c.Close()
+// func validateMachineType(projectId string, machineType string, zones []string) error {
+// 	for _, zone := range zones {
+// 		ctx := context.Background()
+// 		c, err := compute.NewMachineTypesRESTClient(ctx)
+// 		if err != nil {
+// 			return err
+// 		}
+// 		defer c.Close()
 
-		req := &computepb.ListMachineTypesRequest{
-			Project: projectId,
-			Zone:    zone,
-		}
-		it := c.List(ctx, req)
-		validMachineTypes := []string{}
-		for {
-			resp, err := it.Next()
-			if err == iterator.Done {
-				break
-			}
-			if err != nil {
-				return err
-			}
-			if *resp.Name == machineType {
-				return nil
-			}
-			validMachineTypes = append(validMachineTypes, *resp.Name)
-			_ = resp
-		}
-		return fmt.Errorf("machine type %s is invalid, must be one of: %v", machineType, validMachineTypes)
-	}
-	return nil
-}
+// 		req := &computepb.ListMachineTypesRequest{
+// 			Project: projectId,
+// 			Zone:    zone,
+// 		}
+// 		it := c.List(ctx, req)
+// 		validMachineTypes := []string{}
+// 		for {
+// 			resp, err := it.Next()
+// 			if err == iterator.Done {
+// 				break
+// 			}
+// 			if err != nil {
+// 				return err
+// 			}
+// 			if *resp.Name == machineType {
+// 				return nil
+// 			}
+// 			validMachineTypes = append(validMachineTypes, *resp.Name)
+// 			_ = resp
+// 		}
+// 		return fmt.Errorf("machine type %s is invalid, must be one of: %v", machineType, validMachineTypes)
+// 	}
+// 	return nil
+// }
 
 func validateTFModuleRepo(repoPath string) error {
 	validRepo := []string{"../terraform/modules/", "github.com/GoogleCloudPlatform/gke-poc-toolkit//terraform/modules/"}
