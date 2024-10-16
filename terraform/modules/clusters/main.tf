@@ -22,59 +22,58 @@ data "google_project" "project" {
 locals {
   // Presets for project and network settings
   project_id               = var.shared_vpc ? var.vpc_project_id : var.project_id 
-  network_name             = var.vpc_name
+  # network_name             = var.vpc_name
   network                  = "projects/${local.project_id}/global/networks/${var.vpc_name}"
-  vpc_selflink             = format("projects/%s/global/networks/%s", local.project_id, local.network_name)
-  ip_range_pods            = var.vpc_ip_range_pods_name
-  ip_range_services        = var.vpc_ip_range_services_name
-  distinct_cluster_regions = toset([for cluster in var.cluster_config : "${cluster.region}"])
+  vpc_selflink             = format("projects/%s/global/networks/%s", local.project_id, var.vpc_name)
+  # ip_range_pods            = var.vpc_ip_range_pods_name
+  # ip_range_services        = var.vpc_ip_range_services_name
+  # distinct_cluster_regions = toset([for cluster in var.cluster_config : "${cluster.region}"])
 
   // Dynamically create subnet and secondary subnet inputs for multi-cluster creation
-  nested_subnets = flatten([
-    for name, config in var.cluster_config : [
-      {
-        subnet_name           = config.subnet_name
-        subnet_ip             = "10.0.${index(keys(var.cluster_config), name)}.0/24"
-        subnet_region         = config.region
-        subnet_private_access = true
-        description           = "This subnet is managed by Terraform"
-      }
-    ]
-  ])
+  # nested_subnets = flatten([
+  #   for name, config in var.cluster_config : [
+  #     {
+  #       subnet_name           = config.subnet_name
+  #       subnet_region         = config.region
+  #       subnet_private_access = true
+  #       description           = "This subnet is managed by Terraform"
+  #     }
+  #   ]
+  # ])
 
-  nested_secondary_subnets = {
-    for name, config in var.cluster_config : config.subnet_name => [
-      {
-        range_name    = local.ip_range_pods
-        ip_cidr_range = "10.${index(keys(var.cluster_config), name) + 1}.0.0/17"
-      },
-      {
-        range_name    = local.ip_range_services
-        ip_cidr_range = "10.${index(keys(var.cluster_config), name) + 1}.128.0/17"
-      }
-    ]
-  }
+  # nested_secondary_subnets = {
+  #   for name, config in var.cluster_config : config.subnet_name => [
+  #     {
+  #       range_name    = local.ip_range_pods
+  #       ip_cidr_range = "10.${index(keys(var.cluster_config), name) + 1}.0.0/17"
+  #     },
+  #     {
+  #       range_name    = local.ip_range_services
+  #       ip_cidr_range = "10.${index(keys(var.cluster_config), name) + 1}.128.0/17"
+  #     }
+  #   ]
+  # }
 
   # subnetworks_to_nat = flatten([ for cluster in var.cluster_config : [{ "name" = cluster.subnet_name, "source_ip_ranges_to_nat" = ["PRIMARY_IP_RANGE"], "secondary_ip_range_names" = [] }] ])
 
   // Presets for Linux Node Pool
-  linux_pool = [{
-    name               = format("linux-%s", var.node_pool)
-    initial_node_count = var.initial_node_count
-    total_min_count    = 0
-    total_max_count    = 20
-    auto_upgrade       = true
-    auto_repair        = true
-    node_metadata      = "GKE_METADATA"
-    machine_type       = var.linux_machine_type
-    disk_type          = "pd-balanced"
-    disk_size_gb       = 200
-    image_type         = "COS_CONTAINERD"
-    enable_secure_boot = true
-  }]
+  # linux_pool = [{
+  #   name               = format("linux-%s", var.node_pool)
+  #   initial_node_count = var.initial_node_count
+  #   total_min_count    = 0
+  #   total_max_count    = 20
+  #   auto_upgrade       = true
+  #   auto_repair        = true
+  #   node_metadata      = "GKE_METADATA"
+  #   machine_type       = var.linux_machine_type
+  #   disk_type          = "pd-balanced"
+  #   disk_size_gb       = 200
+  #   image_type         = "COS_CONTAINERD"
+  #   enable_secure_boot = true
+  # }]
 
   // Final Node Pool options for Cluster - combines all specified nodepools
-  cluster_node_pool = flatten(local.linux_pool)
+  # cluster_node_pool = flatten(local.linux_pool)
 
 }
 
