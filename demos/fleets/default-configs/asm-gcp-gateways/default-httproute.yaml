@@ -4,7 +4,7 @@ metadata:
   name: default-httproute
   namespace: asm-gateways
   annotations:
-    configsync.gke.io/cluster-name-selector: gke-dev-us-central1-01
+    configsync.gke.io/cluster-name-selector: us-central1_gke-ap-admin-cp-00
 spec:
   parentRefs:
   - name: external-http
