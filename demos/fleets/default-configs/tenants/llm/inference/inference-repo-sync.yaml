@@ -8,9 +8,9 @@ metadata:
 spec:
   sourceFormat: unstructured
   git:
-    repo: https://github.com/GoogleCloudPlatform/gke-poc-toolkit
+    repo: "https://source.developers.google.com/p/MYPROJECT}/r/default-config-sync-repo"
     branch: main
-    dir: demo/fleets/teams/llm/inference
+    dir: /teams/llm
     auth: gcpserviceaccount
     gcpServiceAccountEmail: cs-service-account@MYPROJECT.iam.gserviceaccount.com
 ---

@@ -18,6 +18,7 @@ resource "google_project_iam_member" "hubsa" {
 }
 
 // create ACM service account 
+// Todo - use KSA directly
 module "service_accounts" {
   source        = "terraform-google-modules/service-accounts/google"
   # version       = "~> 4.2.0"

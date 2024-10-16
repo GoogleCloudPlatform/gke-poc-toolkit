@@ -12,6 +12,11 @@ Services in play:
 
 ![diagram](assets/diagram.png)
 
+## Prereqs
+1. Setup Cloud Identity for groups or a Workforce Identity Federation pool if you want to BYO IDP.
+2. Create users and groups for a team-whereami and team-llm-inferencing
+
+
 ## Fleet Infra setup
 
 1. **Initiliaze the GKE POC Toolkit (gkekitctl init).** 
@@ -49,28 +54,17 @@ rm -rf tmp
 
 # Set Fleet project in the gkekitctl and default root sync configs
 cd ${ROOT_DIR}
+export CLOUD_IDENTITY_GROUP=<your-cloud-identity-group>
 find "${ROOT_DIR}" -type f -name "*.yaml" -print0 | while IFS= read -r -d '' file; do
   if [[ "$OSTYPE" == "darwin"* ]]; then
     sed -i '' -e "s|MYPROJECT|${GKE_PROJECT_ID}|g" "${file}"
+    sed -i '' -e "s|MYCLOUDIDENTITYGROUP|${CLOUD_IDENTITY_GROUP}|g" "${file}"
   else
     sed -i -e "s|MYPROJECT|${GKE_PROJECT_ID}|g" "${file}"
+    sed -i -e "s|MYCLOUDIDENTITYGROUP|${CLOUD_IDENTITY_GROUP}|g" "${file}"
   fi
 done
 ```
-
-<!-- 3. **Export vars and add them to your GKE POC toolkit config.yaml.**
-``` bash
-cd ${ROOT_DIR}/gke-poc-toolkit 
-if [[ "$OSTYPE" == "darwin"* ]]; then
-  sed -i '' -e "s/clustersProjectId: \"my-project\"/clustersProjectId: \"${GKE_PROJECT_ID}\"/g" config.yaml
-  sed -i '' -e "s/fleetProjectId: \"my-project\"/fleetProjectId: \"${GKE_PROJECT_ID}\"/g" config.yaml
-  sed -i '' -e "s/vpcProjectId: \"my-project\"/vpcProjectId: \"${GKE_PROJECT_ID}\"/g" config.yaml
-else
-  sed -i -e "s/clustersProjectId: \"my-project\"/clustersProjectId: \"${GKE_PROJECT_ID}\"/g" config.yaml
-  sed -i -e "s/fleetProjectId: \"my-project\"/fleetProjectId: \"${GKE_PROJECT_ID}\"/g" config.yaml
-  sed -i -e "s/vpcProjectId: \"my-project\"/vpcProjectId: \"${GKE_PROJECT_ID}\"/g" config.yaml
-fi
-``` -->
 
 3. **Run the gkekitctl create command from this directory.** This will take about 15 minutes to run.
 ```bash
@@ -99,8 +93,8 @@ gke-mccp-central-01-linux-gke-toolkit-poo-6fb11d07-h6xb   Ready    <none>   11m 
 4. **Push config to the default config sync gcp repo created during the gkekitctl create command.**
 ```bash
 gcloud source repos clone default-config-sync-repo --project ${GKE_PROJECT_ID}
-mv ${ROOT_DIR}/default-configs/* ${ROOT_DIR}default-config-sync-repo 
-rm -rf ${ROOT_DIR}/default-configs
+mv ${ROOT_DIR}/default-configs ${ROOT_DIR}/default-config-sync-repo
+mv ${ROOT_DIR}/teams ${ROOT_DIR}/ 
 cd ${ROOT_DIR}/default-config-sync-repo
 git add . && git commit -m "initial push" && git push
 
@@ -108,28 +102,25 @@ git add . && git commit -m "initial push" && git push
 nomos status
 ```
 
-3. **Once the whereami pods have started navigate to it's endpoint and you will see that you are routed to a pod living in the us-west region. You can also curl the endpoint to the same effect.**
-```bash
-curl https://whereami.endpoints.${GKE_PROJECT_ID}.cloud.goog/
-# The output should look something like this...
-{
-  "cluster_name": "gke-std-west02", 
-  "host_header": "whereami.endpoints.argo-spike.cloud.goog", 
-  "pod_name": "whereami-rollout-6d6cb979b5-5xzpj", 
-  "pod_name_emoji": "🇨🇵", 
-  "project_id": "argo-spike", 
-  "timestamp": "2022-08-01T16:16:56", 
-  "zone": "us-west1-b"
-}
-```
-
 ## Multi cluster load balancing demo
 stuffs
 
 1. **Setup Teams and bind that Whereami team to a cluster that us not the closest to your location.**
+```bash
+gcloud container fleet scopes create team-whereami --project ${GKE_PROJECT_ID}
+gcloud container fleet scopes namespaces create whereami-frontend --scope=team-whereami --project ${GKE_PROJECT_ID} 
+gcloud container fleet memberships bindings create gke-ap-central-00-team-whereami \
+  --membership gke-ap-central-00 \
+  --scope  team-whereami \
+  --location us-central1 \
+  --project ${GKE_PROJECT_ID}
+gcloud beta container fleet scopes add-app-operator-binding SCOPE_ID \
+  --role=ROLE \
+  --group=${TEAM_EMAIL} \
+  --project=${GKE_PROJECT_ID}
+```
 
-
-2. **Validate that the whereami app is alive and that your requests are getting routed to the GKE cluster in the closest region.**
+2. **Validate that the whereami app is alive and that your requests are getting routed to the GKE cluster you bound go the team scope.**
 ```bash
 curl https://whereami.endpoints.${GKE_PROJECT_ID}.cloud.goog/
 # The output should look something like this...

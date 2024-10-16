@@ -13,10 +13,10 @@ vpcConfig:
 ## FleetBuild
 configSyncRepo: "default-config-sync-repo" 
 configSyncBranch: "main"
-configSyncDir: "/"
+configSyncDir: "/default-configs"
 
 ## Cluster Build
-authenticatorSecurityGroup: "gke-security-groups@gkedemos.joonix.net"
+authenticatorSecurityGroup: "gke-security-groups@MYCLOUDIDENTITYGROUP"
 clustersProjectId: "MYPROJECT"
 fleetProjectId: "MYPROJECT" 
 privateEndpoint: true
