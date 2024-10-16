@@ -103,37 +103,9 @@ func InitConf(cfgFile string) *Config {
 	}
 	// Enable GCP APIs - Temporarily adding all apis needed to deal with flakes in the enable service TF module
 	serviceIds := []string{
-		// 	"iam.googleapis.com",
-		// 	"storage.googleapis.com",
 		"compute.googleapis.com",
-		// 	"logging.googleapis.com",
-		// 	"monitoring.googleapis.com",
-		// 	"containerregistry.googleapis.com",
-		// 	"container.googleapis.com",
-		// 	"binaryauthorization.googleapis.com",
-		// 	"stackdriver.googleapis.com",
-		// 	"iap.googleapis.com",
-		// 	"cloudresourcemanager.googleapis.com",
-		// 	"dns.googleapis.com",
-		// 	"iamcredentials.googleapis.com",
-		// 	"stackdriver.googleapis.com",
-		// 	"cloudkms.googleapis.com",
 	}
 	enableService(conf.ClustersProjectID, serviceIds)
-	// anthosServiceIds := []string{
-	// 	"anthos.googleapis.com",
-	// 	"gkehub.googleapis.com",
-	// 	"sourcerepo.googleapis.com",
-	// 	"anthosconfigmanagement.googleapis.com",
-	// 	"anthos.googleapis.com",
-	// 	"gkehub.googleapis.com",
-	// 	"multiclusterservicediscovery.googleapis.com",
-	// 	"multiclusteringress.googleapis.com",
-	// 	"trafficdirector.googleapis.com",
-	// 	"mesh.googleapis.com",
-	// 	"multiclustermetering.googleapis.com",
-	// }
-	// enableService(conf.ClustersProjectID, anthosServiceIds)
 
 	// Validate config
 	err = ValidateConf(conf)
@@ -230,11 +202,11 @@ func ValidateConf(c *Config) error {
 	if c.VpcConfig.VpcName == "" {
 		return fmt.Errorf("VPC Name cannot be empty")
 	}
-	// err := validateVPC(c.VpcConfig.VpcName, c.VpcConfig.VpcProjectID)
-	// if err != nil {
-	// 	return err
-	// }
-	// log.Printf("🌐 VPC name %s is valid + does not yet exist in VPC project %s\n", c.VpcConfig.VpcName, c.VpcConfig.VpcProjectID)
+	err := validateVPC(c.VpcConfig.VpcName, c.VpcConfig.VpcProjectID)
+	if err != nil {
+		return err
+	}
+	log.Printf("🌐 VPC name %s is valid + does not yet exist in VPC project %s\n", c.VpcConfig.VpcName, c.VpcConfig.VpcProjectID)
 
 	// Validate each ClusterConfig
 	for i, cc := range c.ClustersConfig {
@@ -285,43 +257,43 @@ func validateNodeOS(nodeOS string) error {
 // NOTE - the ListRegionsRequest client lib function is returning an empty list for any GCP
 // project. ListZones works fine. So for now, using ListZones result (where each zone has a region)
 // to bootstrap a list of valid regions.
-// func validateConfigRegion(projectID, region string) error {
-// 	ctx := context.Background()
-// 	c, err := compute.NewZonesRESTClient(ctx)
-// 	if err != nil {
-// 		return err
-// 	}
-// 	defer c.Close()
+func validateConfigRegion(projectID, region string) error {
+	ctx := context.Background()
+	c, err := compute.NewZonesRESTClient(ctx)
+	if err != nil {
+		return err
+	}
+	defer c.Close()
 
-// 	req := &computepb.ListZonesRequest{
-// 		Project: projectID,
-// 	}
-// 	it := c.List(ctx, req)
-// 	// Use zones to populate a map of valid regions for this project
-// 	regions := map[string]bool{}
-// 	for {
-// 		resp, err := it.Next()
-// 		if err == iterator.Done {
-// 			break
-// 		}
-// 		if err != nil {
-// 			return err
-// 		}
-// 		r := resp.GetRegion()
-// 		spl := strings.Split(r, "/")
-// 		if len(spl) < 2 {
-// 			return fmt.Errorf("error validating region (%s) - GCP region (%s) is invalid\n", region, r)
-// 		}
-// 		sanitizedRegion := spl[len(spl)-1]
-// 		regions[sanitizedRegion] = true
-// 	}
+	req := &computepb.ListZonesRequest{
+		Project: projectID,
+	}
+	it := c.List(ctx, req)
+	// Use zones to populate a map of valid regions for this project
+	regions := map[string]bool{}
+	for {
+		resp, err := it.Next()
+		if err == iterator.Done {
+			break
+		}
+		if err != nil {
+			return err
+		}
+		r := resp.GetRegion()
+		spl := strings.Split(r, "/")
+		if len(spl) < 2 {
+			return fmt.Errorf("error validating region (%s) - GCP region (%s) is invalid\n", region, r)
+		}
+		sanitizedRegion := spl[len(spl)-1]
+		regions[sanitizedRegion] = true
+	}
 
-// 	// check if Config.Region is in the map.
-// 	if _, ok := regions[region]; !ok {
-// 		return fmt.Errorf("config-wide region %s not found. Must be one of: %v\n", region, regions)
-// 	}
-// 	return nil
-// }
+	// check if Config.Region is in the map.
+	if _, ok := regions[region]; !ok {
+		return fmt.Errorf("config-wide region %s not found. Must be one of: %v\n", region, regions)
+	}
+	return nil
+}
 
 // Validate region + zone for specific clusters.
 func validateRegionAndZone(projectId string, clusterRegion string, clusterZones []string) error {

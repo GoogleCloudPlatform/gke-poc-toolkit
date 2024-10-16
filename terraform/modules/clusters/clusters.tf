@@ -14,6 +14,13 @@
  * limitations under the License.
  */
 
+locals {
+  // Presets for project and network settings
+  project_id               = var.shared_vpc ? var.vpc_project_id : var.project_id 
+  network                  = "projects/${local.project_id}/global/networks/${var.vpc_name}"
+  vpc_selflink             = format("projects/%s/global/networks/%s", local.project_id, var.vpc_name)
+}
+
 # Create clusters listing in the cluster_config variable
 resource "google_container_cluster" "gke_ap" {
   for_each           = var.cluster_config

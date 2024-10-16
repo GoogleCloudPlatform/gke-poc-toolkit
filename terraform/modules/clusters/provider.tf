@@ -33,9 +33,6 @@ terraform {
   }
 }
 
-data "google_client_openid_userinfo" "me" {
-}
-
 provider "google" {
   project = var.project_id
   region  = var.region

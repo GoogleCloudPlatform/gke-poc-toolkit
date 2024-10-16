@@ -17,7 +17,7 @@
 resource "google_container_cluster" "admin" {
   provider           = google-beta
   name               = "gke-ap-admin-cp-00"
-  project            = var.project_id
+  project            = var.fleet_project
   location           = "us-central1"
   enable_autopilot   = true
   initial_node_count = 1

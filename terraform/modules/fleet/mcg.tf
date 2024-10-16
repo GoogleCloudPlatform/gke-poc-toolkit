@@ -14,6 +14,10 @@
  * limitations under the License.
  */
 
+data "google_project" "fleet_project" {
+  project_id = var.fleet_project
+}
+
 // Hydrate 
 locals{
   whereami_openapi_spec = <<-EOT
