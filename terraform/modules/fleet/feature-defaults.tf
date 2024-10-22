@@ -86,7 +86,7 @@ resource "google_gke_hub_feature" "mesh_config_defaults" {
     }
   }
 
-  depends_on = [google_project_iam_member.hubsa]
+  # depends_on = [google_project_iam_member.hubsa]
 }
 
 # Fleet Observability

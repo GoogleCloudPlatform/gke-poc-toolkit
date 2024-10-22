@@ -7,15 +7,15 @@ locals {
   hub_service_account       = "serviceAccount:${local.hub_service_account_email}"
 }
 
-# Create Hub Service Account
-resource "google_project_iam_member" "hubsa" {
-  project = var.fleet_project
-  role    = "roles/gkehub.serviceAgent"
-  member  = local.hub_service_account
-  depends_on = [
-    module.enabled_service_project_apis,
-  ]
-}
+# # Create Hub Service Account
+# resource "google_project_iam_member" "hubsa" {
+#   project = var.fleet_project
+#   role    = "roles/gkehub.serviceAgent"
+#   member  = local.hub_service_account
+#   depends_on = [
+#     module.enabled_service_project_apis,
+#   ]
+# }
 
 // create ACM service account 
 // Todo - use KSA directly
