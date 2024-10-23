@@ -79,6 +79,29 @@ resource "google_endpoints_service" "inference_service" {
     ]
 }
 
+resource "google_certificate_manager_certificate_map" "mcg_certificate_map" {
+  name        = "mcg-cert-map"
+  description = "My acceptance test certificate map"
+}
+
+resource "google_certificate_manager_certificate_map_entry" "mcg_cert_map_entry" {
+  name        = "mcg-cert-map-entry"
+  description = "My acceptance test certificate map entry"
+  map = google_certificate_manager_certificate_map.mcg_certificate_map.name 
+  certificates = [google_certificate_manager_certificate.mcg_certificate.id]
+  hostname = "whereami.endpoints.${var.fleet_project}.cloud.goog"
+}
+
+resource "google_certificate_manager_certificate" "mcg_certificate" {
+  name        = "mcg-cert"
+  scope       = "DEFAULT"
+  managed {
+    domains = [
+      "whereami.endpoints.${var.fleet_project}.cloud.goog"
+      ]
+  }
+}
+
 // https://cloud.google.com/kubernetes-engine/docs/how-to/multi-cluster-ingress-setup#shared_vpc_deployment 
 module "firewall_rules" {
   source       = "terraform-google-modules/network/google//modules/firewall-rules"
