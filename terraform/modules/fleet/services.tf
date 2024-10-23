@@ -41,5 +41,6 @@ module "enabled_service_project_apis" {
     "iam.googleapis.com",
     "sourcerepo.googleapis.com",
     "endpoints.googleapis.com",
+    "certificatemanager.googleapis.com",
   ]
 }
